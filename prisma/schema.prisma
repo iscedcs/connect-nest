@@ -1,0 +1,134 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model BusinessCard {
+  id          String    @id @default(uuid())
+  user_id     String    @unique
+  theme_id    String?
+  theme_color String?
+  card_lang   String?
+  cover       String?
+  profile     String?
+  card_url    String    @unique
+  card_type   String?
+  title       String?
+  sub_title   String?
+  description String?
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+  deleted_at  DateTime?
+
+  // Relations
+  theme               Theme?               @relation(fields: [theme_id], references: [id])
+  fields              BusinessField[]      @relation("CardFields")
+  businessCardDetails BusinessCardDetail[] @relation("BusinessCardToDetails")
+  cardUrl             CardUrl[]            @relation("CardUrlProfile")
+
+  @@map("business_cards")
+}
+
+model BusinessCardDetail {
+  id        String    @id @default(uuid())
+  card_id   String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  businessCard BusinessCard @relation("BusinessCardToDetails", fields: [card_id], references: [id])
+
+  @@map("business_card_details")
+}
+
+model BusinessField {
+  id        String    @id @default(uuid())
+  card_id   String
+  type      String
+  icon      String?
+  label     String?
+  content   String?
+  position  Int?
+  status    String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  businessCard BusinessCard @relation("CardFields", fields: [card_id], references: [id])
+
+  @@map("business_fields")
+}
+
+model CardUrl {
+  id          String    @id @default(uuid())
+  card_id     String    @unique
+  user_id     String?
+  firstuse    Boolean?  @default(false)
+  state       String?
+  profile_id  String?
+  device_type String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  businessCard BusinessCard? @relation("CardUrlProfile", fields: [profile_id], references: [id])
+
+  @@map("card_urls")
+}
+
+model ContactLink {
+  id         String    @id @default(uuid())
+  contact_id String
+  type       String
+  link       String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
+
+  sharedContact SharedContact @relation(fields: [contact_id], references: [id])
+
+  @@map("contact_links")
+}
+
+model SharedContact {
+  id        String    @id @default(uuid())
+  owner_id  String
+  full_name String
+  phone     String?
+  email     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  contact_links ContactLink[]
+
+  @@map("shared_contacts")
+}
+
+model Theme {
+  id                String @id @default(uuid())
+  theme_description String
+
+  businessCards BusinessCard[]
+}
+
+model AuthToken {
+  id        String    @id @default(uuid())
+  token     String    @unique
+  used      Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("auth_tokens")
+}
