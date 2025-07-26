@@ -13,122 +13,127 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model BusinessCard {
-  id          String    @id @default(uuid())
-  user_id     String    @unique
-  theme_id    String?
-  theme_color String?
-  card_lang   String?
-  cover       String?
-  profile     String?
-  card_url    String    @unique
-  card_type   String?
-  title       String?
-  sub_title   String?
-  description String?
-  created_at  DateTime  @default(now())
-  updated_at  DateTime  @updatedAt
-  deleted_at  DateTime?
-
+model Profile {
+  id               String            @id @default(uuid())
+  userId           String            @unique
+  profilePhoto     String?
+  coverPhoto       String?
+  name             String
+  position         String?
+  description      String?
+  location         String?
+  address          Json?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  deletedAt        DateTime?
   // Relations
-  theme               Theme?               @relation(fields: [theme_id], references: [id])
-  fields              BusinessField[]      @relation("CardFields")
-  businessCardDetails BusinessCardDetail[] @relation("BusinessCardToDetails")
-  cardUrl             CardUrl[]            @relation("CardUrlProfile")
-
-  @@map("business_cards")
+  socials          Social[]
+  contacts         Contact[]
+  notifications    Notification[]
+  supportRequests  SupportRequest[]
+  cardInteractions CardInteraction[]
 }
 
-model BusinessCardDetail {
+model Social {
   id        String    @id @default(uuid())
-  card_id   String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
-  businessCard BusinessCard @relation("BusinessCardToDetails", fields: [card_id], references: [id])
-
-  @@map("business_card_details")
-}
-
-model BusinessField {
-  id        String    @id @default(uuid())
-  card_id   String
-  type      String
-  icon      String?
+  user      Profile   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  platform  String
   label     String?
-  content   String?
-  position  Int?
-  status    String
+  value     String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
-
-  businessCard BusinessCard @relation("CardFields", fields: [card_id], references: [id])
-
-  @@map("business_fields")
 }
 
-model CardUrl {
-  id          String    @id @default(uuid())
-  card_id     String    @unique
-  user_id     String?
-  firstuse    Boolean?  @default(false)
-  state       String?
-  profile_id  String?
-  device_type String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  deletedAt   DateTime?
-
-  businessCard BusinessCard? @relation("CardUrlProfile", fields: [profile_id], references: [id])
-
-  @@map("card_urls")
-}
-
-model ContactLink {
-  id         String    @id @default(uuid())
-  contact_id String
-  type       String
-  link       String
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  deletedAt  DateTime?
-
-  sharedContact SharedContact @relation(fields: [contact_id], references: [id])
-
-  @@map("contact_links")
-}
-
-model SharedContact {
+model Contact {
   id        String    @id @default(uuid())
-  owner_id  String
-  full_name String
-  phone     String?
+  owner     Profile   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId   String
+  firstName String?
+  lastName  String?
   email     String?
+  phone     String?
+  note      String?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  contact_links ContactLink[]
-
-  @@map("shared_contacts")
+  @@unique([ownerId])
 }
 
-model Theme {
-  id                String @id @default(uuid())
-  theme_description String
+// model ShareSetting {
+//   id           String      @id @default(uuid())
+//   user         Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   userId       String      @unique
+//   shareEmail   Boolean     @default(true)
+//   sharePhone   Boolean     @default(true)
+//   shareSocials Boolean     @default(true)
+//   createdAt    DateTime    @default(now())
+//   updatedAt    DateTime    @updatedAt
+//   deletedAt    DateTime?
+// }
 
-  businessCards BusinessCard[]
+model Notification {
+  id        String           @id @default(uuid())
+  user      Profile          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  title     String
+  message   String
+  type      NotificationType
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  deletedAt DateTime?
 }
 
-model AuthToken {
+enum NotificationType {
+  CARD_INTERACTION
+  CONTACT_SHARED
+}
+
+model SupportRequest {
   id        String    @id @default(uuid())
-  token     String    @unique
-  used      Boolean   @default(false)
+  user      Profile   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  subject   String
+  message   String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
+}
 
-  @@map("auth_tokens")
+model CardInteraction {
+  id        String    @id @default(uuid())
+  user      Profile   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  deviceId  String
+  method    ScanType
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+// model Invite {
+//   id          String       @id @default(uuid())
+//   invitedBy   Profile? @relation("InvitedByProfile", fields: [invitedById], references: [id])
+//   invitedById String?
+//   email       String
+//   token       String       @unique
+//   status      InviteStatus @default(PENDING)
+//   sentAt      DateTime     @default(now())
+//   createdAt   DateTime     @default(now())
+//   updatedAt   DateTime     @updatedAt
+//   deletedAt   DateTime?
+// }
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+enum ScanType {
+  TAP
+  SCAN
 }
