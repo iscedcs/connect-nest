@@ -8,6 +8,6 @@ import { AuthModule } from 'src/auth/auth.module';
 @Module({
   imports: [DatabaseModule],
   controllers: [SupportRequestController],
-  providers: [SupportRequestService],
+  providers: [SupportRequestService, DatabaseService],
 })
 export class SupportRequestModule {}
