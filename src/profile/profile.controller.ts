@@ -72,7 +72,7 @@ export class ProfileController {
     return this.profileService.getProfile(user);
   }
 
-  @Put('update')
+  @Patch('update')
   @ApiOperation({ summary: 'Update current user\'s profile' })
   @ApiResponse({ 
     status: 200, 
