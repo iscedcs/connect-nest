@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { CreateSocialDto, UpdateSocialDto } from './dto/social.dto';
 
@@ -13,10 +13,7 @@ export class SocialService {
       });
 
       if (!profile) {
-        return {
-          success: false,
-          message: 'Profile not found',
-        };
+        throw new BadRequestException('Profile not found');
       }
 
       const social = await this.databaseService.social.create({
@@ -50,10 +47,7 @@ export class SocialService {
       });
 
       if (!profile) {
-        return {
-          success: false,
-          message: 'Profile not found',
-        };
+        throw new BadRequestException('Profile not found');
       }
 
       const socials = await this.databaseService.social.findMany({
@@ -86,10 +80,7 @@ export class SocialService {
       });
 
       if (!profile) {
-        return {
-          success: false,
-          message: 'Profile not found',
-        };
+        throw new BadRequestException('Profile not found');
       }
 
       const social = await this.databaseService.social.findFirst({
@@ -101,10 +92,7 @@ export class SocialService {
       });
 
       if (!social) {
-        return {
-          success: false,
-          message: 'Social media not found',
-        };
+        throw new BadRequestException('Socials not found');
       }
 
       return {
@@ -129,10 +117,7 @@ export class SocialService {
       });
 
       if (!profile) {
-        return {
-          success: false,
-          message: 'Profile not found',
-        };
+        throw new BadRequestException('Profile not found');
       }
 
       const social = await this.databaseService.social.findFirst({
@@ -144,10 +129,7 @@ export class SocialService {
       });
 
       if (!social) {
-        return {
-          success: false,
-          message: 'Social media not found',
-        };
+        throw new BadRequestException('Social media not found');
       }
 
       const updatedSocial = await this.databaseService.social.update({
@@ -181,10 +163,7 @@ export class SocialService {
       });
 
       if (!profile) {
-        return {
-          success: false,
-          message: 'Profile not found',
-        };
+        throw new BadRequestException('Profile not found');
       }
 
       const social = await this.databaseService.social.findFirst({
@@ -196,10 +175,7 @@ export class SocialService {
       });
 
       if (!social) {
-        return {
-          success: false,
-          message: 'Social media not found',
-        };
+        throw new BadRequestException('Social media not found');
       }
 
       // Soft delete the social media
@@ -229,10 +205,7 @@ export class SocialService {
       });
 
       if (!profile) {
-        return {
-          success: false,
-          message: 'Profile not found',
-        };
+        throw new BadRequestException('Profile not found');
       }
 
       // Soft delete all social media for this profile
@@ -265,10 +238,7 @@ export class SocialService {
       });
 
       if (!profile) {
-        return {
-          success: false,
-          message: 'Profile not found',
-        };
+        throw new BadRequestException('Profile not found');
       }
 
       const socials = await this.databaseService.social.findMany({
@@ -302,10 +272,7 @@ export class SocialService {
       });
 
       if (!profile) {
-        return {
-          success: false,
-          message: 'Profile not found',
-        };
+        throw new BadRequestException('Profile not found');
       }
 
       const totalSocials = await this.databaseService.social.count({
