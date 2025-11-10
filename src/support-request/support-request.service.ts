@@ -8,7 +8,7 @@ export class SupportRequestService {
 
   async createSupportRequest(user: any, dto: CreateSupportRequestDto) {
     try {
-      const profile = await this.databaseService.profile.findUnique({
+      const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
       });
 
@@ -44,7 +44,7 @@ export class SupportRequestService {
 
   async getSupportRequests(user: any, page: number = 1, limit: number = 10) {
     try {
-      const profile = await this.databaseService.profile.findUnique({
+      const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
       });
 
@@ -97,7 +97,7 @@ export class SupportRequestService {
 
   async getSupportRequest(user: any, supportRequestId: string) {
     try {
-      const profile = await this.databaseService.profile.findUnique({
+      const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
       });
 
@@ -140,7 +140,7 @@ export class SupportRequestService {
 
   async updateSupportRequest(user: any, supportRequestId: string, dto: UpdateSupportRequestDto) {
     try {
-      const profile = await this.databaseService.profile.findUnique({
+      const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
       });
 
@@ -191,7 +191,7 @@ export class SupportRequestService {
 
   async deleteSupportRequest(user: any, supportRequestId: string) {
     try {
-      const profile = await this.databaseService.profile.findUnique({
+      const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
       });
 
@@ -239,7 +239,7 @@ export class SupportRequestService {
 
   async searchSupportRequests(user: any, query: string, page: number = 1, limit: number = 10) {
     try {
-      const profile = await this.databaseService.profile.findUnique({
+      const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
       });
 
@@ -320,7 +320,7 @@ export class SupportRequestService {
 
   async getRecentSupportRequests(user: any, limit: number = 5) {
     try {
-      const profile = await this.databaseService.profile.findUnique({
+      const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
       });
 
@@ -357,7 +357,7 @@ export class SupportRequestService {
 
   async getSupportRequestStats(user: any) {
     try {
-      const profile = await this.databaseService.profile.findUnique({
+      const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
       });
 

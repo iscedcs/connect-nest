@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsOptional, IsUUID } from 'class-validator';
+import { IsString, IsOptional, IsUUID, IsBoolean, IsNumber, Min } from 'class-validator';
 
 export class CreateSocialDto {
   @ApiProperty({
@@ -23,6 +23,23 @@ export class CreateSocialDto {
   })
   @IsString()
   value: string;
+
+  @ApiPropertyOptional({
+    description: 'Whether this social is visible',
+    example: true
+  })
+  @IsOptional()
+  @IsBoolean()
+  is_visible?: boolean;
+
+  @ApiPropertyOptional({
+    description: 'Display order',
+    example: 1
+  })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  order?: number;
 }
 
 export class UpdateSocialDto {
@@ -49,6 +66,59 @@ export class UpdateSocialDto {
   @IsOptional()
   @IsString()
   value?: string;
+
+  @ApiPropertyOptional({
+    description: 'Whether this social is visible',
+    example: true
+  })
+  @IsOptional()
+  @IsBoolean()
+  is_visible?: boolean;
+
+  @ApiPropertyOptional({
+    description: 'Display order',
+    example: 1
+  })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  order?: number;
+}
+
+export class BulkVisibilityDto {
+  @ApiProperty({
+    description: 'Array of social IDs',
+    example: ['soc_01', 'soc_02', 'soc_07']
+  })
+  @IsString({ each: true })
+  ids: string[];
+
+  @ApiProperty({
+    description: 'Visibility status to set',
+    example: true
+  })
+  @IsBoolean()
+  is_visible: boolean;
+}
+
+export class BulkDeleteDto {
+  @ApiPropertyOptional({
+    description: 'Array of social IDs to delete. If not provided, all socials will be deleted.',
+    example: ['soc_01', 'soc_02']
+  })
+  @IsOptional()
+  @IsString({ each: true })
+  ids?: string[];
+}
+
+export class BulkRestoreDto {
+  @ApiPropertyOptional({
+    description: 'Array of social IDs to restore. If not provided, all deleted socials will be restored.',
+    example: ['soc_01', 'soc_02']
+  })
+  @IsOptional()
+  @IsString({ each: true })
+  ids?: string[];
 }
 
 export class SocialResponseDto {
@@ -88,4 +158,22 @@ export class SocialResponseDto {
     example: '2024-01-01T00:00:00.000Z'
   })
   updatedAt: Date;
+
+  @ApiProperty({
+    description: 'Whether this social is visible',
+    example: true
+  })
+  is_visible: boolean;
+
+  @ApiPropertyOptional({
+    description: 'Display order',
+    example: 1
+  })
+  order?: number;
+
+  @ApiPropertyOptional({
+    description: 'Timestamp when the social media was deleted (soft delete)',
+    example: '2024-01-01T00:00:00.000Z'
+  })
+  deletedAt?: Date;
 }

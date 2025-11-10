@@ -21,7 +21,8 @@ import {
   ContactResponseDto,
   NotificationResponseDto,
   SupportRequestResponseDto,
-  ProfileStatsResponseDto
+  ProfileStatsResponseDto,
+  CloneProfileDto
 } from './dto/profile.dto';
 import { 
   ApiBearerAuth, 
@@ -117,5 +118,158 @@ export class ProfileController {
       return { success: false, message: 'User not found' };
     }
     return this.profileService.getProfileStats(user);
+  }
+}
+
+@ApiTags('Multi-Profile Management')
+@ApiBearerAuth('access-token')
+@Controller('profiles')
+export class ProfilesController {
+  constructor(private readonly profileService: ProfileService) {}
+
+  @Get('all')
+  @ApiOperation({ summary: 'List all profiles for the current user' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Profiles retrieved successfully',
+  })
+  @ApiQuery({ name: 'page', required: false, description: 'Page number', example: 1 })
+  @ApiQuery({ name: 'per_page', required: false, description: 'Items per page', example: 25 })
+  @ApiQuery({ name: 'include_deleted', required: false, description: 'Include deleted profiles', example: false })
+  getAllProfiles(
+    @Request() req,
+    @Query('page') page: number = 1,
+    @Query('per_page') perPage: number = 25,
+    @Query('include_deleted') includeDeleted: boolean = false
+  ) {
+    const user = req.isce_auth;
+    if (!user) {
+      return { success: false, message: 'User not found' };
+    }
+    return this.profileService.getAllProfiles(user, page, perPage, includeDeleted);
+  }
+
+  @Get('one/:profileId')
+  @ApiOperation({ summary: 'Get a specific profile by ID' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Profile retrieved successfully',
+    type: ProfileResponseDto
+  })
+  @ApiResponse({ status: 404, description: 'Profile not found' })
+  @ApiParam({ name: 'profileId', description: 'Profile ID' })
+  getProfileById(@Request() req, @Param('profileId') profileId: string) {
+    const user = req.isce_auth;
+    if (!user) {
+      return { success: false, message: 'User not found' };
+    }
+    return this.profileService.getProfileById(user, profileId);
+  }
+
+  @Patch('update/:profileId')
+  @ApiOperation({ summary: 'Update a specific profile' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Profile updated successfully',
+    type: ProfileResponseDto
+  })
+  @ApiResponse({ status: 404, description: 'Profile not found' })
+  @ApiParam({ name: 'profileId', description: 'Profile ID' })
+  @ApiBody({ type: UpdateProfileDto })
+  updateProfileById(
+    @Request() req,
+    @Param('profileId') profileId: string,
+    @Body(ValidationPipe) dto: UpdateProfileDto
+  ) {
+    const user = req.isce_auth;
+    if (!user) {
+      return { success: false, message: 'User not found' };
+    }
+    return this.profileService.updateProfileById(user, profileId, dto);
+  }
+
+  @Patch('delete/:profileId')
+  @ApiOperation({ summary: 'Soft delete a specific profile' })
+  @ApiResponse({ status: 204, description: 'Profile deleted successfully' })
+  @ApiResponse({ status: 404, description: 'Profile not found' })
+  @ApiParam({ name: 'profileId', description: 'Profile ID' })
+  deleteProfileById(@Request() req, @Param('profileId') profileId: string) {
+    const user = req.isce_auth;
+    if (!user) {
+      return { success: false, message: 'User not found' };
+    }
+    return this.profileService.deleteProfileById(user, profileId);
+  }
+
+  @Patch('restore/:profileId')
+  @ApiOperation({ summary: 'Restore a soft-deleted profile' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Profile restored successfully',
+    type: ProfileResponseDto
+  })
+  @ApiResponse({ status: 404, description: 'Profile not found' })
+  @ApiParam({ name: 'profileId', description: 'Profile ID' })
+  restoreProfile(@Request() req, @Param('profileId') profileId: string) {
+    const user = req.isce_auth;
+    if (!user) {
+      return { success: false, message: 'User not found' };
+    }
+    return this.profileService.restoreProfile(user, profileId);
+  }
+
+  @Patch('set-default/:profileId')
+  @ApiOperation({ summary: 'Set a profile as the default profile' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Default profile set successfully',
+    type: ProfileResponseDto
+  })
+  @ApiResponse({ status: 404, description: 'Profile not found' })
+  @ApiParam({ name: 'profileId', description: 'Profile ID' })
+  setDefaultProfile(@Request() req, @Param('profileId') profileId: string) {
+    const user = req.isce_auth;
+    if (!user) {
+      return { success: false, message: 'User not found' };
+    }
+    return this.profileService.setDefaultProfile(user, profileId);
+  }
+
+  @Get('default')
+  @ApiOperation({ summary: 'Get the current default profile' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Default profile retrieved successfully',
+    type: ProfileResponseDto
+  })
+  @ApiResponse({ status: 404, description: 'Default profile not found' })
+  getDefaultProfile(@Request() req) {
+    const user = req.isce_auth;
+    if (!user) {
+      return { success: false, message: 'User not found' };
+    }
+    return this.profileService.getDefaultProfile(user);
+  }
+
+  @Post('clone/:profileId')
+  @ApiOperation({ summary: 'Clone a profile and optionally its resources' })
+  @ApiResponse({ 
+    status: 201, 
+    description: 'Profile cloned successfully',
+    type: ProfileResponseDto
+  })
+  @ApiResponse({ status: 404, description: 'Source profile not found' })
+  @ApiParam({ name: 'profileId', description: 'Source Profile ID to clone' })
+  @ApiBody({ type: CloneProfileDto })
+  cloneProfile(
+    @Request() req,
+    @Param('profileId') profileId: string,
+    @Body(ValidationPipe) dto: CloneProfileDto
+  ) {
+    const user = req.isce_auth;
+    if (!user) {
+      return { success: false, message: 'User not found' };
+    }
+    return this.profileService.cloneProfile(user, profileId, dto);
   }
 }

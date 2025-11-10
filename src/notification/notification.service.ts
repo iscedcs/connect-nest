@@ -47,7 +47,7 @@ export class NotificationService {
 
   async getNotifications(user: any, page: number = 1, limit: number = 10) {
     try {
-      const profile = await this.databaseService.profile.findUnique({
+      const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
       });
 
@@ -100,7 +100,7 @@ export class NotificationService {
 
   async getNotification(user: any, notificationId: string) {
     try {
-      const profile = await this.databaseService.profile.findUnique({
+      const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
       });
 
@@ -143,7 +143,7 @@ export class NotificationService {
 
   async markAsRead(user: any, notificationId: string) {
     try {
-      const profile = await this.databaseService.profile.findUnique({
+      const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
       });
 
@@ -190,7 +190,7 @@ export class NotificationService {
 
   async markAllAsRead(user: any) {
     try {
-      const profile = await this.databaseService.profile.findUnique({
+      const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
       });
 
@@ -226,7 +226,7 @@ export class NotificationService {
 
   async deleteNotification(user: any, notificationId: string) {
     try {
-      const profile = await this.databaseService.profile.findUnique({
+      const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
       });
 
@@ -274,7 +274,7 @@ export class NotificationService {
 
   async getUnreadNotifications(user: any, page: number = 1, limit: number = 10) {
     try {
-      const profile = await this.databaseService.profile.findUnique({
+      const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
       });
 
@@ -329,7 +329,7 @@ export class NotificationService {
 
   async getNotificationsByType(user: any, type: NotificationType, page: number = 1, limit: number = 10) {
     try {
-      const profile = await this.databaseService.profile.findUnique({
+      const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
       });
 
@@ -384,7 +384,7 @@ export class NotificationService {
 
   async getRecentNotifications(user: any, limit: number = 5) {
     try {
-      const profile = await this.databaseService.profile.findUnique({
+      const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
       });
 
@@ -421,7 +421,7 @@ export class NotificationService {
 
   async getNotificationStats(user: any) {
     try {
-      const profile = await this.databaseService.profile.findUnique({
+      const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
       });
 

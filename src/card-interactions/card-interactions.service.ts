@@ -46,7 +46,7 @@ export class CardInteractionsService {
 
   async getCardInteractions(user: any, page: number = 1, limit: number = 10) {
     try {
-      const profile = await this.databaseService.profile.findUnique({
+      const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
       });
 
@@ -99,7 +99,7 @@ export class CardInteractionsService {
 
   async getCardInteraction(user: any, interactionId: string) {
     try {
-      const profile = await this.databaseService.profile.findUnique({
+      const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
       });
 
@@ -142,7 +142,7 @@ export class CardInteractionsService {
 
   async updateCardInteraction(user: any, interactionId: string, dto: UpdateCardInteractionDto) {
     try {
-      const profile = await this.databaseService.profile.findUnique({
+      const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
       });
 
@@ -193,7 +193,7 @@ export class CardInteractionsService {
 
   async deleteCardInteraction(user: any, interactionId: string) {
     try {
-      const profile = await this.databaseService.profile.findUnique({
+      const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
       });
 
@@ -241,7 +241,7 @@ export class CardInteractionsService {
 
   async getInteractionsByMethod(user: any, method: ScanType, page: number = 1, limit: number = 10) {
     try {
-      const profile = await this.databaseService.profile.findUnique({
+      const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
       });
 
@@ -296,7 +296,7 @@ export class CardInteractionsService {
 
   async getInteractionsByDevice(user: any, deviceId: string, page: number = 1, limit: number = 10) {
     try {
-      const profile = await this.databaseService.profile.findUnique({
+      const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
       });
 
@@ -351,7 +351,7 @@ export class CardInteractionsService {
 
   async getRecentInteractions(user: any, limit: number = 10) {
     try {
-      const profile = await this.databaseService.profile.findUnique({
+      const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
       });
 
@@ -388,7 +388,7 @@ export class CardInteractionsService {
 
   async getInteractionStats(user: any) {
     try {
-      const profile = await this.databaseService.profile.findUnique({
+      const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
       });
 
@@ -491,7 +491,7 @@ export class CardInteractionsService {
 
   async getInteractionsByDateRange(user: any, startDate: string, endDate: string, page: number = 1, limit: number = 10) {
     try {
-      const profile = await this.databaseService.profile.findUnique({
+      const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
       });
 

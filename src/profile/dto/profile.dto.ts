@@ -2,13 +2,6 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsString, IsOptional, IsObject, IsUUID, IsEnum, IsBoolean, IsNumber, Min, Max } from 'class-validator';
 
 export class CreateProfileDto {
-  @ApiProperty({
-    description: 'The unique user ID associated with this profile',
-    example: 'user-123'
-  })
-  @IsString()
-  userId: string;
-
   @ApiPropertyOptional({
     description: 'URL to the profile photo',
     example: 'https://example.com/profile-photo.jpg'
@@ -240,6 +233,12 @@ export class ProfileResponseDto {
     example: '2024-01-01T00:00:00.000Z'
   })
   deletedAt?: Date;
+
+  @ApiProperty({
+    description: 'Whether this is the default profile for the user',
+    example: true
+  })
+  is_default: boolean;
 }
 
 export class SocialResponseDto {
@@ -436,4 +435,46 @@ export class ProfileStatsResponseDto {
     example: 15
   })
   cardInteractionsCount: number;
+}
+
+export class CloneProfileDto {
+  @ApiPropertyOptional({
+    description: 'Resources to include when cloning',
+    example: {
+      social: true,
+      contacts: true,
+      links: true,
+      videos: true,
+      meetings: true,
+      appointments: true,
+      spotify: true,
+      files: true,
+      forms: true,
+      wallets: true,
+      connectConfig: true
+    }
+  })
+  @IsOptional()
+  @IsObject()
+  include?: {
+    social?: boolean;
+    contacts?: boolean;
+    links?: boolean;
+    videos?: boolean;
+    meetings?: boolean;
+    appointments?: boolean;
+    spotify?: boolean;
+    files?: boolean;
+    forms?: boolean;
+    wallets?: boolean;
+    connectConfig?: boolean;
+  };
+
+  @ApiPropertyOptional({
+    description: 'Custom name for the cloned profile',
+    example: 'Cloned Profile - Draft'
+  })
+  @IsOptional()
+  @IsString()
+  name?: string;
 }

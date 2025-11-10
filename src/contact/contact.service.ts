@@ -48,7 +48,7 @@ export class ContactService {
 
   async getReceivedContacts(user: any, page: number = 1, limit: number = 10) {
     try {
-      const profile = await this.databaseService.profile.findUnique({
+      const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
       });
 
@@ -101,7 +101,7 @@ export class ContactService {
 
   async getContact(user: any, contactId: string) {
     try {
-      const profile = await this.databaseService.profile.findUnique({
+      const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
       });
 
@@ -144,7 +144,7 @@ export class ContactService {
 
   async deleteContact(user: any, contactId: string) {
     try {
-      const profile = await this.databaseService.profile.findUnique({
+      const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
       });
 
@@ -192,7 +192,7 @@ export class ContactService {
 
   async searchReceivedContacts(user: any, searchTerm: string, page: number = 1, limit: number = 10) {
     try {
-      const profile = await this.databaseService.profile.findUnique({
+      const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
       });
 
@@ -309,7 +309,7 @@ export class ContactService {
 
   async getRecentContacts(user: any, limit: number = 5) {
     try {
-      const profile = await this.databaseService.profile.findUnique({
+      const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
       });
 
@@ -346,7 +346,7 @@ export class ContactService {
 
   async getContactStats(user: any) {
     try {
-      const profile = await this.databaseService.profile.findUnique({
+      const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
       });
 
