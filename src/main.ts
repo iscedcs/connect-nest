@@ -19,7 +19,7 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: ['http://localhost:3001', 'https://isceauth.onrender.com', 'http://localhost:3154', 'https://stingray-app-clk8t.ondigitalocean.app', 'https://connect-nest.onrender.com'],
+    origin: ['http://localhost:3001', 'https://isceauth.onrender.com','https://connect-web-eight.vercel.app', 'http://localhost:3154', 'https://stingray-app-clk8t.ondigitalocean.app', 'https://connect-nest.onrender.com'],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
