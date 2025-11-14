@@ -28,10 +28,16 @@ export class SpotifyService {
       const skip = (page - 1) * perPage;
       const where: any = { profileId };
       if (!includeDeleted) where.deletedAt = null;
-      const orderBy: any = sort ? { [sort]: order } : { order: 'asc', createdAt: 'asc' };
+      const orderBy: any[] = [];
+      if (sort) {
+        orderBy.push({ [sort]: order });
+      } else {
+        orderBy.push({ order: 'asc' });
+        orderBy.push({ createdAt: 'asc' });
+      }
 
       const [items, total] = await Promise.all([
-        this.databaseService.spotifyItem.findMany({ where, skip, take: perPage, orderBy: [orderBy] }),
+        this.databaseService.spotifyItem.findMany({ where, skip, take: perPage, orderBy: orderBy }),
         this.databaseService.spotifyItem.count({ where }),
       ]);
 

@@ -403,12 +403,12 @@ export class SocialService {
         where.deletedAt = null;
       }
 
-      const orderBy: any = {};
+      const orderBy: any[] = [];
       if (sort) {
-        orderBy[sort] = order;
+        orderBy.push({ [sort]: order });
       } else {
-        orderBy.order = 'asc';
-        orderBy.createdAt = 'asc';
+        orderBy.push({ order: 'asc' });
+        orderBy.push({ createdAt: 'asc' });
       }
 
       const [socials, total] = await Promise.all([
@@ -416,7 +416,7 @@ export class SocialService {
           where,
           skip,
           take: perPage,
-          orderBy: [orderBy],
+          orderBy: orderBy,
         }),
         this.databaseService.social.count({ where }),
       ]);
