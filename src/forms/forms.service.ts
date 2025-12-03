@@ -12,7 +12,7 @@ export class FormsService {
       if (!profile) return { success: false, message: 'Profile not found' };
 
       const form = await this.databaseService.form.create({
-        data: { profileId, title: dto.title, description: dto.description, form_type: dto.form_type, template_id: dto.template_id, status: dto.status as any, fields: dto.fields as any, is_visible: dto.is_visible !== undefined ? dto.is_visible : true },
+        data: { profileId, title: dto.title, description: dto.description, form_type: dto.form_type, template_id: dto.template_id, status: dto.status as any, fields: dto.fields as any, form_url: dto.form_url, is_visible: dto.is_visible !== undefined ? dto.is_visible : true },
       });
       return { success: true, message: 'Form created successfully', data: { form } };
     } catch (error) {
@@ -67,6 +67,7 @@ export class FormsService {
       if (dto.title !== undefined) updateData.title = dto.title;
       if (dto.description !== undefined) updateData.description = dto.description;
       if (dto.status !== undefined) updateData.status = dto.status as any;
+      if (dto.form_url !== undefined) updateData.form_url = dto.form_url;
       if (dto.is_visible !== undefined) updateData.is_visible = dto.is_visible;
       if (dto.fields !== undefined) updateData.fields = dto.fields as any;
 

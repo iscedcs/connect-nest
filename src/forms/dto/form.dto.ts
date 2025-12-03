@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsOptional, IsBoolean, IsEnum, IsArray, ValidateNested, IsObject } from 'class-validator';
+import { IsString, IsOptional, IsBoolean, IsEnum, IsArray, ValidateNested, IsObject, IsUrl } from 'class-validator';
 import { Type } from 'class-transformer';
 
 // Using Prisma's FormStatus enum - import from @prisma/client if needed
@@ -63,6 +63,14 @@ export class CreateFormDto {
   @IsString()
   status: FormStatus;
 
+  @ApiPropertyOptional({
+    description: 'External form URL (e.g., Google Forms, Typeform, etc.). If not provided, will use internal form.',
+    example: 'https://docs.google.com/forms/d/e/1FAIpQLSd...'
+  })
+  @IsOptional()
+  @IsUrl({ protocols: ['https'], require_protocol: true })
+  form_url?: string;
+
   @ApiPropertyOptional({ description: 'Whether form is visible', example: true })
   @IsOptional()
   @IsBoolean()
@@ -90,6 +98,14 @@ export class UpdateFormDto {
   @IsOptional()
   @IsString()
   status?: FormStatus;
+
+  @ApiPropertyOptional({
+    description: 'External form URL',
+    example: 'https://docs.google.com/forms/d/e/1FAIpQLSd...'
+  })
+  @IsOptional()
+  @IsUrl({ protocols: ['https'], require_protocol: true })
+  form_url?: string;
 
   @ApiPropertyOptional({ description: 'Whether form is visible', example: true })
   @IsOptional()
@@ -200,6 +216,12 @@ export class FormResponseDto {
 
   @ApiProperty({ description: 'Form fields (JSON)', type: 'object', additionalProperties: true })
   fields: any;
+
+  @ApiPropertyOptional({
+    description: 'External form URL',
+    example: 'https://docs.google.com/forms/d/e/1FAIpQLSd...'
+  })
+  form_url?: string;
 
   @ApiProperty({ description: 'Whether form is visible', example: true })
   is_visible: boolean;

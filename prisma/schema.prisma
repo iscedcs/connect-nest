@@ -190,6 +190,7 @@ model Video {
   title      String
   platform   String
   url        String
+  thumbnail  String?
   is_featured Boolean  @default(false)
   is_visible Boolean   @default(true)
   createdAt  DateTime  @default(now())
@@ -270,6 +271,7 @@ model Form {
   template_id String?
   status     FormStatus  @default(DRAFT)
   fields     Json
+  form_url   String?
   is_visible Boolean     @default(true)
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt

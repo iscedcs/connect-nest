@@ -33,6 +33,7 @@ import {
   ApiParam, 
   ApiQuery 
 } from '@nestjs/swagger';
+import { PublicRoute } from '../auth/decorators/public-route.decorator';
 
 @ApiTags('Profile Management')
 @ApiBearerAuth('access-token')
@@ -118,6 +119,20 @@ export class ProfileController {
       return { success: false, message: 'User not found' };
     }
     return this.profileService.getProfileStats(user);
+  }
+
+  // Public Profile Endpoint
+  @PublicRoute()
+  @Get('public/:deviceId')
+  @ApiOperation({ summary: 'Get public profile by device ID (no auth required)' })
+  @ApiParam({ name: 'deviceId', description: 'The NFC/QR device UID' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Public profile retrieved successfully',
+  })
+  @ApiResponse({ status: 404, description: 'Device or profile not found' })
+  async getPublicProfile(@Param('deviceId') deviceId: string) {
+    return this.profileService.getPublicProfileByDeviceId(deviceId);
   }
 }
 

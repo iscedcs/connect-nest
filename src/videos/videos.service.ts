@@ -36,6 +36,7 @@ export class VideosService {
           title: dto.title,
           platform: dto.platform,
           url: dto.url,
+          thumbnail: dto.thumbnail,
           is_featured: false,
           is_visible: dto.is_visible !== undefined ? dto.is_visible : true,
         },
@@ -211,14 +212,16 @@ export class VideosService {
         };
       }
 
+      const updateData: any = {};
+      if (dto.title !== undefined) updateData.title = dto.title;
+      if (dto.platform !== undefined) updateData.platform = dto.platform;
+      if (dto.url !== undefined) updateData.url = dto.url;
+      if (dto.thumbnail !== undefined) updateData.thumbnail = dto.thumbnail;
+      if (dto.is_visible !== undefined) updateData.is_visible = dto.is_visible;
+
       const updatedVideo = await this.databaseService.video.update({
         where: { id: videoId },
-        data: {
-          title: dto.title,
-          platform: dto.platform,
-          url: dto.url,
-          is_visible: dto.is_visible,
-        },
+        data: updateData,
       });
 
       return {

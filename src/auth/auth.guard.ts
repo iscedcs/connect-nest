@@ -3,12 +3,23 @@ import { Reflector } from '@nestjs/core';
 import axios from 'axios';
 import * as jwt from 'jsonwebtoken';
 import { Request } from 'express';
+import { IS_PUBLIC_ROUTE_KEY } from './decorators/public-route.decorator';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    // Check if route is marked as public
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_ROUTE_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    
+    if (isPublic) {
+      return true; // Skip authentication for public routes
+    }
+
     const request = context.switchToHttp().getRequest<Request>();
     let token = request.headers.authorization;
 

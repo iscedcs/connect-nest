@@ -24,6 +24,14 @@ export class CreateVideoDto {
   url: string;
 
   @ApiPropertyOptional({
+    description: 'Video thumbnail URL',
+    example: 'https://img.youtube.com/vi/abc123/maxresdefault.jpg'
+  })
+  @IsOptional()
+  @IsUrl({ protocols: ['https'], require_protocol: true })
+  thumbnail?: string;
+
+  @ApiPropertyOptional({
     description: 'Whether this video is visible',
     example: true
   })
@@ -56,6 +64,14 @@ export class UpdateVideoDto {
   @IsOptional()
   @IsUrl({ protocols: ['https'], require_protocol: true })
   url?: string;
+
+  @ApiPropertyOptional({
+    description: 'Video thumbnail URL',
+    example: 'https://img.youtube.com/vi/abc123/maxresdefault.jpg'
+  })
+  @IsOptional()
+  @IsUrl({ protocols: ['https'], require_protocol: true })
+  thumbnail?: string;
 
   @ApiPropertyOptional({
     description: 'Whether this video is visible',
@@ -132,6 +148,12 @@ export class VideoResponseDto {
     example: 'https://youtu.be/abc123'
   })
   url: string;
+
+  @ApiPropertyOptional({
+    description: 'Video thumbnail URL',
+    example: 'https://img.youtube.com/vi/abc123/maxresdefault.jpg'
+  })
+  thumbnail?: string;
 
   @ApiProperty({
     description: 'Whether this is the featured video',

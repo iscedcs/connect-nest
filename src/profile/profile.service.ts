@@ -1,10 +1,14 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { CreateProfileDto, UpdateProfileDto, CloneProfileDto } from './dto/profile.dto';
+import { AuthClientService } from '../auth/auth-client.service';
 
 @Injectable()
 export class ProfileService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly authClientService: AuthClientService,
+  ) {}
 
   async createProfile(user: any, dto: CreateProfileDto) {
     try {
@@ -731,6 +735,315 @@ export class ProfileService {
       return {
         success: false,
         message: error.message,
+      };
+    }
+  }
+
+  async getPublicProfileByDeviceId(deviceId: string) {
+    try {
+      // Step 1: Get device from Auth Service
+      const device = await this.authClientService.getDeviceByDeviceId(deviceId);
+      
+      if (!device.userId) {
+        return {
+          success: false,
+          message: 'Device is not assigned to a user',
+        };
+      }
+
+      const userId = device.userId;
+
+      // Step 2: Get default profile (with fallback to first created)
+      let profile = await this.databaseService.profile.findFirst({
+        where: {
+          userId: userId,
+          is_default: true,
+          deletedAt: null,
+        },
+      });
+
+      // Fallback: first created profile if no default
+      if (!profile) {
+        profile = await this.databaseService.profile.findFirst({
+          where: {
+            userId: userId,
+            deletedAt: null,
+          },
+          orderBy: {
+            createdAt: 'asc',
+          },
+        });
+      }
+
+      if (!profile) {
+        return {
+          success: false,
+          message: 'Profile not found',
+        };
+      }
+
+      // Step 3: Aggregate all visible modules in parallel
+      const [
+        profileContacts,
+        links,
+        socials,
+        videos,
+        files,
+        spotifyItems,
+        meetings,
+        appointments,
+        wallets,
+        forms,
+      ] = await Promise.all([
+        // Profile Contacts
+        this.databaseService.profileContact.findMany({
+          where: {
+            profileId: profile.id,
+            is_visible: true,
+            deletedAt: null,
+          },
+          orderBy: [
+            { is_primary: 'desc' },
+            { createdAt: 'asc' },
+          ],
+        }),
+        
+        // Links
+        this.databaseService.link.findMany({
+          where: {
+            profileId: profile.id,
+            is_visible: true,
+            deletedAt: null,
+          },
+          orderBy: [
+            { order: 'asc' },
+            { createdAt: 'desc' },
+          ],
+        }),
+        
+        // Socials
+        this.databaseService.social.findMany({
+          where: {
+            userId: profile.id,
+            is_visible: true,
+            deletedAt: null,
+          },
+          orderBy: [
+            { order: 'asc' },
+            { createdAt: 'desc' },
+          ],
+        }),
+        
+        // Videos
+        this.databaseService.video.findMany({
+          where: {
+            profileId: profile.id,
+            is_visible: true,
+            deletedAt: null,
+          },
+          orderBy: [
+            { is_featured: 'desc' },
+            { createdAt: 'desc' },
+          ],
+        }),
+        
+        // Files
+        this.databaseService.fileItem.findMany({
+          where: {
+            profileId: profile.id,
+            is_visible: true,
+            deletedAt: null,
+          },
+          orderBy: { createdAt: 'desc' },
+        }),
+        
+        // Spotify Items
+        this.databaseService.spotifyItem.findMany({
+          where: {
+            profileId: profile.id,
+            is_visible: true,
+            deletedAt: null,
+          },
+          orderBy: [
+            { order: 'asc' },
+            { createdAt: 'desc' },
+          ],
+        }),
+        
+        // Meeting Links
+        this.databaseService.meetingLink.findMany({
+          where: {
+            profileId: profile.id,
+            is_visible: true,
+            deletedAt: null,
+          },
+          orderBy: [
+            { is_default: 'desc' },
+            { createdAt: 'desc' },
+          ],
+        }),
+        
+        // Appointment Links
+        this.databaseService.appointmentLink.findMany({
+          where: {
+            profileId: profile.id,
+            is_visible: true,
+            deletedAt: null,
+          },
+          orderBy: [
+            { is_default: 'desc' },
+            { createdAt: 'desc' },
+          ],
+        }),
+        
+        // Wallets
+        this.databaseService.wallet.findMany({
+          where: {
+            profileId: profile.id,
+            is_visible: true,
+            deletedAt: null,
+          },
+          orderBy: [
+            { is_default: 'desc' },
+            { createdAt: 'desc' },
+          ],
+        }),
+        
+        // Forms
+        this.databaseService.form.findMany({
+          where: {
+            profileId: profile.id,
+            is_visible: true,
+            deletedAt: null,
+          },
+          orderBy: { createdAt: 'desc' },
+        }),
+      ]);
+
+      // Step 4: Get device metadata from CardInteraction
+      const [tapCount, lastTap] = await Promise.all([
+        this.databaseService.cardInteraction.count({
+          where: {
+            deviceId: deviceId,
+            deletedAt: null,
+          },
+        }),
+        this.databaseService.cardInteraction.findFirst({
+          where: {
+            deviceId: deviceId,
+            deletedAt: null,
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+          select: {
+            createdAt: true,
+          },
+        }),
+      ]);
+
+      // Step 5: Transform contacts (primary/others structure)
+      const primaryContact = profileContacts.find(c => c.is_primary) || null;
+      const otherContacts = profileContacts.filter(c => !c.is_primary);
+
+      // Step 6: Format response according to spec
+      return {
+        success: true,
+        message: 'Public profile loaded',
+        data: {
+          profile: {
+            id: profile.id,
+            name: profile.name,
+            position: profile.position,
+            bio: profile.description,
+            profilePhoto: profile.profilePhoto,
+            coverPhoto: profile.coverPhoto,
+            location: profile.location,
+          },
+          contact: {
+            primary: primaryContact
+              ? {
+                  label: primaryContact.label,
+                  phone_number: primaryContact.phone_number,
+                }
+              : null,
+            others: otherContacts.map((c) => ({
+              id: c.id,
+              label: c.label,
+              phone_number: c.phone_number,
+            })),
+          },
+          links: links.map((link) => ({
+            id: link.id,
+            title: link.title,
+            url: link.url,
+            icon: 'globe',
+          })),
+          socials: socials.map((social) => ({
+            id: social.id,
+            platform: social.platform,
+            username: social.value,
+            url: social.value,
+            icon: social.platform.toLowerCase(),
+          })),
+          videos: videos.map((video) => ({
+            id: video.id,
+            platform: video.platform,
+            title: video.title,
+            thumbnail: video.thumbnail || null,
+            url: video.url,
+          })),
+          files: files.map((file) => ({
+            id: file.id,
+            title: file.filename,
+            type: file.media_type,
+            url: file.spaces_url,
+          })),
+          spotify: spotifyItems.map((item) => ({
+            id: item.id,
+            type: item.type,
+            title: item.title,
+            url: item.external_url,
+          })),
+          meetings: meetings.map((meeting) => ({
+            id: meeting.id,
+            provider: meeting.provider,
+            url: meeting.url,
+          })),
+          appointments: appointments.map((appointment) => ({
+            id: appointment.id,
+            provider: appointment.provider,
+            url: appointment.url,
+          })),
+          wallets: wallets.map((wallet) => ({
+            id: wallet.id,
+            network: wallet.network,
+            address: wallet.address,
+          })),
+          forms: forms.map((form) => ({
+            id: form.id,
+            title: form.title,
+            description: form.description,
+            url: form.form_url || `/forms/${form.id}`,
+          })),
+          device: {
+            deviceId: device.id,
+            type: device.type,
+            tapCount: tapCount,
+            lastTap: lastTap?.createdAt || null,
+          },
+        },
+      };
+    } catch (error) {
+      if (error.response?.status === 404) {
+        return {
+          success: false,
+          message: 'Device not found',
+        };
+      }
+      return {
+        success: false,
+        message: error.message || 'Failed to load public profile',
       };
     }
   }
