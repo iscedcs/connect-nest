@@ -19,8 +19,10 @@ export class AuthClientService {
 
   async getDeviceByDeviceId(deviceId: string): Promise<DeviceResponse> {
     try {
-      const response = await axios.get(`${this.authUrl}/device/one/${deviceId}`);
-      
+      console.log("DEVICE ID", deviceId);
+      const response = await axios.get(`${this.authUrl}/device/product/${deviceId}`);
+
+      console.log("DEVICE RESPONSE", response.data);
       if (response.data.success && response.data.data) {
         return response.data.data;
       }
