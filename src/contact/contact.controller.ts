@@ -24,12 +24,14 @@ import {
   ApiParam, 
   ApiQuery 
 } from '@nestjs/swagger';
+import { PublicRoute } from 'src/auth/decorators/public-route.decorator';
 
 @ApiTags('Contact Management')
 @Controller('contact')
 export class ContactController {
   constructor(private readonly contactService: ContactService) {}
 
+  @PublicRoute()
   @Post('leave')
   @ApiOperation({ summary: 'Leave contact information for a profile owner (Guest endpoint)' })
   @ApiResponse({ 
