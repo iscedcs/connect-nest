@@ -954,6 +954,7 @@ export class ProfileService {
           profile: {
             id: profile.id,
             name: profile.name,
+            userId: profile.userId,
             position: profile.position,
             bio: profile.description,
             profilePhoto: profile.profilePhoto,

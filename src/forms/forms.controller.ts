@@ -2,6 +2,7 @@ import { Controller, Get, Post, Patch, Body, Request, ValidationPipe, Param, Que
 import { FormsService } from './forms.service';
 import { CreateFormDto, UpdateFormDto, CreateFormFromTemplateDto, CreateTemplateDto, BulkVisibilityDto, BulkDeleteDto, BulkRestoreDto, FormResponseDto, TemplateResponseDto, SubmissionResponseDto } from './dto/form.dto';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags, ApiParam, ApiQuery } from '@nestjs/swagger';
+import { PublicRoute } from 'src/auth/decorators/public-route.decorator';
 
 @ApiTags('Forms')
 @ApiBearerAuth('access-token')
@@ -44,6 +45,15 @@ export class FormsController {
     const user = req.isce_auth;
     if (!user) return { success: false, message: 'User not found' };
     return this.formsService.getFormById(user, profileId, id);
+  }
+
+  @PublicRoute()
+  @Get('public/:id')
+  @ApiOperation({ summary: 'Get a specific form by ID' })
+  @ApiResponse({ status: 200, description: 'Form retrieved successfully', type: FormResponseDto })
+  @ApiParam({ name: 'id', description: 'Form ID' })
+  getPublicFormById(@Param('id') id: string) {
+    return this.formsService.getPublicFormById(id);
   }
 
   @Patch('update/:id')

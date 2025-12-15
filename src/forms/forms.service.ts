@@ -55,6 +55,17 @@ export class FormsService {
     }
   }
 
+  async getPublicFormById(formId: string) {
+    try {
+      const form = await this.databaseService.form.findFirst({ where: { id: formId, deletedAt: null } });
+      if (!form) return { success: false, message: 'Form not found' };
+
+      return { success: true, message: 'Form retrieved successfully', data: { form } };
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  }
+
   async updateForm(user: any, profileId: string, formId: string, dto: UpdateFormDto) {
     try {
       const profile = await this.databaseService.profile.findFirst({ where: { id: profileId, userId: user.id, deletedAt: null } });
