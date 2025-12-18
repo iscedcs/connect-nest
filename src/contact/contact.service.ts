@@ -46,10 +46,14 @@ export class ContactService {
     }
   }
 
-  async getReceivedContacts(user: any, page: number = 1, limit: number = 10) {
+  async getReceivedContacts(user: any, profileId: string, page: number = 1, limit: number = 10) {
     try {
+      // Verify the profile belongs to the user
       const profile = await this.databaseService.profile.findFirst({
-        where: { userId: user.id },
+        where: { 
+          id: profileId,
+          userId: user.id 
+        },
       });
 
       if (!profile) {
@@ -99,10 +103,14 @@ export class ContactService {
     }
   }
 
-  async getContact(user: any, contactId: string) {
+  async getContact(user: any, profileId: string, contactId: string) {
     try {
+      // Verify the profile belongs to the user
       const profile = await this.databaseService.profile.findFirst({
-        where: { userId: user.id },
+        where: { 
+          id: profileId,
+          userId: user.id 
+        },
       });
 
       if (!profile) {
@@ -142,10 +150,14 @@ export class ContactService {
     }
   }
 
-  async deleteContact(user: any, contactId: string) {
+  async deleteContact(user: any, profileId: string, contactId: string) {
     try {
+      // Verify the profile belongs to the user
       const profile = await this.databaseService.profile.findFirst({
-        where: { userId: user.id },
+        where: { 
+          id: profileId,
+          userId: user.id 
+        },
       });
 
       if (!profile) {
@@ -190,10 +202,14 @@ export class ContactService {
     }
   }
 
-  async searchReceivedContacts(user: any, searchTerm: string, page: number = 1, limit: number = 10) {
+  async searchReceivedContacts(user: any, profileId: string, searchTerm: string, page: number = 1, limit: number = 10) {
     try {
+      // Verify the profile belongs to the user
       const profile = await this.databaseService.profile.findFirst({
-        where: { userId: user.id },
+        where: { 
+          id: profileId,
+          userId: user.id 
+        },
       });
 
       if (!profile) {
@@ -307,10 +323,14 @@ export class ContactService {
     }
   }
 
-  async getRecentContacts(user: any, limit: number = 5) {
+  async getRecentContacts(user: any, profileId: string, limit: number = 5) {
     try {
+      // Verify the profile belongs to the user
       const profile = await this.databaseService.profile.findFirst({
-        where: { userId: user.id },
+        where: { 
+          id: profileId,
+          userId: user.id 
+        },
       });
 
       if (!profile) {
@@ -344,10 +364,14 @@ export class ContactService {
     }
   }
 
-  async getContactStats(user: any) {
+  async getContactStats(user: any, profileId: string) {
     try {
+      // Verify the profile belongs to the user
       const profile = await this.databaseService.profile.findFirst({
-        where: { userId: user.id },
+        where: { 
+          id: profileId,
+          userId: user.id 
+        },
       });
 
       if (!profile) {

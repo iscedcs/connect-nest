@@ -44,9 +44,15 @@ export class ContactController {
   leaveContact(@Body(ValidationPipe) dto: CreateContactDto) {
     return this.contactService.leaveContact(dto);
   }
+}
+
+@ApiTags('Profile Contacts Management')
+@ApiBearerAuth('access-token')
+@Controller('profiles/:profileId/contact')
+export class ProfileContactController {
+  constructor(private readonly contactService: ContactService) {}
 
   @Get('received')
-  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get all contacts received by current user (Profile owner endpoint)' })
   @ApiResponse({ 
     status: 200, 
@@ -54,10 +60,12 @@ export class ContactController {
     type: [ContactResponseDto]
   })
   @ApiResponse({ status: 404, description: 'Profile not found' })
+  @ApiParam({ name: 'profileId', description: 'Profile ID' })
   @ApiQuery({ name: 'page', required: false, description: 'Page number' })
   @ApiQuery({ name: 'limit', required: false, description: 'Items per page' })
   getReceivedContacts(
-    @Request() req, 
+    @Request() req,
+    @Param('profileId') profileId: string,
     @Query('page') page: number = 1, 
     @Query('limit') limit: number = 10
   ) {
@@ -65,11 +73,10 @@ export class ContactController {
     if (!user) {
       return { success: false, message: 'User not found' };
     }
-    return this.contactService.getReceivedContacts(user, page, limit);
+    return this.contactService.getReceivedContacts(user, profileId, page, limit);
   }
 
   @Get('one/:id')
-  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get a specific received contact by ID' })
   @ApiResponse({ 
     status: 200, 
@@ -77,31 +84,31 @@ export class ContactController {
     type: ContactResponseDto
   })
   @ApiResponse({ status: 404, description: 'Contact not found' })
+  @ApiParam({ name: 'profileId', description: 'Profile ID' })
   @ApiParam({ name: 'id', description: 'Contact ID' })
-  getContact(@Request() req, @Param('id') id: string) {
+  getContact(@Request() req, @Param('profileId') profileId: string, @Param('id') id: string) {
     const user = req.isce_auth;
     if (!user) {
       return { success: false, message: 'User not found' };
     }
-    return this.contactService.getContact(user, id);
+    return this.contactService.getContact(user, profileId, id);
   }
 
   @Patch('delete/:id')
-  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Delete a specific received contact' })
   @ApiResponse({ status: 200, description: 'Contact deleted successfully' })
   @ApiResponse({ status: 404, description: 'Contact not found' })
+  @ApiParam({ name: 'profileId', description: 'Profile ID' })
   @ApiParam({ name: 'id', description: 'Contact ID' })
-  deleteContact(@Request() req, @Param('id') id: string) {
+  deleteContact(@Request() req, @Param('profileId') profileId: string, @Param('id') id: string) {
     const user = req.isce_auth;
     if (!user) {
       return { success: false, message: 'User not found' };
     }
-    return this.contactService.deleteContact(user, id);
+    return this.contactService.deleteContact(user, profileId, id);
   }
 
   @Get('search')
-  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Search received contacts by various fields' })
   @ApiResponse({ 
     status: 200, 
@@ -109,11 +116,13 @@ export class ContactController {
     type: [ContactResponseDto]
   })
   @ApiResponse({ status: 404, description: 'Profile not found' })
+  @ApiParam({ name: 'profileId', description: 'Profile ID' })
   @ApiQuery({ name: 'q', required: true, description: 'Search term' })
   @ApiQuery({ name: 'page', required: false, description: 'Page number' })
   @ApiQuery({ name: 'limit', required: false, description: 'Items per page' })
   searchReceivedContacts(
-    @Request() req, 
+    @Request() req,
+    @Param('profileId') profileId: string,
     @Query('q') searchTerm: string,
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10
@@ -122,11 +131,10 @@ export class ContactController {
     if (!user) {
       return { success: false, message: 'User not found' };
     }
-    return this.contactService.searchReceivedContacts(user, searchTerm, page, limit);
+    return this.contactService.searchReceivedContacts(user, profileId, searchTerm, page, limit);
   }
 
   @Get('recent')
-  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get recent contacts received by current user' })
   @ApiResponse({ 
     status: 200, 
@@ -134,28 +142,29 @@ export class ContactController {
     type: [ContactResponseDto]
   })
   @ApiResponse({ status: 404, description: 'Profile not found' })
+  @ApiParam({ name: 'profileId', description: 'Profile ID' })
   @ApiQuery({ name: 'limit', required: false, description: 'Number of recent contacts to retrieve' })
-  getRecentContacts(@Request() req, @Query('limit') limit: number = 5) {
+  getRecentContacts(@Request() req, @Param('profileId') profileId: string, @Query('limit') limit: number = 5) {
     const user = req.isce_auth;
     if (!user) {
       return { success: false, message: 'User not found' };
     }
-    return this.contactService.getRecentContacts(user, limit);
+    return this.contactService.getRecentContacts(user, profileId, limit);
   }
 
   @Get('stats')
-  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get contact statistics for current user' })
   @ApiResponse({ 
     status: 200, 
     description: 'Contact statistics retrieved successfully'
   })
   @ApiResponse({ status: 404, description: 'Profile not found' })
-  getContactStats(@Request() req) {
+  @ApiParam({ name: 'profileId', description: 'Profile ID' })
+  getContactStats(@Request() req, @Param('profileId') profileId: string) {
     const user = req.isce_auth;
     if (!user) {
       return { success: false, message: 'User not found' };
     }
-    return this.contactService.getContactStats(user);
+    return this.contactService.getContactStats(user, profileId);
   }
 }
