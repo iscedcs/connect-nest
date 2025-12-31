@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Patch, Body, Request, ValidationPipe, Param, Query } from '@nestjs/common';
 import { FormsService } from './forms.service';
-import { CreateFormDto, UpdateFormDto, CreateFormFromTemplateDto, CreateTemplateDto, BulkVisibilityDto, BulkDeleteDto, BulkRestoreDto, FormResponseDto, TemplateResponseDto, SubmissionResponseDto } from './dto/form.dto';
+import { CreateFormDto, UpdateFormDto, CreateFormFromTemplateDto, CreateTemplateDto, BulkVisibilityDto, BulkDeleteDto, BulkRestoreDto, FormResponseDto, TemplateResponseDto, SubmissionResponseDto, SubmitFormDto } from './dto/form.dto';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { PublicRoute } from 'src/auth/decorators/public-route.decorator';
 
@@ -182,6 +182,26 @@ export class FormsController {
     const user = req.isce_auth;
     if (!user) return { success: false, message: 'User not found' };
     return this.formsService.bulkVisibility(user, profileId, dto);
+  }
+
+  @PublicRoute()
+  @Post('submit/public/:id')
+  @ApiOperation({ summary: 'Submit a form (Public endpoint - no authentication required)' })
+  @ApiResponse({ 
+    status: 201, 
+    description: 'Form submitted successfully',
+    type: SubmissionResponseDto
+  })
+  @ApiResponse({ status: 404, description: 'Form not found, inactive, hidden, or deleted' })
+  @ApiParam({ name: 'profileId', description: 'Profile ID' })
+  @ApiParam({ name: 'id', description: 'Form ID' })
+  @ApiBody({ type: SubmitFormDto })
+  submitPublicForm(
+    @Param('profileId') profileId: string,
+    @Param('id') id: string,
+    @Body(ValidationPipe) dto: SubmitFormDto
+  ) {
+    return this.formsService.submitPublicForm(profileId, id, dto);
   }
 }
 

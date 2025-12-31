@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
-import { CreateFormDto, UpdateFormDto, CreateFormFromTemplateDto, CreateTemplateDto, BulkVisibilityDto, BulkDeleteDto, BulkRestoreDto, FormStatus } from './dto/form.dto';
+import { CreateFormDto, UpdateFormDto, CreateFormFromTemplateDto, CreateTemplateDto, BulkVisibilityDto, BulkDeleteDto, BulkRestoreDto, FormStatus, SubmitFormDto } from './dto/form.dto';
 
 @Injectable()
 export class FormsService {
@@ -270,6 +270,50 @@ export class FormsService {
       return { success: true, message: 'Forms visibility updated successfully' };
     } catch (error) {
       return { success: false, message: error.message };
+    }
+  }
+
+  async submitPublicForm(profileId: string, formId: string, dto: SubmitFormDto) {
+    try {
+      // Verify the form exists, belongs to the profile, is ACTIVE, visible, and not deleted
+      const form = await this.databaseService.form.findFirst({
+        where: {
+          id: formId,
+          profileId: profileId,
+          status: 'ACTIVE',
+          is_visible: true,
+          deletedAt: null,
+        },
+      });
+
+      if (!form) {
+        return {
+          success: false,
+          message: 'Form not found, inactive, hidden, or deleted',
+        };
+      }
+
+      // Create the submission
+      const submission = await this.databaseService.submission.create({
+        data: {
+          formId: formId,
+          answers: dto.answers as any,
+          submitted_at: new Date(),
+        },
+      });
+
+      return {
+        success: true,
+        message: 'Form submitted successfully',
+        data: {
+          submission,
+        },
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message,
+      };
     }
   }
 }

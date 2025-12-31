@@ -218,7 +218,8 @@ export class VideosService {
       if (dto.url !== undefined) updateData.url = dto.url;
       if (dto.thumbnail !== undefined) updateData.thumbnail = dto.thumbnail;
       if (dto.is_visible !== undefined) updateData.is_visible = dto.is_visible;
-
+      if (dto.is_featured !== undefined) updateData.is_featured = dto.is_featured;
+      
       const updatedVideo = await this.databaseService.video.update({
         where: { id: videoId },
         data: updateData,

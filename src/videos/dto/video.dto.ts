@@ -80,6 +80,14 @@ export class UpdateVideoDto {
   @IsOptional()
   @IsBoolean()
   is_visible?: boolean;
+
+  @ApiPropertyOptional({
+    description: 'Whether this video is featured',
+    example: true
+  })
+  @IsOptional()
+  @IsBoolean()
+  is_featured?: boolean;
 }
 
 export class BulkVisibilityDto {

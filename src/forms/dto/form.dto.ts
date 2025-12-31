@@ -259,6 +259,17 @@ export class TemplateResponseDto {
   createdAt: Date;
 }
 
+export class SubmitFormDto {
+  @ApiProperty({ 
+    description: 'Form submission answers (key-value pairs matching form fields)', 
+    type: 'object',
+    additionalProperties: true,
+    example: { full_name: 'John Doe', email: 'john@example.com', message: 'Hello!' }
+  })
+  @IsObject()
+  answers: Record<string, any>;
+}
+
 export class SubmissionResponseDto {
   @ApiProperty({ description: 'Unique identifier for the submission', example: '550e8400-e29b-41d4-a716-446655440000' })
   id: string;
