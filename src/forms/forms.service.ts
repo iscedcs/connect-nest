@@ -161,6 +161,70 @@ export class FormsService {
     }
   }
 
+  async getAllSubmissions(user: any, profileId: string, page: number = 1, perPage: number = 25, from?: string, to?: string) {
+    try {
+      const profile = await this.databaseService.profile.findFirst({ where: { id: profileId, userId: user.id, deletedAt: null } });
+      if (!profile) return { success: false, message: 'Profile not found' };
+
+      // Get all forms for this profile
+      const forms = await this.databaseService.form.findMany({
+        where: { profileId, deletedAt: null },
+        select: { id: true },
+      });
+
+      const formIds = forms.map(form => form.id);
+      
+      if (formIds.length === 0) {
+        return { 
+          success: true, 
+          message: 'Submissions retrieved successfully', 
+          data: { 
+            submissions: [], 
+            pagination: { page, per_page: perPage, total: 0, pages: 0 } 
+          } 
+        };
+      }
+
+      const skip = (page - 1) * perPage;
+      const where: any = { 
+        formId: { in: formIds }, 
+        deletedAt: null 
+      };
+      
+      if (from || to) {
+        where.submitted_at = {};
+        if (from) where.submitted_at.gte = new Date(from);
+        if (to) where.submitted_at.lte = new Date(to);
+      }
+
+      const [submissions, total] = await Promise.all([
+        this.databaseService.submission.findMany({ 
+          where, 
+          skip, 
+          take: perPage, 
+          orderBy: { submitted_at: 'desc' } 
+        }),
+        this.databaseService.submission.count({ where }),
+      ]);
+
+      return { 
+        success: true, 
+        message: 'Submissions retrieved successfully', 
+        data: { 
+          submissions, 
+          pagination: { 
+            page, 
+            per_page: perPage, 
+            total, 
+            pages: Math.ceil(total / perPage) 
+          } 
+        } 
+      };
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  }
+
   async deleteSubmission(user: any, profileId: string, formId: string, submissionId: string) {
     try {
       const profile = await this.databaseService.profile.findFirst({ where: { id: profileId, userId: user.id, deletedAt: null } });

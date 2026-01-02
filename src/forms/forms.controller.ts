@@ -102,6 +102,20 @@ export class FormsController {
     return this.formsService.toggleVisibility(user, profileId, id, isVisible);
   }
 
+  @Get('submissions/all')
+  @ApiOperation({ summary: 'Get all submissions for all forms in a profile' })
+  @ApiResponse({ status: 200, description: 'Submissions retrieved successfully', type: [SubmissionResponseDto] })
+  @ApiParam({ name: 'profileId', description: 'Profile ID' })
+  @ApiQuery({ name: 'page', required: false })
+  @ApiQuery({ name: 'per_page', required: false })
+  @ApiQuery({ name: 'from', required: false, description: 'Start date (ISO string)' })
+  @ApiQuery({ name: 'to', required: false, description: 'End date (ISO string)' })
+  getAllSubmissions(@Request() req, @Param('profileId') profileId: string, @Query('page') page: number = 1, @Query('per_page') perPage: number = 25, @Query('from') from?: string, @Query('to') to?: string) {
+    const user = req.isce_auth;
+    if (!user) return { success: false, message: 'User not found' };
+    return this.formsService.getAllSubmissions(user, profileId, page, perPage, from, to);
+  }
+
   @Get('submissions/:id')
   @ApiOperation({ summary: 'Get submissions for a specific form' })
   @ApiResponse({ status: 200, description: 'Submissions retrieved successfully', type: [SubmissionResponseDto] })
