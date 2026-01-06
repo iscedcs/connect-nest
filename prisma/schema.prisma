@@ -16,6 +16,7 @@ datasource db {
 model Profile {
   id               String            @id @default(uuid())
   userId           String
+  slug             String?           @unique
   profilePhoto     String?
   coverPhoto       String?
   name             String
