@@ -1,9 +1,9 @@
+import 'dotenv/config';
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
-
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,19 +14,26 @@ async function bootstrap() {
       transform: true,
       transformOptions: {
         enableImplicitConversion: true,
-      }
-    })
+      },
+    }),
   );
 
+  const allowedOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',')
+    : ['http://localhost:3154'];
+
   app.enableCors({
-    origin: ['http://localhost:3001', 'https://isceauth.onrender.com','https://connect-web-eight.vercel.app', 'http://localhost:3154', 'https://stingray-app-clk8t.ondigitalocean.app', 'https://connect-nest.onrender.com'],
+    origin: allowedOrigins,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   });
 
-  app.useLogger(process.env.NODE_ENV === 'production' ? ['error', 'warn'] : ['log', 'error', 'warn', 'debug', 'verbose']);
-
+  app.useLogger(
+    process.env.NODE_ENV === 'production'
+      ? ['error', 'warn']
+      : ['log', 'error', 'warn', 'debug', 'verbose'],
+  );
 
   app.setGlobalPrefix('api');
 
@@ -36,12 +43,12 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('ISCE CONNECT API')
     .addBearerAuth(
-      { 
-        type: 'http', 
-        scheme: 'bearer', 
-        bearerFormat: 'JWT' 
-      }, 
-      'access-token' // The name used to reference this auth method in the Swagger UI
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+      'access-token', // The name used to reference this auth method in the Swagger UI
     )
     .build();
 

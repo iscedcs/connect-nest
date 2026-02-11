@@ -1,6 +1,10 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
-import { CreateProfileDto, UpdateProfileDto, CloneProfileDto } from './dto/profile.dto';
+import {
+  CreateProfileDto,
+  UpdateProfileDto,
+  CloneProfileDto,
+} from './dto/profile.dto';
 import { AuthClientService } from '../auth/auth-client.service';
 
 @Injectable()
@@ -178,7 +182,6 @@ export class ProfileService {
     }
   }
 
-
   async getProfileStats(user: any) {
     try {
       // Get the default profile for the user
@@ -255,11 +258,16 @@ export class ProfileService {
   }
 
   // Multi-Profile Methods
-  async getAllProfiles(user: any, page: number = 1, perPage: number = 25, includeDeleted: boolean = false) {
+  async getAllProfiles(
+    user: any,
+    page: number = 1,
+    perPage: number = 25,
+    includeDeleted: boolean = false,
+  ) {
     try {
       const skip = (page - 1) * perPage;
       const where: any = { userId: user.id };
-      
+
       if (!includeDeleted) {
         where.deletedAt = null;
       }
@@ -579,7 +587,7 @@ export class ProfileService {
       // Clone resources if specified
       if (include.social && sourceProfile.socials.length > 0) {
         await this.databaseService.social.createMany({
-          data: sourceProfile.socials.map(s => ({
+          data: sourceProfile.socials.map((s) => ({
             userId: newProfile.id,
             platform: s.platform,
             label: s.label,
@@ -592,7 +600,7 @@ export class ProfileService {
 
       if (include.contacts && sourceProfile.profileContacts.length > 0) {
         await this.databaseService.profileContact.createMany({
-          data: sourceProfile.profileContacts.map(c => ({
+          data: sourceProfile.profileContacts.map((c) => ({
             profileId: newProfile.id,
             label: c.label,
             phone_number: c.phone_number,
@@ -604,7 +612,7 @@ export class ProfileService {
 
       if (include.links && sourceProfile.links.length > 0) {
         await this.databaseService.link.createMany({
-          data: sourceProfile.links.map(l => ({
+          data: sourceProfile.links.map((l) => ({
             profileId: newProfile.id,
             title: l.title,
             url: l.url,
@@ -617,7 +625,7 @@ export class ProfileService {
 
       if (include.videos && sourceProfile.videos.length > 0) {
         await this.databaseService.video.createMany({
-          data: sourceProfile.videos.map(v => ({
+          data: sourceProfile.videos.map((v) => ({
             profileId: newProfile.id,
             title: v.title,
             platform: v.platform,
@@ -630,7 +638,7 @@ export class ProfileService {
 
       if (include.meetings && sourceProfile.meetings.length > 0) {
         await this.databaseService.meetingLink.createMany({
-          data: sourceProfile.meetings.map(m => ({
+          data: sourceProfile.meetings.map((m) => ({
             profileId: newProfile.id,
             provider: m.provider,
             url: m.url,
@@ -643,7 +651,7 @@ export class ProfileService {
 
       if (include.appointments && sourceProfile.appointments.length > 0) {
         await this.databaseService.appointmentLink.createMany({
-          data: sourceProfile.appointments.map(a => ({
+          data: sourceProfile.appointments.map((a) => ({
             profileId: newProfile.id,
             provider: a.provider,
             url: a.url,
@@ -656,7 +664,7 @@ export class ProfileService {
 
       if (include.spotify && sourceProfile.spotifyItems.length > 0) {
         await this.databaseService.spotifyItem.createMany({
-          data: sourceProfile.spotifyItems.map(s => ({
+          data: sourceProfile.spotifyItems.map((s) => ({
             profileId: newProfile.id,
             type: s.type,
             external_url: s.external_url,
@@ -669,7 +677,7 @@ export class ProfileService {
 
       if (include.files && sourceProfile.files.length > 0) {
         await this.databaseService.fileItem.createMany({
-          data: sourceProfile.files.map(f => ({
+          data: sourceProfile.files.map((f) => ({
             profileId: newProfile.id,
             filename: f.filename,
             storage_key: f.storage_key,
@@ -701,7 +709,7 @@ export class ProfileService {
 
       if (include.wallets && sourceProfile.wallets.length > 0) {
         await this.databaseService.wallet.createMany({
-          data: sourceProfile.wallets.map(w => ({
+          data: sourceProfile.wallets.map((w) => ({
             profileId: newProfile.id,
             network: w.network,
             address: w.address,
@@ -743,7 +751,8 @@ export class ProfileService {
     try {
       // Step 1: Get device from Auth Service
       const device = await this.authClientService.getDeviceByDeviceId(deviceId);
-      
+      console.log({ device });
+
       if (!device.userId) {
         return {
           success: false,
@@ -761,6 +770,8 @@ export class ProfileService {
           deletedAt: null,
         },
       });
+
+      console.log({ profile });
 
       // Fallback: first created profile if no default
       if (!profile) {
@@ -802,12 +813,9 @@ export class ProfileService {
             is_visible: true,
             deletedAt: null,
           },
-          orderBy: [
-            { is_primary: 'desc' },
-            { createdAt: 'asc' },
-          ],
+          orderBy: [{ is_primary: 'desc' }, { createdAt: 'asc' }],
         }),
-        
+
         // Links
         this.databaseService.link.findMany({
           where: {
@@ -815,12 +823,9 @@ export class ProfileService {
             is_visible: true,
             deletedAt: null,
           },
-          orderBy: [
-            { order: 'asc' },
-            { createdAt: 'desc' },
-          ],
+          orderBy: [{ order: 'asc' }, { createdAt: 'desc' }],
         }),
-        
+
         // Socials
         this.databaseService.social.findMany({
           where: {
@@ -828,12 +833,9 @@ export class ProfileService {
             is_visible: true,
             deletedAt: null,
           },
-          orderBy: [
-            { order: 'asc' },
-            { createdAt: 'desc' },
-          ],
+          orderBy: [{ order: 'asc' }, { createdAt: 'desc' }],
         }),
-        
+
         // Videos
         this.databaseService.video.findMany({
           where: {
@@ -841,12 +843,9 @@ export class ProfileService {
             is_visible: true,
             deletedAt: null,
           },
-          orderBy: [
-            { is_featured: 'desc' },
-            { createdAt: 'desc' },
-          ],
+          orderBy: [{ is_featured: 'desc' }, { createdAt: 'desc' }],
         }),
-        
+
         // Files
         this.databaseService.fileItem.findMany({
           where: {
@@ -856,7 +855,7 @@ export class ProfileService {
           },
           orderBy: { createdAt: 'desc' },
         }),
-        
+
         // Spotify Items
         this.databaseService.spotifyItem.findMany({
           where: {
@@ -864,12 +863,9 @@ export class ProfileService {
             is_visible: true,
             deletedAt: null,
           },
-          orderBy: [
-            { order: 'asc' },
-            { createdAt: 'desc' },
-          ],
+          orderBy: [{ order: 'asc' }, { createdAt: 'desc' }],
         }),
-        
+
         // Meeting Links
         this.databaseService.meetingLink.findMany({
           where: {
@@ -877,12 +873,9 @@ export class ProfileService {
             is_visible: true,
             deletedAt: null,
           },
-          orderBy: [
-            { is_default: 'desc' },
-            { createdAt: 'desc' },
-          ],
+          orderBy: [{ is_default: 'desc' }, { createdAt: 'desc' }],
         }),
-        
+
         // Appointment Links
         this.databaseService.appointmentLink.findMany({
           where: {
@@ -890,12 +883,9 @@ export class ProfileService {
             is_visible: true,
             deletedAt: null,
           },
-          orderBy: [
-            { is_default: 'desc' },
-            { createdAt: 'desc' },
-          ],
+          orderBy: [{ is_default: 'desc' }, { createdAt: 'desc' }],
         }),
-        
+
         // Wallets
         this.databaseService.wallet.findMany({
           where: {
@@ -903,12 +893,9 @@ export class ProfileService {
             is_visible: true,
             deletedAt: null,
           },
-          orderBy: [
-            { is_default: 'desc' },
-            { createdAt: 'desc' },
-          ],
+          orderBy: [{ is_default: 'desc' }, { createdAt: 'desc' }],
         }),
-        
+
         // Forms
         this.databaseService.form.findMany({
           where: {
@@ -943,8 +930,8 @@ export class ProfileService {
       ]);
 
       // Step 5: Transform contacts (primary/others structure)
-      const primaryContact = profileContacts.find(c => c.is_primary) || null;
-      const otherContacts = profileContacts.filter(c => !c.is_primary);
+      const primaryContact = profileContacts.find((c) => c.is_primary) || null;
+      const otherContacts = profileContacts.filter((c) => !c.is_primary);
 
       // Step 6: Format response according to spec
       return {
@@ -1036,6 +1023,7 @@ export class ProfileService {
         },
       };
     } catch (error) {
+      console.log({ error });
       if (error.response?.status === 404) {
         return {
           success: false,

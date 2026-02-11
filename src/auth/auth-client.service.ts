@@ -19,21 +19,25 @@ export class AuthClientService {
 
   async getDeviceByDeviceId(deviceId: string): Promise<DeviceResponse> {
     try {
-      console.log("DEVICE ID", deviceId);
-      const response = await axios.get(`${this.authUrl}/device/product/${deviceId}`);
+      console.log('DEVICE ID', deviceId);
+      const response = await axios.get(
+        `${this.authUrl}/device/product/${deviceId}`,
+      );
 
-      console.log("DEVICE RESPONSE", response.data);
+      console.log('DEVICE RESPONSE', response.data);
       if (response.data.success && response.data.data) {
         return response.data.data;
       }
-      
+
       throw new NotFoundException('Device not found');
     } catch (error) {
-      if (error.response?.status === 404 || error instanceof NotFoundException) {
+      if (
+        error.response?.status === 404 ||
+        error instanceof NotFoundException
+      ) {
         throw new NotFoundException('Device not found');
       }
       throw new Error(`Failed to fetch device: ${error.message}`);
     }
   }
 }
-

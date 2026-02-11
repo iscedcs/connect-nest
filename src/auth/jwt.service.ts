@@ -38,8 +38,7 @@ export class JwtService {
         userType: payload.userType,
       };
     } catch (error) {
-      console.log('Error extracting user from token:', error.message);
       return null;
     }
   }
-} 
+}

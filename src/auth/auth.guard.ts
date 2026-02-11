@@ -1,9 +1,25 @@
-import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import axios from 'axios';
 import * as jwt from 'jsonwebtoken';
 import { Request } from 'express';
 import { IS_PUBLIC_ROUTE_KEY } from './decorators/public-route.decorator';
+
+interface JwtPayload {
+  id: string;
+  email: string;
+  phone?: string;
+  firstName?: string;
+  lastName?: string;
+  displayPicture?: string;
+  userType?: string;
+  iat?: number;
+  exp?: number;
+}
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -11,11 +27,11 @@ export class AuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     // Check if route is marked as public
-    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_ROUTE_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
-    
+    const isPublic = this.reflector.getAllAndOverride<boolean>(
+      IS_PUBLIC_ROUTE_KEY,
+      [context.getHandler(), context.getClass()],
+    );
+
     if (isPublic) {
       return true; // Skip authentication for public routes
     }
@@ -29,47 +45,28 @@ export class AuthGuard implements CanActivate {
 
     // Remove "Bearer " prefix if present
     if (token.startsWith('Bearer ')) {
-      token = token.slice(7); // Remove the "Bearer " part
+      token = token.slice(7);
     }
 
-    console.log('TOKEN', token);
-
     try {
-      // Decode the JWT token to extract payload
-      const decoded = jwt.decode(token) as {
-        fullname?: string;
-        id?: string;
-        email?: string;
-        password?: string;
-      };
-
-      const { email, password } = decoded || {};
-
-      console.log('DECODED', decoded);
-
-      if (!email || !password) {
-        throw new UnauthorizedException('Invalid token payload');
+      const secret = process.env.JWT_SECRET;
+      if (!secret) {
+        throw new Error('JWT_SECRET environment variable is not set');
       }
 
-      // Make a request to the authentication API to validate the token
-      const authResponse = await axios.post(
-        `${process.env.AUTH_URL}/auth/signin-events`,
-        { email, password },
-        { headers: { Authorization: `Bearer ${token}` } }, // Ensure Bearer prefix when sending the token
-      );
+      // Verify the JWT signature and decode the payload
+      const verified = jwt.verify(token, secret) as JwtPayload;
 
-      if (authResponse.data.success) {
-        // Attach user info to the request for later use
-        const user = jwt.decode(authResponse.data.token);
-        console.log('USER', user);
-        (request as any).isce_auth = user;
-        console.log('ISCEAUTH', (request as any).isce_auth);
-        return true;
-      } else {
-        throw new UnauthorizedException('Unauthorized');
-      }
+      // Attach verified user info to the request
+      (request as any).isce_auth = verified;
+      return true;
     } catch (error) {
-      console.error('Authentication error:', error.message || error);
+      if (error instanceof jwt.TokenExpiredError) {
+        throw new UnauthorizedException('Token has expired');
+      }
+      if (error instanceof jwt.JsonWebTokenError) {
+        throw new UnauthorizedException('Invalid token');
+      }
       throw new UnauthorizedException('Unauthorized');
     }
   }
