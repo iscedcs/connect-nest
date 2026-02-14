@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
-import { CreateNotificationDto, UpdateNotificationDto } from './dto/notification.dto';
-import { NotificationType } from '@prisma/client';
+import { CreateNotificationDto } from './dto/notification.dto';
+import { NotificationType } from '../generated/prisma/client';
 
 @Injectable()
 export class NotificationService {
@@ -272,7 +272,11 @@ export class NotificationService {
     }
   }
 
-  async getUnreadNotifications(user: any, page: number = 1, limit: number = 10) {
+  async getUnreadNotifications(
+    user: any,
+    page: number = 1,
+    limit: number = 10,
+  ) {
     try {
       const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
@@ -327,7 +331,12 @@ export class NotificationService {
     }
   }
 
-  async getNotificationsByType(user: any, type: NotificationType, page: number = 1, limit: number = 10) {
+  async getNotificationsByType(
+    user: any,
+    type: NotificationType,
+    page: number = 1,
+    limit: number = 10,
+  ) {
     try {
       const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
@@ -439,29 +448,33 @@ export class NotificationService {
         },
       });
 
-      const unreadNotifications = await this.databaseService.notification.count({
-        where: {
-          userId: profile.id,
-          isRead: false,
-          deletedAt: null,
+      const unreadNotifications = await this.databaseService.notification.count(
+        {
+          where: {
+            userId: profile.id,
+            isRead: false,
+            deletedAt: null,
+          },
         },
-      });
+      );
 
-      const cardInteractionNotifications = await this.databaseService.notification.count({
-        where: {
-          userId: profile.id,
-          type: 'CARD_INTERACTION',
-          deletedAt: null,
-        },
-      });
+      const cardInteractionNotifications =
+        await this.databaseService.notification.count({
+          where: {
+            userId: profile.id,
+            type: 'CARD_INTERACTION',
+            deletedAt: null,
+          },
+        });
 
-      const contactSharedNotifications = await this.databaseService.notification.count({
-        where: {
-          userId: profile.id,
-          type: 'CONTACT_SHARED',
-          deletedAt: null,
-        },
-      });
+      const contactSharedNotifications =
+        await this.databaseService.notification.count({
+          where: {
+            userId: profile.id,
+            type: 'CONTACT_SHARED',
+            deletedAt: null,
+          },
+        });
 
       const todayNotifications = await this.databaseService.notification.count({
         where: {
@@ -473,15 +486,16 @@ export class NotificationService {
         },
       });
 
-      const thisWeekNotifications = await this.databaseService.notification.count({
-        where: {
-          userId: profile.id,
-          deletedAt: null,
-          createdAt: {
-            gte: new Date(new Date().setDate(new Date().getDate() - 7)),
+      const thisWeekNotifications =
+        await this.databaseService.notification.count({
+          where: {
+            userId: profile.id,
+            deletedAt: null,
+            createdAt: {
+              gte: new Date(new Date().setDate(new Date().getDate() - 7)),
+            },
           },
-        },
-      });
+        });
 
       return {
         success: true,
@@ -494,7 +508,14 @@ export class NotificationService {
             contactSharedNotifications,
             todayNotifications,
             thisWeekNotifications,
-            readRate: totalNotifications > 0 ? Math.round(((totalNotifications - unreadNotifications) / totalNotifications) * 100) : 0,
+            readRate:
+              totalNotifications > 0
+                ? Math.round(
+                    ((totalNotifications - unreadNotifications) /
+                      totalNotifications) *
+                      100,
+                  )
+                : 0,
           },
         },
       };

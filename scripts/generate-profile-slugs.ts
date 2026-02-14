@@ -1,11 +1,10 @@
-import * as dotenv from 'dotenv';
-import { PrismaClient } from '@prisma/client';
+import 'dotenv/config';
+import { PrismaClient } from 'src/generated/prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 import slugify from 'slugify';
 
-// Load environment variables
-dotenv.config();
-
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
+const prisma = new PrismaClient({ adapter });
 
 // Helper function to generate a URL-friendly slug from a string
 function generateSlug(text: string): string {
@@ -138,4 +137,3 @@ generateProfileSlugs()
     console.error(error);
     process.exit(1);
   });
-

@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsOptional, IsBoolean, IsEnum, IsArray, ValidateNested, IsObject, IsUrl } from 'class-validator';
+import { IsString, IsOptional, IsBoolean, IsArray, ValidateNested, IsObject, IsUrl } from 'class-validator';
 import { Type } from 'class-transformer';
 
 // Using Prisma's FormStatus enum - import from @prisma/client if needed
@@ -168,29 +168,7 @@ export class CreateTemplateDto {
   fields: FormFieldDto[];
 }
 
-export class BulkVisibilityDto {
-  @ApiProperty({ description: 'Array of form IDs', example: ['form_01', 'form_02'] })
-  @IsString({ each: true })
-  ids: string[];
-
-  @ApiProperty({ description: 'Visibility status to set', example: true })
-  @IsBoolean()
-  is_visible: boolean;
-}
-
-export class BulkDeleteDto {
-  @ApiPropertyOptional({ description: 'Array of form IDs to delete. If not provided, all forms will be deleted.', example: ['form_01', 'form_02'] })
-  @IsOptional()
-  @IsString({ each: true })
-  ids?: string[];
-}
-
-export class BulkRestoreDto {
-  @ApiPropertyOptional({ description: 'Array of form IDs to restore. If not provided, all deleted forms will be restored.', example: ['form_01', 'form_02'] })
-  @IsOptional()
-  @IsString({ each: true })
-  ids?: string[];
-}
+export { BulkVisibilityDto, BulkDeleteDto, BulkRestoreDto } from '../../common/dto/bulk-operations.dto';
 
 export class FormResponseDto {
   @ApiProperty({ description: 'Unique identifier for the form', example: '550e8400-e29b-41d4-a716-446655440000' })
@@ -260,8 +238,8 @@ export class TemplateResponseDto {
 }
 
 export class SubmitFormDto {
-  @ApiProperty({ 
-    description: 'Form submission answers (key-value pairs matching form fields)', 
+  @ApiProperty({
+    description: 'Form submission answers (key-value pairs matching form fields)',
     type: 'object',
     additionalProperties: true,
     example: { full_name: 'John Doe', email: 'john@example.com', message: 'Hello!' }
@@ -292,4 +270,3 @@ export class SubmissionResponseDto {
   @ApiPropertyOptional({ description: 'Timestamp when the submission was deleted (soft delete)', example: '2024-01-01T00:00:00.000Z' })
   deletedAt?: Date;
 }
-

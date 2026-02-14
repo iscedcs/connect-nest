@@ -47,6 +47,9 @@ lerna-debug.log*
 .temp
 .tmp
 
+# Prisma generated client
+/src/generated/prisma
+
 # Runtime data
 pids
 *.pid

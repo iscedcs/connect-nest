@@ -19,7 +19,7 @@ import { SocialModule } from './social/social.module';
 import { NotificationModule } from './notification/notification.module';
 import { SupportRequestModule } from './support-request/support-request.module';
 import { CardInteractionsModule } from './card-interactions/card-interactions.module';
-
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 
 @Module({
   providers: [
@@ -27,8 +27,18 @@ import { CardInteractionsModule } from './card-interactions/card-interactions.mo
       provide: APP_GUARD,
       useClass: AuthGuard,
     },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
   ],
   imports: [
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 30,
+      },
+    ]),
     AuthModule,
     DatabaseModule,
     ContactModule,

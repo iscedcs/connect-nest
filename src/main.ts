@@ -4,9 +4,12 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.use(helmet());
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -37,27 +40,29 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');
 
-  const config = new DocumentBuilder()
-    .setTitle('ISCE CONNECT API')
-    .setDescription('The official Documentations of ISCE CONNECT API.')
-    .setVersion('1.0')
-    .addTag('ISCE CONNECT API')
-    .addBearerAuth(
-      {
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-      },
-      'access-token', // The name used to reference this auth method in the Swagger UI
-    )
-    .build();
+  if (process.env.NODE_ENV !== 'production') {
+    const config = new DocumentBuilder()
+      .setTitle('ISCE CONNECT API')
+      .setDescription('The official Documentations of ISCE CONNECT API.')
+      .setVersion('1.0')
+      .addTag('ISCE CONNECT API')
+      .addBearerAuth(
+        {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+        'access-token', // The name used to reference this auth method in the Swagger UI
+      )
+      .build();
 
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document, {
-    swaggerOptions: {
-      persistAuthorization: true, // Keeps the token across routes
-    },
-  });
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('docs', app, document, {
+      swaggerOptions: {
+        persistAuthorization: true, // Keeps the token across routes
+      },
+    });
+  }
 
   await app.listen(process.env.PORT || 3000);
   console.log(`🚀 App is running on port ${process.env.PORT}`);

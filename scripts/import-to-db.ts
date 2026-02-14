@@ -1,12 +1,11 @@
+import 'dotenv/config';
 import * as fs from 'fs';
 import * as path from 'path';
-import { PrismaClient } from '@prisma/client';
-import * as dotenv from 'dotenv';
+import { PrismaClient } from 'src/generated/prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 
-// Load environment variables
-dotenv.config();
-
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
+const prisma = new PrismaClient({ adapter });
 
 interface MappedProfile {
   id: string;
@@ -83,13 +82,13 @@ async function importToDatabase() {
 
     // Read from isce-auth migration output directory
     const outputDir = path.join(__dirname, '..', '..', 'isce-auth', 'migration-output');
-    
+
     // Read mapped profiles
     const profilesPath = path.join(outputDir, 'mapped-profiles.json');
     if (!fs.existsSync(profilesPath)) {
       throw new Error(`Profiles file not found: ${profilesPath}`);
     }
-    
+
     const profiles: MappedProfile[] = JSON.parse(fs.readFileSync(profilesPath, 'utf-8'));
     console.log(`📖 Found ${profiles.length} profiles to import`);
 
@@ -358,4 +357,3 @@ importToDatabase()
     console.error('\n💥 Import failed:', error);
     process.exit(1);
   });
-

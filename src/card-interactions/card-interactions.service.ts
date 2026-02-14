@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
-import { CreateCardInteractionDto, UpdateCardInteractionDto } from './dto/card-interaction.dto';
-import { ScanType } from '@prisma/client';
+import {
+  CreateCardInteractionDto,
+  UpdateCardInteractionDto,
+} from './dto/card-interaction.dto';
+import { ScanType } from '../generated/prisma/client';
 
 @Injectable()
 export class CardInteractionsService {
@@ -21,13 +24,15 @@ export class CardInteractionsService {
         };
       }
 
-      const cardInteraction = await this.databaseService.cardInteraction.create({
-        data: {
-          userId: dto.profileId,
-          deviceId: dto.deviceId,
-          method: dto.method,
+      const cardInteraction = await this.databaseService.cardInteraction.create(
+        {
+          data: {
+            userId: dto.profileId,
+            deviceId: dto.deviceId,
+            method: dto.method,
+          },
         },
-      });
+      );
 
       return {
         success: true,
@@ -59,15 +64,16 @@ export class CardInteractionsService {
 
       const skip = (page - 1) * limit;
 
-      const cardInteractions = await this.databaseService.cardInteraction.findMany({
-        where: {
-          userId: profile.id,
-          deletedAt: null,
-        },
-        orderBy: { createdAt: 'desc' },
-        skip,
-        take: limit,
-      });
+      const cardInteractions =
+        await this.databaseService.cardInteraction.findMany({
+          where: {
+            userId: profile.id,
+            deletedAt: null,
+          },
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take: limit,
+        });
 
       const total = await this.databaseService.cardInteraction.count({
         where: {
@@ -110,13 +116,14 @@ export class CardInteractionsService {
         };
       }
 
-      const cardInteraction = await this.databaseService.cardInteraction.findFirst({
-        where: {
-          id: interactionId,
-          userId: profile.id,
-          deletedAt: null,
-        },
-      });
+      const cardInteraction =
+        await this.databaseService.cardInteraction.findFirst({
+          where: {
+            id: interactionId,
+            userId: profile.id,
+            deletedAt: null,
+          },
+        });
 
       if (!cardInteraction) {
         return {
@@ -140,7 +147,11 @@ export class CardInteractionsService {
     }
   }
 
-  async updateCardInteraction(user: any, interactionId: string, dto: UpdateCardInteractionDto) {
+  async updateCardInteraction(
+    user: any,
+    interactionId: string,
+    dto: UpdateCardInteractionDto,
+  ) {
     try {
       const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
@@ -153,13 +164,14 @@ export class CardInteractionsService {
         };
       }
 
-      const existingInteraction = await this.databaseService.cardInteraction.findFirst({
-        where: {
-          id: interactionId,
-          userId: profile.id,
-          deletedAt: null,
-        },
-      });
+      const existingInteraction =
+        await this.databaseService.cardInteraction.findFirst({
+          where: {
+            id: interactionId,
+            userId: profile.id,
+            deletedAt: null,
+          },
+        });
 
       if (!existingInteraction) {
         return {
@@ -168,13 +180,14 @@ export class CardInteractionsService {
         };
       }
 
-      const updatedInteraction = await this.databaseService.cardInteraction.update({
-        where: { id: interactionId },
-        data: {
-          deviceId: dto.deviceId,
-          method: dto.method,
-        },
-      });
+      const updatedInteraction =
+        await this.databaseService.cardInteraction.update({
+          where: { id: interactionId },
+          data: {
+            deviceId: dto.deviceId,
+            method: dto.method,
+          },
+        });
 
       return {
         success: true,
@@ -204,13 +217,14 @@ export class CardInteractionsService {
         };
       }
 
-      const cardInteraction = await this.databaseService.cardInteraction.findFirst({
-        where: {
-          id: interactionId,
-          userId: profile.id,
-          deletedAt: null,
-        },
-      });
+      const cardInteraction =
+        await this.databaseService.cardInteraction.findFirst({
+          where: {
+            id: interactionId,
+            userId: profile.id,
+            deletedAt: null,
+          },
+        });
 
       if (!cardInteraction) {
         return {
@@ -239,7 +253,12 @@ export class CardInteractionsService {
     }
   }
 
-  async getInteractionsByMethod(user: any, method: ScanType, page: number = 1, limit: number = 10) {
+  async getInteractionsByMethod(
+    user: any,
+    method: ScanType,
+    page: number = 1,
+    limit: number = 10,
+  ) {
     try {
       const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
@@ -254,16 +273,17 @@ export class CardInteractionsService {
 
       const skip = (page - 1) * limit;
 
-      const cardInteractions = await this.databaseService.cardInteraction.findMany({
-        where: {
-          userId: profile.id,
-          method: method,
-          deletedAt: null,
-        },
-        orderBy: { createdAt: 'desc' },
-        skip,
-        take: limit,
-      });
+      const cardInteractions =
+        await this.databaseService.cardInteraction.findMany({
+          where: {
+            userId: profile.id,
+            method: method,
+            deletedAt: null,
+          },
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take: limit,
+        });
 
       const total = await this.databaseService.cardInteraction.count({
         where: {
@@ -294,7 +314,12 @@ export class CardInteractionsService {
     }
   }
 
-  async getInteractionsByDevice(user: any, deviceId: string, page: number = 1, limit: number = 10) {
+  async getInteractionsByDevice(
+    user: any,
+    deviceId: string,
+    page: number = 1,
+    limit: number = 10,
+  ) {
     try {
       const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
@@ -309,16 +334,17 @@ export class CardInteractionsService {
 
       const skip = (page - 1) * limit;
 
-      const cardInteractions = await this.databaseService.cardInteraction.findMany({
-        where: {
-          userId: profile.id,
-          deviceId: deviceId,
-          deletedAt: null,
-        },
-        orderBy: { createdAt: 'desc' },
-        skip,
-        take: limit,
-      });
+      const cardInteractions =
+        await this.databaseService.cardInteraction.findMany({
+          where: {
+            userId: profile.id,
+            deviceId: deviceId,
+            deletedAt: null,
+          },
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take: limit,
+        });
 
       const total = await this.databaseService.cardInteraction.count({
         where: {
@@ -362,14 +388,15 @@ export class CardInteractionsService {
         };
       }
 
-      const cardInteractions = await this.databaseService.cardInteraction.findMany({
-        where: {
-          userId: profile.id,
-          deletedAt: null,
-        },
-        orderBy: { createdAt: 'desc' },
-        take: limit,
-      });
+      const cardInteractions =
+        await this.databaseService.cardInteraction.findMany({
+          where: {
+            userId: profile.id,
+            deletedAt: null,
+          },
+          orderBy: { createdAt: 'desc' },
+          take: limit,
+        });
 
       return {
         success: true,
@@ -399,12 +426,13 @@ export class CardInteractionsService {
         };
       }
 
-      const totalInteractions = await this.databaseService.cardInteraction.count({
-        where: {
-          userId: profile.id,
-          deletedAt: null,
-        },
-      });
+      const totalInteractions =
+        await this.databaseService.cardInteraction.count({
+          where: {
+            userId: profile.id,
+            deletedAt: null,
+          },
+        });
 
       const tapInteractions = await this.databaseService.cardInteraction.count({
         where: {
@@ -414,43 +442,48 @@ export class CardInteractionsService {
         },
       });
 
-      const scanInteractions = await this.databaseService.cardInteraction.count({
-        where: {
-          userId: profile.id,
-          method: 'SCAN',
-          deletedAt: null,
-        },
-      });
-
-      const todayInteractions = await this.databaseService.cardInteraction.count({
-        where: {
-          userId: profile.id,
-          deletedAt: null,
-          createdAt: {
-            gte: new Date(new Date().setHours(0, 0, 0, 0)),
+      const scanInteractions = await this.databaseService.cardInteraction.count(
+        {
+          where: {
+            userId: profile.id,
+            method: 'SCAN',
+            deletedAt: null,
           },
         },
-      });
+      );
 
-      const thisWeekInteractions = await this.databaseService.cardInteraction.count({
-        where: {
-          userId: profile.id,
-          deletedAt: null,
-          createdAt: {
-            gte: new Date(new Date().setDate(new Date().getDate() - 7)),
+      const todayInteractions =
+        await this.databaseService.cardInteraction.count({
+          where: {
+            userId: profile.id,
+            deletedAt: null,
+            createdAt: {
+              gte: new Date(new Date().setHours(0, 0, 0, 0)),
+            },
           },
-        },
-      });
+        });
 
-      const thisMonthInteractions = await this.databaseService.cardInteraction.count({
-        where: {
-          userId: profile.id,
-          deletedAt: null,
-          createdAt: {
-            gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+      const thisWeekInteractions =
+        await this.databaseService.cardInteraction.count({
+          where: {
+            userId: profile.id,
+            deletedAt: null,
+            createdAt: {
+              gte: new Date(new Date().setDate(new Date().getDate() - 7)),
+            },
           },
-        },
-      });
+        });
+
+      const thisMonthInteractions =
+        await this.databaseService.cardInteraction.count({
+          where: {
+            userId: profile.id,
+            deletedAt: null,
+            createdAt: {
+              gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+            },
+          },
+        });
 
       // Get unique devices count
       const uniqueDevices = await this.databaseService.cardInteraction.groupBy({
@@ -476,8 +509,14 @@ export class CardInteractionsService {
             thisWeekInteractions,
             thisMonthInteractions,
             uniqueDevices: uniqueDevices.length,
-            tapPercentage: totalInteractions > 0 ? Math.round((tapInteractions / totalInteractions) * 100) : 0,
-            scanPercentage: totalInteractions > 0 ? Math.round((scanInteractions / totalInteractions) * 100) : 0,
+            tapPercentage:
+              totalInteractions > 0
+                ? Math.round((tapInteractions / totalInteractions) * 100)
+                : 0,
+            scanPercentage:
+              totalInteractions > 0
+                ? Math.round((scanInteractions / totalInteractions) * 100)
+                : 0,
           },
         },
       };
@@ -489,7 +528,13 @@ export class CardInteractionsService {
     }
   }
 
-  async getInteractionsByDateRange(user: any, startDate: string, endDate: string, page: number = 1, limit: number = 10) {
+  async getInteractionsByDateRange(
+    user: any,
+    startDate: string,
+    endDate: string,
+    page: number = 1,
+    limit: number = 10,
+  ) {
     try {
       const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
@@ -504,19 +549,20 @@ export class CardInteractionsService {
 
       const skip = (page - 1) * limit;
 
-      const cardInteractions = await this.databaseService.cardInteraction.findMany({
-        where: {
-          userId: profile.id,
-          deletedAt: null,
-          createdAt: {
-            gte: new Date(startDate),
-            lte: new Date(endDate),
+      const cardInteractions =
+        await this.databaseService.cardInteraction.findMany({
+          where: {
+            userId: profile.id,
+            deletedAt: null,
+            createdAt: {
+              gte: new Date(startDate),
+              lte: new Date(endDate),
+            },
           },
-        },
-        orderBy: { createdAt: 'desc' },
-        skip,
-        take: limit,
-      });
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take: limit,
+        });
 
       const total = await this.databaseService.cardInteraction.count({
         where: {

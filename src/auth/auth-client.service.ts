@@ -15,7 +15,7 @@ export interface DeviceResponse {
 
 @Injectable()
 export class AuthClientService {
-  private readonly authUrl = process.env.AUTH_URL;
+  private readonly authUrl = process.env.AUTH_API_URL;
 
   async getDeviceByDeviceId(deviceId: string): Promise<DeviceResponse> {
     try {
