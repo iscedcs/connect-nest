@@ -16,10 +16,34 @@ export class CardInteractionsService {
 
   async recordCardInteraction(dto: CreateCardInteractionDto) {
     try {
+      // Must have at least one identifier
+      if (!dto.deviceId && !dto.slug && !dto.profileId) {
+        return {
+          success: false,
+          message: 'At least one of deviceId, slug, or profileId is required',
+        };
+      }
+
       let profileId = dto.profileId;
 
-      // If profileId not provided, resolve from deviceId via auth service
-      if (!profileId) {
+      // Resolve profileId from slug if provided and profileId is not
+      if (!profileId && dto.slug) {
+        const profile = await this.databaseService.profile.findUnique({
+          where: { slug: dto.slug },
+        });
+
+        if (!profile || profile.deletedAt) {
+          return {
+            success: false,
+            message: 'Profile not found for this slug',
+          };
+        }
+
+        profileId = profile.id;
+      }
+
+      // If profileId still not resolved, try from deviceId via auth service
+      if (!profileId && dto.deviceId) {
         const device = await this.authClientService.getDeviceByDeviceId(
           dto.deviceId,
         );
@@ -73,7 +97,7 @@ export class CardInteractionsService {
         {
           data: {
             userId: profileId,
-            deviceId: dto.deviceId,
+            deviceId: dto.deviceId ?? '',
             method: dto.method ?? ScanType.TAP,
             deviceType: dto.deviceType ?? null,
             referrer: dto.referrer ?? null,

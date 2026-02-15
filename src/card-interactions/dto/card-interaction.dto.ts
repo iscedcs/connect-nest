@@ -1,24 +1,34 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { ScanType } from '../../generated/prisma/client';
 import { IsString, IsOptional, IsUUID, IsEnum } from 'class-validator';
 
 export class CreateCardInteractionDto {
   @ApiPropertyOptional({
     description:
-      'Profile ID of the user whose card was interacted with. If omitted, resolved from deviceId.',
+      'Profile ID of the user whose card was interacted with. If omitted, resolved from deviceId or slug.',
     example: '550e8400-e29b-41d4-a716-446655440000',
   })
   @IsOptional()
   @IsUUID()
   profileId?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description:
-      'Unique identifier of the device that interacted with the card',
+      'Unique identifier of the device that interacted with the card. Required unless slug is provided.',
     example: '29775b12f3d7173e883b38faeb03fa12',
   })
+  @IsOptional()
   @IsString()
-  deviceId: string;
+  deviceId?: string;
+
+  @ApiPropertyOptional({
+    description:
+      'Profile slug — used to resolve the profile when no deviceId is available (e.g. QR scans on slug-based profiles).',
+    example: 'john-doe',
+  })
+  @IsOptional()
+  @IsString()
+  slug?: string;
 
   @ApiPropertyOptional({
     description: 'Method of interaction with the card (TAP or SCAN)',
