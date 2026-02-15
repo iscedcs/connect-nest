@@ -1,4 +1,4 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ScanType } from '../../generated/prisma/client';
 import { IsString, IsOptional, IsUUID, IsEnum } from 'class-validator';
 
