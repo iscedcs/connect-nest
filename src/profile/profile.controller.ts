@@ -1,37 +1,30 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Put, 
-  Delete, 
-  Body, 
-  Request, 
-  ValidationPipe, 
-  Query, 
-  Param, 
-  Patch
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Request,
+  ValidationPipe,
+  Query,
+  Param,
+  Patch,
 } from '@nestjs/common';
 import { ProfileService } from './profile.service';
-import { 
-  CreateProfileDto, 
-  UpdateProfileDto, 
-  PaginationDto,
+import {
+  CreateProfileDto,
+  UpdateProfileDto,
   ProfileResponseDto,
-  SocialResponseDto,
-  ContactResponseDto,
-  NotificationResponseDto,
-  SupportRequestResponseDto,
   ProfileStatsResponseDto,
-  CloneProfileDto
+  CloneProfileDto,
 } from './dto/profile.dto';
-import { 
-  ApiBearerAuth, 
-  ApiBody, 
-  ApiOperation, 
-  ApiResponse, 
-  ApiTags, 
-  ApiParam, 
-  ApiQuery 
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiParam,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { PublicRoute } from '../auth/decorators/public-route.decorator';
 
@@ -43,10 +36,10 @@ export class ProfileController {
 
   @Post('create')
   @ApiOperation({ summary: 'Create a new user profile' })
-  @ApiResponse({ 
-    status: 201, 
+  @ApiResponse({
+    status: 201,
     description: 'Profile created successfully',
-    type: ProfileResponseDto
+    type: ProfileResponseDto,
   })
   @ApiResponse({ status: 400, description: 'Failed to create profile' })
   @ApiBody({ type: CreateProfileDto })
@@ -59,11 +52,11 @@ export class ProfileController {
   }
 
   @Get('me')
-  @ApiOperation({ summary: 'Get current user\'s profile with all related data' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiOperation({ summary: "Get current user's profile with all related data" })
+  @ApiResponse({
+    status: 200,
     description: 'Profile retrieved successfully',
-    type: ProfileResponseDto
+    type: ProfileResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Profile not found' })
   getProfile(@Request() req) {
@@ -75,11 +68,11 @@ export class ProfileController {
   }
 
   @Patch('update')
-  @ApiOperation({ summary: 'Update current user\'s profile' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiOperation({ summary: "Update current user's profile" })
+  @ApiResponse({
+    status: 200,
     description: 'Profile updated successfully',
-    type: ProfileResponseDto
+    type: ProfileResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Profile not found' })
   @ApiBody({ type: UpdateProfileDto })
@@ -92,7 +85,7 @@ export class ProfileController {
   }
 
   @Patch('delete')
-  @ApiOperation({ summary: 'Delete current user\'s profile (soft delete)' })
+  @ApiOperation({ summary: "Delete current user's profile (soft delete)" })
   @ApiResponse({ status: 200, description: 'Profile deleted successfully' })
   @ApiResponse({ status: 404, description: 'Profile not found' })
   deleteProfile(@Request() req) {
@@ -103,14 +96,13 @@ export class ProfileController {
     return this.profileService.deleteProfile(user);
   }
 
-
   // Statistics Endpoint
   @Get('stats')
   @ApiOperation({ summary: 'Get profile statistics for current user' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Profile statistics retrieved successfully',
-    type: ProfileStatsResponseDto
+    type: ProfileStatsResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Profile not found' })
   getProfileStats(@Request() req) {
@@ -124,15 +116,31 @@ export class ProfileController {
   // Public Profile Endpoint
   @PublicRoute()
   @Get('public/:deviceId')
-  @ApiOperation({ summary: 'Get public profile by device ID (no auth required)' })
+  @ApiOperation({
+    summary: 'Get public profile by device ID (no auth required)',
+  })
   @ApiParam({ name: 'deviceId', description: 'The NFC/QR device UID' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Public profile retrieved successfully',
   })
   @ApiResponse({ status: 404, description: 'Device or profile not found' })
   async getPublicProfile(@Param('deviceId') deviceId: string) {
     return this.profileService.getPublicProfileByDeviceId(deviceId);
+  }
+
+  // Public Profile by Slug Endpoint
+  @PublicRoute()
+  @Get('slug/:slug')
+  @ApiOperation({ summary: 'Get public profile by slug (no auth required)' })
+  @ApiParam({ name: 'slug', description: 'The unique profile slug' })
+  @ApiResponse({
+    status: 200,
+    description: 'Public profile retrieved successfully',
+  })
+  @ApiResponse({ status: 404, description: 'Profile not found' })
+  async getPublicProfileBySlug(@Param('slug') slug: string) {
+    return this.profileService.getPublicProfileBySlug(slug);
   }
 }
 
@@ -144,32 +152,52 @@ export class ProfilesController {
 
   @Get('all')
   @ApiOperation({ summary: 'List all profiles for the current user' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Profiles retrieved successfully',
   })
-  @ApiQuery({ name: 'page', required: false, description: 'Page number', example: 1 })
-  @ApiQuery({ name: 'per_page', required: false, description: 'Items per page', example: 25 })
-  @ApiQuery({ name: 'include_deleted', required: false, description: 'Include deleted profiles', example: false })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Page number',
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'per_page',
+    required: false,
+    description: 'Items per page',
+    example: 25,
+  })
+  @ApiQuery({
+    name: 'include_deleted',
+    required: false,
+    description: 'Include deleted profiles',
+    example: false,
+  })
   getAllProfiles(
     @Request() req,
     @Query('page') page: number = 1,
     @Query('per_page') perPage: number = 25,
-    @Query('include_deleted') includeDeleted: boolean = false
+    @Query('include_deleted') includeDeleted: boolean = false,
   ) {
     const user = req.isce_auth;
     if (!user) {
       return { success: false, message: 'User not found' };
     }
-    return this.profileService.getAllProfiles(user, page, perPage, includeDeleted);
+    return this.profileService.getAllProfiles(
+      user,
+      page,
+      perPage,
+      includeDeleted,
+    );
   }
 
   @Get('one/:profileId')
   @ApiOperation({ summary: 'Get a specific profile by ID' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Profile retrieved successfully',
-    type: ProfileResponseDto
+    type: ProfileResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Profile not found' })
   @ApiParam({ name: 'profileId', description: 'Profile ID' })
@@ -183,10 +211,10 @@ export class ProfilesController {
 
   @Patch('update/:profileId')
   @ApiOperation({ summary: 'Update a specific profile' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Profile updated successfully',
-    type: ProfileResponseDto
+    type: ProfileResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Profile not found' })
   @ApiParam({ name: 'profileId', description: 'Profile ID' })
@@ -194,7 +222,7 @@ export class ProfilesController {
   updateProfileById(
     @Request() req,
     @Param('profileId') profileId: string,
-    @Body(ValidationPipe) dto: UpdateProfileDto
+    @Body(ValidationPipe) dto: UpdateProfileDto,
   ) {
     const user = req.isce_auth;
     if (!user) {
@@ -218,10 +246,10 @@ export class ProfilesController {
 
   @Patch('restore/:profileId')
   @ApiOperation({ summary: 'Restore a soft-deleted profile' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Profile restored successfully',
-    type: ProfileResponseDto
+    type: ProfileResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Profile not found' })
   @ApiParam({ name: 'profileId', description: 'Profile ID' })
@@ -235,10 +263,10 @@ export class ProfilesController {
 
   @Patch('set-default/:profileId')
   @ApiOperation({ summary: 'Set a profile as the default profile' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Default profile set successfully',
-    type: ProfileResponseDto
+    type: ProfileResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Profile not found' })
   @ApiParam({ name: 'profileId', description: 'Profile ID' })
@@ -252,10 +280,10 @@ export class ProfilesController {
 
   @Get('default')
   @ApiOperation({ summary: 'Get the current default profile' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Default profile retrieved successfully',
-    type: ProfileResponseDto
+    type: ProfileResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Default profile not found' })
   getDefaultProfile(@Request() req) {
@@ -268,10 +296,10 @@ export class ProfilesController {
 
   @Post('clone/:profileId')
   @ApiOperation({ summary: 'Clone a profile and optionally its resources' })
-  @ApiResponse({ 
-    status: 201, 
+  @ApiResponse({
+    status: 201,
     description: 'Profile cloned successfully',
-    type: ProfileResponseDto
+    type: ProfileResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Source profile not found' })
   @ApiParam({ name: 'profileId', description: 'Source Profile ID to clone' })
@@ -279,7 +307,7 @@ export class ProfilesController {
   cloneProfile(
     @Request() req,
     @Param('profileId') profileId: string,
-    @Body(ValidationPipe) dto: CloneProfileDto
+    @Body(ValidationPipe) dto: CloneProfileDto,
   ) {
     const user = req.isce_auth;
     if (!user) {

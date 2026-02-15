@@ -117,9 +117,24 @@ export class ProfileService {
         };
       }
 
+      // If slug is being updated, check uniqueness
+      if (dto.slug && dto.slug !== profile.slug) {
+        const existing = await this.databaseService.profile.findUnique({
+          where: { slug: dto.slug },
+        });
+        if (existing) {
+          return {
+            success: false,
+            message:
+              'This slug is already taken. Please choose a different one.',
+          };
+        }
+      }
+
       const updatedProfile = await this.databaseService.profile.update({
         where: { id: profile.id },
         data: {
+          slug: dto.slug,
           name: dto.name,
           position: dto.position,
           description: dto.description,
@@ -352,9 +367,24 @@ export class ProfileService {
         };
       }
 
+      // If slug is being updated, check uniqueness
+      if (dto.slug && dto.slug !== profile.slug) {
+        const existing = await this.databaseService.profile.findUnique({
+          where: { slug: dto.slug },
+        });
+        if (existing) {
+          return {
+            success: false,
+            message:
+              'This slug is already taken. Please choose a different one.',
+          };
+        }
+      }
+
       const updatedProfile = await this.databaseService.profile.update({
         where: { id: profileId },
         data: {
+          slug: dto.slug,
           name: dto.name,
           position: dto.position,
           description: dto.description,
@@ -1030,6 +1060,172 @@ export class ProfileService {
           message: 'Device not found',
         };
       }
+      return {
+        success: false,
+        message: error.message || 'Failed to load public profile',
+      };
+    }
+  }
+
+  async getPublicProfileBySlug(slug: string) {
+    try {
+      // Step 1: Find profile by slug
+      const profile = await this.databaseService.profile.findUnique({
+        where: { slug },
+      });
+
+      if (!profile || profile.deletedAt) {
+        return {
+          success: false,
+          message: 'Profile not found',
+        };
+      }
+
+      // Step 2: Aggregate all visible modules in parallel
+      const [
+        profileContacts,
+        links,
+        socials,
+        videos,
+        files,
+        spotifyItems,
+        meetings,
+        appointments,
+        wallets,
+        forms,
+      ] = await Promise.all([
+        this.databaseService.profileContact.findMany({
+          where: { profileId: profile.id, is_visible: true, deletedAt: null },
+          orderBy: [{ is_primary: 'desc' }, { createdAt: 'asc' }],
+        }),
+        this.databaseService.link.findMany({
+          where: { profileId: profile.id, is_visible: true, deletedAt: null },
+          orderBy: [{ order: 'asc' }, { createdAt: 'desc' }],
+        }),
+        this.databaseService.social.findMany({
+          where: { userId: profile.id, is_visible: true, deletedAt: null },
+          orderBy: [{ order: 'asc' }, { createdAt: 'desc' }],
+        }),
+        this.databaseService.video.findMany({
+          where: { profileId: profile.id, is_visible: true, deletedAt: null },
+          orderBy: [{ is_featured: 'desc' }, { createdAt: 'desc' }],
+        }),
+        this.databaseService.fileItem.findMany({
+          where: { profileId: profile.id, is_visible: true, deletedAt: null },
+          orderBy: { createdAt: 'desc' },
+        }),
+        this.databaseService.spotifyItem.findMany({
+          where: { profileId: profile.id, is_visible: true, deletedAt: null },
+          orderBy: [{ order: 'asc' }, { createdAt: 'desc' }],
+        }),
+        this.databaseService.meetingLink.findMany({
+          where: { profileId: profile.id, is_visible: true, deletedAt: null },
+          orderBy: [{ is_default: 'desc' }, { createdAt: 'desc' }],
+        }),
+        this.databaseService.appointmentLink.findMany({
+          where: { profileId: profile.id, is_visible: true, deletedAt: null },
+          orderBy: [{ is_default: 'desc' }, { createdAt: 'desc' }],
+        }),
+        this.databaseService.wallet.findMany({
+          where: { profileId: profile.id, is_visible: true, deletedAt: null },
+          orderBy: [{ is_default: 'desc' }, { createdAt: 'desc' }],
+        }),
+        this.databaseService.form.findMany({
+          where: { profileId: profile.id, is_visible: true, deletedAt: null },
+          orderBy: { createdAt: 'desc' },
+        }),
+      ]);
+
+      // Step 3: Transform contacts
+      const primaryContact = profileContacts.find((c) => c.is_primary) || null;
+      const otherContacts = profileContacts.filter((c) => !c.is_primary);
+
+      // Step 4: Format response
+      return {
+        success: true,
+        message: 'Public profile loaded',
+        data: {
+          profile: {
+            id: profile.id,
+            name: profile.name,
+            slug: profile.slug,
+            userId: profile.userId,
+            position: profile.position,
+            bio: profile.description,
+            profilePhoto: profile.profilePhoto,
+            coverPhoto: profile.coverPhoto,
+            location: profile.location,
+          },
+          contact: {
+            primary: primaryContact
+              ? {
+                  label: primaryContact.label,
+                  phone_number: primaryContact.phone_number,
+                }
+              : null,
+            others: otherContacts.map((c) => ({
+              id: c.id,
+              label: c.label,
+              phone_number: c.phone_number,
+            })),
+          },
+          links: links.map((link) => ({
+            id: link.id,
+            title: link.title,
+            url: link.url,
+            icon: 'globe',
+          })),
+          socials: socials.map((social) => ({
+            id: social.id,
+            platform: social.platform,
+            username: social.value,
+            url: social.value,
+            icon: social.platform.toLowerCase(),
+          })),
+          videos: videos.map((video) => ({
+            id: video.id,
+            platform: video.platform,
+            title: video.title,
+            thumbnail: video.thumbnail || null,
+            url: video.url,
+          })),
+          files: files.map((file) => ({
+            id: file.id,
+            title: file.filename,
+            type: file.media_type,
+            url: file.spaces_url,
+          })),
+          spotify: spotifyItems.map((item) => ({
+            id: item.id,
+            type: item.type,
+            title: item.title,
+            url: item.external_url,
+          })),
+          meetings: meetings.map((meeting) => ({
+            id: meeting.id,
+            provider: meeting.provider,
+            url: meeting.url,
+          })),
+          appointments: appointments.map((appointment) => ({
+            id: appointment.id,
+            provider: appointment.provider,
+            url: appointment.url,
+          })),
+          wallets: wallets.map((wallet) => ({
+            id: wallet.id,
+            network: wallet.network,
+            address: wallet.address,
+          })),
+          forms: forms.map((form) => ({
+            id: form.id,
+            title: form.title,
+            description: form.description,
+            url: form.form_url || `/forms/${form.id}`,
+          })),
+        },
+      };
+    } catch (error) {
+      console.log({ error });
       return {
         success: false,
         message: error.message || 'Failed to load public profile',
