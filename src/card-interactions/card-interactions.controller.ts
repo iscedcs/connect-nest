@@ -25,6 +25,7 @@ import {
   ApiQuery,
 } from '@nestjs/swagger';
 import { ScanType } from '../generated/prisma/client';
+import { PublicRoute } from '../auth/decorators/public-route.decorator';
 
 @ApiTags('Card Interactions Management')
 @Controller('card-interactions')
@@ -34,6 +35,7 @@ export class CardInteractionsController {
   ) {}
 
   @Post('record')
+  @PublicRoute()
   @ApiOperation({ summary: 'Record a new card interaction (System endpoint)' })
   @ApiResponse({
     status: 201,
