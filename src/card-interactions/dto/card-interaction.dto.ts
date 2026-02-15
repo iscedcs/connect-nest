@@ -3,28 +3,48 @@ import { ScanType } from '../../generated/prisma/client';
 import { IsString, IsOptional, IsUUID, IsEnum } from 'class-validator';
 
 export class CreateCardInteractionDto {
-  @ApiProperty({
-    description: 'Profile ID of the user whose card was interacted with',
+  @ApiPropertyOptional({
+    description:
+      'Profile ID of the user whose card was interacted with. If omitted, resolved from deviceId.',
     example: '550e8400-e29b-41d4-a716-446655440000',
   })
+  @IsOptional()
   @IsUUID()
-  profileId: string;
+  profileId?: string;
 
   @ApiProperty({
     description:
       'Unique identifier of the device that interacted with the card',
-    example: 'device-12345',
+    example: '29775b12f3d7173e883b38faeb03fa12',
   })
   @IsString()
   deviceId: string;
 
-  @ApiProperty({
-    description: 'Method of interaction with the card',
+  @ApiPropertyOptional({
+    description: 'Method of interaction with the card (TAP or SCAN)',
     enum: ScanType,
     example: ScanType.TAP,
   })
+  @IsOptional()
   @IsEnum(ScanType)
-  method: ScanType;
+  method?: ScanType;
+
+  @ApiPropertyOptional({
+    description:
+      'Type identifier from the device URL (identifies the physical device type)',
+    example: '6214bdef7dbcb',
+  })
+  @IsOptional()
+  @IsString()
+  deviceType?: string;
+
+  @ApiPropertyOptional({
+    description: 'HTTP referrer — where the visitor came from',
+    example: 'https://www.google.com',
+  })
+  @IsOptional()
+  @IsString()
+  referrer?: string;
 }
 
 export class UpdateCardInteractionDto {
@@ -64,7 +84,7 @@ export class CardInteractionResponseDto {
   @ApiProperty({
     description:
       'Unique identifier of the device that interacted with the card',
-    example: 'device-12345',
+    example: '29775b12f3d7173e883b38faeb03fa12',
   })
   deviceId: string;
 
@@ -74,6 +94,21 @@ export class CardInteractionResponseDto {
   })
   @IsEnum(ScanType)
   method: ScanType;
+
+  @ApiPropertyOptional({
+    description: 'Physical device type identifier from URL',
+    example: '6214bdef7dbcb',
+  })
+  @IsOptional()
+  @IsString()
+  deviceType?: string;
+
+  @ApiPropertyOptional({
+    description: 'HTTP referrer',
+  })
+  @IsOptional()
+  @IsString()
+  referrer?: string;
 
   @ApiProperty({
     description: 'Timestamp when the interaction occurred',

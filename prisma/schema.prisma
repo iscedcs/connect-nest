@@ -120,14 +120,16 @@ model SupportRequest {
 }
 
 model CardInteraction {
-  id        String    @id @default(uuid())
-  user      Profile   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String
-  deviceId  String
-  method    ScanType
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  id         String    @id @default(uuid())
+  user       Profile   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  deviceId   String
+  method     ScanType
+  deviceType String?
+  referrer   String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
 }
 
 // model Invite {

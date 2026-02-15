@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
+import { AuthClientService } from 'src/auth/auth-client.service';
 import {
   CreateCardInteractionDto,
   UpdateCardInteractionDto,
@@ -8,28 +9,74 @@ import { ScanType } from '../generated/prisma/client';
 
 @Injectable()
 export class CardInteractionsService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly authClientService: AuthClientService,
+  ) {}
 
   async recordCardInteraction(dto: CreateCardInteractionDto) {
     try {
-      // Verify the profile exists
-      const profile = await this.databaseService.profile.findUnique({
-        where: { id: dto.profileId },
-      });
+      let profileId = dto.profileId;
 
-      if (!profile) {
-        return {
-          success: false,
-          message: 'Profile not found',
-        };
+      // If profileId not provided, resolve from deviceId via auth service
+      if (!profileId) {
+        const device = await this.authClientService.getDeviceByDeviceId(
+          dto.deviceId,
+        );
+
+        if (!device?.userId) {
+          return {
+            success: false,
+            message: 'Device is not assigned to a user',
+          };
+        }
+
+        // Find the user's default profile (or fall back to first)
+        let profile = await this.databaseService.profile.findFirst({
+          where: {
+            userId: device.userId,
+            is_default: true,
+            deletedAt: null,
+          },
+        });
+
+        if (!profile) {
+          profile = await this.databaseService.profile.findFirst({
+            where: { userId: device.userId, deletedAt: null },
+            orderBy: { createdAt: 'asc' },
+          });
+        }
+
+        if (!profile) {
+          return {
+            success: false,
+            message: 'Profile not found for this device',
+          };
+        }
+
+        profileId = profile.id;
+      } else {
+        // Verify the provided profileId exists
+        const profile = await this.databaseService.profile.findUnique({
+          where: { id: profileId },
+        });
+
+        if (!profile) {
+          return {
+            success: false,
+            message: 'Profile not found',
+          };
+        }
       }
 
       const cardInteraction = await this.databaseService.cardInteraction.create(
         {
           data: {
-            userId: dto.profileId,
+            userId: profileId,
             deviceId: dto.deviceId,
-            method: dto.method,
+            method: dto.method ?? ScanType.TAP,
+            deviceType: dto.deviceType ?? null,
+            referrer: dto.referrer ?? null,
           },
         },
       );

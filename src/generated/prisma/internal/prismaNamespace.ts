@@ -1877,6 +1877,8 @@ export const CardInteractionScalarFieldEnum = {
   userId: 'userId',
   deviceId: 'deviceId',
   method: 'method',
+  deviceType: 'deviceType',
+  referrer: 'referrer',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
