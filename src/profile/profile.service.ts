@@ -792,14 +792,35 @@ export class ProfileService {
 
       const userId = device.userId;
 
-      // Step 2: Get default profile (with fallback to first created)
-      let profile = await this.databaseService.profile.findFirst({
-        where: {
-          userId: userId,
-          is_default: true,
-          deletedAt: null,
-        },
-      });
+      // Step 1.5: Check DeviceProfile binding — a device may be linked to a specific profile
+      const deviceProfileLink =
+        await this.databaseService.deviceProfile.findUnique({
+          where: { deviceId },
+        });
+
+      let profile = null;
+
+      if (deviceProfileLink) {
+        // Device is explicitly linked to a profile — use it (verify it belongs to the same user)
+        profile = await this.databaseService.profile.findFirst({
+          where: {
+            id: deviceProfileLink.profileId,
+            userId: userId,
+            deletedAt: null,
+          },
+        });
+      }
+
+      // Step 2: Fall back to default profile (then first created)
+      if (!profile) {
+        profile = await this.databaseService.profile.findFirst({
+          where: {
+            userId: userId,
+            is_default: true,
+            deletedAt: null,
+          },
+        });
+      }
 
       console.log({ profile });
 

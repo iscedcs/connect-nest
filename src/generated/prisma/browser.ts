@@ -107,3 +107,8 @@ export type Wallet = Prisma.WalletModel
  * 
  */
 export type ConnectConfig = Prisma.ConnectConfigModel
+/**
+ * Model DeviceProfile
+ * 
+ */
+export type DeviceProfile = Prisma.DeviceProfileModel

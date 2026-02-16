@@ -19,6 +19,7 @@ import { SocialModule } from './social/social.module';
 import { NotificationModule } from './notification/notification.module';
 import { SupportRequestModule } from './support-request/support-request.module';
 import { CardInteractionsModule } from './card-interactions/card-interactions.module';
+import { DeviceProfileModule } from './device-profile/device-profile.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 
 @Module({
@@ -57,6 +58,7 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
     NotificationModule,
     SupportRequestModule,
     CardInteractionsModule,
+    DeviceProfileModule,
   ],
 })
 export class AppModule {}

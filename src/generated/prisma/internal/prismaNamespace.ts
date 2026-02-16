@@ -401,7 +401,8 @@ export const ModelName = {
   FormTemplate: 'FormTemplate',
   Submission: 'Submission',
   Wallet: 'Wallet',
-  ConnectConfig: 'ConnectConfig'
+  ConnectConfig: 'ConnectConfig',
+  DeviceProfile: 'DeviceProfile'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -417,7 +418,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "profile" | "social" | "contact" | "notification" | "supportRequest" | "cardInteraction" | "profileContact" | "link" | "video" | "meetingLink" | "appointmentLink" | "spotifyItem" | "fileItem" | "form" | "formTemplate" | "submission" | "wallet" | "connectConfig"
+    modelProps: "profile" | "social" | "contact" | "notification" | "supportRequest" | "cardInteraction" | "profileContact" | "link" | "video" | "meetingLink" | "appointmentLink" | "spotifyItem" | "fileItem" | "form" | "formTemplate" | "submission" | "wallet" | "connectConfig" | "deviceProfile"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1753,6 +1754,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    DeviceProfile: {
+      payload: Prisma.$DeviceProfilePayload<ExtArgs>
+      fields: Prisma.DeviceProfileFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DeviceProfileFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeviceProfilePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DeviceProfileFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeviceProfilePayload>
+        }
+        findFirst: {
+          args: Prisma.DeviceProfileFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeviceProfilePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DeviceProfileFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeviceProfilePayload>
+        }
+        findMany: {
+          args: Prisma.DeviceProfileFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeviceProfilePayload>[]
+        }
+        create: {
+          args: Prisma.DeviceProfileCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeviceProfilePayload>
+        }
+        createMany: {
+          args: Prisma.DeviceProfileCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DeviceProfileCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeviceProfilePayload>[]
+        }
+        delete: {
+          args: Prisma.DeviceProfileDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeviceProfilePayload>
+        }
+        update: {
+          args: Prisma.DeviceProfileUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeviceProfilePayload>
+        }
+        deleteMany: {
+          args: Prisma.DeviceProfileDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DeviceProfileUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DeviceProfileUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeviceProfilePayload>[]
+        }
+        upsert: {
+          args: Prisma.DeviceProfileUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeviceProfilePayload>
+        }
+        aggregate: {
+          args: Prisma.DeviceProfileAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDeviceProfile>
+        }
+        groupBy: {
+          args: Prisma.DeviceProfileGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DeviceProfileGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DeviceProfileCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DeviceProfileCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2076,6 +2151,17 @@ export const ConnectConfigScalarFieldEnum = {
 export type ConnectConfigScalarFieldEnum = (typeof ConnectConfigScalarFieldEnum)[keyof typeof ConnectConfigScalarFieldEnum]
 
 
+export const DeviceProfileScalarFieldEnum = {
+  id: 'id',
+  deviceId: 'deviceId',
+  profileId: 'profileId',
+  linkedAt: 'linkedAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DeviceProfileScalarFieldEnum = (typeof DeviceProfileScalarFieldEnum)[keyof typeof DeviceProfileScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2361,6 +2447,7 @@ export type GlobalOmitConfig = {
   submission?: Prisma.SubmissionOmit
   wallet?: Prisma.WalletOmit
   connectConfig?: Prisma.ConnectConfigOmit
+  deviceProfile?: Prisma.DeviceProfileOmit
 }
 
 /* Types for Logging */

@@ -68,7 +68,8 @@ export const ModelName = {
   FormTemplate: 'FormTemplate',
   Submission: 'Submission',
   Wallet: 'Wallet',
-  ConnectConfig: 'ConnectConfig'
+  ConnectConfig: 'ConnectConfig',
+  DeviceProfile: 'DeviceProfile'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -369,6 +370,17 @@ export const ConnectConfigScalarFieldEnum = {
 } as const
 
 export type ConnectConfigScalarFieldEnum = (typeof ConnectConfigScalarFieldEnum)[keyof typeof ConnectConfigScalarFieldEnum]
+
+
+export const DeviceProfileScalarFieldEnum = {
+  id: 'id',
+  deviceId: 'deviceId',
+  profileId: 'profileId',
+  linkedAt: 'linkedAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DeviceProfileScalarFieldEnum = (typeof DeviceProfileScalarFieldEnum)[keyof typeof DeviceProfileScalarFieldEnum]
 
 
 export const SortOrder = {

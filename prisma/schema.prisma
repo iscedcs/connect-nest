@@ -44,6 +44,7 @@ model Profile {
   notifications    Notification[]
   supportRequests  SupportRequest[]
   cardInteractions CardInteraction[]
+  deviceProfiles   DeviceProfile[]
 
   @@index([userId])
 }
@@ -337,4 +338,19 @@ model ConnectConfig {
   branding  Json?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// Device-Profile Binding
+// Maps a physical device (NFC card/tag) to a specific profile.
+// One device can only be linked to one profile at a time.
+// Unlinking + relinking is supported — devices can be moved between profiles.
+model DeviceProfile {
+  id        String   @id @default(uuid())
+  deviceId  String   @unique // productId from isce-auth Device model
+  profileId String
+  profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  linkedAt  DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([profileId])
 }
