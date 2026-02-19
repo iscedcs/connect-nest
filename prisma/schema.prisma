@@ -107,6 +107,7 @@ model Notification {
 enum NotificationType {
   CARD_INTERACTION
   CONTACT_SHARED
+  WALLET_UPDATE
 }
 
 model SupportRequest {

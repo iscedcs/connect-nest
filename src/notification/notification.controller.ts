@@ -8,6 +8,8 @@ import {
   ValidationPipe,
   Param,
   Query,
+  Headers,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { NotificationService } from './notification.service';
 import {
@@ -22,8 +24,10 @@ import {
   ApiTags,
   ApiParam,
   ApiQuery,
+  ApiExcludeEndpoint,
 } from '@nestjs/swagger';
 import { NotificationType } from '../generated/prisma/client';
+import { PublicRoute } from '../auth/decorators/public-route.decorator';
 
 @ApiTags('Notification Management')
 @Controller('notification')
@@ -220,5 +224,28 @@ export class NotificationController {
       return { success: false, message: 'User not found' };
     }
     return this.notificationService.getNotificationStats(user);
+  }
+
+  /**
+   * Internal endpoint called by wallet-nest to push wallet-activation
+   * notifications without a user JWT. Protected by X-Internal-Key header.
+   */
+  @Post('internal')
+  @PublicRoute()
+  @ApiExcludeEndpoint()
+  createInternalNotification(
+    @Headers('x-internal-key') key: string,
+    @Body() body: { userId: string; title: string; message: string; type: string },
+  ) {
+    const internalKey = process.env.INTERNAL_NOTIFY_KEY;
+    if (!internalKey || key !== internalKey) {
+      throw new UnauthorizedException('Invalid internal key');
+    }
+    return this.notificationService.createNotificationByUserId(
+      body.userId,
+      body.title,
+      body.message,
+      body.type as NotificationType,
+    );
   }
 }

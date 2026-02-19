@@ -45,6 +45,25 @@ export class NotificationService {
     }
   }
 
+  /**
+   * Internal helper called by wallet-nest webhook to push wallet activation
+   * notifications. Looks up the user’s profile by userId, then delegates.
+   */
+  async createNotificationByUserId(
+    userId: string,
+    title: string,
+    message: string,
+    type: NotificationType,
+  ) {
+    const profile = await this.databaseService.profile.findFirst({
+      where: { userId },
+    });
+    if (!profile) {
+      return { success: false, message: 'Profile not found for userId' };
+    }
+    return this.createNotification({ profileId: profile.id, title, message, type });
+  }
+
   async getNotifications(user: any, page: number = 1, limit: number = 10) {
     try {
       const profile = await this.databaseService.profile.findFirst({
