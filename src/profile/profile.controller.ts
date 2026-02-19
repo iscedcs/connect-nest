@@ -142,6 +142,37 @@ export class ProfileController {
   async getPublicProfileBySlug(@Param('slug') slug: string) {
     return this.profileService.getPublicProfileBySlug(slug);
   }
+
+  /**
+   * Returns the aggregated wallet card for a public profile —
+   * virtual account details + ISCE Tag. No auth required.
+   */
+  @PublicRoute()
+  @Get('slug/:slug/wallet-card')
+  @ApiOperation({
+    summary: 'Get ISCE Wallet card for a public profile (no auth required)',
+  })
+  @ApiParam({ name: 'slug', description: 'The unique profile slug' })
+  @ApiResponse({
+    status: 200,
+    schema: {
+      example: {
+        success: true,
+        data: {
+          canReceive: true,
+          accountNumber: '1234567890',
+          bankName: 'Wema Bank',
+          accountName: 'John Doe',
+          txLimit: 30000,
+          isceTag: '@rexed',
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 404, description: 'Profile not found' })
+  async getProfileWalletCard(@Param('slug') slug: string) {
+    return this.profileService.getProfileWalletCard(slug);
+  }
 }
 
 @ApiTags('Multi-Profile Management')

@@ -6,12 +6,14 @@ import {
   CloneProfileDto,
 } from './dto/profile.dto';
 import { AuthClientService } from '../auth/auth-client.service';
+import { WalletClientService } from '../auth/wallet-client.service';
 
 @Injectable()
 export class ProfileService {
   constructor(
     private readonly databaseService: DatabaseService,
     private readonly authClientService: AuthClientService,
+    private readonly walletClientService: WalletClientService,
   ) {}
 
   async createProfile(user: any, dto: CreateProfileDto) {
@@ -1250,6 +1252,39 @@ export class ProfileService {
       return {
         success: false,
         message: error.message || 'Failed to load public profile',
+      };
+    }
+  }
+
+  /**
+   * Aggregated wallet card for a public profile.
+   * Resolves the profile's userId, then fetches virtual account details
+   * from wallet-nest and ISCE Tag from isce-auth in parallel.
+   */
+  async getProfileWalletCard(slug: string) {
+    try {
+      const profile = await this.databaseService.profile.findUnique({
+        where: { slug },
+        select: { userId: true, deletedAt: true },
+      });
+
+      if (!profile || profile.deletedAt) {
+        return { success: false, message: 'Profile not found' };
+      }
+
+      const walletCard = await this.walletClientService.getWalletCardForUser(
+        profile.userId,
+      );
+
+      return {
+        success: true,
+        message: 'Wallet card loaded',
+        data: walletCard,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message || 'Failed to load wallet card',
       };
     }
   }
