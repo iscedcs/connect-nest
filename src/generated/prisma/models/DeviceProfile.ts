@@ -28,6 +28,7 @@ export type DeviceProfileMinAggregateOutputType = {
   id: string | null
   deviceId: string | null
   profileId: string | null
+  fcmToken: string | null
   linkedAt: Date | null
   updatedAt: Date | null
 }
@@ -36,6 +37,7 @@ export type DeviceProfileMaxAggregateOutputType = {
   id: string | null
   deviceId: string | null
   profileId: string | null
+  fcmToken: string | null
   linkedAt: Date | null
   updatedAt: Date | null
 }
@@ -44,6 +46,7 @@ export type DeviceProfileCountAggregateOutputType = {
   id: number
   deviceId: number
   profileId: number
+  fcmToken: number
   linkedAt: number
   updatedAt: number
   _all: number
@@ -54,6 +57,7 @@ export type DeviceProfileMinAggregateInputType = {
   id?: true
   deviceId?: true
   profileId?: true
+  fcmToken?: true
   linkedAt?: true
   updatedAt?: true
 }
@@ -62,6 +66,7 @@ export type DeviceProfileMaxAggregateInputType = {
   id?: true
   deviceId?: true
   profileId?: true
+  fcmToken?: true
   linkedAt?: true
   updatedAt?: true
 }
@@ -70,6 +75,7 @@ export type DeviceProfileCountAggregateInputType = {
   id?: true
   deviceId?: true
   profileId?: true
+  fcmToken?: true
   linkedAt?: true
   updatedAt?: true
   _all?: true
@@ -151,6 +157,7 @@ export type DeviceProfileGroupByOutputType = {
   id: string
   deviceId: string
   profileId: string
+  fcmToken: string | null
   linkedAt: Date
   updatedAt: Date
   _count: DeviceProfileCountAggregateOutputType | null
@@ -180,6 +187,7 @@ export type DeviceProfileWhereInput = {
   id?: Prisma.StringFilter<"DeviceProfile"> | string
   deviceId?: Prisma.StringFilter<"DeviceProfile"> | string
   profileId?: Prisma.StringFilter<"DeviceProfile"> | string
+  fcmToken?: Prisma.StringNullableFilter<"DeviceProfile"> | string | null
   linkedAt?: Prisma.DateTimeFilter<"DeviceProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"DeviceProfile"> | Date | string
   profile?: Prisma.XOR<Prisma.ProfileScalarRelationFilter, Prisma.ProfileWhereInput>
@@ -189,6 +197,7 @@ export type DeviceProfileOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   deviceId?: Prisma.SortOrder
   profileId?: Prisma.SortOrder
+  fcmToken?: Prisma.SortOrderInput | Prisma.SortOrder
   linkedAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   profile?: Prisma.ProfileOrderByWithRelationInput
@@ -201,6 +210,7 @@ export type DeviceProfileWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.DeviceProfileWhereInput[]
   NOT?: Prisma.DeviceProfileWhereInput | Prisma.DeviceProfileWhereInput[]
   profileId?: Prisma.StringFilter<"DeviceProfile"> | string
+  fcmToken?: Prisma.StringNullableFilter<"DeviceProfile"> | string | null
   linkedAt?: Prisma.DateTimeFilter<"DeviceProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"DeviceProfile"> | Date | string
   profile?: Prisma.XOR<Prisma.ProfileScalarRelationFilter, Prisma.ProfileWhereInput>
@@ -210,6 +220,7 @@ export type DeviceProfileOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   deviceId?: Prisma.SortOrder
   profileId?: Prisma.SortOrder
+  fcmToken?: Prisma.SortOrderInput | Prisma.SortOrder
   linkedAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.DeviceProfileCountOrderByAggregateInput
@@ -224,6 +235,7 @@ export type DeviceProfileScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"DeviceProfile"> | string
   deviceId?: Prisma.StringWithAggregatesFilter<"DeviceProfile"> | string
   profileId?: Prisma.StringWithAggregatesFilter<"DeviceProfile"> | string
+  fcmToken?: Prisma.StringNullableWithAggregatesFilter<"DeviceProfile"> | string | null
   linkedAt?: Prisma.DateTimeWithAggregatesFilter<"DeviceProfile"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"DeviceProfile"> | Date | string
 }
@@ -231,6 +243,7 @@ export type DeviceProfileScalarWhereWithAggregatesInput = {
 export type DeviceProfileCreateInput = {
   id?: string
   deviceId: string
+  fcmToken?: string | null
   linkedAt?: Date | string
   updatedAt?: Date | string
   profile: Prisma.ProfileCreateNestedOneWithoutDeviceProfilesInput
@@ -240,6 +253,7 @@ export type DeviceProfileUncheckedCreateInput = {
   id?: string
   deviceId: string
   profileId: string
+  fcmToken?: string | null
   linkedAt?: Date | string
   updatedAt?: Date | string
 }
@@ -247,6 +261,7 @@ export type DeviceProfileUncheckedCreateInput = {
 export type DeviceProfileUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   deviceId?: Prisma.StringFieldUpdateOperationsInput | string
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   profile?: Prisma.ProfileUpdateOneRequiredWithoutDeviceProfilesNestedInput
@@ -256,6 +271,7 @@ export type DeviceProfileUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   deviceId?: Prisma.StringFieldUpdateOperationsInput | string
   profileId?: Prisma.StringFieldUpdateOperationsInput | string
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -264,6 +280,7 @@ export type DeviceProfileCreateManyInput = {
   id?: string
   deviceId: string
   profileId: string
+  fcmToken?: string | null
   linkedAt?: Date | string
   updatedAt?: Date | string
 }
@@ -271,6 +288,7 @@ export type DeviceProfileCreateManyInput = {
 export type DeviceProfileUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   deviceId?: Prisma.StringFieldUpdateOperationsInput | string
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -279,6 +297,7 @@ export type DeviceProfileUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   deviceId?: Prisma.StringFieldUpdateOperationsInput | string
   profileId?: Prisma.StringFieldUpdateOperationsInput | string
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -297,6 +316,7 @@ export type DeviceProfileCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   deviceId?: Prisma.SortOrder
   profileId?: Prisma.SortOrder
+  fcmToken?: Prisma.SortOrder
   linkedAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -305,6 +325,7 @@ export type DeviceProfileMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   deviceId?: Prisma.SortOrder
   profileId?: Prisma.SortOrder
+  fcmToken?: Prisma.SortOrder
   linkedAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -313,6 +334,7 @@ export type DeviceProfileMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   deviceId?: Prisma.SortOrder
   profileId?: Prisma.SortOrder
+  fcmToken?: Prisma.SortOrder
   linkedAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -362,6 +384,7 @@ export type DeviceProfileUncheckedUpdateManyWithoutProfileNestedInput = {
 export type DeviceProfileCreateWithoutProfileInput = {
   id?: string
   deviceId: string
+  fcmToken?: string | null
   linkedAt?: Date | string
   updatedAt?: Date | string
 }
@@ -369,6 +392,7 @@ export type DeviceProfileCreateWithoutProfileInput = {
 export type DeviceProfileUncheckedCreateWithoutProfileInput = {
   id?: string
   deviceId: string
+  fcmToken?: string | null
   linkedAt?: Date | string
   updatedAt?: Date | string
 }
@@ -406,6 +430,7 @@ export type DeviceProfileScalarWhereInput = {
   id?: Prisma.StringFilter<"DeviceProfile"> | string
   deviceId?: Prisma.StringFilter<"DeviceProfile"> | string
   profileId?: Prisma.StringFilter<"DeviceProfile"> | string
+  fcmToken?: Prisma.StringNullableFilter<"DeviceProfile"> | string | null
   linkedAt?: Prisma.DateTimeFilter<"DeviceProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"DeviceProfile"> | Date | string
 }
@@ -413,6 +438,7 @@ export type DeviceProfileScalarWhereInput = {
 export type DeviceProfileCreateManyProfileInput = {
   id?: string
   deviceId: string
+  fcmToken?: string | null
   linkedAt?: Date | string
   updatedAt?: Date | string
 }
@@ -420,6 +446,7 @@ export type DeviceProfileCreateManyProfileInput = {
 export type DeviceProfileUpdateWithoutProfileInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   deviceId?: Prisma.StringFieldUpdateOperationsInput | string
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -427,6 +454,7 @@ export type DeviceProfileUpdateWithoutProfileInput = {
 export type DeviceProfileUncheckedUpdateWithoutProfileInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   deviceId?: Prisma.StringFieldUpdateOperationsInput | string
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -434,6 +462,7 @@ export type DeviceProfileUncheckedUpdateWithoutProfileInput = {
 export type DeviceProfileUncheckedUpdateManyWithoutProfileInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   deviceId?: Prisma.StringFieldUpdateOperationsInput | string
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -444,6 +473,7 @@ export type DeviceProfileSelect<ExtArgs extends runtime.Types.Extensions.Interna
   id?: boolean
   deviceId?: boolean
   profileId?: boolean
+  fcmToken?: boolean
   linkedAt?: boolean
   updatedAt?: boolean
   profile?: boolean | Prisma.ProfileDefaultArgs<ExtArgs>
@@ -453,6 +483,7 @@ export type DeviceProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   id?: boolean
   deviceId?: boolean
   profileId?: boolean
+  fcmToken?: boolean
   linkedAt?: boolean
   updatedAt?: boolean
   profile?: boolean | Prisma.ProfileDefaultArgs<ExtArgs>
@@ -462,6 +493,7 @@ export type DeviceProfileSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   id?: boolean
   deviceId?: boolean
   profileId?: boolean
+  fcmToken?: boolean
   linkedAt?: boolean
   updatedAt?: boolean
   profile?: boolean | Prisma.ProfileDefaultArgs<ExtArgs>
@@ -471,11 +503,12 @@ export type DeviceProfileSelectScalar = {
   id?: boolean
   deviceId?: boolean
   profileId?: boolean
+  fcmToken?: boolean
   linkedAt?: boolean
   updatedAt?: boolean
 }
 
-export type DeviceProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "deviceId" | "profileId" | "linkedAt" | "updatedAt", ExtArgs["result"]["deviceProfile"]>
+export type DeviceProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "deviceId" | "profileId" | "fcmToken" | "linkedAt" | "updatedAt", ExtArgs["result"]["deviceProfile"]>
 export type DeviceProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   profile?: boolean | Prisma.ProfileDefaultArgs<ExtArgs>
 }
@@ -495,6 +528,7 @@ export type $DeviceProfilePayload<ExtArgs extends runtime.Types.Extensions.Inter
     id: string
     deviceId: string
     profileId: string
+    fcmToken: string | null
     linkedAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["deviceProfile"]>
@@ -924,6 +958,7 @@ export interface DeviceProfileFieldRefs {
   readonly id: Prisma.FieldRef<"DeviceProfile", 'String'>
   readonly deviceId: Prisma.FieldRef<"DeviceProfile", 'String'>
   readonly profileId: Prisma.FieldRef<"DeviceProfile", 'String'>
+  readonly fcmToken: Prisma.FieldRef<"DeviceProfile", 'String'>
   readonly linkedAt: Prisma.FieldRef<"DeviceProfile", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"DeviceProfile", 'DateTime'>
 }

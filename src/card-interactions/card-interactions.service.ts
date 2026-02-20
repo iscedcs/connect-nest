@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { AuthClientService } from 'src/auth/auth-client.service';
+import { PushService } from 'src/push/push.service';
 import {
   CreateCardInteractionDto,
   UpdateCardInteractionDto,
@@ -12,6 +13,7 @@ export class CardInteractionsService {
   constructor(
     private readonly databaseService: DatabaseService,
     private readonly authClientService: AuthClientService,
+    private readonly pushService: PushService,
   ) {}
 
   async recordCardInteraction(dto: CreateCardInteractionDto) {
@@ -104,6 +106,27 @@ export class CardInteractionsService {
           },
         },
       );
+
+      // Notify the profile owner — fire-and-forget, never block the response
+      this.databaseService.profile
+        .findUnique({ where: { id: profileId }, select: { userId: true } })
+        .then((p) => {
+          if (p?.userId) {
+            const method =
+              (dto.method ?? ScanType.TAP) === ScanType.TAP
+                ? 'tapped'
+                : 'scanned';
+            this.pushService.sendToUser(
+              p.userId,
+              'Your card was ' + method + '! 👆',
+              'Someone just viewed your digital card.',
+              { type: 'CARD_INTERACTION', interactionId: cardInteraction.id },
+            );
+          }
+        })
+        .catch(() => {
+          // ignore — notification failure must never affect the API response
+        });
 
       return {
         success: true,

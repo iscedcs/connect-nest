@@ -16,6 +16,7 @@ export interface DeviceResponse {
 @Injectable()
 export class AuthClientService {
   private readonly authUrl = process.env.AUTH_API_URL;
+  private readonly internalKey = process.env.INTERNAL_API_KEY;
 
   async getDeviceByDeviceId(deviceId: string): Promise<DeviceResponse> {
     try {
@@ -38,6 +39,22 @@ export class AuthClientService {
         throw new NotFoundException('Device not found');
       }
       throw new Error(`Failed to fetch device: ${error.message}`);
+    }
+  }
+
+  /** Fetch FCM tokens for a user from isce-auth (internal endpoint). */
+  async getFcmTokens(userId: string): Promise<string[]> {
+    try {
+      const response = await axios.get(
+        `${this.authUrl}/device/session/tokens/${userId}`,
+        { headers: { 'x-internal-key': this.internalKey ?? '' } },
+      );
+      if (response.data?.success && Array.isArray(response.data.data)) {
+        return response.data.data as string[];
+      }
+      return [];
+    } catch {
+      return [];
     }
   }
 }

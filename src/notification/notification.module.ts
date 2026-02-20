@@ -8,5 +8,6 @@ import { DatabaseService } from 'src/database/database.service';
   imports: [DatabaseModule],
   controllers: [NotificationController],
   providers: [NotificationService, DatabaseService],
+  exports: [NotificationService],
 })
 export class NotificationModule {}

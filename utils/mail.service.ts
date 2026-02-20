@@ -1,67 +1,31 @@
 import { Injectable, Logger } from '@nestjs/common';
-import * as nodemailer from 'nodemailer';
-import * as sgMail from '@sendgrid/mail';
+import { Resend } from 'resend';
 
-const FROM = '"ISCE Connect" <isceofficial@gmail.com>';
-const SENDGRID_TIMEOUT_MS = 5000;
+const FROM = 'ISCE Connect <no-reply@isce.africa>';
 
 @Injectable()
 export class MailService {
   private readonly logger = new Logger(MailService.name);
-  private transporter: nodemailer.Transporter;
+  private readonly resend = new Resend(process.env.RESEND_API_KEY);
 
-  constructor() {
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY as string);
-    this.transporter = nodemailer.createTransport({
-      service: 'Gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-  }
-
-  /**
-   * Internal: try SendGrid first (5s timeout), fall back to Gmail.
-   * Never throws — errors are logged only.
-   */
   private async deliver(msg: {
     to: string;
     subject: string;
     text: string;
     html: string;
   }): Promise<void> {
-    const payload = { from: FROM, ...msg };
-
-    // Try SendGrid first
     try {
-      await Promise.race([
-        sgMail.send(payload),
-        new Promise<never>((_, reject) =>
-          setTimeout(
-            () =>
-              reject(
-                new Error(`SendGrid timeout after ${SENDGRID_TIMEOUT_MS}ms`),
-              ),
-            SENDGRID_TIMEOUT_MS,
-          ),
-        ),
-      ]);
-      this.logger.log(`[Mail] SendGrid → ${msg.to} (${msg.subject})`);
-      return;
-    } catch (sgErr) {
-      this.logger.warn(
-        `[Mail] SendGrid failed for ${msg.to}: ${sgErr.message} — falling back to Gmail`,
-      );
-    }
-
-    // Fall back to Gmail
-    try {
-      await this.transporter.sendMail(payload);
-      this.logger.log(`[Mail] Gmail → ${msg.to} (${msg.subject})`);
-    } catch (gmailErr) {
+      await this.resend.emails.send({
+        from: FROM,
+        to: msg.to,
+        subject: msg.subject,
+        text: msg.text,
+        html: msg.html,
+      });
+      this.logger.log(`[Mail] Resend → ${msg.to} (${msg.subject})`);
+    } catch (err) {
       this.logger.error(
-        `[Mail] Gmail also failed for ${msg.to}: ${gmailErr.message}`,
+        `[Mail] Resend failed for ${msg.to}: ${(err as Error).message}`,
       );
     }
   }

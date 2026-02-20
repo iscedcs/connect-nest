@@ -21,6 +21,7 @@ import { SupportRequestModule } from './support-request/support-request.module';
 import { CardInteractionsModule } from './card-interactions/card-interactions.module';
 import { DeviceProfileModule } from './device-profile/device-profile.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { PushModule } from './push/push.module';
 
 @Module({
   providers: [
@@ -59,6 +60,7 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
     SupportRequestModule,
     CardInteractionsModule,
     DeviceProfileModule,
+    PushModule,
   ],
 })
 export class AppModule {}

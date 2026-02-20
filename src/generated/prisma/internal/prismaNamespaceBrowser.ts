@@ -376,6 +376,7 @@ export const DeviceProfileScalarFieldEnum = {
   id: 'id',
   deviceId: 'deviceId',
   profileId: 'profileId',
+  fcmToken: 'fcmToken',
   linkedAt: 'linkedAt',
   updatedAt: 'updatedAt'
 } as const
