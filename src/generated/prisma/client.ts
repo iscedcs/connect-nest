@@ -132,3 +132,48 @@ export type ConnectConfig = Prisma.ConnectConfigModel
  * 
  */
 export type DeviceProfile = Prisma.DeviceProfileModel
+/**
+ * Model Artisan
+ * 
+ */
+export type Artisan = Prisma.ArtisanModel
+/**
+ * Model ArtisanCategory
+ * 
+ */
+export type ArtisanCategory = Prisma.ArtisanCategoryModel
+/**
+ * Model ArtisanCategoryMap
+ * 
+ */
+export type ArtisanCategoryMap = Prisma.ArtisanCategoryMapModel
+/**
+ * Model ArtisanService
+ * 
+ */
+export type ArtisanService = Prisma.ArtisanServiceModel
+/**
+ * Model PortfolioItem
+ * 
+ */
+export type PortfolioItem = Prisma.PortfolioItemModel
+/**
+ * Model Booking
+ * 
+ */
+export type Booking = Prisma.BookingModel
+/**
+ * Model Review
+ * 
+ */
+export type Review = Prisma.ReviewModel
+/**
+ * Model Promotion
+ * 
+ */
+export type Promotion = Prisma.PromotionModel
+/**
+ * Model PlatformSetting
+ * 
+ */
+export type PlatformSetting = Prisma.PlatformSettingModel

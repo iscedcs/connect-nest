@@ -266,6 +266,7 @@ export type ProfileWhereInput = {
   supportRequests?: Prisma.SupportRequestListRelationFilter
   cardInteractions?: Prisma.CardInteractionListRelationFilter
   deviceProfiles?: Prisma.DeviceProfileListRelationFilter
+  artisan?: Prisma.XOR<Prisma.ArtisanNullableScalarRelationFilter, Prisma.ArtisanWhereInput> | null
 }
 
 export type ProfileOrderByWithRelationInput = {
@@ -299,6 +300,7 @@ export type ProfileOrderByWithRelationInput = {
   supportRequests?: Prisma.SupportRequestOrderByRelationAggregateInput
   cardInteractions?: Prisma.CardInteractionOrderByRelationAggregateInput
   deviceProfiles?: Prisma.DeviceProfileOrderByRelationAggregateInput
+  artisan?: Prisma.ArtisanOrderByWithRelationInput
 }
 
 export type ProfileWhereUniqueInput = Prisma.AtLeast<{
@@ -335,6 +337,7 @@ export type ProfileWhereUniqueInput = Prisma.AtLeast<{
   supportRequests?: Prisma.SupportRequestListRelationFilter
   cardInteractions?: Prisma.CardInteractionListRelationFilter
   deviceProfiles?: Prisma.DeviceProfileListRelationFilter
+  artisan?: Prisma.XOR<Prisma.ArtisanNullableScalarRelationFilter, Prisma.ArtisanWhereInput> | null
 }, "id" | "slug">
 
 export type ProfileOrderByWithAggregationInput = {
@@ -408,6 +411,7 @@ export type ProfileCreateInput = {
   supportRequests?: Prisma.SupportRequestCreateNestedManyWithoutUserInput
   cardInteractions?: Prisma.CardInteractionCreateNestedManyWithoutUserInput
   deviceProfiles?: Prisma.DeviceProfileCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileUncheckedCreateInput = {
@@ -441,6 +445,7 @@ export type ProfileUncheckedCreateInput = {
   supportRequests?: Prisma.SupportRequestUncheckedCreateNestedManyWithoutUserInput
   cardInteractions?: Prisma.CardInteractionUncheckedCreateNestedManyWithoutUserInput
   deviceProfiles?: Prisma.DeviceProfileUncheckedCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanUncheckedCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileUpdateInput = {
@@ -474,6 +479,7 @@ export type ProfileUpdateInput = {
   supportRequests?: Prisma.SupportRequestUpdateManyWithoutUserNestedInput
   cardInteractions?: Prisma.CardInteractionUpdateManyWithoutUserNestedInput
   deviceProfiles?: Prisma.DeviceProfileUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileUncheckedUpdateInput = {
@@ -507,6 +513,7 @@ export type ProfileUncheckedUpdateInput = {
   supportRequests?: Prisma.SupportRequestUncheckedUpdateManyWithoutUserNestedInput
   cardInteractions?: Prisma.CardInteractionUncheckedUpdateManyWithoutUserNestedInput
   deviceProfiles?: Prisma.DeviceProfileUncheckedUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUncheckedUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileCreateManyInput = {
@@ -858,6 +865,20 @@ export type ProfileUpdateOneRequiredWithoutDeviceProfilesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProfileUpdateToOneWithWhereWithoutDeviceProfilesInput, Prisma.ProfileUpdateWithoutDeviceProfilesInput>, Prisma.ProfileUncheckedUpdateWithoutDeviceProfilesInput>
 }
 
+export type ProfileCreateNestedOneWithoutArtisanInput = {
+  create?: Prisma.XOR<Prisma.ProfileCreateWithoutArtisanInput, Prisma.ProfileUncheckedCreateWithoutArtisanInput>
+  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutArtisanInput
+  connect?: Prisma.ProfileWhereUniqueInput
+}
+
+export type ProfileUpdateOneRequiredWithoutArtisanNestedInput = {
+  create?: Prisma.XOR<Prisma.ProfileCreateWithoutArtisanInput, Prisma.ProfileUncheckedCreateWithoutArtisanInput>
+  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutArtisanInput
+  upsert?: Prisma.ProfileUpsertWithoutArtisanInput
+  connect?: Prisma.ProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProfileUpdateToOneWithWhereWithoutArtisanInput, Prisma.ProfileUpdateWithoutArtisanInput>, Prisma.ProfileUncheckedUpdateWithoutArtisanInput>
+}
+
 export type ProfileCreateWithoutSocialsInput = {
   id?: string
   userId: string
@@ -888,6 +909,7 @@ export type ProfileCreateWithoutSocialsInput = {
   supportRequests?: Prisma.SupportRequestCreateNestedManyWithoutUserInput
   cardInteractions?: Prisma.CardInteractionCreateNestedManyWithoutUserInput
   deviceProfiles?: Prisma.DeviceProfileCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileUncheckedCreateWithoutSocialsInput = {
@@ -920,6 +942,7 @@ export type ProfileUncheckedCreateWithoutSocialsInput = {
   supportRequests?: Prisma.SupportRequestUncheckedCreateNestedManyWithoutUserInput
   cardInteractions?: Prisma.CardInteractionUncheckedCreateNestedManyWithoutUserInput
   deviceProfiles?: Prisma.DeviceProfileUncheckedCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanUncheckedCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileCreateOrConnectWithoutSocialsInput = {
@@ -968,6 +991,7 @@ export type ProfileUpdateWithoutSocialsInput = {
   supportRequests?: Prisma.SupportRequestUpdateManyWithoutUserNestedInput
   cardInteractions?: Prisma.CardInteractionUpdateManyWithoutUserNestedInput
   deviceProfiles?: Prisma.DeviceProfileUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutSocialsInput = {
@@ -1000,6 +1024,7 @@ export type ProfileUncheckedUpdateWithoutSocialsInput = {
   supportRequests?: Prisma.SupportRequestUncheckedUpdateManyWithoutUserNestedInput
   cardInteractions?: Prisma.CardInteractionUncheckedUpdateManyWithoutUserNestedInput
   deviceProfiles?: Prisma.DeviceProfileUncheckedUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUncheckedUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileCreateWithoutContactsInput = {
@@ -1032,6 +1057,7 @@ export type ProfileCreateWithoutContactsInput = {
   supportRequests?: Prisma.SupportRequestCreateNestedManyWithoutUserInput
   cardInteractions?: Prisma.CardInteractionCreateNestedManyWithoutUserInput
   deviceProfiles?: Prisma.DeviceProfileCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileUncheckedCreateWithoutContactsInput = {
@@ -1064,6 +1090,7 @@ export type ProfileUncheckedCreateWithoutContactsInput = {
   supportRequests?: Prisma.SupportRequestUncheckedCreateNestedManyWithoutUserInput
   cardInteractions?: Prisma.CardInteractionUncheckedCreateNestedManyWithoutUserInput
   deviceProfiles?: Prisma.DeviceProfileUncheckedCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanUncheckedCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileCreateOrConnectWithoutContactsInput = {
@@ -1112,6 +1139,7 @@ export type ProfileUpdateWithoutContactsInput = {
   supportRequests?: Prisma.SupportRequestUpdateManyWithoutUserNestedInput
   cardInteractions?: Prisma.CardInteractionUpdateManyWithoutUserNestedInput
   deviceProfiles?: Prisma.DeviceProfileUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutContactsInput = {
@@ -1144,6 +1172,7 @@ export type ProfileUncheckedUpdateWithoutContactsInput = {
   supportRequests?: Prisma.SupportRequestUncheckedUpdateManyWithoutUserNestedInput
   cardInteractions?: Prisma.CardInteractionUncheckedUpdateManyWithoutUserNestedInput
   deviceProfiles?: Prisma.DeviceProfileUncheckedUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUncheckedUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileCreateWithoutNotificationsInput = {
@@ -1176,6 +1205,7 @@ export type ProfileCreateWithoutNotificationsInput = {
   supportRequests?: Prisma.SupportRequestCreateNestedManyWithoutUserInput
   cardInteractions?: Prisma.CardInteractionCreateNestedManyWithoutUserInput
   deviceProfiles?: Prisma.DeviceProfileCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileUncheckedCreateWithoutNotificationsInput = {
@@ -1208,6 +1238,7 @@ export type ProfileUncheckedCreateWithoutNotificationsInput = {
   supportRequests?: Prisma.SupportRequestUncheckedCreateNestedManyWithoutUserInput
   cardInteractions?: Prisma.CardInteractionUncheckedCreateNestedManyWithoutUserInput
   deviceProfiles?: Prisma.DeviceProfileUncheckedCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanUncheckedCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileCreateOrConnectWithoutNotificationsInput = {
@@ -1256,6 +1287,7 @@ export type ProfileUpdateWithoutNotificationsInput = {
   supportRequests?: Prisma.SupportRequestUpdateManyWithoutUserNestedInput
   cardInteractions?: Prisma.CardInteractionUpdateManyWithoutUserNestedInput
   deviceProfiles?: Prisma.DeviceProfileUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutNotificationsInput = {
@@ -1288,6 +1320,7 @@ export type ProfileUncheckedUpdateWithoutNotificationsInput = {
   supportRequests?: Prisma.SupportRequestUncheckedUpdateManyWithoutUserNestedInput
   cardInteractions?: Prisma.CardInteractionUncheckedUpdateManyWithoutUserNestedInput
   deviceProfiles?: Prisma.DeviceProfileUncheckedUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUncheckedUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileCreateWithoutSupportRequestsInput = {
@@ -1320,6 +1353,7 @@ export type ProfileCreateWithoutSupportRequestsInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   cardInteractions?: Prisma.CardInteractionCreateNestedManyWithoutUserInput
   deviceProfiles?: Prisma.DeviceProfileCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileUncheckedCreateWithoutSupportRequestsInput = {
@@ -1352,6 +1386,7 @@ export type ProfileUncheckedCreateWithoutSupportRequestsInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   cardInteractions?: Prisma.CardInteractionUncheckedCreateNestedManyWithoutUserInput
   deviceProfiles?: Prisma.DeviceProfileUncheckedCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanUncheckedCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileCreateOrConnectWithoutSupportRequestsInput = {
@@ -1400,6 +1435,7 @@ export type ProfileUpdateWithoutSupportRequestsInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   cardInteractions?: Prisma.CardInteractionUpdateManyWithoutUserNestedInput
   deviceProfiles?: Prisma.DeviceProfileUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutSupportRequestsInput = {
@@ -1432,6 +1468,7 @@ export type ProfileUncheckedUpdateWithoutSupportRequestsInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   cardInteractions?: Prisma.CardInteractionUncheckedUpdateManyWithoutUserNestedInput
   deviceProfiles?: Prisma.DeviceProfileUncheckedUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUncheckedUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileCreateWithoutCardInteractionsInput = {
@@ -1464,6 +1501,7 @@ export type ProfileCreateWithoutCardInteractionsInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   supportRequests?: Prisma.SupportRequestCreateNestedManyWithoutUserInput
   deviceProfiles?: Prisma.DeviceProfileCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileUncheckedCreateWithoutCardInteractionsInput = {
@@ -1496,6 +1534,7 @@ export type ProfileUncheckedCreateWithoutCardInteractionsInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   supportRequests?: Prisma.SupportRequestUncheckedCreateNestedManyWithoutUserInput
   deviceProfiles?: Prisma.DeviceProfileUncheckedCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanUncheckedCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileCreateOrConnectWithoutCardInteractionsInput = {
@@ -1544,6 +1583,7 @@ export type ProfileUpdateWithoutCardInteractionsInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   supportRequests?: Prisma.SupportRequestUpdateManyWithoutUserNestedInput
   deviceProfiles?: Prisma.DeviceProfileUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutCardInteractionsInput = {
@@ -1576,6 +1616,7 @@ export type ProfileUncheckedUpdateWithoutCardInteractionsInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   supportRequests?: Prisma.SupportRequestUncheckedUpdateManyWithoutUserNestedInput
   deviceProfiles?: Prisma.DeviceProfileUncheckedUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUncheckedUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileCreateWithoutProfileContactsInput = {
@@ -1608,6 +1649,7 @@ export type ProfileCreateWithoutProfileContactsInput = {
   supportRequests?: Prisma.SupportRequestCreateNestedManyWithoutUserInput
   cardInteractions?: Prisma.CardInteractionCreateNestedManyWithoutUserInput
   deviceProfiles?: Prisma.DeviceProfileCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileUncheckedCreateWithoutProfileContactsInput = {
@@ -1640,6 +1682,7 @@ export type ProfileUncheckedCreateWithoutProfileContactsInput = {
   supportRequests?: Prisma.SupportRequestUncheckedCreateNestedManyWithoutUserInput
   cardInteractions?: Prisma.CardInteractionUncheckedCreateNestedManyWithoutUserInput
   deviceProfiles?: Prisma.DeviceProfileUncheckedCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanUncheckedCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileCreateOrConnectWithoutProfileContactsInput = {
@@ -1688,6 +1731,7 @@ export type ProfileUpdateWithoutProfileContactsInput = {
   supportRequests?: Prisma.SupportRequestUpdateManyWithoutUserNestedInput
   cardInteractions?: Prisma.CardInteractionUpdateManyWithoutUserNestedInput
   deviceProfiles?: Prisma.DeviceProfileUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutProfileContactsInput = {
@@ -1720,6 +1764,7 @@ export type ProfileUncheckedUpdateWithoutProfileContactsInput = {
   supportRequests?: Prisma.SupportRequestUncheckedUpdateManyWithoutUserNestedInput
   cardInteractions?: Prisma.CardInteractionUncheckedUpdateManyWithoutUserNestedInput
   deviceProfiles?: Prisma.DeviceProfileUncheckedUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUncheckedUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileCreateWithoutLinksInput = {
@@ -1752,6 +1797,7 @@ export type ProfileCreateWithoutLinksInput = {
   supportRequests?: Prisma.SupportRequestCreateNestedManyWithoutUserInput
   cardInteractions?: Prisma.CardInteractionCreateNestedManyWithoutUserInput
   deviceProfiles?: Prisma.DeviceProfileCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileUncheckedCreateWithoutLinksInput = {
@@ -1784,6 +1830,7 @@ export type ProfileUncheckedCreateWithoutLinksInput = {
   supportRequests?: Prisma.SupportRequestUncheckedCreateNestedManyWithoutUserInput
   cardInteractions?: Prisma.CardInteractionUncheckedCreateNestedManyWithoutUserInput
   deviceProfiles?: Prisma.DeviceProfileUncheckedCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanUncheckedCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileCreateOrConnectWithoutLinksInput = {
@@ -1832,6 +1879,7 @@ export type ProfileUpdateWithoutLinksInput = {
   supportRequests?: Prisma.SupportRequestUpdateManyWithoutUserNestedInput
   cardInteractions?: Prisma.CardInteractionUpdateManyWithoutUserNestedInput
   deviceProfiles?: Prisma.DeviceProfileUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutLinksInput = {
@@ -1864,6 +1912,7 @@ export type ProfileUncheckedUpdateWithoutLinksInput = {
   supportRequests?: Prisma.SupportRequestUncheckedUpdateManyWithoutUserNestedInput
   cardInteractions?: Prisma.CardInteractionUncheckedUpdateManyWithoutUserNestedInput
   deviceProfiles?: Prisma.DeviceProfileUncheckedUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUncheckedUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileCreateWithoutVideosInput = {
@@ -1896,6 +1945,7 @@ export type ProfileCreateWithoutVideosInput = {
   supportRequests?: Prisma.SupportRequestCreateNestedManyWithoutUserInput
   cardInteractions?: Prisma.CardInteractionCreateNestedManyWithoutUserInput
   deviceProfiles?: Prisma.DeviceProfileCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileUncheckedCreateWithoutVideosInput = {
@@ -1928,6 +1978,7 @@ export type ProfileUncheckedCreateWithoutVideosInput = {
   supportRequests?: Prisma.SupportRequestUncheckedCreateNestedManyWithoutUserInput
   cardInteractions?: Prisma.CardInteractionUncheckedCreateNestedManyWithoutUserInput
   deviceProfiles?: Prisma.DeviceProfileUncheckedCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanUncheckedCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileCreateOrConnectWithoutVideosInput = {
@@ -1976,6 +2027,7 @@ export type ProfileUpdateWithoutVideosInput = {
   supportRequests?: Prisma.SupportRequestUpdateManyWithoutUserNestedInput
   cardInteractions?: Prisma.CardInteractionUpdateManyWithoutUserNestedInput
   deviceProfiles?: Prisma.DeviceProfileUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutVideosInput = {
@@ -2008,6 +2060,7 @@ export type ProfileUncheckedUpdateWithoutVideosInput = {
   supportRequests?: Prisma.SupportRequestUncheckedUpdateManyWithoutUserNestedInput
   cardInteractions?: Prisma.CardInteractionUncheckedUpdateManyWithoutUserNestedInput
   deviceProfiles?: Prisma.DeviceProfileUncheckedUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUncheckedUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileCreateWithoutMeetingsInput = {
@@ -2040,6 +2093,7 @@ export type ProfileCreateWithoutMeetingsInput = {
   supportRequests?: Prisma.SupportRequestCreateNestedManyWithoutUserInput
   cardInteractions?: Prisma.CardInteractionCreateNestedManyWithoutUserInput
   deviceProfiles?: Prisma.DeviceProfileCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileUncheckedCreateWithoutMeetingsInput = {
@@ -2072,6 +2126,7 @@ export type ProfileUncheckedCreateWithoutMeetingsInput = {
   supportRequests?: Prisma.SupportRequestUncheckedCreateNestedManyWithoutUserInput
   cardInteractions?: Prisma.CardInteractionUncheckedCreateNestedManyWithoutUserInput
   deviceProfiles?: Prisma.DeviceProfileUncheckedCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanUncheckedCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileCreateOrConnectWithoutMeetingsInput = {
@@ -2120,6 +2175,7 @@ export type ProfileUpdateWithoutMeetingsInput = {
   supportRequests?: Prisma.SupportRequestUpdateManyWithoutUserNestedInput
   cardInteractions?: Prisma.CardInteractionUpdateManyWithoutUserNestedInput
   deviceProfiles?: Prisma.DeviceProfileUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutMeetingsInput = {
@@ -2152,6 +2208,7 @@ export type ProfileUncheckedUpdateWithoutMeetingsInput = {
   supportRequests?: Prisma.SupportRequestUncheckedUpdateManyWithoutUserNestedInput
   cardInteractions?: Prisma.CardInteractionUncheckedUpdateManyWithoutUserNestedInput
   deviceProfiles?: Prisma.DeviceProfileUncheckedUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUncheckedUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileCreateWithoutAppointmentsInput = {
@@ -2184,6 +2241,7 @@ export type ProfileCreateWithoutAppointmentsInput = {
   supportRequests?: Prisma.SupportRequestCreateNestedManyWithoutUserInput
   cardInteractions?: Prisma.CardInteractionCreateNestedManyWithoutUserInput
   deviceProfiles?: Prisma.DeviceProfileCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileUncheckedCreateWithoutAppointmentsInput = {
@@ -2216,6 +2274,7 @@ export type ProfileUncheckedCreateWithoutAppointmentsInput = {
   supportRequests?: Prisma.SupportRequestUncheckedCreateNestedManyWithoutUserInput
   cardInteractions?: Prisma.CardInteractionUncheckedCreateNestedManyWithoutUserInput
   deviceProfiles?: Prisma.DeviceProfileUncheckedCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanUncheckedCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileCreateOrConnectWithoutAppointmentsInput = {
@@ -2264,6 +2323,7 @@ export type ProfileUpdateWithoutAppointmentsInput = {
   supportRequests?: Prisma.SupportRequestUpdateManyWithoutUserNestedInput
   cardInteractions?: Prisma.CardInteractionUpdateManyWithoutUserNestedInput
   deviceProfiles?: Prisma.DeviceProfileUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutAppointmentsInput = {
@@ -2296,6 +2356,7 @@ export type ProfileUncheckedUpdateWithoutAppointmentsInput = {
   supportRequests?: Prisma.SupportRequestUncheckedUpdateManyWithoutUserNestedInput
   cardInteractions?: Prisma.CardInteractionUncheckedUpdateManyWithoutUserNestedInput
   deviceProfiles?: Prisma.DeviceProfileUncheckedUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUncheckedUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileCreateWithoutSpotifyItemsInput = {
@@ -2328,6 +2389,7 @@ export type ProfileCreateWithoutSpotifyItemsInput = {
   supportRequests?: Prisma.SupportRequestCreateNestedManyWithoutUserInput
   cardInteractions?: Prisma.CardInteractionCreateNestedManyWithoutUserInput
   deviceProfiles?: Prisma.DeviceProfileCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileUncheckedCreateWithoutSpotifyItemsInput = {
@@ -2360,6 +2422,7 @@ export type ProfileUncheckedCreateWithoutSpotifyItemsInput = {
   supportRequests?: Prisma.SupportRequestUncheckedCreateNestedManyWithoutUserInput
   cardInteractions?: Prisma.CardInteractionUncheckedCreateNestedManyWithoutUserInput
   deviceProfiles?: Prisma.DeviceProfileUncheckedCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanUncheckedCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileCreateOrConnectWithoutSpotifyItemsInput = {
@@ -2408,6 +2471,7 @@ export type ProfileUpdateWithoutSpotifyItemsInput = {
   supportRequests?: Prisma.SupportRequestUpdateManyWithoutUserNestedInput
   cardInteractions?: Prisma.CardInteractionUpdateManyWithoutUserNestedInput
   deviceProfiles?: Prisma.DeviceProfileUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutSpotifyItemsInput = {
@@ -2440,6 +2504,7 @@ export type ProfileUncheckedUpdateWithoutSpotifyItemsInput = {
   supportRequests?: Prisma.SupportRequestUncheckedUpdateManyWithoutUserNestedInput
   cardInteractions?: Prisma.CardInteractionUncheckedUpdateManyWithoutUserNestedInput
   deviceProfiles?: Prisma.DeviceProfileUncheckedUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUncheckedUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileCreateWithoutFilesInput = {
@@ -2472,6 +2537,7 @@ export type ProfileCreateWithoutFilesInput = {
   supportRequests?: Prisma.SupportRequestCreateNestedManyWithoutUserInput
   cardInteractions?: Prisma.CardInteractionCreateNestedManyWithoutUserInput
   deviceProfiles?: Prisma.DeviceProfileCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileUncheckedCreateWithoutFilesInput = {
@@ -2504,6 +2570,7 @@ export type ProfileUncheckedCreateWithoutFilesInput = {
   supportRequests?: Prisma.SupportRequestUncheckedCreateNestedManyWithoutUserInput
   cardInteractions?: Prisma.CardInteractionUncheckedCreateNestedManyWithoutUserInput
   deviceProfiles?: Prisma.DeviceProfileUncheckedCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanUncheckedCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileCreateOrConnectWithoutFilesInput = {
@@ -2552,6 +2619,7 @@ export type ProfileUpdateWithoutFilesInput = {
   supportRequests?: Prisma.SupportRequestUpdateManyWithoutUserNestedInput
   cardInteractions?: Prisma.CardInteractionUpdateManyWithoutUserNestedInput
   deviceProfiles?: Prisma.DeviceProfileUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutFilesInput = {
@@ -2584,6 +2652,7 @@ export type ProfileUncheckedUpdateWithoutFilesInput = {
   supportRequests?: Prisma.SupportRequestUncheckedUpdateManyWithoutUserNestedInput
   cardInteractions?: Prisma.CardInteractionUncheckedUpdateManyWithoutUserNestedInput
   deviceProfiles?: Prisma.DeviceProfileUncheckedUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUncheckedUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileCreateWithoutFormsInput = {
@@ -2616,6 +2685,7 @@ export type ProfileCreateWithoutFormsInput = {
   supportRequests?: Prisma.SupportRequestCreateNestedManyWithoutUserInput
   cardInteractions?: Prisma.CardInteractionCreateNestedManyWithoutUserInput
   deviceProfiles?: Prisma.DeviceProfileCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileUncheckedCreateWithoutFormsInput = {
@@ -2648,6 +2718,7 @@ export type ProfileUncheckedCreateWithoutFormsInput = {
   supportRequests?: Prisma.SupportRequestUncheckedCreateNestedManyWithoutUserInput
   cardInteractions?: Prisma.CardInteractionUncheckedCreateNestedManyWithoutUserInput
   deviceProfiles?: Prisma.DeviceProfileUncheckedCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanUncheckedCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileCreateOrConnectWithoutFormsInput = {
@@ -2696,6 +2767,7 @@ export type ProfileUpdateWithoutFormsInput = {
   supportRequests?: Prisma.SupportRequestUpdateManyWithoutUserNestedInput
   cardInteractions?: Prisma.CardInteractionUpdateManyWithoutUserNestedInput
   deviceProfiles?: Prisma.DeviceProfileUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutFormsInput = {
@@ -2728,6 +2800,7 @@ export type ProfileUncheckedUpdateWithoutFormsInput = {
   supportRequests?: Prisma.SupportRequestUncheckedUpdateManyWithoutUserNestedInput
   cardInteractions?: Prisma.CardInteractionUncheckedUpdateManyWithoutUserNestedInput
   deviceProfiles?: Prisma.DeviceProfileUncheckedUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUncheckedUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileCreateWithoutWalletsInput = {
@@ -2760,6 +2833,7 @@ export type ProfileCreateWithoutWalletsInput = {
   supportRequests?: Prisma.SupportRequestCreateNestedManyWithoutUserInput
   cardInteractions?: Prisma.CardInteractionCreateNestedManyWithoutUserInput
   deviceProfiles?: Prisma.DeviceProfileCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileUncheckedCreateWithoutWalletsInput = {
@@ -2792,6 +2866,7 @@ export type ProfileUncheckedCreateWithoutWalletsInput = {
   supportRequests?: Prisma.SupportRequestUncheckedCreateNestedManyWithoutUserInput
   cardInteractions?: Prisma.CardInteractionUncheckedCreateNestedManyWithoutUserInput
   deviceProfiles?: Prisma.DeviceProfileUncheckedCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanUncheckedCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileCreateOrConnectWithoutWalletsInput = {
@@ -2840,6 +2915,7 @@ export type ProfileUpdateWithoutWalletsInput = {
   supportRequests?: Prisma.SupportRequestUpdateManyWithoutUserNestedInput
   cardInteractions?: Prisma.CardInteractionUpdateManyWithoutUserNestedInput
   deviceProfiles?: Prisma.DeviceProfileUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutWalletsInput = {
@@ -2872,6 +2948,7 @@ export type ProfileUncheckedUpdateWithoutWalletsInput = {
   supportRequests?: Prisma.SupportRequestUncheckedUpdateManyWithoutUserNestedInput
   cardInteractions?: Prisma.CardInteractionUncheckedUpdateManyWithoutUserNestedInput
   deviceProfiles?: Prisma.DeviceProfileUncheckedUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUncheckedUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileCreateWithoutConnectConfigInput = {
@@ -2904,6 +2981,7 @@ export type ProfileCreateWithoutConnectConfigInput = {
   supportRequests?: Prisma.SupportRequestCreateNestedManyWithoutUserInput
   cardInteractions?: Prisma.CardInteractionCreateNestedManyWithoutUserInput
   deviceProfiles?: Prisma.DeviceProfileCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileUncheckedCreateWithoutConnectConfigInput = {
@@ -2936,6 +3014,7 @@ export type ProfileUncheckedCreateWithoutConnectConfigInput = {
   supportRequests?: Prisma.SupportRequestUncheckedCreateNestedManyWithoutUserInput
   cardInteractions?: Prisma.CardInteractionUncheckedCreateNestedManyWithoutUserInput
   deviceProfiles?: Prisma.DeviceProfileUncheckedCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanUncheckedCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileCreateOrConnectWithoutConnectConfigInput = {
@@ -2984,6 +3063,7 @@ export type ProfileUpdateWithoutConnectConfigInput = {
   supportRequests?: Prisma.SupportRequestUpdateManyWithoutUserNestedInput
   cardInteractions?: Prisma.CardInteractionUpdateManyWithoutUserNestedInput
   deviceProfiles?: Prisma.DeviceProfileUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutConnectConfigInput = {
@@ -3016,6 +3096,7 @@ export type ProfileUncheckedUpdateWithoutConnectConfigInput = {
   supportRequests?: Prisma.SupportRequestUncheckedUpdateManyWithoutUserNestedInput
   cardInteractions?: Prisma.CardInteractionUncheckedUpdateManyWithoutUserNestedInput
   deviceProfiles?: Prisma.DeviceProfileUncheckedUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUncheckedUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileCreateWithoutDeviceProfilesInput = {
@@ -3048,6 +3129,7 @@ export type ProfileCreateWithoutDeviceProfilesInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   supportRequests?: Prisma.SupportRequestCreateNestedManyWithoutUserInput
   cardInteractions?: Prisma.CardInteractionCreateNestedManyWithoutUserInput
+  artisan?: Prisma.ArtisanCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileUncheckedCreateWithoutDeviceProfilesInput = {
@@ -3080,6 +3162,7 @@ export type ProfileUncheckedCreateWithoutDeviceProfilesInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   supportRequests?: Prisma.SupportRequestUncheckedCreateNestedManyWithoutUserInput
   cardInteractions?: Prisma.CardInteractionUncheckedCreateNestedManyWithoutUserInput
+  artisan?: Prisma.ArtisanUncheckedCreateNestedOneWithoutProfileInput
 }
 
 export type ProfileCreateOrConnectWithoutDeviceProfilesInput = {
@@ -3128,6 +3211,7 @@ export type ProfileUpdateWithoutDeviceProfilesInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   supportRequests?: Prisma.SupportRequestUpdateManyWithoutUserNestedInput
   cardInteractions?: Prisma.CardInteractionUpdateManyWithoutUserNestedInput
+  artisan?: Prisma.ArtisanUpdateOneWithoutProfileNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutDeviceProfilesInput = {
@@ -3160,6 +3244,155 @@ export type ProfileUncheckedUpdateWithoutDeviceProfilesInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   supportRequests?: Prisma.SupportRequestUncheckedUpdateManyWithoutUserNestedInput
   cardInteractions?: Prisma.CardInteractionUncheckedUpdateManyWithoutUserNestedInput
+  artisan?: Prisma.ArtisanUncheckedUpdateOneWithoutProfileNestedInput
+}
+
+export type ProfileCreateWithoutArtisanInput = {
+  id?: string
+  userId: string
+  slug?: string | null
+  profilePhoto?: string | null
+  coverPhoto?: string | null
+  name: string
+  position?: string | null
+  description?: string | null
+  location?: string | null
+  address?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  is_default?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  socials?: Prisma.SocialCreateNestedManyWithoutUserInput
+  contacts?: Prisma.ContactCreateNestedManyWithoutOwnerInput
+  profileContacts?: Prisma.ProfileContactCreateNestedManyWithoutProfileInput
+  links?: Prisma.LinkCreateNestedManyWithoutProfileInput
+  videos?: Prisma.VideoCreateNestedManyWithoutProfileInput
+  meetings?: Prisma.MeetingLinkCreateNestedManyWithoutProfileInput
+  appointments?: Prisma.AppointmentLinkCreateNestedManyWithoutProfileInput
+  spotifyItems?: Prisma.SpotifyItemCreateNestedManyWithoutProfileInput
+  files?: Prisma.FileItemCreateNestedManyWithoutProfileInput
+  forms?: Prisma.FormCreateNestedManyWithoutProfileInput
+  wallets?: Prisma.WalletCreateNestedManyWithoutProfileInput
+  connectConfig?: Prisma.ConnectConfigCreateNestedOneWithoutProfileInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  supportRequests?: Prisma.SupportRequestCreateNestedManyWithoutUserInput
+  cardInteractions?: Prisma.CardInteractionCreateNestedManyWithoutUserInput
+  deviceProfiles?: Prisma.DeviceProfileCreateNestedManyWithoutProfileInput
+}
+
+export type ProfileUncheckedCreateWithoutArtisanInput = {
+  id?: string
+  userId: string
+  slug?: string | null
+  profilePhoto?: string | null
+  coverPhoto?: string | null
+  name: string
+  position?: string | null
+  description?: string | null
+  location?: string | null
+  address?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  is_default?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  socials?: Prisma.SocialUncheckedCreateNestedManyWithoutUserInput
+  contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOwnerInput
+  profileContacts?: Prisma.ProfileContactUncheckedCreateNestedManyWithoutProfileInput
+  links?: Prisma.LinkUncheckedCreateNestedManyWithoutProfileInput
+  videos?: Prisma.VideoUncheckedCreateNestedManyWithoutProfileInput
+  meetings?: Prisma.MeetingLinkUncheckedCreateNestedManyWithoutProfileInput
+  appointments?: Prisma.AppointmentLinkUncheckedCreateNestedManyWithoutProfileInput
+  spotifyItems?: Prisma.SpotifyItemUncheckedCreateNestedManyWithoutProfileInput
+  files?: Prisma.FileItemUncheckedCreateNestedManyWithoutProfileInput
+  forms?: Prisma.FormUncheckedCreateNestedManyWithoutProfileInput
+  wallets?: Prisma.WalletUncheckedCreateNestedManyWithoutProfileInput
+  connectConfig?: Prisma.ConnectConfigUncheckedCreateNestedOneWithoutProfileInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  supportRequests?: Prisma.SupportRequestUncheckedCreateNestedManyWithoutUserInput
+  cardInteractions?: Prisma.CardInteractionUncheckedCreateNestedManyWithoutUserInput
+  deviceProfiles?: Prisma.DeviceProfileUncheckedCreateNestedManyWithoutProfileInput
+}
+
+export type ProfileCreateOrConnectWithoutArtisanInput = {
+  where: Prisma.ProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProfileCreateWithoutArtisanInput, Prisma.ProfileUncheckedCreateWithoutArtisanInput>
+}
+
+export type ProfileUpsertWithoutArtisanInput = {
+  update: Prisma.XOR<Prisma.ProfileUpdateWithoutArtisanInput, Prisma.ProfileUncheckedUpdateWithoutArtisanInput>
+  create: Prisma.XOR<Prisma.ProfileCreateWithoutArtisanInput, Prisma.ProfileUncheckedCreateWithoutArtisanInput>
+  where?: Prisma.ProfileWhereInput
+}
+
+export type ProfileUpdateToOneWithWhereWithoutArtisanInput = {
+  where?: Prisma.ProfileWhereInput
+  data: Prisma.XOR<Prisma.ProfileUpdateWithoutArtisanInput, Prisma.ProfileUncheckedUpdateWithoutArtisanInput>
+}
+
+export type ProfileUpdateWithoutArtisanInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profilePhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  position?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  is_default?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  socials?: Prisma.SocialUpdateManyWithoutUserNestedInput
+  contacts?: Prisma.ContactUpdateManyWithoutOwnerNestedInput
+  profileContacts?: Prisma.ProfileContactUpdateManyWithoutProfileNestedInput
+  links?: Prisma.LinkUpdateManyWithoutProfileNestedInput
+  videos?: Prisma.VideoUpdateManyWithoutProfileNestedInput
+  meetings?: Prisma.MeetingLinkUpdateManyWithoutProfileNestedInput
+  appointments?: Prisma.AppointmentLinkUpdateManyWithoutProfileNestedInput
+  spotifyItems?: Prisma.SpotifyItemUpdateManyWithoutProfileNestedInput
+  files?: Prisma.FileItemUpdateManyWithoutProfileNestedInput
+  forms?: Prisma.FormUpdateManyWithoutProfileNestedInput
+  wallets?: Prisma.WalletUpdateManyWithoutProfileNestedInput
+  connectConfig?: Prisma.ConnectConfigUpdateOneWithoutProfileNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  supportRequests?: Prisma.SupportRequestUpdateManyWithoutUserNestedInput
+  cardInteractions?: Prisma.CardInteractionUpdateManyWithoutUserNestedInput
+  deviceProfiles?: Prisma.DeviceProfileUpdateManyWithoutProfileNestedInput
+}
+
+export type ProfileUncheckedUpdateWithoutArtisanInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profilePhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  position?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  is_default?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  socials?: Prisma.SocialUncheckedUpdateManyWithoutUserNestedInput
+  contacts?: Prisma.ContactUncheckedUpdateManyWithoutOwnerNestedInput
+  profileContacts?: Prisma.ProfileContactUncheckedUpdateManyWithoutProfileNestedInput
+  links?: Prisma.LinkUncheckedUpdateManyWithoutProfileNestedInput
+  videos?: Prisma.VideoUncheckedUpdateManyWithoutProfileNestedInput
+  meetings?: Prisma.MeetingLinkUncheckedUpdateManyWithoutProfileNestedInput
+  appointments?: Prisma.AppointmentLinkUncheckedUpdateManyWithoutProfileNestedInput
+  spotifyItems?: Prisma.SpotifyItemUncheckedUpdateManyWithoutProfileNestedInput
+  files?: Prisma.FileItemUncheckedUpdateManyWithoutProfileNestedInput
+  forms?: Prisma.FormUncheckedUpdateManyWithoutProfileNestedInput
+  wallets?: Prisma.WalletUncheckedUpdateManyWithoutProfileNestedInput
+  connectConfig?: Prisma.ConnectConfigUncheckedUpdateOneWithoutProfileNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  supportRequests?: Prisma.SupportRequestUncheckedUpdateManyWithoutUserNestedInput
+  cardInteractions?: Prisma.CardInteractionUncheckedUpdateManyWithoutUserNestedInput
+  deviceProfiles?: Prisma.DeviceProfileUncheckedUpdateManyWithoutProfileNestedInput
 }
 
 
@@ -3350,6 +3583,7 @@ export type ProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   supportRequests?: boolean | Prisma.Profile$supportRequestsArgs<ExtArgs>
   cardInteractions?: boolean | Prisma.Profile$cardInteractionsArgs<ExtArgs>
   deviceProfiles?: boolean | Prisma.Profile$deviceProfilesArgs<ExtArgs>
+  artisan?: boolean | Prisma.Profile$artisanArgs<ExtArgs>
   _count?: boolean | Prisma.ProfileCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["profile"]>
 
@@ -3422,6 +3656,7 @@ export type ProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   supportRequests?: boolean | Prisma.Profile$supportRequestsArgs<ExtArgs>
   cardInteractions?: boolean | Prisma.Profile$cardInteractionsArgs<ExtArgs>
   deviceProfiles?: boolean | Prisma.Profile$deviceProfilesArgs<ExtArgs>
+  artisan?: boolean | Prisma.Profile$artisanArgs<ExtArgs>
   _count?: boolean | Prisma.ProfileCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProfileIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -3446,6 +3681,7 @@ export type $ProfilePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     supportRequests: Prisma.$SupportRequestPayload<ExtArgs>[]
     cardInteractions: Prisma.$CardInteractionPayload<ExtArgs>[]
     deviceProfiles: Prisma.$DeviceProfilePayload<ExtArgs>[]
+    artisan: Prisma.$ArtisanPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -3872,6 +4108,7 @@ export interface Prisma__ProfileClient<T, Null = never, ExtArgs extends runtime.
   supportRequests<T extends Prisma.Profile$supportRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$supportRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SupportRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   cardInteractions<T extends Prisma.Profile$cardInteractionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$cardInteractionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CardInteractionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   deviceProfiles<T extends Prisma.Profile$deviceProfilesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$deviceProfilesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DeviceProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  artisan<T extends Prisma.Profile$artisanArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$artisanArgs<ExtArgs>>): Prisma.Prisma__ArtisanClient<runtime.Types.Result.GetResult<Prisma.$ArtisanPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4679,6 +4916,25 @@ export type Profile$deviceProfilesArgs<ExtArgs extends runtime.Types.Extensions.
   take?: number
   skip?: number
   distinct?: Prisma.DeviceProfileScalarFieldEnum | Prisma.DeviceProfileScalarFieldEnum[]
+}
+
+/**
+ * Profile.artisan
+ */
+export type Profile$artisanArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Artisan
+   */
+  select?: Prisma.ArtisanSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Artisan
+   */
+  omit?: Prisma.ArtisanOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ArtisanInclude<ExtArgs> | null
+  where?: Prisma.ArtisanWhereInput
 }
 
 /**

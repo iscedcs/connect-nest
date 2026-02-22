@@ -17,7 +17,16 @@ export const NotificationType = {
   WALLET_TRANSFER: 'WALLET_TRANSFER',
   CONTACT_SAVED: 'CONTACT_SAVED',
   MEETING_REQUEST: 'MEETING_REQUEST',
-  APPOINTMENT_BOOKED: 'APPOINTMENT_BOOKED'
+  APPOINTMENT_BOOKED: 'APPOINTMENT_BOOKED',
+  ARTISAN_ACTIVATED: 'ARTISAN_ACTIVATED',
+  ARTISAN_SUSPENDED: 'ARTISAN_SUSPENDED',
+  BOOKING_RECEIVED: 'BOOKING_RECEIVED',
+  BOOKING_CONFIRMED: 'BOOKING_CONFIRMED',
+  BOOKING_CANCELLED: 'BOOKING_CANCELLED',
+  BOOKING_COMPLETED: 'BOOKING_COMPLETED',
+  REVIEW_RECEIVED: 'REVIEW_RECEIVED',
+  PROMOTION_STARTED: 'PROMOTION_STARTED',
+  PROMOTION_EXPIRED: 'PROMOTION_EXPIRED'
 } as const
 
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
@@ -47,3 +56,42 @@ export const FormStatus = {
 } as const
 
 export type FormStatus = (typeof FormStatus)[keyof typeof FormStatus]
+
+
+export const ArtisanStatus = {
+  PENDING_REVIEW: 'PENDING_REVIEW',
+  ACTIVE: 'ACTIVE',
+  SUSPENDED: 'SUSPENDED',
+  DEACTIVATED: 'DEACTIVATED'
+} as const
+
+export type ArtisanStatus = (typeof ArtisanStatus)[keyof typeof ArtisanStatus]
+
+
+export const BookingStatus = {
+  PENDING: 'PENDING',
+  CONFIRMED: 'CONFIRMED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
+  NO_SHOW: 'NO_SHOW'
+} as const
+
+export type BookingStatus = (typeof BookingStatus)[keyof typeof BookingStatus]
+
+
+export const PromotionType = {
+  SPONSORED: 'SPONSORED',
+  BOOST: 'BOOST'
+} as const
+
+export type PromotionType = (typeof PromotionType)[keyof typeof PromotionType]
+
+
+export const PromotionStatus = {
+  ACTIVE: 'ACTIVE',
+  EXPIRED: 'EXPIRED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type PromotionStatus = (typeof PromotionStatus)[keyof typeof PromotionStatus]

@@ -45,6 +45,7 @@ model Profile {
   supportRequests  SupportRequest[]
   cardInteractions CardInteraction[]
   deviceProfiles   DeviceProfile[]
+  artisan          Artisan?
 
   @@index([userId])
 }
@@ -113,6 +114,15 @@ enum NotificationType {
   CONTACT_SAVED
   MEETING_REQUEST
   APPOINTMENT_BOOKED
+  ARTISAN_ACTIVATED
+  ARTISAN_SUSPENDED
+  BOOKING_RECEIVED
+  BOOKING_CONFIRMED
+  BOOKING_CANCELLED
+  BOOKING_COMPLETED
+  REVIEW_RECEIVED
+  PROMOTION_STARTED
+  PROMOTION_EXPIRED
 }
 
 model SupportRequest {
@@ -360,4 +370,266 @@ model DeviceProfile {
   updatedAt DateTime @updatedAt
 
   @@index([profileId])
+}
+
+// ─── Artisan Enums ────────────────────────────────────────
+
+enum ArtisanStatus {
+  PENDING_REVIEW // Awaiting admin approval (when manual review enabled)
+  ACTIVE // Listed in directory, can receive bookings & payments
+  SUSPENDED // Temporarily disabled by admin
+  DEACTIVATED // Self-deactivated by user
+}
+
+enum BookingStatus {
+  PENDING // Customer submitted, artisan hasn't responded
+  CONFIRMED // Artisan accepted
+  IN_PROGRESS // Service is being delivered
+  COMPLETED // Service finished, payment settled
+  CANCELLED // Cancelled by either party
+  NO_SHOW // Customer didn't show up
+}
+
+enum PromotionType {
+  SPONSORED // Top carousel placement in directory
+  BOOST // Temporary search ranking boost (24-48 hrs)
+}
+
+enum PromotionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+// ─── Artisan Core ─────────────────────────────────────────
+
+model Artisan {
+  id        String  @id @default(uuid())
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId String  @unique
+  userId    String // Denormalized from profile for fast queries
+
+  // Artisan-specific fields
+  bio            String? // Artisan pitch (separate from profile.description)
+  status         ArtisanStatus @default(PENDING_REVIEW)
+  customCategory String? // Free-text when "Others" category is selected
+
+  // Verification
+  termsAcceptedAt DateTime?
+  activatedAt     DateTime? // When status changed to ACTIVE
+  suspendedReason String? // Admin reason for suspension
+
+  // Stats (denormalized for directory performance)
+  averageRating Decimal @default(0) @db.Decimal(3, 2) // 0.00 - 5.00
+  totalReviews  Int     @default(0)
+  totalBookings Int     @default(0)
+  totalEarnings Decimal @default(0) @db.Decimal(18, 4) // Lifetime earnings via platform
+
+  // Working hours: JSON array of { day: 0-6, open: "09:00", close: "17:00", isOpen: boolean }
+  workingHours Json?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  // Relations
+  categories ArtisanCategoryMap[]
+  services   ArtisanService[]
+  portfolio  PortfolioItem[]
+  bookings   Booking[]
+  reviews    Review[]
+  promotions Promotion[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([averageRating])
+  @@index([createdAt])
+}
+
+// ─── Categories ───────────────────────────────────────────
+
+model ArtisanCategory {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  slug        String   @unique // URL-safe: "beauty-grooming"
+  icon        String? // Emoji or icon identifier
+  description String?
+  order       Int      @default(0) // Display order in UI
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  artisans ArtisanCategoryMap[]
+
+  @@index([slug])
+  @@index([isActive, order])
+}
+
+// Many-to-many: an artisan can have 1–3 categories
+model ArtisanCategoryMap {
+  id         String          @id @default(uuid())
+  artisan    Artisan         @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+  artisanId  String
+  category   ArtisanCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId String
+  isPrimary  Boolean         @default(false) // First selected category
+
+  @@unique([artisanId, categoryId])
+  @@index([categoryId])
+}
+
+// ─── Services ─────────────────────────────────────────────
+
+model ArtisanService {
+  id          String    @id @default(uuid())
+  artisan     Artisan   @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+  artisanId   String
+  name        String
+  description String?
+  price       Decimal   @db.Decimal(18, 4)
+  currency    String    @default("NGN")
+  duration    Int? // Duration in minutes (optional)
+  isActive    Boolean   @default(true)
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  bookings Booking[]
+
+  @@index([artisanId])
+  @@index([isActive])
+}
+
+// ─── Portfolio ────────────────────────────────────────────
+
+model PortfolioItem {
+  id        String    @id @default(uuid())
+  artisan   Artisan   @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+  artisanId String
+  type      String    @default("image") // "image" | "video" | "link"
+  url       String // DO Spaces URL or external link
+  thumbnail String? // For videos — auto-generated or uploaded
+  caption   String?
+  order     Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([artisanId])
+}
+
+// ─── Bookings ─────────────────────────────────────────────
+
+model Booking {
+  id                String          @id @default(uuid())
+  artisan           Artisan         @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+  artisanId         String
+  service           ArtisanService? @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  serviceId         String?
+  customerUserId    String // The user who booked (from JWT)
+  customerProfileId String? // Optional: customer's profile ID
+  customerName      String? // Snapshot at booking time
+  customerPhone     String?
+
+  // Scheduling
+  scheduledDate DateTime
+  scheduledTime String? // "14:00" — separate from date for flexibility
+  duration      Int? // Minutes, copied from service or custom
+
+  // Pricing
+  agreedPrice      Decimal? @db.Decimal(18, 4)
+  currency         String   @default("NGN")
+  commissionAmount Decimal? @db.Decimal(18, 4) // Platform commission
+
+  // Payment tracking
+  paymentReference String? // wallet-nest PaymentIntent reference
+  isPaid           Boolean   @default(false)
+  paidAt           DateTime?
+
+  status             BookingStatus @default(PENDING)
+  note               String? // Customer note to artisan
+  cancelledBy        String? // "artisan" | "customer"
+  cancellationReason String?
+  cancelledAt        DateTime?
+  startedAt          DateTime? // When artisan started work
+  completedAt        DateTime? // When artisan marked complete
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  review Review?
+
+  @@index([artisanId])
+  @@index([customerUserId])
+  @@index([status])
+  @@index([scheduledDate])
+}
+
+// ─── Reviews ──────────────────────────────────────────────
+
+model Review {
+  id             String   @id @default(uuid())
+  artisan        Artisan  @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+  artisanId      String
+  booking        Booking? @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  bookingId      String?  @unique // One review per booking
+  reviewerUserId String // The customer who left the review
+  reviewerName   String? // Snapshot
+
+  rating  Int // 1–5 stars
+  comment String?
+
+  // Payment verification: review only allowed if reviewer has completed booking/payment
+  paymentReference String? // wallet-nest transaction reference that validates eligibility
+
+  isVisible Boolean   @default(true) // Admin can hide inappropriate reviews
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([artisanId])
+  @@index([reviewerUserId])
+  @@index([rating])
+}
+
+// ─── Promotions ───────────────────────────────────────────
+
+model Promotion {
+  id        String          @id @default(uuid())
+  artisan   Artisan         @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+  artisanId String
+  type      PromotionType
+  status    PromotionStatus @default(ACTIVE)
+
+  // Payment
+  amount           Decimal @db.Decimal(18, 4)
+  currency         String  @default("NGN")
+  paymentReference String? // wallet-nest transaction reference
+
+  startsAt DateTime @default(now())
+  endsAt   DateTime // When the promotion expires
+  metadata Json? // Extra config (e.g., boost intensity)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([artisanId])
+  @@index([status])
+  @@index([type, status])
+  @@index([endsAt])
+}
+
+// ─── Platform Settings (singleton) ────────────────────────
+
+model PlatformSetting {
+  id                    String   @id @default("default")
+  artisanAutoApproval   Boolean  @default(true) // true = auto-list, false = manual review
+  artisanCommissionRate Decimal  @default(0.025) @db.Decimal(5, 4) // 2.5% default
+  sponsoredPriceDaily   Decimal  @default(500) @db.Decimal(18, 4) // ₦500/day
+  boostPriceDaily       Decimal  @default(200) @db.Decimal(18, 4) // ₦200/day
+  minPortfolioItems     Int      @default(2)
+  maxCategories         Int      @default(3)
+  updatedAt             DateTime @updatedAt
 }

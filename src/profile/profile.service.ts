@@ -1116,6 +1116,7 @@ export class ProfileService {
         appointments,
         wallets,
         forms,
+        artisan,
       ] = await Promise.all([
         this.databaseService.profileContact.findMany({
           where: { profileId: profile.id, is_visible: true, deletedAt: null },
@@ -1156,6 +1157,23 @@ export class ProfileService {
         this.databaseService.form.findMany({
           where: { profileId: profile.id, is_visible: true, deletedAt: null },
           orderBy: { createdAt: 'desc' },
+        }),
+        this.databaseService.artisan.findUnique({
+          where: { profileId: profile.id, deletedAt: null, status: 'ACTIVE' },
+          include: {
+            categories: {
+              include: { category: true },
+              orderBy: { isPrimary: 'desc' },
+            },
+            services: {
+              where: { deletedAt: null, isActive: true },
+              orderBy: [{ order: 'asc' }, { createdAt: 'desc' }],
+            },
+            portfolio: {
+              where: { deletedAt: null },
+              orderBy: [{ order: 'asc' }, { createdAt: 'desc' }],
+            },
+          },
         }),
       ]);
 
@@ -1245,6 +1263,37 @@ export class ProfileService {
             description: form.description,
             url: form.form_url || `/forms/${form.id}`,
           })),
+          artisan: artisan
+            ? {
+                id: artisan.id,
+                bio: artisan.bio,
+                averageRating: artisan.averageRating,
+                totalReviews: artisan.totalReviews,
+                totalBookings: artisan.totalBookings,
+                workingHours: artisan.workingHours,
+                categories: artisan.categories.map((cm) => ({
+                  id: cm.category.id,
+                  name: cm.category.name,
+                  slug: cm.category.slug,
+                  isPrimary: cm.isPrimary,
+                })),
+                services: artisan.services.map((s) => ({
+                  id: s.id,
+                  title: s.name,
+                  description: s.description,
+                  price: s.price,
+                  currency: s.currency,
+                  duration: s.duration,
+                })),
+                portfolio: artisan.portfolio.map((p) => ({
+                  id: p.id,
+                  type: p.type,
+                  url: p.url,
+                  thumbnail: p.thumbnail,
+                  caption: p.caption,
+                })),
+              }
+            : null,
         },
       };
     } catch (error) {

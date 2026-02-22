@@ -69,7 +69,16 @@ export const ModelName = {
   Submission: 'Submission',
   Wallet: 'Wallet',
   ConnectConfig: 'ConnectConfig',
-  DeviceProfile: 'DeviceProfile'
+  DeviceProfile: 'DeviceProfile',
+  Artisan: 'Artisan',
+  ArtisanCategory: 'ArtisanCategory',
+  ArtisanCategoryMap: 'ArtisanCategoryMap',
+  ArtisanService: 'ArtisanService',
+  PortfolioItem: 'PortfolioItem',
+  Booking: 'Booking',
+  Review: 'Review',
+  Promotion: 'Promotion',
+  PlatformSetting: 'PlatformSetting'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -382,6 +391,170 @@ export const DeviceProfileScalarFieldEnum = {
 } as const
 
 export type DeviceProfileScalarFieldEnum = (typeof DeviceProfileScalarFieldEnum)[keyof typeof DeviceProfileScalarFieldEnum]
+
+
+export const ArtisanScalarFieldEnum = {
+  id: 'id',
+  profileId: 'profileId',
+  userId: 'userId',
+  bio: 'bio',
+  status: 'status',
+  customCategory: 'customCategory',
+  termsAcceptedAt: 'termsAcceptedAt',
+  activatedAt: 'activatedAt',
+  suspendedReason: 'suspendedReason',
+  averageRating: 'averageRating',
+  totalReviews: 'totalReviews',
+  totalBookings: 'totalBookings',
+  totalEarnings: 'totalEarnings',
+  workingHours: 'workingHours',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type ArtisanScalarFieldEnum = (typeof ArtisanScalarFieldEnum)[keyof typeof ArtisanScalarFieldEnum]
+
+
+export const ArtisanCategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug',
+  icon: 'icon',
+  description: 'description',
+  order: 'order',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ArtisanCategoryScalarFieldEnum = (typeof ArtisanCategoryScalarFieldEnum)[keyof typeof ArtisanCategoryScalarFieldEnum]
+
+
+export const ArtisanCategoryMapScalarFieldEnum = {
+  id: 'id',
+  artisanId: 'artisanId',
+  categoryId: 'categoryId',
+  isPrimary: 'isPrimary'
+} as const
+
+export type ArtisanCategoryMapScalarFieldEnum = (typeof ArtisanCategoryMapScalarFieldEnum)[keyof typeof ArtisanCategoryMapScalarFieldEnum]
+
+
+export const ArtisanServiceScalarFieldEnum = {
+  id: 'id',
+  artisanId: 'artisanId',
+  name: 'name',
+  description: 'description',
+  price: 'price',
+  currency: 'currency',
+  duration: 'duration',
+  isActive: 'isActive',
+  order: 'order',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type ArtisanServiceScalarFieldEnum = (typeof ArtisanServiceScalarFieldEnum)[keyof typeof ArtisanServiceScalarFieldEnum]
+
+
+export const PortfolioItemScalarFieldEnum = {
+  id: 'id',
+  artisanId: 'artisanId',
+  type: 'type',
+  url: 'url',
+  thumbnail: 'thumbnail',
+  caption: 'caption',
+  order: 'order',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type PortfolioItemScalarFieldEnum = (typeof PortfolioItemScalarFieldEnum)[keyof typeof PortfolioItemScalarFieldEnum]
+
+
+export const BookingScalarFieldEnum = {
+  id: 'id',
+  artisanId: 'artisanId',
+  serviceId: 'serviceId',
+  customerUserId: 'customerUserId',
+  customerProfileId: 'customerProfileId',
+  customerName: 'customerName',
+  customerPhone: 'customerPhone',
+  scheduledDate: 'scheduledDate',
+  scheduledTime: 'scheduledTime',
+  duration: 'duration',
+  agreedPrice: 'agreedPrice',
+  currency: 'currency',
+  commissionAmount: 'commissionAmount',
+  paymentReference: 'paymentReference',
+  isPaid: 'isPaid',
+  paidAt: 'paidAt',
+  status: 'status',
+  note: 'note',
+  cancelledBy: 'cancelledBy',
+  cancellationReason: 'cancellationReason',
+  cancelledAt: 'cancelledAt',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type BookingScalarFieldEnum = (typeof BookingScalarFieldEnum)[keyof typeof BookingScalarFieldEnum]
+
+
+export const ReviewScalarFieldEnum = {
+  id: 'id',
+  artisanId: 'artisanId',
+  bookingId: 'bookingId',
+  reviewerUserId: 'reviewerUserId',
+  reviewerName: 'reviewerName',
+  rating: 'rating',
+  comment: 'comment',
+  paymentReference: 'paymentReference',
+  isVisible: 'isVisible',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type ReviewScalarFieldEnum = (typeof ReviewScalarFieldEnum)[keyof typeof ReviewScalarFieldEnum]
+
+
+export const PromotionScalarFieldEnum = {
+  id: 'id',
+  artisanId: 'artisanId',
+  type: 'type',
+  status: 'status',
+  amount: 'amount',
+  currency: 'currency',
+  paymentReference: 'paymentReference',
+  startsAt: 'startsAt',
+  endsAt: 'endsAt',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PromotionScalarFieldEnum = (typeof PromotionScalarFieldEnum)[keyof typeof PromotionScalarFieldEnum]
+
+
+export const PlatformSettingScalarFieldEnum = {
+  id: 'id',
+  artisanAutoApproval: 'artisanAutoApproval',
+  artisanCommissionRate: 'artisanCommissionRate',
+  sponsoredPriceDaily: 'sponsoredPriceDaily',
+  boostPriceDaily: 'boostPriceDaily',
+  minPortfolioItems: 'minPortfolioItems',
+  maxCategories: 'maxCategories',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PlatformSettingScalarFieldEnum = (typeof PlatformSettingScalarFieldEnum)[keyof typeof PlatformSettingScalarFieldEnum]
 
 
 export const SortOrder = {
