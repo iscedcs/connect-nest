@@ -1,10 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
 import { DatabaseService } from 'src/database/database.service';
-import { CreateContactDto, UpdateContactDto } from './dto/contact.dto';
+import { CreateContactDto } from './dto/contact.dto';
 
 @Injectable()
 export class ContactService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  private readonly logger = new Logger(ContactService.name);
+
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly httpService: HttpService,
+  ) {}
 
   async leaveContact(dto: CreateContactDto) {
     try {
@@ -20,20 +27,56 @@ export class ContactService {
         };
       }
 
+      // Try to find an existing profile for the person leaving contact
+      let contactProfileId: string | null = null;
+      let status: 'PENDING' | 'ACCEPTED' = 'PENDING';
+
+      if (dto.email) {
+        contactProfileId = await this.findProfileByEmail(dto.email);
+      }
+      if (!contactProfileId && dto.phone) {
+        contactProfileId = await this.findProfileByPhone(dto.phone);
+      }
+
+      // If the person has a profile, auto-accept
+      if (contactProfileId) {
+        status = 'ACCEPTED';
+      }
+
       const contact = await this.databaseService.contact.create({
         data: {
           ownerId: dto.profileId,
+          contactProfileId,
+          status,
           firstName: dto.firstName,
           lastName: dto.lastName,
           email: dto.email,
           phone: dto.phone,
           note: dto.note,
         },
+        include: {
+          contactProfile: contactProfileId
+            ? {
+                select: {
+                  id: true,
+                  slug: true,
+                  name: true,
+                  profilePhoto: true,
+                  coverPhoto: true,
+                  position: true,
+                  description: true,
+                  location: true,
+                },
+              }
+            : false,
+        },
       });
 
       return {
         success: true,
-        message: 'Contact information submitted successfully',
+        message: contactProfileId
+          ? 'Contact exchanged and auto-accepted — profile linked'
+          : 'Contact information submitted successfully',
         data: {
           contact,
         },
@@ -46,13 +89,72 @@ export class ContactService {
     }
   }
 
-  async getReceivedContacts(user: any, profileId: string, page: number = 1, limit: number = 10) {
+  /**
+   * Look up a user's profile by email via isce-auth check-email endpoint.
+   * Returns the profileId if found, null otherwise.
+   */
+  private async findProfileByEmail(email: string): Promise<string | null> {
+    try {
+      const authApiUrl = process.env.AUTH_API_URL;
+      if (!authApiUrl) return null;
+
+      const { data: res } = await firstValueFrom(
+        this.httpService.post(`${authApiUrl}/auth/check-email`, { email }),
+      );
+
+      if (!res?.data?.exists || !res?.data?.userId) return null;
+
+      const profile = await this.databaseService.profile.findFirst({
+        where: { userId: res.data.userId, deletedAt: null },
+        select: { id: true },
+      });
+
+      return profile?.id ?? null;
+    } catch (error) {
+      this.logger.warn(`Failed to look up profile by email: ${error.message}`);
+      return null;
+    }
+  }
+
+  /**
+   * Look up a user's profile by phone via isce-auth check-phone endpoint.
+   * Returns the profileId if found, null otherwise.
+   */
+  private async findProfileByPhone(phone: string): Promise<string | null> {
+    try {
+      const authApiUrl = process.env.AUTH_API_URL;
+      if (!authApiUrl) return null;
+
+      const { data: res } = await firstValueFrom(
+        this.httpService.post(`${authApiUrl}/auth/check-phone`, { phone }),
+      );
+
+      if (!res?.data?.exists || !res?.data?.userId) return null;
+
+      const profile = await this.databaseService.profile.findFirst({
+        where: { userId: res.data.userId, deletedAt: null },
+        select: { id: true },
+      });
+
+      return profile?.id ?? null;
+    } catch (error) {
+      this.logger.warn(`Failed to look up profile by phone: ${error.message}`);
+      return null;
+    }
+  }
+
+  async getReceivedContacts(
+    user: any,
+    profileId: string,
+    page: number = 1,
+    limit: number = 10,
+  ) {
     try {
       // Verify the profile belongs to the user
       const profile = await this.databaseService.profile.findFirst({
-        where: { 
+        where: {
           id: profileId,
-          userId: user.id 
+          userId: user.id,
         },
       });
 
@@ -65,11 +167,23 @@ export class ContactService {
 
       const skip = (page - 1) * limit;
 
+      const contactProfileSelect = {
+        id: true,
+        slug: true,
+        name: true,
+        profilePhoto: true,
+        coverPhoto: true,
+        position: true,
+        description: true,
+        location: true,
+      };
+
       const contacts = await this.databaseService.contact.findMany({
         where: {
           ownerId: profile.id,
           deletedAt: null,
         },
+        include: { contactProfile: { select: contactProfileSelect } },
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
@@ -107,9 +221,9 @@ export class ContactService {
     try {
       // Verify the profile belongs to the user
       const profile = await this.databaseService.profile.findFirst({
-        where: { 
+        where: {
           id: profileId,
-          userId: user.id 
+          userId: user.id,
         },
       });
 
@@ -125,6 +239,20 @@ export class ContactService {
           id: contactId,
           ownerId: profile.id,
           deletedAt: null,
+        },
+        include: {
+          contactProfile: {
+            select: {
+              id: true,
+              slug: true,
+              name: true,
+              profilePhoto: true,
+              coverPhoto: true,
+              position: true,
+              description: true,
+              location: true,
+            },
+          },
         },
       });
 
@@ -154,9 +282,9 @@ export class ContactService {
     try {
       // Verify the profile belongs to the user
       const profile = await this.databaseService.profile.findFirst({
-        where: { 
+        where: {
           id: profileId,
-          userId: user.id 
+          userId: user.id,
         },
       });
 
@@ -202,13 +330,19 @@ export class ContactService {
     }
   }
 
-  async searchReceivedContacts(user: any, profileId: string, searchTerm: string, page: number = 1, limit: number = 10) {
+  async searchReceivedContacts(
+    user: any,
+    profileId: string,
+    searchTerm: string,
+    page: number = 1,
+    limit: number = 10,
+  ) {
     try {
       // Verify the profile belongs to the user
       const profile = await this.databaseService.profile.findFirst({
-        where: { 
+        where: {
           id: profileId,
-          userId: user.id 
+          userId: user.id,
         },
       });
 
@@ -257,6 +391,20 @@ export class ContactService {
               },
             },
           ],
+        },
+        include: {
+          contactProfile: {
+            select: {
+              id: true,
+              slug: true,
+              name: true,
+              profilePhoto: true,
+              coverPhoto: true,
+              position: true,
+              description: true,
+              location: true,
+            },
+          },
         },
         orderBy: { createdAt: 'desc' },
         skip,
@@ -327,9 +475,9 @@ export class ContactService {
     try {
       // Verify the profile belongs to the user
       const profile = await this.databaseService.profile.findFirst({
-        where: { 
+        where: {
           id: profileId,
-          userId: user.id 
+          userId: user.id,
         },
       });
 
@@ -344,6 +492,20 @@ export class ContactService {
         where: {
           ownerId: profile.id,
           deletedAt: null,
+        },
+        include: {
+          contactProfile: {
+            select: {
+              id: true,
+              slug: true,
+              name: true,
+              profilePhoto: true,
+              coverPhoto: true,
+              position: true,
+              description: true,
+              location: true,
+            },
+          },
         },
         orderBy: { createdAt: 'desc' },
         take: limit,
@@ -368,9 +530,9 @@ export class ContactService {
     try {
       // Verify the profile belongs to the user
       const profile = await this.databaseService.profile.findFirst({
-        where: { 
+        where: {
           id: profileId,
-          userId: user.id 
+          userId: user.id,
         },
       });
 
@@ -449,7 +611,14 @@ export class ContactService {
             contactsWithNotes,
             todayContacts,
             thisWeekContacts,
-            completionRate: totalContacts > 0 ? Math.round((contactsWithEmail + contactsWithPhone) / (totalContacts * 2) * 100) : 0,
+            completionRate:
+              totalContacts > 0
+                ? Math.round(
+                    ((contactsWithEmail + contactsWithPhone) /
+                      (totalContacts * 2)) *
+                      100,
+                  )
+                : 0,
           },
         },
       };

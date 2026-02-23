@@ -27,11 +27,16 @@ export class ArtisanService {
 
   async getRequirements() {
     const settings = await this.getOrCreateSettings();
+    const categories = await this.databaseService.artisanCategory.findMany({
+      where: { isActive: true },
+      orderBy: { order: 'asc' },
+    });
     return {
       success: true,
       data: {
         minPortfolioItems: settings.minPortfolioItems,
         maxCategories: settings.maxCategories,
+        categories,
         requirements: [
           'Complete profile with display picture',
           'At least 1 service with pricing',
@@ -67,19 +72,29 @@ export class ArtisanService {
       throw new BadRequestException('You must accept the terms and conditions');
     }
 
-    // 4. Validate categories exist
+    // 4. Validate categories / custom category
     const settings = await this.getOrCreateSettings();
+
+    if (dto.categoryIds.length === 0 && !dto.customCategory?.trim()) {
+      throw new BadRequestException(
+        'Select at least one category or provide a custom category',
+      );
+    }
+
     if (dto.categoryIds.length > settings.maxCategories) {
       throw new BadRequestException(
         `Maximum ${settings.maxCategories} categories allowed`,
       );
     }
 
-    const categories = await this.databaseService.artisanCategory.findMany({
-      where: { id: { in: dto.categoryIds }, isActive: true },
-    });
-    if (categories.length !== dto.categoryIds.length) {
-      throw new BadRequestException('One or more categories are invalid');
+    let categories: { id: string }[] = [];
+    if (dto.categoryIds.length > 0) {
+      categories = await this.databaseService.artisanCategory.findMany({
+        where: { id: { in: dto.categoryIds }, isActive: true },
+      });
+      if (categories.length !== dto.categoryIds.length) {
+        throw new BadRequestException('One or more categories are invalid');
+      }
     }
 
     // 5. Determine initial status
@@ -101,24 +116,28 @@ export class ArtisanService {
       });
 
       // Create category mappings
-      const categoryMappings = dto.categoryIds.map((catId, index) => ({
-        artisanId: created.id,
-        categoryId: catId,
-        isPrimary: index === 0,
-      }));
-      await tx.artisanCategoryMap.createMany({ data: categoryMappings });
+      if (dto.categoryIds.length > 0) {
+        const categoryMappings = dto.categoryIds.map((catId, index) => ({
+          artisanId: created.id,
+          categoryId: catId,
+          isPrimary: index === 0,
+        }));
+        await tx.artisanCategoryMap.createMany({ data: categoryMappings });
+      }
 
       // Create services
-      const serviceData = dto.services.map((svc, index) => ({
-        artisanId: created.id,
-        name: svc.name,
-        description: svc.description || null,
-        price: new Prisma.Decimal(svc.price),
-        currency: svc.currency || 'NGN',
-        duration: svc.duration || null,
-        order: index,
-      }));
-      await tx.artisanService.createMany({ data: serviceData });
+      if (dto.services && dto.services.length > 0) {
+        const serviceData = dto.services.map((svc, index) => ({
+          artisanId: created.id,
+          name: svc.name,
+          description: svc.description || null,
+          price: svc.price != null ? new Prisma.Decimal(svc.price) : null,
+          currency: svc.currency || 'NGN',
+          duration: svc.duration || null,
+          order: index,
+        }));
+        await tx.artisanService.createMany({ data: serviceData });
+      }
 
       return created;
     });
@@ -237,7 +256,7 @@ export class ArtisanService {
         artisanId: artisan.id,
         name: dto.name,
         description: dto.description || null,
-        price: new Prisma.Decimal(dto.price),
+        price: dto.price != null ? new Prisma.Decimal(dto.price) : null,
         currency: dto.currency || 'NGN',
         duration: dto.duration || null,
         order: count,
@@ -937,8 +956,12 @@ export class ArtisanService {
 
     return {
       success: true,
-      data: artisans,
-      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+      data: {
+        artisans,
+        total,
+        page,
+        totalPages: Math.ceil(total / limit),
+      },
     };
   }
 
@@ -1326,14 +1349,12 @@ export class ArtisanService {
       profile: {
         select: {
           id: true,
-          firstName: true,
-          lastName: true,
-          displayPicture: true,
+          name: true,
+          profilePhoto: true,
           slug: true,
-          city: true,
-          state: true,
           location: true,
-          bio: true,
+          description: true,
+          position: true,
         },
       },
       categories: {

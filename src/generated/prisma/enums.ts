@@ -9,6 +9,14 @@
 * 🟢 You can import this file directly.
 */
 
+export const ContactStatus = {
+  PENDING: 'PENDING',
+  ACCEPTED: 'ACCEPTED'
+} as const
+
+export type ContactStatus = (typeof ContactStatus)[keyof typeof ContactStatus]
+
+
 export const NotificationType = {
   CARD_INTERACTION: 'CARD_INTERACTION',
   CONTACT_SHARED: 'CONTACT_SHARED',

@@ -32,10 +32,14 @@ export class CreateServiceDto {
   @IsString()
   description?: string;
 
-  @ApiProperty({ description: 'Price in minor currency', example: 5000 })
+  @ApiPropertyOptional({
+    description: 'Price in minor currency',
+    example: 5000,
+  })
+  @IsOptional()
   @IsNumber()
   @Min(0)
-  price: number;
+  price?: number;
 
   @ApiPropertyOptional({
     description: 'Currency code',
@@ -173,11 +177,11 @@ export class RegisterArtisanDto {
   profileId: string;
 
   @ApiProperty({
-    description: 'Category IDs (1-3)',
+    description:
+      'Category IDs (0-3). Can be empty if customCategory is provided.',
     example: ['uuid1', 'uuid2'],
   })
   @IsArray()
-  @ArrayMinSize(1)
   @ArrayMaxSize(3)
   @IsUUID('4', { each: true })
   categoryIds: string[];
@@ -198,15 +202,15 @@ export class RegisterArtisanDto {
   @MinLength(20)
   bio?: string;
 
-  @ApiProperty({
-    description: 'At least 1 service to offer',
+  @ApiPropertyOptional({
+    description: 'Services to offer (can be added later)',
     type: [CreateServiceDto],
   })
+  @IsOptional()
   @IsArray()
-  @ArrayMinSize(1)
   @ValidateNested({ each: true })
   @Type(() => CreateServiceDto)
-  services: CreateServiceDto[];
+  services?: CreateServiceDto[];
 
   @ApiPropertyOptional({
     description: 'Working hours schedule',

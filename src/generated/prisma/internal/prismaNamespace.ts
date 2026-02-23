@@ -2581,6 +2581,8 @@ export type SocialScalarFieldEnum = (typeof SocialScalarFieldEnum)[keyof typeof 
 export const ContactScalarFieldEnum = {
   id: 'id',
   ownerId: 'ownerId',
+  contactProfileId: 'contactProfileId',
+  status: 'status',
   firstName: 'firstName',
   lastName: 'lastName',
   email: 'email',
@@ -3116,6 +3118,20 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  * Reference to a field of type 'Int[]'
  */
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ContactStatus'
+ */
+export type EnumContactStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ContactStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ContactStatus[]'
+ */
+export type ListEnumContactStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ContactStatus[]'>
     
 
 

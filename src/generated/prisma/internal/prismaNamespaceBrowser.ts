@@ -136,6 +136,8 @@ export type SocialScalarFieldEnum = (typeof SocialScalarFieldEnum)[keyof typeof 
 export const ContactScalarFieldEnum = {
   id: 'id',
   ownerId: 'ownerId',
+  contactProfileId: 'contactProfileId',
+  status: 'status',
   firstName: 'firstName',
   lastName: 'lastName',
   email: 'email',

@@ -252,6 +252,7 @@ export type ProfileWhereInput = {
   deletedAt?: Prisma.DateTimeNullableFilter<"Profile"> | Date | string | null
   socials?: Prisma.SocialListRelationFilter
   contacts?: Prisma.ContactListRelationFilter
+  linkedContacts?: Prisma.ContactListRelationFilter
   profileContacts?: Prisma.ProfileContactListRelationFilter
   links?: Prisma.LinkListRelationFilter
   videos?: Prisma.VideoListRelationFilter
@@ -286,6 +287,7 @@ export type ProfileOrderByWithRelationInput = {
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   socials?: Prisma.SocialOrderByRelationAggregateInput
   contacts?: Prisma.ContactOrderByRelationAggregateInput
+  linkedContacts?: Prisma.ContactOrderByRelationAggregateInput
   profileContacts?: Prisma.ProfileContactOrderByRelationAggregateInput
   links?: Prisma.LinkOrderByRelationAggregateInput
   videos?: Prisma.VideoOrderByRelationAggregateInput
@@ -323,6 +325,7 @@ export type ProfileWhereUniqueInput = Prisma.AtLeast<{
   deletedAt?: Prisma.DateTimeNullableFilter<"Profile"> | Date | string | null
   socials?: Prisma.SocialListRelationFilter
   contacts?: Prisma.ContactListRelationFilter
+  linkedContacts?: Prisma.ContactListRelationFilter
   profileContacts?: Prisma.ProfileContactListRelationFilter
   links?: Prisma.LinkListRelationFilter
   videos?: Prisma.VideoListRelationFilter
@@ -397,6 +400,7 @@ export type ProfileCreateInput = {
   deletedAt?: Date | string | null
   socials?: Prisma.SocialCreateNestedManyWithoutUserInput
   contacts?: Prisma.ContactCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactCreateNestedManyWithoutProfileInput
   links?: Prisma.LinkCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoCreateNestedManyWithoutProfileInput
@@ -431,6 +435,7 @@ export type ProfileUncheckedCreateInput = {
   deletedAt?: Date | string | null
   socials?: Prisma.SocialUncheckedCreateNestedManyWithoutUserInput
   contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactUncheckedCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactUncheckedCreateNestedManyWithoutProfileInput
   links?: Prisma.LinkUncheckedCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoUncheckedCreateNestedManyWithoutProfileInput
@@ -465,6 +470,7 @@ export type ProfileUpdateInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUpdateManyWithoutUserNestedInput
   contacts?: Prisma.ContactUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUpdateManyWithoutProfileNestedInput
   links?: Prisma.LinkUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUpdateManyWithoutProfileNestedInput
@@ -499,6 +505,7 @@ export type ProfileUncheckedUpdateInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUncheckedUpdateManyWithoutUserNestedInput
   contacts?: Prisma.ContactUncheckedUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUncheckedUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUncheckedUpdateManyWithoutProfileNestedInput
   links?: Prisma.LinkUncheckedUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUncheckedUpdateManyWithoutProfileNestedInput
@@ -621,6 +628,11 @@ export type ProfileScalarRelationFilter = {
   isNot?: Prisma.ProfileWhereInput
 }
 
+export type ProfileNullableScalarRelationFilter = {
+  is?: Prisma.ProfileWhereInput | null
+  isNot?: Prisma.ProfileWhereInput | null
+}
+
 export type StringFieldUpdateOperationsInput = {
   set?: string
 }
@@ -661,12 +673,28 @@ export type ProfileCreateNestedOneWithoutContactsInput = {
   connect?: Prisma.ProfileWhereUniqueInput
 }
 
+export type ProfileCreateNestedOneWithoutLinkedContactsInput = {
+  create?: Prisma.XOR<Prisma.ProfileCreateWithoutLinkedContactsInput, Prisma.ProfileUncheckedCreateWithoutLinkedContactsInput>
+  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutLinkedContactsInput
+  connect?: Prisma.ProfileWhereUniqueInput
+}
+
 export type ProfileUpdateOneRequiredWithoutContactsNestedInput = {
   create?: Prisma.XOR<Prisma.ProfileCreateWithoutContactsInput, Prisma.ProfileUncheckedCreateWithoutContactsInput>
   connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutContactsInput
   upsert?: Prisma.ProfileUpsertWithoutContactsInput
   connect?: Prisma.ProfileWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProfileUpdateToOneWithWhereWithoutContactsInput, Prisma.ProfileUpdateWithoutContactsInput>, Prisma.ProfileUncheckedUpdateWithoutContactsInput>
+}
+
+export type ProfileUpdateOneWithoutLinkedContactsNestedInput = {
+  create?: Prisma.XOR<Prisma.ProfileCreateWithoutLinkedContactsInput, Prisma.ProfileUncheckedCreateWithoutLinkedContactsInput>
+  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutLinkedContactsInput
+  upsert?: Prisma.ProfileUpsertWithoutLinkedContactsInput
+  disconnect?: Prisma.ProfileWhereInput | boolean
+  delete?: Prisma.ProfileWhereInput | boolean
+  connect?: Prisma.ProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProfileUpdateToOneWithWhereWithoutLinkedContactsInput, Prisma.ProfileUpdateWithoutLinkedContactsInput>, Prisma.ProfileUncheckedUpdateWithoutLinkedContactsInput>
 }
 
 export type ProfileCreateNestedOneWithoutNotificationsInput = {
@@ -895,6 +923,7 @@ export type ProfileCreateWithoutSocialsInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   contacts?: Prisma.ContactCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactCreateNestedManyWithoutProfileInput
   links?: Prisma.LinkCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoCreateNestedManyWithoutProfileInput
@@ -928,6 +957,7 @@ export type ProfileUncheckedCreateWithoutSocialsInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactUncheckedCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactUncheckedCreateNestedManyWithoutProfileInput
   links?: Prisma.LinkUncheckedCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoUncheckedCreateNestedManyWithoutProfileInput
@@ -977,6 +1007,7 @@ export type ProfileUpdateWithoutSocialsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   contacts?: Prisma.ContactUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUpdateManyWithoutProfileNestedInput
   links?: Prisma.LinkUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUpdateManyWithoutProfileNestedInput
@@ -1010,6 +1041,7 @@ export type ProfileUncheckedUpdateWithoutSocialsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   contacts?: Prisma.ContactUncheckedUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUncheckedUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUncheckedUpdateManyWithoutProfileNestedInput
   links?: Prisma.LinkUncheckedUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUncheckedUpdateManyWithoutProfileNestedInput
@@ -1043,6 +1075,7 @@ export type ProfileCreateWithoutContactsInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   socials?: Prisma.SocialCreateNestedManyWithoutUserInput
+  linkedContacts?: Prisma.ContactCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactCreateNestedManyWithoutProfileInput
   links?: Prisma.LinkCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoCreateNestedManyWithoutProfileInput
@@ -1076,6 +1109,7 @@ export type ProfileUncheckedCreateWithoutContactsInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   socials?: Prisma.SocialUncheckedCreateNestedManyWithoutUserInput
+  linkedContacts?: Prisma.ContactUncheckedCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactUncheckedCreateNestedManyWithoutProfileInput
   links?: Prisma.LinkUncheckedCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoUncheckedCreateNestedManyWithoutProfileInput
@@ -1096,6 +1130,79 @@ export type ProfileUncheckedCreateWithoutContactsInput = {
 export type ProfileCreateOrConnectWithoutContactsInput = {
   where: Prisma.ProfileWhereUniqueInput
   create: Prisma.XOR<Prisma.ProfileCreateWithoutContactsInput, Prisma.ProfileUncheckedCreateWithoutContactsInput>
+}
+
+export type ProfileCreateWithoutLinkedContactsInput = {
+  id?: string
+  userId: string
+  slug?: string | null
+  profilePhoto?: string | null
+  coverPhoto?: string | null
+  name: string
+  position?: string | null
+  description?: string | null
+  location?: string | null
+  address?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  is_default?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  socials?: Prisma.SocialCreateNestedManyWithoutUserInput
+  contacts?: Prisma.ContactCreateNestedManyWithoutOwnerInput
+  profileContacts?: Prisma.ProfileContactCreateNestedManyWithoutProfileInput
+  links?: Prisma.LinkCreateNestedManyWithoutProfileInput
+  videos?: Prisma.VideoCreateNestedManyWithoutProfileInput
+  meetings?: Prisma.MeetingLinkCreateNestedManyWithoutProfileInput
+  appointments?: Prisma.AppointmentLinkCreateNestedManyWithoutProfileInput
+  spotifyItems?: Prisma.SpotifyItemCreateNestedManyWithoutProfileInput
+  files?: Prisma.FileItemCreateNestedManyWithoutProfileInput
+  forms?: Prisma.FormCreateNestedManyWithoutProfileInput
+  wallets?: Prisma.WalletCreateNestedManyWithoutProfileInput
+  connectConfig?: Prisma.ConnectConfigCreateNestedOneWithoutProfileInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  supportRequests?: Prisma.SupportRequestCreateNestedManyWithoutUserInput
+  cardInteractions?: Prisma.CardInteractionCreateNestedManyWithoutUserInput
+  deviceProfiles?: Prisma.DeviceProfileCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanCreateNestedOneWithoutProfileInput
+}
+
+export type ProfileUncheckedCreateWithoutLinkedContactsInput = {
+  id?: string
+  userId: string
+  slug?: string | null
+  profilePhoto?: string | null
+  coverPhoto?: string | null
+  name: string
+  position?: string | null
+  description?: string | null
+  location?: string | null
+  address?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  is_default?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  socials?: Prisma.SocialUncheckedCreateNestedManyWithoutUserInput
+  contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOwnerInput
+  profileContacts?: Prisma.ProfileContactUncheckedCreateNestedManyWithoutProfileInput
+  links?: Prisma.LinkUncheckedCreateNestedManyWithoutProfileInput
+  videos?: Prisma.VideoUncheckedCreateNestedManyWithoutProfileInput
+  meetings?: Prisma.MeetingLinkUncheckedCreateNestedManyWithoutProfileInput
+  appointments?: Prisma.AppointmentLinkUncheckedCreateNestedManyWithoutProfileInput
+  spotifyItems?: Prisma.SpotifyItemUncheckedCreateNestedManyWithoutProfileInput
+  files?: Prisma.FileItemUncheckedCreateNestedManyWithoutProfileInput
+  forms?: Prisma.FormUncheckedCreateNestedManyWithoutProfileInput
+  wallets?: Prisma.WalletUncheckedCreateNestedManyWithoutProfileInput
+  connectConfig?: Prisma.ConnectConfigUncheckedCreateNestedOneWithoutProfileInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  supportRequests?: Prisma.SupportRequestUncheckedCreateNestedManyWithoutUserInput
+  cardInteractions?: Prisma.CardInteractionUncheckedCreateNestedManyWithoutUserInput
+  deviceProfiles?: Prisma.DeviceProfileUncheckedCreateNestedManyWithoutProfileInput
+  artisan?: Prisma.ArtisanUncheckedCreateNestedOneWithoutProfileInput
+}
+
+export type ProfileCreateOrConnectWithoutLinkedContactsInput = {
+  where: Prisma.ProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProfileCreateWithoutLinkedContactsInput, Prisma.ProfileUncheckedCreateWithoutLinkedContactsInput>
 }
 
 export type ProfileUpsertWithoutContactsInput = {
@@ -1125,6 +1232,7 @@ export type ProfileUpdateWithoutContactsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUpdateManyWithoutUserNestedInput
+  linkedContacts?: Prisma.ContactUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUpdateManyWithoutProfileNestedInput
   links?: Prisma.LinkUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUpdateManyWithoutProfileNestedInput
@@ -1158,6 +1266,86 @@ export type ProfileUncheckedUpdateWithoutContactsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUncheckedUpdateManyWithoutUserNestedInput
+  linkedContacts?: Prisma.ContactUncheckedUpdateManyWithoutContactProfileNestedInput
+  profileContacts?: Prisma.ProfileContactUncheckedUpdateManyWithoutProfileNestedInput
+  links?: Prisma.LinkUncheckedUpdateManyWithoutProfileNestedInput
+  videos?: Prisma.VideoUncheckedUpdateManyWithoutProfileNestedInput
+  meetings?: Prisma.MeetingLinkUncheckedUpdateManyWithoutProfileNestedInput
+  appointments?: Prisma.AppointmentLinkUncheckedUpdateManyWithoutProfileNestedInput
+  spotifyItems?: Prisma.SpotifyItemUncheckedUpdateManyWithoutProfileNestedInput
+  files?: Prisma.FileItemUncheckedUpdateManyWithoutProfileNestedInput
+  forms?: Prisma.FormUncheckedUpdateManyWithoutProfileNestedInput
+  wallets?: Prisma.WalletUncheckedUpdateManyWithoutProfileNestedInput
+  connectConfig?: Prisma.ConnectConfigUncheckedUpdateOneWithoutProfileNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  supportRequests?: Prisma.SupportRequestUncheckedUpdateManyWithoutUserNestedInput
+  cardInteractions?: Prisma.CardInteractionUncheckedUpdateManyWithoutUserNestedInput
+  deviceProfiles?: Prisma.DeviceProfileUncheckedUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUncheckedUpdateOneWithoutProfileNestedInput
+}
+
+export type ProfileUpsertWithoutLinkedContactsInput = {
+  update: Prisma.XOR<Prisma.ProfileUpdateWithoutLinkedContactsInput, Prisma.ProfileUncheckedUpdateWithoutLinkedContactsInput>
+  create: Prisma.XOR<Prisma.ProfileCreateWithoutLinkedContactsInput, Prisma.ProfileUncheckedCreateWithoutLinkedContactsInput>
+  where?: Prisma.ProfileWhereInput
+}
+
+export type ProfileUpdateToOneWithWhereWithoutLinkedContactsInput = {
+  where?: Prisma.ProfileWhereInput
+  data: Prisma.XOR<Prisma.ProfileUpdateWithoutLinkedContactsInput, Prisma.ProfileUncheckedUpdateWithoutLinkedContactsInput>
+}
+
+export type ProfileUpdateWithoutLinkedContactsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profilePhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  position?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  is_default?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  socials?: Prisma.SocialUpdateManyWithoutUserNestedInput
+  contacts?: Prisma.ContactUpdateManyWithoutOwnerNestedInput
+  profileContacts?: Prisma.ProfileContactUpdateManyWithoutProfileNestedInput
+  links?: Prisma.LinkUpdateManyWithoutProfileNestedInput
+  videos?: Prisma.VideoUpdateManyWithoutProfileNestedInput
+  meetings?: Prisma.MeetingLinkUpdateManyWithoutProfileNestedInput
+  appointments?: Prisma.AppointmentLinkUpdateManyWithoutProfileNestedInput
+  spotifyItems?: Prisma.SpotifyItemUpdateManyWithoutProfileNestedInput
+  files?: Prisma.FileItemUpdateManyWithoutProfileNestedInput
+  forms?: Prisma.FormUpdateManyWithoutProfileNestedInput
+  wallets?: Prisma.WalletUpdateManyWithoutProfileNestedInput
+  connectConfig?: Prisma.ConnectConfigUpdateOneWithoutProfileNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  supportRequests?: Prisma.SupportRequestUpdateManyWithoutUserNestedInput
+  cardInteractions?: Prisma.CardInteractionUpdateManyWithoutUserNestedInput
+  deviceProfiles?: Prisma.DeviceProfileUpdateManyWithoutProfileNestedInput
+  artisan?: Prisma.ArtisanUpdateOneWithoutProfileNestedInput
+}
+
+export type ProfileUncheckedUpdateWithoutLinkedContactsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profilePhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  position?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  is_default?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  socials?: Prisma.SocialUncheckedUpdateManyWithoutUserNestedInput
+  contacts?: Prisma.ContactUncheckedUpdateManyWithoutOwnerNestedInput
   profileContacts?: Prisma.ProfileContactUncheckedUpdateManyWithoutProfileNestedInput
   links?: Prisma.LinkUncheckedUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUncheckedUpdateManyWithoutProfileNestedInput
@@ -1192,6 +1380,7 @@ export type ProfileCreateWithoutNotificationsInput = {
   deletedAt?: Date | string | null
   socials?: Prisma.SocialCreateNestedManyWithoutUserInput
   contacts?: Prisma.ContactCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactCreateNestedManyWithoutProfileInput
   links?: Prisma.LinkCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoCreateNestedManyWithoutProfileInput
@@ -1225,6 +1414,7 @@ export type ProfileUncheckedCreateWithoutNotificationsInput = {
   deletedAt?: Date | string | null
   socials?: Prisma.SocialUncheckedCreateNestedManyWithoutUserInput
   contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactUncheckedCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactUncheckedCreateNestedManyWithoutProfileInput
   links?: Prisma.LinkUncheckedCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoUncheckedCreateNestedManyWithoutProfileInput
@@ -1274,6 +1464,7 @@ export type ProfileUpdateWithoutNotificationsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUpdateManyWithoutUserNestedInput
   contacts?: Prisma.ContactUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUpdateManyWithoutProfileNestedInput
   links?: Prisma.LinkUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUpdateManyWithoutProfileNestedInput
@@ -1307,6 +1498,7 @@ export type ProfileUncheckedUpdateWithoutNotificationsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUncheckedUpdateManyWithoutUserNestedInput
   contacts?: Prisma.ContactUncheckedUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUncheckedUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUncheckedUpdateManyWithoutProfileNestedInput
   links?: Prisma.LinkUncheckedUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUncheckedUpdateManyWithoutProfileNestedInput
@@ -1340,6 +1532,7 @@ export type ProfileCreateWithoutSupportRequestsInput = {
   deletedAt?: Date | string | null
   socials?: Prisma.SocialCreateNestedManyWithoutUserInput
   contacts?: Prisma.ContactCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactCreateNestedManyWithoutProfileInput
   links?: Prisma.LinkCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoCreateNestedManyWithoutProfileInput
@@ -1373,6 +1566,7 @@ export type ProfileUncheckedCreateWithoutSupportRequestsInput = {
   deletedAt?: Date | string | null
   socials?: Prisma.SocialUncheckedCreateNestedManyWithoutUserInput
   contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactUncheckedCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactUncheckedCreateNestedManyWithoutProfileInput
   links?: Prisma.LinkUncheckedCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoUncheckedCreateNestedManyWithoutProfileInput
@@ -1422,6 +1616,7 @@ export type ProfileUpdateWithoutSupportRequestsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUpdateManyWithoutUserNestedInput
   contacts?: Prisma.ContactUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUpdateManyWithoutProfileNestedInput
   links?: Prisma.LinkUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUpdateManyWithoutProfileNestedInput
@@ -1455,6 +1650,7 @@ export type ProfileUncheckedUpdateWithoutSupportRequestsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUncheckedUpdateManyWithoutUserNestedInput
   contacts?: Prisma.ContactUncheckedUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUncheckedUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUncheckedUpdateManyWithoutProfileNestedInput
   links?: Prisma.LinkUncheckedUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUncheckedUpdateManyWithoutProfileNestedInput
@@ -1488,6 +1684,7 @@ export type ProfileCreateWithoutCardInteractionsInput = {
   deletedAt?: Date | string | null
   socials?: Prisma.SocialCreateNestedManyWithoutUserInput
   contacts?: Prisma.ContactCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactCreateNestedManyWithoutProfileInput
   links?: Prisma.LinkCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoCreateNestedManyWithoutProfileInput
@@ -1521,6 +1718,7 @@ export type ProfileUncheckedCreateWithoutCardInteractionsInput = {
   deletedAt?: Date | string | null
   socials?: Prisma.SocialUncheckedCreateNestedManyWithoutUserInput
   contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactUncheckedCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactUncheckedCreateNestedManyWithoutProfileInput
   links?: Prisma.LinkUncheckedCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoUncheckedCreateNestedManyWithoutProfileInput
@@ -1570,6 +1768,7 @@ export type ProfileUpdateWithoutCardInteractionsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUpdateManyWithoutUserNestedInput
   contacts?: Prisma.ContactUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUpdateManyWithoutProfileNestedInput
   links?: Prisma.LinkUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUpdateManyWithoutProfileNestedInput
@@ -1603,6 +1802,7 @@ export type ProfileUncheckedUpdateWithoutCardInteractionsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUncheckedUpdateManyWithoutUserNestedInput
   contacts?: Prisma.ContactUncheckedUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUncheckedUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUncheckedUpdateManyWithoutProfileNestedInput
   links?: Prisma.LinkUncheckedUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUncheckedUpdateManyWithoutProfileNestedInput
@@ -1636,6 +1836,7 @@ export type ProfileCreateWithoutProfileContactsInput = {
   deletedAt?: Date | string | null
   socials?: Prisma.SocialCreateNestedManyWithoutUserInput
   contacts?: Prisma.ContactCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactCreateNestedManyWithoutContactProfileInput
   links?: Prisma.LinkCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoCreateNestedManyWithoutProfileInput
   meetings?: Prisma.MeetingLinkCreateNestedManyWithoutProfileInput
@@ -1669,6 +1870,7 @@ export type ProfileUncheckedCreateWithoutProfileContactsInput = {
   deletedAt?: Date | string | null
   socials?: Prisma.SocialUncheckedCreateNestedManyWithoutUserInput
   contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactUncheckedCreateNestedManyWithoutContactProfileInput
   links?: Prisma.LinkUncheckedCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoUncheckedCreateNestedManyWithoutProfileInput
   meetings?: Prisma.MeetingLinkUncheckedCreateNestedManyWithoutProfileInput
@@ -1718,6 +1920,7 @@ export type ProfileUpdateWithoutProfileContactsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUpdateManyWithoutUserNestedInput
   contacts?: Prisma.ContactUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUpdateManyWithoutContactProfileNestedInput
   links?: Prisma.LinkUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUpdateManyWithoutProfileNestedInput
   meetings?: Prisma.MeetingLinkUpdateManyWithoutProfileNestedInput
@@ -1751,6 +1954,7 @@ export type ProfileUncheckedUpdateWithoutProfileContactsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUncheckedUpdateManyWithoutUserNestedInput
   contacts?: Prisma.ContactUncheckedUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUncheckedUpdateManyWithoutContactProfileNestedInput
   links?: Prisma.LinkUncheckedUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUncheckedUpdateManyWithoutProfileNestedInput
   meetings?: Prisma.MeetingLinkUncheckedUpdateManyWithoutProfileNestedInput
@@ -1784,6 +1988,7 @@ export type ProfileCreateWithoutLinksInput = {
   deletedAt?: Date | string | null
   socials?: Prisma.SocialCreateNestedManyWithoutUserInput
   contacts?: Prisma.ContactCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoCreateNestedManyWithoutProfileInput
   meetings?: Prisma.MeetingLinkCreateNestedManyWithoutProfileInput
@@ -1817,6 +2022,7 @@ export type ProfileUncheckedCreateWithoutLinksInput = {
   deletedAt?: Date | string | null
   socials?: Prisma.SocialUncheckedCreateNestedManyWithoutUserInput
   contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactUncheckedCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactUncheckedCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoUncheckedCreateNestedManyWithoutProfileInput
   meetings?: Prisma.MeetingLinkUncheckedCreateNestedManyWithoutProfileInput
@@ -1866,6 +2072,7 @@ export type ProfileUpdateWithoutLinksInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUpdateManyWithoutUserNestedInput
   contacts?: Prisma.ContactUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUpdateManyWithoutProfileNestedInput
   meetings?: Prisma.MeetingLinkUpdateManyWithoutProfileNestedInput
@@ -1899,6 +2106,7 @@ export type ProfileUncheckedUpdateWithoutLinksInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUncheckedUpdateManyWithoutUserNestedInput
   contacts?: Prisma.ContactUncheckedUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUncheckedUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUncheckedUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUncheckedUpdateManyWithoutProfileNestedInput
   meetings?: Prisma.MeetingLinkUncheckedUpdateManyWithoutProfileNestedInput
@@ -1932,6 +2140,7 @@ export type ProfileCreateWithoutVideosInput = {
   deletedAt?: Date | string | null
   socials?: Prisma.SocialCreateNestedManyWithoutUserInput
   contacts?: Prisma.ContactCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactCreateNestedManyWithoutProfileInput
   links?: Prisma.LinkCreateNestedManyWithoutProfileInput
   meetings?: Prisma.MeetingLinkCreateNestedManyWithoutProfileInput
@@ -1965,6 +2174,7 @@ export type ProfileUncheckedCreateWithoutVideosInput = {
   deletedAt?: Date | string | null
   socials?: Prisma.SocialUncheckedCreateNestedManyWithoutUserInput
   contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactUncheckedCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactUncheckedCreateNestedManyWithoutProfileInput
   links?: Prisma.LinkUncheckedCreateNestedManyWithoutProfileInput
   meetings?: Prisma.MeetingLinkUncheckedCreateNestedManyWithoutProfileInput
@@ -2014,6 +2224,7 @@ export type ProfileUpdateWithoutVideosInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUpdateManyWithoutUserNestedInput
   contacts?: Prisma.ContactUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUpdateManyWithoutProfileNestedInput
   links?: Prisma.LinkUpdateManyWithoutProfileNestedInput
   meetings?: Prisma.MeetingLinkUpdateManyWithoutProfileNestedInput
@@ -2047,6 +2258,7 @@ export type ProfileUncheckedUpdateWithoutVideosInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUncheckedUpdateManyWithoutUserNestedInput
   contacts?: Prisma.ContactUncheckedUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUncheckedUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUncheckedUpdateManyWithoutProfileNestedInput
   links?: Prisma.LinkUncheckedUpdateManyWithoutProfileNestedInput
   meetings?: Prisma.MeetingLinkUncheckedUpdateManyWithoutProfileNestedInput
@@ -2080,6 +2292,7 @@ export type ProfileCreateWithoutMeetingsInput = {
   deletedAt?: Date | string | null
   socials?: Prisma.SocialCreateNestedManyWithoutUserInput
   contacts?: Prisma.ContactCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactCreateNestedManyWithoutProfileInput
   links?: Prisma.LinkCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoCreateNestedManyWithoutProfileInput
@@ -2113,6 +2326,7 @@ export type ProfileUncheckedCreateWithoutMeetingsInput = {
   deletedAt?: Date | string | null
   socials?: Prisma.SocialUncheckedCreateNestedManyWithoutUserInput
   contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactUncheckedCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactUncheckedCreateNestedManyWithoutProfileInput
   links?: Prisma.LinkUncheckedCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoUncheckedCreateNestedManyWithoutProfileInput
@@ -2162,6 +2376,7 @@ export type ProfileUpdateWithoutMeetingsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUpdateManyWithoutUserNestedInput
   contacts?: Prisma.ContactUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUpdateManyWithoutProfileNestedInput
   links?: Prisma.LinkUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUpdateManyWithoutProfileNestedInput
@@ -2195,6 +2410,7 @@ export type ProfileUncheckedUpdateWithoutMeetingsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUncheckedUpdateManyWithoutUserNestedInput
   contacts?: Prisma.ContactUncheckedUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUncheckedUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUncheckedUpdateManyWithoutProfileNestedInput
   links?: Prisma.LinkUncheckedUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUncheckedUpdateManyWithoutProfileNestedInput
@@ -2228,6 +2444,7 @@ export type ProfileCreateWithoutAppointmentsInput = {
   deletedAt?: Date | string | null
   socials?: Prisma.SocialCreateNestedManyWithoutUserInput
   contacts?: Prisma.ContactCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactCreateNestedManyWithoutProfileInput
   links?: Prisma.LinkCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoCreateNestedManyWithoutProfileInput
@@ -2261,6 +2478,7 @@ export type ProfileUncheckedCreateWithoutAppointmentsInput = {
   deletedAt?: Date | string | null
   socials?: Prisma.SocialUncheckedCreateNestedManyWithoutUserInput
   contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactUncheckedCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactUncheckedCreateNestedManyWithoutProfileInput
   links?: Prisma.LinkUncheckedCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoUncheckedCreateNestedManyWithoutProfileInput
@@ -2310,6 +2528,7 @@ export type ProfileUpdateWithoutAppointmentsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUpdateManyWithoutUserNestedInput
   contacts?: Prisma.ContactUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUpdateManyWithoutProfileNestedInput
   links?: Prisma.LinkUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUpdateManyWithoutProfileNestedInput
@@ -2343,6 +2562,7 @@ export type ProfileUncheckedUpdateWithoutAppointmentsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUncheckedUpdateManyWithoutUserNestedInput
   contacts?: Prisma.ContactUncheckedUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUncheckedUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUncheckedUpdateManyWithoutProfileNestedInput
   links?: Prisma.LinkUncheckedUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUncheckedUpdateManyWithoutProfileNestedInput
@@ -2376,6 +2596,7 @@ export type ProfileCreateWithoutSpotifyItemsInput = {
   deletedAt?: Date | string | null
   socials?: Prisma.SocialCreateNestedManyWithoutUserInput
   contacts?: Prisma.ContactCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactCreateNestedManyWithoutProfileInput
   links?: Prisma.LinkCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoCreateNestedManyWithoutProfileInput
@@ -2409,6 +2630,7 @@ export type ProfileUncheckedCreateWithoutSpotifyItemsInput = {
   deletedAt?: Date | string | null
   socials?: Prisma.SocialUncheckedCreateNestedManyWithoutUserInput
   contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactUncheckedCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactUncheckedCreateNestedManyWithoutProfileInput
   links?: Prisma.LinkUncheckedCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoUncheckedCreateNestedManyWithoutProfileInput
@@ -2458,6 +2680,7 @@ export type ProfileUpdateWithoutSpotifyItemsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUpdateManyWithoutUserNestedInput
   contacts?: Prisma.ContactUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUpdateManyWithoutProfileNestedInput
   links?: Prisma.LinkUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUpdateManyWithoutProfileNestedInput
@@ -2491,6 +2714,7 @@ export type ProfileUncheckedUpdateWithoutSpotifyItemsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUncheckedUpdateManyWithoutUserNestedInput
   contacts?: Prisma.ContactUncheckedUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUncheckedUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUncheckedUpdateManyWithoutProfileNestedInput
   links?: Prisma.LinkUncheckedUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUncheckedUpdateManyWithoutProfileNestedInput
@@ -2524,6 +2748,7 @@ export type ProfileCreateWithoutFilesInput = {
   deletedAt?: Date | string | null
   socials?: Prisma.SocialCreateNestedManyWithoutUserInput
   contacts?: Prisma.ContactCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactCreateNestedManyWithoutProfileInput
   links?: Prisma.LinkCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoCreateNestedManyWithoutProfileInput
@@ -2557,6 +2782,7 @@ export type ProfileUncheckedCreateWithoutFilesInput = {
   deletedAt?: Date | string | null
   socials?: Prisma.SocialUncheckedCreateNestedManyWithoutUserInput
   contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactUncheckedCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactUncheckedCreateNestedManyWithoutProfileInput
   links?: Prisma.LinkUncheckedCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoUncheckedCreateNestedManyWithoutProfileInput
@@ -2606,6 +2832,7 @@ export type ProfileUpdateWithoutFilesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUpdateManyWithoutUserNestedInput
   contacts?: Prisma.ContactUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUpdateManyWithoutProfileNestedInput
   links?: Prisma.LinkUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUpdateManyWithoutProfileNestedInput
@@ -2639,6 +2866,7 @@ export type ProfileUncheckedUpdateWithoutFilesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUncheckedUpdateManyWithoutUserNestedInput
   contacts?: Prisma.ContactUncheckedUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUncheckedUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUncheckedUpdateManyWithoutProfileNestedInput
   links?: Prisma.LinkUncheckedUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUncheckedUpdateManyWithoutProfileNestedInput
@@ -2672,6 +2900,7 @@ export type ProfileCreateWithoutFormsInput = {
   deletedAt?: Date | string | null
   socials?: Prisma.SocialCreateNestedManyWithoutUserInput
   contacts?: Prisma.ContactCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactCreateNestedManyWithoutProfileInput
   links?: Prisma.LinkCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoCreateNestedManyWithoutProfileInput
@@ -2705,6 +2934,7 @@ export type ProfileUncheckedCreateWithoutFormsInput = {
   deletedAt?: Date | string | null
   socials?: Prisma.SocialUncheckedCreateNestedManyWithoutUserInput
   contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactUncheckedCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactUncheckedCreateNestedManyWithoutProfileInput
   links?: Prisma.LinkUncheckedCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoUncheckedCreateNestedManyWithoutProfileInput
@@ -2754,6 +2984,7 @@ export type ProfileUpdateWithoutFormsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUpdateManyWithoutUserNestedInput
   contacts?: Prisma.ContactUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUpdateManyWithoutProfileNestedInput
   links?: Prisma.LinkUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUpdateManyWithoutProfileNestedInput
@@ -2787,6 +3018,7 @@ export type ProfileUncheckedUpdateWithoutFormsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUncheckedUpdateManyWithoutUserNestedInput
   contacts?: Prisma.ContactUncheckedUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUncheckedUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUncheckedUpdateManyWithoutProfileNestedInput
   links?: Prisma.LinkUncheckedUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUncheckedUpdateManyWithoutProfileNestedInput
@@ -2820,6 +3052,7 @@ export type ProfileCreateWithoutWalletsInput = {
   deletedAt?: Date | string | null
   socials?: Prisma.SocialCreateNestedManyWithoutUserInput
   contacts?: Prisma.ContactCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactCreateNestedManyWithoutProfileInput
   links?: Prisma.LinkCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoCreateNestedManyWithoutProfileInput
@@ -2853,6 +3086,7 @@ export type ProfileUncheckedCreateWithoutWalletsInput = {
   deletedAt?: Date | string | null
   socials?: Prisma.SocialUncheckedCreateNestedManyWithoutUserInput
   contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactUncheckedCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactUncheckedCreateNestedManyWithoutProfileInput
   links?: Prisma.LinkUncheckedCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoUncheckedCreateNestedManyWithoutProfileInput
@@ -2902,6 +3136,7 @@ export type ProfileUpdateWithoutWalletsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUpdateManyWithoutUserNestedInput
   contacts?: Prisma.ContactUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUpdateManyWithoutProfileNestedInput
   links?: Prisma.LinkUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUpdateManyWithoutProfileNestedInput
@@ -2935,6 +3170,7 @@ export type ProfileUncheckedUpdateWithoutWalletsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUncheckedUpdateManyWithoutUserNestedInput
   contacts?: Prisma.ContactUncheckedUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUncheckedUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUncheckedUpdateManyWithoutProfileNestedInput
   links?: Prisma.LinkUncheckedUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUncheckedUpdateManyWithoutProfileNestedInput
@@ -2968,6 +3204,7 @@ export type ProfileCreateWithoutConnectConfigInput = {
   deletedAt?: Date | string | null
   socials?: Prisma.SocialCreateNestedManyWithoutUserInput
   contacts?: Prisma.ContactCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactCreateNestedManyWithoutProfileInput
   links?: Prisma.LinkCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoCreateNestedManyWithoutProfileInput
@@ -3001,6 +3238,7 @@ export type ProfileUncheckedCreateWithoutConnectConfigInput = {
   deletedAt?: Date | string | null
   socials?: Prisma.SocialUncheckedCreateNestedManyWithoutUserInput
   contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactUncheckedCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactUncheckedCreateNestedManyWithoutProfileInput
   links?: Prisma.LinkUncheckedCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoUncheckedCreateNestedManyWithoutProfileInput
@@ -3050,6 +3288,7 @@ export type ProfileUpdateWithoutConnectConfigInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUpdateManyWithoutUserNestedInput
   contacts?: Prisma.ContactUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUpdateManyWithoutProfileNestedInput
   links?: Prisma.LinkUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUpdateManyWithoutProfileNestedInput
@@ -3083,6 +3322,7 @@ export type ProfileUncheckedUpdateWithoutConnectConfigInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUncheckedUpdateManyWithoutUserNestedInput
   contacts?: Prisma.ContactUncheckedUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUncheckedUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUncheckedUpdateManyWithoutProfileNestedInput
   links?: Prisma.LinkUncheckedUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUncheckedUpdateManyWithoutProfileNestedInput
@@ -3116,6 +3356,7 @@ export type ProfileCreateWithoutDeviceProfilesInput = {
   deletedAt?: Date | string | null
   socials?: Prisma.SocialCreateNestedManyWithoutUserInput
   contacts?: Prisma.ContactCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactCreateNestedManyWithoutProfileInput
   links?: Prisma.LinkCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoCreateNestedManyWithoutProfileInput
@@ -3149,6 +3390,7 @@ export type ProfileUncheckedCreateWithoutDeviceProfilesInput = {
   deletedAt?: Date | string | null
   socials?: Prisma.SocialUncheckedCreateNestedManyWithoutUserInput
   contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactUncheckedCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactUncheckedCreateNestedManyWithoutProfileInput
   links?: Prisma.LinkUncheckedCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoUncheckedCreateNestedManyWithoutProfileInput
@@ -3198,6 +3440,7 @@ export type ProfileUpdateWithoutDeviceProfilesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUpdateManyWithoutUserNestedInput
   contacts?: Prisma.ContactUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUpdateManyWithoutProfileNestedInput
   links?: Prisma.LinkUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUpdateManyWithoutProfileNestedInput
@@ -3231,6 +3474,7 @@ export type ProfileUncheckedUpdateWithoutDeviceProfilesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUncheckedUpdateManyWithoutUserNestedInput
   contacts?: Prisma.ContactUncheckedUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUncheckedUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUncheckedUpdateManyWithoutProfileNestedInput
   links?: Prisma.LinkUncheckedUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUncheckedUpdateManyWithoutProfileNestedInput
@@ -3264,6 +3508,7 @@ export type ProfileCreateWithoutArtisanInput = {
   deletedAt?: Date | string | null
   socials?: Prisma.SocialCreateNestedManyWithoutUserInput
   contacts?: Prisma.ContactCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactCreateNestedManyWithoutProfileInput
   links?: Prisma.LinkCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoCreateNestedManyWithoutProfileInput
@@ -3297,6 +3542,7 @@ export type ProfileUncheckedCreateWithoutArtisanInput = {
   deletedAt?: Date | string | null
   socials?: Prisma.SocialUncheckedCreateNestedManyWithoutUserInput
   contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutOwnerInput
+  linkedContacts?: Prisma.ContactUncheckedCreateNestedManyWithoutContactProfileInput
   profileContacts?: Prisma.ProfileContactUncheckedCreateNestedManyWithoutProfileInput
   links?: Prisma.LinkUncheckedCreateNestedManyWithoutProfileInput
   videos?: Prisma.VideoUncheckedCreateNestedManyWithoutProfileInput
@@ -3346,6 +3592,7 @@ export type ProfileUpdateWithoutArtisanInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUpdateManyWithoutUserNestedInput
   contacts?: Prisma.ContactUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUpdateManyWithoutProfileNestedInput
   links?: Prisma.LinkUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUpdateManyWithoutProfileNestedInput
@@ -3379,6 +3626,7 @@ export type ProfileUncheckedUpdateWithoutArtisanInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   socials?: Prisma.SocialUncheckedUpdateManyWithoutUserNestedInput
   contacts?: Prisma.ContactUncheckedUpdateManyWithoutOwnerNestedInput
+  linkedContacts?: Prisma.ContactUncheckedUpdateManyWithoutContactProfileNestedInput
   profileContacts?: Prisma.ProfileContactUncheckedUpdateManyWithoutProfileNestedInput
   links?: Prisma.LinkUncheckedUpdateManyWithoutProfileNestedInput
   videos?: Prisma.VideoUncheckedUpdateManyWithoutProfileNestedInput
@@ -3403,6 +3651,7 @@ export type ProfileUncheckedUpdateWithoutArtisanInput = {
 export type ProfileCountOutputType = {
   socials: number
   contacts: number
+  linkedContacts: number
   profileContacts: number
   links: number
   videos: number
@@ -3421,6 +3670,7 @@ export type ProfileCountOutputType = {
 export type ProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   socials?: boolean | ProfileCountOutputTypeCountSocialsArgs
   contacts?: boolean | ProfileCountOutputTypeCountContactsArgs
+  linkedContacts?: boolean | ProfileCountOutputTypeCountLinkedContactsArgs
   profileContacts?: boolean | ProfileCountOutputTypeCountProfileContactsArgs
   links?: boolean | ProfileCountOutputTypeCountLinksArgs
   videos?: boolean | ProfileCountOutputTypeCountVideosArgs
@@ -3457,6 +3707,13 @@ export type ProfileCountOutputTypeCountSocialsArgs<ExtArgs extends runtime.Types
  * ProfileCountOutputType without action
  */
 export type ProfileCountOutputTypeCountContactsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ContactWhereInput
+}
+
+/**
+ * ProfileCountOutputType without action
+ */
+export type ProfileCountOutputTypeCountLinkedContactsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ContactWhereInput
 }
 
@@ -3569,6 +3826,7 @@ export type ProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   deletedAt?: boolean
   socials?: boolean | Prisma.Profile$socialsArgs<ExtArgs>
   contacts?: boolean | Prisma.Profile$contactsArgs<ExtArgs>
+  linkedContacts?: boolean | Prisma.Profile$linkedContactsArgs<ExtArgs>
   profileContacts?: boolean | Prisma.Profile$profileContactsArgs<ExtArgs>
   links?: boolean | Prisma.Profile$linksArgs<ExtArgs>
   videos?: boolean | Prisma.Profile$videosArgs<ExtArgs>
@@ -3642,6 +3900,7 @@ export type ProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
 export type ProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   socials?: boolean | Prisma.Profile$socialsArgs<ExtArgs>
   contacts?: boolean | Prisma.Profile$contactsArgs<ExtArgs>
+  linkedContacts?: boolean | Prisma.Profile$linkedContactsArgs<ExtArgs>
   profileContacts?: boolean | Prisma.Profile$profileContactsArgs<ExtArgs>
   links?: boolean | Prisma.Profile$linksArgs<ExtArgs>
   videos?: boolean | Prisma.Profile$videosArgs<ExtArgs>
@@ -3667,6 +3926,7 @@ export type $ProfilePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   objects: {
     socials: Prisma.$SocialPayload<ExtArgs>[]
     contacts: Prisma.$ContactPayload<ExtArgs>[]
+    linkedContacts: Prisma.$ContactPayload<ExtArgs>[]
     profileContacts: Prisma.$ProfileContactPayload<ExtArgs>[]
     links: Prisma.$LinkPayload<ExtArgs>[]
     videos: Prisma.$VideoPayload<ExtArgs>[]
@@ -4094,6 +4354,7 @@ export interface Prisma__ProfileClient<T, Null = never, ExtArgs extends runtime.
   readonly [Symbol.toStringTag]: "PrismaPromise"
   socials<T extends Prisma.Profile$socialsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$socialsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SocialPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   contacts<T extends Prisma.Profile$contactsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$contactsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  linkedContacts<T extends Prisma.Profile$linkedContactsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$linkedContactsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   profileContacts<T extends Prisma.Profile$profileContactsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$profileContactsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProfileContactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   links<T extends Prisma.Profile$linksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$linksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   videos<T extends Prisma.Profile$videosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$videosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VideoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -4567,6 +4828,30 @@ export type Profile$socialsArgs<ExtArgs extends runtime.Types.Extensions.Interna
  * Profile.contacts
  */
 export type Profile$contactsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Contact
+   */
+  select?: Prisma.ContactSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Contact
+   */
+  omit?: Prisma.ContactOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ContactInclude<ExtArgs> | null
+  where?: Prisma.ContactWhereInput
+  orderBy?: Prisma.ContactOrderByWithRelationInput | Prisma.ContactOrderByWithRelationInput[]
+  cursor?: Prisma.ContactWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ContactScalarFieldEnum | Prisma.ContactScalarFieldEnum[]
+}
+
+/**
+ * Profile.linkedContacts
+ */
+export type Profile$linkedContactsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the Contact
    */

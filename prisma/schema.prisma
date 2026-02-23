@@ -30,7 +30,8 @@ model Profile {
   deletedAt        DateTime?
   // Relations
   socials          Social[]
-  contacts         Contact[]
+  contacts         Contact[]         @relation("ContactOwner")
+  linkedContacts   Contact[]         @relation("ContactProfile")
   profileContacts  ProfileContact[]
   links            Link[]
   videos           Video[]
@@ -64,20 +65,29 @@ model Social {
   deletedAt  DateTime?
 }
 
+enum ContactStatus {
+  PENDING
+  ACCEPTED
+}
+
 model Contact {
-  id        String    @id @default(uuid())
-  owner     Profile   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  ownerId   String
-  firstName String?
-  lastName  String?
-  email     String?
-  phone     String?
-  note      String?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  id               String        @id @default(uuid())
+  owner            Profile       @relation("ContactOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId          String
+  contactProfile   Profile?      @relation("ContactProfile", fields: [contactProfileId], references: [id], onDelete: SetNull)
+  contactProfileId String?
+  status           ContactStatus @default(PENDING)
+  firstName        String?
+  lastName         String?
+  email            String?
+  phone            String?
+  note             String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  deletedAt        DateTime?
 
   @@index([ownerId])
+  @@index([contactProfileId])
 }
 
 // model ShareSetting {
@@ -486,7 +496,7 @@ model ArtisanService {
   artisanId   String
   name        String
   description String?
-  price       Decimal   @db.Decimal(18, 4)
+  price       Decimal?  @db.Decimal(18, 4)
   currency    String    @default("NGN")
   duration    Int? // Duration in minutes (optional)
   isActive    Boolean   @default(true)

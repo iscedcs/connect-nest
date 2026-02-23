@@ -234,7 +234,7 @@ export type ArtisanServiceGroupByOutputType = {
   artisanId: string
   name: string
   description: string | null
-  price: runtime.Decimal
+  price: runtime.Decimal | null
   currency: string
   duration: number | null
   isActive: boolean
@@ -272,7 +272,7 @@ export type ArtisanServiceWhereInput = {
   artisanId?: Prisma.StringFilter<"ArtisanService"> | string
   name?: Prisma.StringFilter<"ArtisanService"> | string
   description?: Prisma.StringNullableFilter<"ArtisanService"> | string | null
-  price?: Prisma.DecimalFilter<"ArtisanService"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  price?: Prisma.DecimalNullableFilter<"ArtisanService"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFilter<"ArtisanService"> | string
   duration?: Prisma.IntNullableFilter<"ArtisanService"> | number | null
   isActive?: Prisma.BoolFilter<"ArtisanService"> | boolean
@@ -289,7 +289,7 @@ export type ArtisanServiceOrderByWithRelationInput = {
   artisanId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
-  price?: Prisma.SortOrder
+  price?: Prisma.SortOrderInput | Prisma.SortOrder
   currency?: Prisma.SortOrder
   duration?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -309,7 +309,7 @@ export type ArtisanServiceWhereUniqueInput = Prisma.AtLeast<{
   artisanId?: Prisma.StringFilter<"ArtisanService"> | string
   name?: Prisma.StringFilter<"ArtisanService"> | string
   description?: Prisma.StringNullableFilter<"ArtisanService"> | string | null
-  price?: Prisma.DecimalFilter<"ArtisanService"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  price?: Prisma.DecimalNullableFilter<"ArtisanService"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFilter<"ArtisanService"> | string
   duration?: Prisma.IntNullableFilter<"ArtisanService"> | number | null
   isActive?: Prisma.BoolFilter<"ArtisanService"> | boolean
@@ -326,7 +326,7 @@ export type ArtisanServiceOrderByWithAggregationInput = {
   artisanId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
-  price?: Prisma.SortOrder
+  price?: Prisma.SortOrderInput | Prisma.SortOrder
   currency?: Prisma.SortOrder
   duration?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -349,7 +349,7 @@ export type ArtisanServiceScalarWhereWithAggregatesInput = {
   artisanId?: Prisma.StringWithAggregatesFilter<"ArtisanService"> | string
   name?: Prisma.StringWithAggregatesFilter<"ArtisanService"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"ArtisanService"> | string | null
-  price?: Prisma.DecimalWithAggregatesFilter<"ArtisanService"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  price?: Prisma.DecimalNullableWithAggregatesFilter<"ArtisanService"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringWithAggregatesFilter<"ArtisanService"> | string
   duration?: Prisma.IntNullableWithAggregatesFilter<"ArtisanService"> | number | null
   isActive?: Prisma.BoolWithAggregatesFilter<"ArtisanService"> | boolean
@@ -363,7 +363,7 @@ export type ArtisanServiceCreateInput = {
   id?: string
   name: string
   description?: string | null
-  price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
   duration?: number | null
   isActive?: boolean
@@ -380,7 +380,7 @@ export type ArtisanServiceUncheckedCreateInput = {
   artisanId: string
   name: string
   description?: string | null
-  price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
   duration?: number | null
   isActive?: boolean
@@ -395,7 +395,7 @@ export type ArtisanServiceUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  price?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -412,7 +412,7 @@ export type ArtisanServiceUncheckedUpdateInput = {
   artisanId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  price?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -428,7 +428,7 @@ export type ArtisanServiceCreateManyInput = {
   artisanId: string
   name: string
   description?: string | null
-  price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
   duration?: number | null
   isActive?: boolean
@@ -442,7 +442,7 @@ export type ArtisanServiceUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  price?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -457,7 +457,7 @@ export type ArtisanServiceUncheckedUpdateManyInput = {
   artisanId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  price?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -581,6 +581,14 @@ export type ArtisanServiceUncheckedUpdateManyWithoutArtisanNestedInput = {
   deleteMany?: Prisma.ArtisanServiceScalarWhereInput | Prisma.ArtisanServiceScalarWhereInput[]
 }
 
+export type NullableDecimalFieldUpdateOperationsInput = {
+  set?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
+}
+
 export type ArtisanServiceCreateNestedOneWithoutBookingsInput = {
   create?: Prisma.XOR<Prisma.ArtisanServiceCreateWithoutBookingsInput, Prisma.ArtisanServiceUncheckedCreateWithoutBookingsInput>
   connectOrCreate?: Prisma.ArtisanServiceCreateOrConnectWithoutBookingsInput
@@ -601,7 +609,7 @@ export type ArtisanServiceCreateWithoutArtisanInput = {
   id?: string
   name: string
   description?: string | null
-  price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
   duration?: number | null
   isActive?: boolean
@@ -616,7 +624,7 @@ export type ArtisanServiceUncheckedCreateWithoutArtisanInput = {
   id?: string
   name: string
   description?: string | null
-  price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
   duration?: number | null
   isActive?: boolean
@@ -661,7 +669,7 @@ export type ArtisanServiceScalarWhereInput = {
   artisanId?: Prisma.StringFilter<"ArtisanService"> | string
   name?: Prisma.StringFilter<"ArtisanService"> | string
   description?: Prisma.StringNullableFilter<"ArtisanService"> | string | null
-  price?: Prisma.DecimalFilter<"ArtisanService"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  price?: Prisma.DecimalNullableFilter<"ArtisanService"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFilter<"ArtisanService"> | string
   duration?: Prisma.IntNullableFilter<"ArtisanService"> | number | null
   isActive?: Prisma.BoolFilter<"ArtisanService"> | boolean
@@ -675,7 +683,7 @@ export type ArtisanServiceCreateWithoutBookingsInput = {
   id?: string
   name: string
   description?: string | null
-  price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
   duration?: number | null
   isActive?: boolean
@@ -691,7 +699,7 @@ export type ArtisanServiceUncheckedCreateWithoutBookingsInput = {
   artisanId: string
   name: string
   description?: string | null
-  price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
   duration?: number | null
   isActive?: boolean
@@ -721,7 +729,7 @@ export type ArtisanServiceUpdateWithoutBookingsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  price?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -737,7 +745,7 @@ export type ArtisanServiceUncheckedUpdateWithoutBookingsInput = {
   artisanId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  price?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -751,7 +759,7 @@ export type ArtisanServiceCreateManyArtisanInput = {
   id?: string
   name: string
   description?: string | null
-  price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
   duration?: number | null
   isActive?: boolean
@@ -765,7 +773,7 @@ export type ArtisanServiceUpdateWithoutArtisanInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  price?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -780,7 +788,7 @@ export type ArtisanServiceUncheckedUpdateWithoutArtisanInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  price?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -795,7 +803,7 @@ export type ArtisanServiceUncheckedUpdateManyWithoutArtisanInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  price?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -925,7 +933,7 @@ export type $ArtisanServicePayload<ExtArgs extends runtime.Types.Extensions.Inte
     artisanId: string
     name: string
     description: string | null
-    price: runtime.Decimal
+    price: runtime.Decimal | null
     currency: string
     duration: number | null
     isActive: boolean
