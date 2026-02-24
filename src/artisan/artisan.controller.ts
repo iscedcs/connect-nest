@@ -263,6 +263,19 @@ export class ArtisanController {
     );
   }
 
+  @Get('bookings/detail/:bookingId')
+  @ApiOperation({ summary: 'Get a single booking by ID' })
+  @ApiResponse({ status: 200, description: 'Booking returned' })
+  @ApiResponse({ status: 404, description: 'Booking not found' })
+  async getBookingById(
+    @Request() req,
+    @Param('bookingId') bookingId: string,
+  ) {
+    const user = req.isce_auth;
+    if (!user) return { success: false, message: 'User not found' };
+    return this.artisanService.getBookingById(user.id, bookingId);
+  }
+
   @Post('bookings/:profileId/:bookingId/confirm')
   @ApiOperation({ summary: 'Confirm a pending booking' })
   @ApiResponse({ status: 200, description: 'Booking confirmed' })

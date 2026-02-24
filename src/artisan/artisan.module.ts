@@ -9,6 +9,7 @@ import {
 import { ThreadController } from './thread.controller';
 import { ArtisanService } from './artisan.service';
 import { ThreadService } from './thread.service';
+import { ThreadEventService } from './thread-event.service';
 import { DatabaseService } from '../database/database.service';
 
 @Module({
@@ -19,7 +20,7 @@ import { DatabaseService } from '../database/database.service';
     ArtisanAdminController,
     ThreadController,
   ],
-  providers: [ArtisanService, ThreadService, DatabaseService],
-  exports: [ArtisanService, ThreadService],
+  providers: [ArtisanService, ThreadService, ThreadEventService, DatabaseService],
+  exports: [ArtisanService, ThreadService, ThreadEventService],
 })
 export class ArtisanModule {}

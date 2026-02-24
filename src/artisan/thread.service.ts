@@ -16,10 +16,21 @@ import {
   DisputePaymentDto,
   ThreadQueryDto,
 } from './dto/artisan.dto';
+import { ThreadEventService } from './thread-event.service';
 
 @Injectable()
 export class ThreadService {
-  constructor(private readonly db: DatabaseService) {}
+  constructor(
+    private readonly db: DatabaseService,
+    private readonly events: ThreadEventService,
+  ) {}
+
+  /**
+   * Public wrapper around findAndValidateThread (used by SSE endpoint).
+   */
+  async validateParticipant(threadId: string, userId: string) {
+    await this.findAndValidateThread(threadId, userId);
+  }
 
   // ─── Thread CRUD ────────────────────────────────────────
 
@@ -210,6 +221,13 @@ export class ThreadService {
       return msg;
     });
 
+    // SSE: notify other participant
+    this.events.emit('new_message', threadId, {
+      message,
+      senderUserId: userId,
+      senderRole,
+    });
+
     return { success: true, message: 'Message sent', data: message };
   }
 
@@ -282,6 +300,16 @@ export class ThreadService {
       });
 
       return msg;
+    });
+
+    // SSE: notify client about new proposal
+    this.events.emit('new_message', threadId, {
+      message,
+      senderUserId: userId,
+      senderRole: 'ARTISAN',
+    });
+    this.events.emit('status_changed', threadId, {
+      status: 'PROPOSAL_SENT',
     });
 
     return { success: true, message: 'Proposal sent', data: message };
@@ -377,6 +405,12 @@ export class ThreadService {
       return booking;
     });
 
+    // SSE: notify artisan about acceptance
+    this.events.emit('status_changed', threadId, {
+      status: 'BOOKED',
+      booking: result,
+    });
+
     return {
       success: true,
       message: 'Proposal accepted, booking created',
@@ -434,6 +468,12 @@ export class ThreadService {
       });
     });
 
+    // SSE: notify artisan about decline
+    this.events.emit('status_changed', threadId, {
+      status: 'OPEN',
+      reason: dto.reason || null,
+    });
+
     return { success: true, message: 'Proposal declined' };
   }
 
@@ -470,13 +510,18 @@ export class ThreadService {
       });
     });
 
+    // SSE: notify other participant
+    this.events.emit('thread_closed', threadId, {
+      closedBy: role,
+    });
+
     return { success: true, message: 'Thread closed' };
   }
 
   // ─── Payment Confirmation ───────────────────────────────
 
   /**
-   * Client confirms they have sent payment (for OFFLINE bookings).
+   * Client confirms they have sent payment.
    */
   async confirmPaymentSent(
     bookingId: string,
@@ -487,13 +532,10 @@ export class ThreadService {
       where: {
         id: bookingId,
         customerUserId: userId,
-        paymentMethod: 'OFFLINE',
       },
     });
     if (!booking) {
-      throw new NotFoundException(
-        'Booking not found or not an offline payment',
-      );
+      throw new NotFoundException('Booking not found');
     }
 
     if (booking.clientPaymentConfirmed) {
@@ -539,6 +581,19 @@ export class ThreadService {
       return result;
     });
 
+    // SSE: notify artisan about client payment confirmation
+    const paymentThread = await this.db.bookingThread.findFirst({
+      where: { bookingId },
+    });
+    if (paymentThread) {
+      this.events.emit('payment_update', paymentThread.id, {
+        action: 'payment_sent',
+        clientConfirmed: true,
+        artisanConfirmed: updated.artisanPaymentConfirmed,
+        isPaid: updated.artisanPaymentConfirmed,
+      });
+    }
+
     return {
       success: true,
       message: 'Payment confirmation recorded',
@@ -551,13 +606,13 @@ export class ThreadService {
   }
 
   /**
-   * Artisan confirms they have received payment (for OFFLINE bookings).
+   * Artisan confirms they have received payment.
    */
   async confirmPaymentReceived(
     bookingId: string,
     userId: string,
     profileId: string,
-    _dto: ConfirmPaymentDto,
+    _dto?: ConfirmPaymentDto,
   ) {
     const artisan = await this.findOwnArtisan(userId, profileId);
 
@@ -565,13 +620,10 @@ export class ThreadService {
       where: {
         id: bookingId,
         artisanId: artisan.id,
-        paymentMethod: 'OFFLINE',
       },
     });
     if (!booking) {
-      throw new NotFoundException(
-        'Booking not found or not an offline payment',
-      );
+      throw new NotFoundException('Booking not found');
     }
 
     if (booking.artisanPaymentConfirmed) {
@@ -613,6 +665,19 @@ export class ThreadService {
 
       return result;
     });
+
+    // SSE: notify client about artisan payment receipt
+    const receiptThread = await this.db.bookingThread.findFirst({
+      where: { bookingId },
+    });
+    if (receiptThread) {
+      this.events.emit('payment_update', receiptThread.id, {
+        action: 'payment_received',
+        clientConfirmed: updated.clientPaymentConfirmed,
+        artisanConfirmed: true,
+        isPaid: updated.clientPaymentConfirmed,
+      });
+    }
 
     return {
       success: true,
@@ -681,6 +746,18 @@ export class ThreadService {
 
       return result;
     });
+
+    // SSE: notify other participant about dispute
+    const disputeThread = await this.db.bookingThread.findFirst({
+      where: { bookingId },
+    });
+    if (disputeThread) {
+      this.events.emit('payment_update', disputeThread.id, {
+        action: 'payment_disputed',
+        reason: dto.reason,
+        disputedBy: isClient ? 'CLIENT' : 'ARTISAN',
+      });
+    }
 
     return {
       success: true,

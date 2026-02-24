@@ -3,6 +3,7 @@ import {
   BadRequestException,
   NotFoundException,
   ConflictException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { Prisma } from '../generated/prisma/client';
@@ -504,6 +505,60 @@ export class ArtisanService {
     });
 
     return { success: true, message: 'Booking confirmed', data: updated };
+  }
+
+  /**
+   * Get a single booking by ID. Accessible by the artisan who owns it
+   * or the customer who made it.
+   */
+  async getBookingById(userId: string, bookingId: string) {
+    const booking = await this.databaseService.booking.findFirst({
+      where: { id: bookingId },
+      include: {
+        service: true,
+        artisan: {
+          include: {
+            profile: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                profilePhoto: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!booking) {
+      throw new NotFoundException('Booking not found');
+    }
+
+    // Verify the user is a participant
+    const isCustomer = booking.customerUserId === userId;
+    const isArtisan = booking.artisan?.userId === userId;
+
+    if (!isCustomer && !isArtisan) {
+      throw new ForbiddenException(
+        'You are not a participant of this booking',
+      );
+    }
+
+    // Find associated thread if any
+    const thread = await this.databaseService.bookingThread.findFirst({
+      where: { bookingId: booking.id },
+      select: { id: true, status: true },
+    });
+
+    return {
+      success: true,
+      data: {
+        ...booking,
+        thread: thread || null,
+        viewerRole: isCustomer ? 'CLIENT' : 'ARTISAN',
+      },
+    };
   }
 
   async startBooking(userId: string, profileId: string, bookingId: string) {
