@@ -6,7 +6,6 @@ import {
   Param,
   Query,
   Request,
-  Sse,
   ValidationPipe,
 } from '@nestjs/common';
 import {
@@ -17,7 +16,6 @@ import {
   ApiQuery,
 } from '@nestjs/swagger';
 import { ThreadService } from './thread.service';
-import { ThreadEventService } from './thread-event.service';
 import {
   CreateThreadDto,
   SendMessageDto,
@@ -37,10 +35,7 @@ import {
 @ApiBearerAuth('access-token')
 @Controller('threads')
 export class ThreadController {
-  constructor(
-    private readonly threadService: ThreadService,
-    private readonly threadEventService: ThreadEventService,
-  ) {}
+  constructor(private readonly threadService: ThreadService) {}
 
   // ─── Thread CRUD ──────────────────────────────────────
 
@@ -106,21 +101,6 @@ export class ThreadController {
     const user = req.isce_auth;
     if (!user) return { success: false, message: 'User not found' };
     return this.threadService.getThread(threadId, user.id);
-  }
-
-  // ─── SSE (real-time) ─────────────────────────────────
-
-  @Sse(':threadId/events')
-  @ApiOperation({
-    summary: 'Subscribe to real-time events for a thread (SSE)',
-  })
-  @ApiResponse({ status: 200, description: 'SSE stream opened' })
-  sseEvents(@Request() req, @Param('threadId') threadId: string) {
-    const user = req.isce_auth;
-    if (!user) return;
-    // Validate participant (will throw if not)
-    this.threadService.validateParticipant(threadId, user.id);
-    return this.threadEventService.subscribe(threadId);
   }
 
   // ─── Messaging ────────────────────────────────────────
