@@ -34,7 +34,15 @@ export const NotificationType = {
   BOOKING_COMPLETED: 'BOOKING_COMPLETED',
   REVIEW_RECEIVED: 'REVIEW_RECEIVED',
   PROMOTION_STARTED: 'PROMOTION_STARTED',
-  PROMOTION_EXPIRED: 'PROMOTION_EXPIRED'
+  PROMOTION_EXPIRED: 'PROMOTION_EXPIRED',
+  THREAD_NEW_INQUIRY: 'THREAD_NEW_INQUIRY',
+  THREAD_NEW_MESSAGE: 'THREAD_NEW_MESSAGE',
+  THREAD_PROPOSAL_RECEIVED: 'THREAD_PROPOSAL_RECEIVED',
+  THREAD_PROPOSAL_ACCEPTED: 'THREAD_PROPOSAL_ACCEPTED',
+  THREAD_PROPOSAL_DECLINED: 'THREAD_PROPOSAL_DECLINED',
+  PAYMENT_SENT_CONFIRMED: 'PAYMENT_SENT_CONFIRMED',
+  PAYMENT_RECEIVED_CONFIRMED: 'PAYMENT_RECEIVED_CONFIRMED',
+  PAYMENT_DISPUTED: 'PAYMENT_DISPUTED'
 } as const
 
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
@@ -103,3 +111,55 @@ export const PromotionStatus = {
 } as const
 
 export type PromotionStatus = (typeof PromotionStatus)[keyof typeof PromotionStatus]
+
+
+export const ThreadStatus = {
+  OPEN: 'OPEN',
+  PROPOSAL_SENT: 'PROPOSAL_SENT',
+  BOOKED: 'BOOKED',
+  CLOSED: 'CLOSED'
+} as const
+
+export type ThreadStatus = (typeof ThreadStatus)[keyof typeof ThreadStatus]
+
+
+export const ThreadMessageType = {
+  TEXT: 'TEXT',
+  PROPOSAL: 'PROPOSAL',
+  SYSTEM: 'SYSTEM'
+} as const
+
+export type ThreadMessageType = (typeof ThreadMessageType)[keyof typeof ThreadMessageType]
+
+
+export const SenderRole = {
+  CLIENT: 'CLIENT',
+  ARTISAN: 'ARTISAN'
+} as const
+
+export type SenderRole = (typeof SenderRole)[keyof typeof SenderRole]
+
+
+export const PaymentMethod = {
+  WALLET: 'WALLET',
+  OFFLINE: 'OFFLINE',
+  NONE: 'NONE'
+} as const
+
+export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod]
+
+
+export const PaymentTiming = {
+  UPFRONT: 'UPFRONT',
+  ON_COMPLETION: 'ON_COMPLETION'
+} as const
+
+export type PaymentTiming = (typeof PaymentTiming)[keyof typeof PaymentTiming]
+
+
+export const PaymentDisputedBy = {
+  CLIENT: 'CLIENT',
+  ARTISAN: 'ARTISAN'
+} as const
+
+export type PaymentDisputedBy = (typeof PaymentDisputedBy)[keyof typeof PaymentDisputedBy]

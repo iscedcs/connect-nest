@@ -75,6 +75,8 @@ export const ModelName = {
   ArtisanCategoryMap: 'ArtisanCategoryMap',
   ArtisanService: 'ArtisanService',
   PortfolioItem: 'PortfolioItem',
+  BookingThread: 'BookingThread',
+  ThreadMessage: 'ThreadMessage',
   Booking: 'Booking',
   Review: 'Review',
   Promotion: 'Promotion',
@@ -477,6 +479,41 @@ export const PortfolioItemScalarFieldEnum = {
 export type PortfolioItemScalarFieldEnum = (typeof PortfolioItemScalarFieldEnum)[keyof typeof PortfolioItemScalarFieldEnum]
 
 
+export const BookingThreadScalarFieldEnum = {
+  id: 'id',
+  artisanId: 'artisanId',
+  serviceId: 'serviceId',
+  clientUserId: 'clientUserId',
+  clientProfileId: 'clientProfileId',
+  clientName: 'clientName',
+  clientPhone: 'clientPhone',
+  status: 'status',
+  bookingId: 'bookingId',
+  lastMessageAt: 'lastMessageAt',
+  closedAt: 'closedAt',
+  closedBy: 'closedBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BookingThreadScalarFieldEnum = (typeof BookingThreadScalarFieldEnum)[keyof typeof BookingThreadScalarFieldEnum]
+
+
+export const ThreadMessageScalarFieldEnum = {
+  id: 'id',
+  threadId: 'threadId',
+  senderUserId: 'senderUserId',
+  senderRole: 'senderRole',
+  type: 'type',
+  content: 'content',
+  proposalData: 'proposalData',
+  isRead: 'isRead',
+  createdAt: 'createdAt'
+} as const
+
+export type ThreadMessageScalarFieldEnum = (typeof ThreadMessageScalarFieldEnum)[keyof typeof ThreadMessageScalarFieldEnum]
+
+
 export const BookingScalarFieldEnum = {
   id: 'id',
   artisanId: 'artisanId',
@@ -491,9 +528,19 @@ export const BookingScalarFieldEnum = {
   agreedPrice: 'agreedPrice',
   currency: 'currency',
   commissionAmount: 'commissionAmount',
+  paymentMethod: 'paymentMethod',
+  paymentTiming: 'paymentTiming',
   paymentReference: 'paymentReference',
   isPaid: 'isPaid',
   paidAt: 'paidAt',
+  clientPaymentConfirmed: 'clientPaymentConfirmed',
+  clientPaymentConfirmedAt: 'clientPaymentConfirmedAt',
+  artisanPaymentConfirmed: 'artisanPaymentConfirmed',
+  artisanPaymentConfirmedAt: 'artisanPaymentConfirmedAt',
+  paymentDisputed: 'paymentDisputed',
+  paymentDisputeReason: 'paymentDisputeReason',
+  paymentDisputedAt: 'paymentDisputedAt',
+  paymentDisputedBy: 'paymentDisputedBy',
   status: 'status',
   note: 'note',
   cancelledBy: 'cancelledBy',

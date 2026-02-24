@@ -408,6 +408,8 @@ export const ModelName = {
   ArtisanCategoryMap: 'ArtisanCategoryMap',
   ArtisanService: 'ArtisanService',
   PortfolioItem: 'PortfolioItem',
+  BookingThread: 'BookingThread',
+  ThreadMessage: 'ThreadMessage',
   Booking: 'Booking',
   Review: 'Review',
   Promotion: 'Promotion',
@@ -427,7 +429,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "profile" | "social" | "contact" | "notification" | "supportRequest" | "cardInteraction" | "profileContact" | "link" | "video" | "meetingLink" | "appointmentLink" | "spotifyItem" | "fileItem" | "form" | "formTemplate" | "submission" | "wallet" | "connectConfig" | "deviceProfile" | "artisan" | "artisanCategory" | "artisanCategoryMap" | "artisanService" | "portfolioItem" | "booking" | "review" | "promotion" | "platformSetting"
+    modelProps: "profile" | "social" | "contact" | "notification" | "supportRequest" | "cardInteraction" | "profileContact" | "link" | "video" | "meetingLink" | "appointmentLink" | "spotifyItem" | "fileItem" | "form" | "formTemplate" | "submission" | "wallet" | "connectConfig" | "deviceProfile" | "artisan" | "artisanCategory" | "artisanCategoryMap" | "artisanService" | "portfolioItem" | "bookingThread" | "threadMessage" | "booking" | "review" | "promotion" | "platformSetting"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2207,6 +2209,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    BookingThread: {
+      payload: Prisma.$BookingThreadPayload<ExtArgs>
+      fields: Prisma.BookingThreadFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BookingThreadFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingThreadPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BookingThreadFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingThreadPayload>
+        }
+        findFirst: {
+          args: Prisma.BookingThreadFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingThreadPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BookingThreadFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingThreadPayload>
+        }
+        findMany: {
+          args: Prisma.BookingThreadFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingThreadPayload>[]
+        }
+        create: {
+          args: Prisma.BookingThreadCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingThreadPayload>
+        }
+        createMany: {
+          args: Prisma.BookingThreadCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BookingThreadCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingThreadPayload>[]
+        }
+        delete: {
+          args: Prisma.BookingThreadDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingThreadPayload>
+        }
+        update: {
+          args: Prisma.BookingThreadUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingThreadPayload>
+        }
+        deleteMany: {
+          args: Prisma.BookingThreadDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BookingThreadUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BookingThreadUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingThreadPayload>[]
+        }
+        upsert: {
+          args: Prisma.BookingThreadUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingThreadPayload>
+        }
+        aggregate: {
+          args: Prisma.BookingThreadAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBookingThread>
+        }
+        groupBy: {
+          args: Prisma.BookingThreadGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BookingThreadGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BookingThreadCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BookingThreadCountAggregateOutputType> | number
+        }
+      }
+    }
+    ThreadMessage: {
+      payload: Prisma.$ThreadMessagePayload<ExtArgs>
+      fields: Prisma.ThreadMessageFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ThreadMessageFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ThreadMessagePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ThreadMessageFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ThreadMessagePayload>
+        }
+        findFirst: {
+          args: Prisma.ThreadMessageFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ThreadMessagePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ThreadMessageFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ThreadMessagePayload>
+        }
+        findMany: {
+          args: Prisma.ThreadMessageFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ThreadMessagePayload>[]
+        }
+        create: {
+          args: Prisma.ThreadMessageCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ThreadMessagePayload>
+        }
+        createMany: {
+          args: Prisma.ThreadMessageCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ThreadMessageCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ThreadMessagePayload>[]
+        }
+        delete: {
+          args: Prisma.ThreadMessageDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ThreadMessagePayload>
+        }
+        update: {
+          args: Prisma.ThreadMessageUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ThreadMessagePayload>
+        }
+        deleteMany: {
+          args: Prisma.ThreadMessageDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ThreadMessageUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ThreadMessageUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ThreadMessagePayload>[]
+        }
+        upsert: {
+          args: Prisma.ThreadMessageUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ThreadMessagePayload>
+        }
+        aggregate: {
+          args: Prisma.ThreadMessageAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateThreadMessage>
+        }
+        groupBy: {
+          args: Prisma.ThreadMessageGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ThreadMessageGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ThreadMessageCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ThreadMessageCountAggregateOutputType> | number
+        }
+      }
+    }
     Booking: {
       payload: Prisma.$BookingPayload<ExtArgs>
       fields: Prisma.BookingFieldRefs
@@ -2922,6 +3072,41 @@ export const PortfolioItemScalarFieldEnum = {
 export type PortfolioItemScalarFieldEnum = (typeof PortfolioItemScalarFieldEnum)[keyof typeof PortfolioItemScalarFieldEnum]
 
 
+export const BookingThreadScalarFieldEnum = {
+  id: 'id',
+  artisanId: 'artisanId',
+  serviceId: 'serviceId',
+  clientUserId: 'clientUserId',
+  clientProfileId: 'clientProfileId',
+  clientName: 'clientName',
+  clientPhone: 'clientPhone',
+  status: 'status',
+  bookingId: 'bookingId',
+  lastMessageAt: 'lastMessageAt',
+  closedAt: 'closedAt',
+  closedBy: 'closedBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BookingThreadScalarFieldEnum = (typeof BookingThreadScalarFieldEnum)[keyof typeof BookingThreadScalarFieldEnum]
+
+
+export const ThreadMessageScalarFieldEnum = {
+  id: 'id',
+  threadId: 'threadId',
+  senderUserId: 'senderUserId',
+  senderRole: 'senderRole',
+  type: 'type',
+  content: 'content',
+  proposalData: 'proposalData',
+  isRead: 'isRead',
+  createdAt: 'createdAt'
+} as const
+
+export type ThreadMessageScalarFieldEnum = (typeof ThreadMessageScalarFieldEnum)[keyof typeof ThreadMessageScalarFieldEnum]
+
+
 export const BookingScalarFieldEnum = {
   id: 'id',
   artisanId: 'artisanId',
@@ -2936,9 +3121,19 @@ export const BookingScalarFieldEnum = {
   agreedPrice: 'agreedPrice',
   currency: 'currency',
   commissionAmount: 'commissionAmount',
+  paymentMethod: 'paymentMethod',
+  paymentTiming: 'paymentTiming',
   paymentReference: 'paymentReference',
   isPaid: 'isPaid',
   paidAt: 'paidAt',
+  clientPaymentConfirmed: 'clientPaymentConfirmed',
+  clientPaymentConfirmedAt: 'clientPaymentConfirmedAt',
+  artisanPaymentConfirmed: 'artisanPaymentConfirmed',
+  artisanPaymentConfirmedAt: 'artisanPaymentConfirmedAt',
+  paymentDisputed: 'paymentDisputed',
+  paymentDisputeReason: 'paymentDisputeReason',
+  paymentDisputedAt: 'paymentDisputedAt',
+  paymentDisputedBy: 'paymentDisputedBy',
   status: 'status',
   note: 'note',
   cancelledBy: 'cancelledBy',
@@ -3206,6 +3401,90 @@ export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMo
 
 
 /**
+ * Reference to a field of type 'ThreadStatus'
+ */
+export type EnumThreadStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ThreadStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ThreadStatus[]'
+ */
+export type ListEnumThreadStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ThreadStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'SenderRole'
+ */
+export type EnumSenderRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SenderRole'>
+    
+
+
+/**
+ * Reference to a field of type 'SenderRole[]'
+ */
+export type ListEnumSenderRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SenderRole[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ThreadMessageType'
+ */
+export type EnumThreadMessageTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ThreadMessageType'>
+    
+
+
+/**
+ * Reference to a field of type 'ThreadMessageType[]'
+ */
+export type ListEnumThreadMessageTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ThreadMessageType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'PaymentMethod'
+ */
+export type EnumPaymentMethodFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentMethod'>
+    
+
+
+/**
+ * Reference to a field of type 'PaymentMethod[]'
+ */
+export type ListEnumPaymentMethodFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentMethod[]'>
+    
+
+
+/**
+ * Reference to a field of type 'PaymentTiming'
+ */
+export type EnumPaymentTimingFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentTiming'>
+    
+
+
+/**
+ * Reference to a field of type 'PaymentTiming[]'
+ */
+export type ListEnumPaymentTimingFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentTiming[]'>
+    
+
+
+/**
+ * Reference to a field of type 'PaymentDisputedBy'
+ */
+export type EnumPaymentDisputedByFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentDisputedBy'>
+    
+
+
+/**
+ * Reference to a field of type 'PaymentDisputedBy[]'
+ */
+export type ListEnumPaymentDisputedByFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentDisputedBy[]'>
+    
+
+
+/**
  * Reference to a field of type 'BookingStatus'
  */
 export type EnumBookingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BookingStatus'>
@@ -3379,6 +3658,8 @@ export type GlobalOmitConfig = {
   artisanCategoryMap?: Prisma.ArtisanCategoryMapOmit
   artisanService?: Prisma.ArtisanServiceOmit
   portfolioItem?: Prisma.PortfolioItemOmit
+  bookingThread?: Prisma.BookingThreadOmit
+  threadMessage?: Prisma.ThreadMessageOmit
   booking?: Prisma.BookingOmit
   review?: Prisma.ReviewOmit
   promotion?: Prisma.PromotionOmit

@@ -7,9 +7,12 @@ import {
   IsBoolean,
   IsNumber,
   IsInt,
+  IsEnum,
+  IsDateString,
   Min,
   Max,
   MinLength,
+  MaxLength,
   ArrayMinSize,
   ArrayMaxSize,
   ValidateNested,
@@ -520,6 +523,192 @@ export class UpdateCategoryDto {
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
+}
+
+// ─── Thread / Conversation DTOs ───────────────────────────
+
+export class CreateThreadDto {
+  @ApiProperty({ description: 'Artisan ID to start conversation with' })
+  @IsUUID()
+  artisanId: string;
+
+  @ApiPropertyOptional({ description: 'Service ID the inquiry is about' })
+  @IsOptional()
+  @IsUUID()
+  serviceId?: string;
+
+  @ApiProperty({
+    description: 'Initial message to the artisan',
+    example: 'Hi, I need a haircut this Saturday. Are you available?',
+  })
+  @IsString()
+  @MinLength(5)
+  @MaxLength(2000)
+  message: string;
+
+  @ApiPropertyOptional({ description: 'Customer name' })
+  @IsOptional()
+  @IsString()
+  clientName?: string;
+
+  @ApiPropertyOptional({ description: 'Customer phone' })
+  @IsOptional()
+  @IsString()
+  clientPhone?: string;
+
+  @ApiPropertyOptional({ description: 'Customer profile ID' })
+  @IsOptional()
+  @IsUUID()
+  clientProfileId?: string;
+}
+
+export class SendMessageDto {
+  @ApiProperty({
+    description: 'Message content',
+    example: 'Sounds good, what time works for you?',
+  })
+  @IsString()
+  @MinLength(1)
+  @MaxLength(2000)
+  content: string;
+}
+
+export class SendProposalDto {
+  @ApiPropertyOptional({ description: 'Service ID for the proposal' })
+  @IsOptional()
+  @IsUUID()
+  serviceId?: string;
+
+  @ApiProperty({ description: 'Proposed price', example: 5000 })
+  @IsNumber()
+  @Min(0)
+  price: number;
+
+  @ApiPropertyOptional({
+    description: 'Currency code',
+    example: 'NGN',
+    default: 'NGN',
+  })
+  @IsOptional()
+  @IsString()
+  currency?: string;
+
+  @ApiProperty({
+    description: 'Proposed date',
+    example: '2025-03-15',
+  })
+  @IsDateString()
+  date: string;
+
+  @ApiPropertyOptional({
+    description: 'Proposed time',
+    example: '14:00',
+  })
+  @IsOptional()
+  @IsString()
+  time?: string;
+
+  @ApiPropertyOptional({ description: 'Duration in minutes', example: 60 })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  duration?: number;
+
+  @ApiPropertyOptional({
+    description: 'Payment preference',
+    enum: ['WALLET', 'OFFLINE', 'NONE'],
+    default: 'NONE',
+  })
+  @IsOptional()
+  @IsEnum(['WALLET', 'OFFLINE', 'NONE'])
+  paymentPreference?: 'WALLET' | 'OFFLINE' | 'NONE';
+
+  @ApiPropertyOptional({
+    description: 'Payment timing',
+    enum: ['UPFRONT', 'ON_COMPLETION'],
+    default: 'ON_COMPLETION',
+  })
+  @IsOptional()
+  @IsEnum(['UPFRONT', 'ON_COMPLETION'])
+  paymentTiming?: 'UPFRONT' | 'ON_COMPLETION';
+
+  @ApiPropertyOptional({
+    description: 'Note / description for the proposal',
+    example: 'Includes wash and styling',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(1000)
+  note?: string;
+}
+
+export class AcceptProposalDto {
+  @ApiProperty({ description: 'The proposal message ID to accept' })
+  @IsUUID()
+  messageId: string;
+}
+
+export class DeclineProposalDto {
+  @ApiProperty({ description: 'The proposal message ID to decline' })
+  @IsUUID()
+  messageId: string;
+
+  @ApiPropertyOptional({ description: 'Reason for declining' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  reason?: string;
+}
+
+export class ConfirmPaymentDto {
+  @ApiPropertyOptional({
+    description: 'Payment reference (transaction ID, receipt, etc.)',
+  })
+  @IsOptional()
+  @IsString()
+  reference?: string;
+
+  @ApiPropertyOptional({ description: 'Additional note about the payment' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  note?: string;
+}
+
+export class DisputePaymentDto {
+  @ApiProperty({ description: 'Reason for disputing the payment' })
+  @IsString()
+  @MinLength(10)
+  @MaxLength(1000)
+  reason: string;
+}
+
+export class ThreadQueryDto {
+  @ApiPropertyOptional({ description: 'Page number', default: 1 })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  page?: number;
+
+  @ApiPropertyOptional({
+    description: 'Items per page',
+    default: 20,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(50)
+  limit?: number;
+
+  @ApiPropertyOptional({
+    description: 'Filter by thread status',
+    enum: ['OPEN', 'PROPOSAL_SENT', 'BOOKED', 'CLOSED'],
+  })
+  @IsOptional()
+  @IsString()
+  status?: 'OPEN' | 'PROPOSAL_SENT' | 'BOOKED' | 'CLOSED';
 }
 
 // ─── Platform Settings DTO ────────────────────────────────

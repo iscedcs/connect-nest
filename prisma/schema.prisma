@@ -133,6 +133,14 @@ enum NotificationType {
   REVIEW_RECEIVED
   PROMOTION_STARTED
   PROMOTION_EXPIRED
+  THREAD_NEW_INQUIRY
+  THREAD_NEW_MESSAGE
+  THREAD_PROPOSAL_RECEIVED
+  THREAD_PROPOSAL_ACCEPTED
+  THREAD_PROPOSAL_DECLINED
+  PAYMENT_SENT_CONFIRMED
+  PAYMENT_RECEIVED_CONFIRMED
+  PAYMENT_DISPUTED
 }
 
 model SupportRequest {
@@ -411,6 +419,42 @@ enum PromotionStatus {
   CANCELLED
 }
 
+// ─── Booking Thread Enums ─────────────────────────────────
+
+enum ThreadStatus {
+  OPEN // Inquiry sent, conversation ongoing
+  PROPOSAL_SENT // Artisan sent a structured proposal
+  BOOKED // Proposal accepted → Booking created
+  CLOSED // Manually closed by either party, or expired
+}
+
+enum ThreadMessageType {
+  TEXT // Free-form message
+  PROPOSAL // Structured proposal (price, date, time, etc.)
+  SYSTEM // Automated messages ("Booking confirmed", etc.)
+}
+
+enum SenderRole {
+  CLIENT
+  ARTISAN
+}
+
+enum PaymentMethod {
+  WALLET // In-app wallet escrow
+  OFFLINE // Cash, bank transfer, etc.
+  NONE // No payment attached yet
+}
+
+enum PaymentTiming {
+  UPFRONT // Pay before work starts
+  ON_COMPLETION // Pay after work is done
+}
+
+enum PaymentDisputedBy {
+  CLIENT
+  ARTISAN
+}
+
 // ─── Artisan Core ─────────────────────────────────────────
 
 model Artisan {
@@ -449,6 +493,7 @@ model Artisan {
   bookings   Booking[]
   reviews    Review[]
   promotions Promotion[]
+  threads    BookingThread[]
 
   @@index([userId])
   @@index([status])
@@ -506,6 +551,7 @@ model ArtisanService {
   deletedAt   DateTime?
 
   bookings Booking[]
+  threads  BookingThread[]
 
   @@index([artisanId])
   @@index([isActive])
@@ -527,6 +573,57 @@ model PortfolioItem {
   deletedAt DateTime?
 
   @@index([artisanId])
+}
+
+// ─── Booking Threads (Conversation) ──────────────────────
+
+model BookingThread {
+  id              String          @id @default(uuid())
+  artisan         Artisan         @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+  artisanId       String
+  service         ArtisanService? @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  serviceId       String? // Optional: which service the inquiry is about
+  clientUserId    String // The customer who initiated
+  clientProfileId String? // Customer's Connect profile ID
+  clientName      String? // Snapshot at inquiry time
+  clientPhone     String?
+
+  status    ThreadStatus @default(OPEN)
+  bookingId String?      @unique // Set when proposal is accepted → Booking created
+  booking   Booking?     @relation("ThreadBooking", fields: [bookingId], references: [id], onDelete: SetNull)
+
+  lastMessageAt DateTime  @default(now())
+  closedAt      DateTime?
+  closedBy      String? // "client" | "artisan" | "system"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages ThreadMessage[]
+
+  @@index([artisanId])
+  @@index([clientUserId])
+  @@index([status])
+  @@index([lastMessageAt])
+}
+
+model ThreadMessage {
+  id           String        @id @default(uuid())
+  thread       BookingThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  threadId     String
+  senderUserId String
+  senderRole   SenderRole
+
+  type         ThreadMessageType @default(TEXT)
+  content      String // Text body
+  proposalData Json? // For PROPOSAL type: { serviceId, price, currency, date, time, duration, paymentPreference, paymentTiming, note }
+
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([threadId])
+  @@index([senderUserId])
+  @@index([createdAt])
 }
 
 // ─── Bookings ─────────────────────────────────────────────
@@ -553,9 +650,23 @@ model Booking {
   commissionAmount Decimal? @db.Decimal(18, 4) // Platform commission
 
   // Payment tracking
-  paymentReference String? // wallet-nest PaymentIntent reference
-  isPaid           Boolean   @default(false)
+  paymentMethod    PaymentMethod @default(NONE)
+  paymentTiming    PaymentTiming @default(ON_COMPLETION)
+  paymentReference String? // wallet-nest escrow ID for WALLET payments
+  isPaid           Boolean       @default(false)
   paidAt           DateTime?
+
+  // Dual payment confirmation (for OFFLINE payments)
+  clientPaymentConfirmed    Boolean   @default(false)
+  clientPaymentConfirmedAt  DateTime?
+  artisanPaymentConfirmed   Boolean   @default(false)
+  artisanPaymentConfirmedAt DateTime?
+
+  // Payment disputes
+  paymentDisputed      Boolean            @default(false)
+  paymentDisputeReason String?
+  paymentDisputedAt    DateTime?
+  paymentDisputedBy    PaymentDisputedBy?
 
   status             BookingStatus @default(PENDING)
   note               String? // Customer note to artisan
@@ -570,6 +681,7 @@ model Booking {
   deletedAt DateTime?
 
   review Review?
+  thread BookingThread? @relation("ThreadBooking")
 
   @@index([artisanId])
   @@index([customerUserId])

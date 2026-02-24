@@ -158,6 +158,16 @@ export type ArtisanService = Prisma.ArtisanServiceModel
  */
 export type PortfolioItem = Prisma.PortfolioItemModel
 /**
+ * Model BookingThread
+ * 
+ */
+export type BookingThread = Prisma.BookingThreadModel
+/**
+ * Model ThreadMessage
+ * 
+ */
+export type ThreadMessage = Prisma.ThreadMessageModel
+/**
  * Model Booking
  * 
  */

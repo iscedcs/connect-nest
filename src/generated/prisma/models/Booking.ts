@@ -52,9 +52,19 @@ export type BookingMinAggregateOutputType = {
   agreedPrice: runtime.Decimal | null
   currency: string | null
   commissionAmount: runtime.Decimal | null
+  paymentMethod: $Enums.PaymentMethod | null
+  paymentTiming: $Enums.PaymentTiming | null
   paymentReference: string | null
   isPaid: boolean | null
   paidAt: Date | null
+  clientPaymentConfirmed: boolean | null
+  clientPaymentConfirmedAt: Date | null
+  artisanPaymentConfirmed: boolean | null
+  artisanPaymentConfirmedAt: Date | null
+  paymentDisputed: boolean | null
+  paymentDisputeReason: string | null
+  paymentDisputedAt: Date | null
+  paymentDisputedBy: $Enums.PaymentDisputedBy | null
   status: $Enums.BookingStatus | null
   note: string | null
   cancelledBy: string | null
@@ -81,9 +91,19 @@ export type BookingMaxAggregateOutputType = {
   agreedPrice: runtime.Decimal | null
   currency: string | null
   commissionAmount: runtime.Decimal | null
+  paymentMethod: $Enums.PaymentMethod | null
+  paymentTiming: $Enums.PaymentTiming | null
   paymentReference: string | null
   isPaid: boolean | null
   paidAt: Date | null
+  clientPaymentConfirmed: boolean | null
+  clientPaymentConfirmedAt: Date | null
+  artisanPaymentConfirmed: boolean | null
+  artisanPaymentConfirmedAt: Date | null
+  paymentDisputed: boolean | null
+  paymentDisputeReason: string | null
+  paymentDisputedAt: Date | null
+  paymentDisputedBy: $Enums.PaymentDisputedBy | null
   status: $Enums.BookingStatus | null
   note: string | null
   cancelledBy: string | null
@@ -110,9 +130,19 @@ export type BookingCountAggregateOutputType = {
   agreedPrice: number
   currency: number
   commissionAmount: number
+  paymentMethod: number
+  paymentTiming: number
   paymentReference: number
   isPaid: number
   paidAt: number
+  clientPaymentConfirmed: number
+  clientPaymentConfirmedAt: number
+  artisanPaymentConfirmed: number
+  artisanPaymentConfirmedAt: number
+  paymentDisputed: number
+  paymentDisputeReason: number
+  paymentDisputedAt: number
+  paymentDisputedBy: number
   status: number
   note: number
   cancelledBy: number
@@ -153,9 +183,19 @@ export type BookingMinAggregateInputType = {
   agreedPrice?: true
   currency?: true
   commissionAmount?: true
+  paymentMethod?: true
+  paymentTiming?: true
   paymentReference?: true
   isPaid?: true
   paidAt?: true
+  clientPaymentConfirmed?: true
+  clientPaymentConfirmedAt?: true
+  artisanPaymentConfirmed?: true
+  artisanPaymentConfirmedAt?: true
+  paymentDisputed?: true
+  paymentDisputeReason?: true
+  paymentDisputedAt?: true
+  paymentDisputedBy?: true
   status?: true
   note?: true
   cancelledBy?: true
@@ -182,9 +222,19 @@ export type BookingMaxAggregateInputType = {
   agreedPrice?: true
   currency?: true
   commissionAmount?: true
+  paymentMethod?: true
+  paymentTiming?: true
   paymentReference?: true
   isPaid?: true
   paidAt?: true
+  clientPaymentConfirmed?: true
+  clientPaymentConfirmedAt?: true
+  artisanPaymentConfirmed?: true
+  artisanPaymentConfirmedAt?: true
+  paymentDisputed?: true
+  paymentDisputeReason?: true
+  paymentDisputedAt?: true
+  paymentDisputedBy?: true
   status?: true
   note?: true
   cancelledBy?: true
@@ -211,9 +261,19 @@ export type BookingCountAggregateInputType = {
   agreedPrice?: true
   currency?: true
   commissionAmount?: true
+  paymentMethod?: true
+  paymentTiming?: true
   paymentReference?: true
   isPaid?: true
   paidAt?: true
+  clientPaymentConfirmed?: true
+  clientPaymentConfirmedAt?: true
+  artisanPaymentConfirmed?: true
+  artisanPaymentConfirmedAt?: true
+  paymentDisputed?: true
+  paymentDisputeReason?: true
+  paymentDisputedAt?: true
+  paymentDisputedBy?: true
   status?: true
   note?: true
   cancelledBy?: true
@@ -327,9 +387,19 @@ export type BookingGroupByOutputType = {
   agreedPrice: runtime.Decimal | null
   currency: string
   commissionAmount: runtime.Decimal | null
+  paymentMethod: $Enums.PaymentMethod
+  paymentTiming: $Enums.PaymentTiming
   paymentReference: string | null
   isPaid: boolean
   paidAt: Date | null
+  clientPaymentConfirmed: boolean
+  clientPaymentConfirmedAt: Date | null
+  artisanPaymentConfirmed: boolean
+  artisanPaymentConfirmedAt: Date | null
+  paymentDisputed: boolean
+  paymentDisputeReason: string | null
+  paymentDisputedAt: Date | null
+  paymentDisputedBy: $Enums.PaymentDisputedBy | null
   status: $Enums.BookingStatus
   note: string | null
   cancelledBy: string | null
@@ -379,9 +449,19 @@ export type BookingWhereInput = {
   agreedPrice?: Prisma.DecimalNullableFilter<"Booking"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFilter<"Booking"> | string
   commissionAmount?: Prisma.DecimalNullableFilter<"Booking"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentMethod?: Prisma.EnumPaymentMethodFilter<"Booking"> | $Enums.PaymentMethod
+  paymentTiming?: Prisma.EnumPaymentTimingFilter<"Booking"> | $Enums.PaymentTiming
   paymentReference?: Prisma.StringNullableFilter<"Booking"> | string | null
   isPaid?: Prisma.BoolFilter<"Booking"> | boolean
   paidAt?: Prisma.DateTimeNullableFilter<"Booking"> | Date | string | null
+  clientPaymentConfirmed?: Prisma.BoolFilter<"Booking"> | boolean
+  clientPaymentConfirmedAt?: Prisma.DateTimeNullableFilter<"Booking"> | Date | string | null
+  artisanPaymentConfirmed?: Prisma.BoolFilter<"Booking"> | boolean
+  artisanPaymentConfirmedAt?: Prisma.DateTimeNullableFilter<"Booking"> | Date | string | null
+  paymentDisputed?: Prisma.BoolFilter<"Booking"> | boolean
+  paymentDisputeReason?: Prisma.StringNullableFilter<"Booking"> | string | null
+  paymentDisputedAt?: Prisma.DateTimeNullableFilter<"Booking"> | Date | string | null
+  paymentDisputedBy?: Prisma.EnumPaymentDisputedByNullableFilter<"Booking"> | $Enums.PaymentDisputedBy | null
   status?: Prisma.EnumBookingStatusFilter<"Booking"> | $Enums.BookingStatus
   note?: Prisma.StringNullableFilter<"Booking"> | string | null
   cancelledBy?: Prisma.StringNullableFilter<"Booking"> | string | null
@@ -395,6 +475,7 @@ export type BookingWhereInput = {
   artisan?: Prisma.XOR<Prisma.ArtisanScalarRelationFilter, Prisma.ArtisanWhereInput>
   service?: Prisma.XOR<Prisma.ArtisanServiceNullableScalarRelationFilter, Prisma.ArtisanServiceWhereInput> | null
   review?: Prisma.XOR<Prisma.ReviewNullableScalarRelationFilter, Prisma.ReviewWhereInput> | null
+  thread?: Prisma.XOR<Prisma.BookingThreadNullableScalarRelationFilter, Prisma.BookingThreadWhereInput> | null
 }
 
 export type BookingOrderByWithRelationInput = {
@@ -411,9 +492,19 @@ export type BookingOrderByWithRelationInput = {
   agreedPrice?: Prisma.SortOrderInput | Prisma.SortOrder
   currency?: Prisma.SortOrder
   commissionAmount?: Prisma.SortOrderInput | Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrder
+  paymentTiming?: Prisma.SortOrder
   paymentReference?: Prisma.SortOrderInput | Prisma.SortOrder
   isPaid?: Prisma.SortOrder
   paidAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  clientPaymentConfirmed?: Prisma.SortOrder
+  clientPaymentConfirmedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  artisanPaymentConfirmed?: Prisma.SortOrder
+  artisanPaymentConfirmedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  paymentDisputed?: Prisma.SortOrder
+  paymentDisputeReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  paymentDisputedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  paymentDisputedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   note?: Prisma.SortOrderInput | Prisma.SortOrder
   cancelledBy?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -427,6 +518,7 @@ export type BookingOrderByWithRelationInput = {
   artisan?: Prisma.ArtisanOrderByWithRelationInput
   service?: Prisma.ArtisanServiceOrderByWithRelationInput
   review?: Prisma.ReviewOrderByWithRelationInput
+  thread?: Prisma.BookingThreadOrderByWithRelationInput
 }
 
 export type BookingWhereUniqueInput = Prisma.AtLeast<{
@@ -446,9 +538,19 @@ export type BookingWhereUniqueInput = Prisma.AtLeast<{
   agreedPrice?: Prisma.DecimalNullableFilter<"Booking"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFilter<"Booking"> | string
   commissionAmount?: Prisma.DecimalNullableFilter<"Booking"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentMethod?: Prisma.EnumPaymentMethodFilter<"Booking"> | $Enums.PaymentMethod
+  paymentTiming?: Prisma.EnumPaymentTimingFilter<"Booking"> | $Enums.PaymentTiming
   paymentReference?: Prisma.StringNullableFilter<"Booking"> | string | null
   isPaid?: Prisma.BoolFilter<"Booking"> | boolean
   paidAt?: Prisma.DateTimeNullableFilter<"Booking"> | Date | string | null
+  clientPaymentConfirmed?: Prisma.BoolFilter<"Booking"> | boolean
+  clientPaymentConfirmedAt?: Prisma.DateTimeNullableFilter<"Booking"> | Date | string | null
+  artisanPaymentConfirmed?: Prisma.BoolFilter<"Booking"> | boolean
+  artisanPaymentConfirmedAt?: Prisma.DateTimeNullableFilter<"Booking"> | Date | string | null
+  paymentDisputed?: Prisma.BoolFilter<"Booking"> | boolean
+  paymentDisputeReason?: Prisma.StringNullableFilter<"Booking"> | string | null
+  paymentDisputedAt?: Prisma.DateTimeNullableFilter<"Booking"> | Date | string | null
+  paymentDisputedBy?: Prisma.EnumPaymentDisputedByNullableFilter<"Booking"> | $Enums.PaymentDisputedBy | null
   status?: Prisma.EnumBookingStatusFilter<"Booking"> | $Enums.BookingStatus
   note?: Prisma.StringNullableFilter<"Booking"> | string | null
   cancelledBy?: Prisma.StringNullableFilter<"Booking"> | string | null
@@ -462,6 +564,7 @@ export type BookingWhereUniqueInput = Prisma.AtLeast<{
   artisan?: Prisma.XOR<Prisma.ArtisanScalarRelationFilter, Prisma.ArtisanWhereInput>
   service?: Prisma.XOR<Prisma.ArtisanServiceNullableScalarRelationFilter, Prisma.ArtisanServiceWhereInput> | null
   review?: Prisma.XOR<Prisma.ReviewNullableScalarRelationFilter, Prisma.ReviewWhereInput> | null
+  thread?: Prisma.XOR<Prisma.BookingThreadNullableScalarRelationFilter, Prisma.BookingThreadWhereInput> | null
 }, "id">
 
 export type BookingOrderByWithAggregationInput = {
@@ -478,9 +581,19 @@ export type BookingOrderByWithAggregationInput = {
   agreedPrice?: Prisma.SortOrderInput | Prisma.SortOrder
   currency?: Prisma.SortOrder
   commissionAmount?: Prisma.SortOrderInput | Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrder
+  paymentTiming?: Prisma.SortOrder
   paymentReference?: Prisma.SortOrderInput | Prisma.SortOrder
   isPaid?: Prisma.SortOrder
   paidAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  clientPaymentConfirmed?: Prisma.SortOrder
+  clientPaymentConfirmedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  artisanPaymentConfirmed?: Prisma.SortOrder
+  artisanPaymentConfirmedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  paymentDisputed?: Prisma.SortOrder
+  paymentDisputeReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  paymentDisputedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  paymentDisputedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   note?: Prisma.SortOrderInput | Prisma.SortOrder
   cancelledBy?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -515,9 +628,19 @@ export type BookingScalarWhereWithAggregatesInput = {
   agreedPrice?: Prisma.DecimalNullableWithAggregatesFilter<"Booking"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringWithAggregatesFilter<"Booking"> | string
   commissionAmount?: Prisma.DecimalNullableWithAggregatesFilter<"Booking"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentMethod?: Prisma.EnumPaymentMethodWithAggregatesFilter<"Booking"> | $Enums.PaymentMethod
+  paymentTiming?: Prisma.EnumPaymentTimingWithAggregatesFilter<"Booking"> | $Enums.PaymentTiming
   paymentReference?: Prisma.StringNullableWithAggregatesFilter<"Booking"> | string | null
   isPaid?: Prisma.BoolWithAggregatesFilter<"Booking"> | boolean
   paidAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Booking"> | Date | string | null
+  clientPaymentConfirmed?: Prisma.BoolWithAggregatesFilter<"Booking"> | boolean
+  clientPaymentConfirmedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Booking"> | Date | string | null
+  artisanPaymentConfirmed?: Prisma.BoolWithAggregatesFilter<"Booking"> | boolean
+  artisanPaymentConfirmedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Booking"> | Date | string | null
+  paymentDisputed?: Prisma.BoolWithAggregatesFilter<"Booking"> | boolean
+  paymentDisputeReason?: Prisma.StringNullableWithAggregatesFilter<"Booking"> | string | null
+  paymentDisputedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Booking"> | Date | string | null
+  paymentDisputedBy?: Prisma.EnumPaymentDisputedByNullableWithAggregatesFilter<"Booking"> | $Enums.PaymentDisputedBy | null
   status?: Prisma.EnumBookingStatusWithAggregatesFilter<"Booking"> | $Enums.BookingStatus
   note?: Prisma.StringNullableWithAggregatesFilter<"Booking"> | string | null
   cancelledBy?: Prisma.StringNullableWithAggregatesFilter<"Booking"> | string | null
@@ -542,9 +665,19 @@ export type BookingCreateInput = {
   agreedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
   commissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentMethod?: $Enums.PaymentMethod
+  paymentTiming?: $Enums.PaymentTiming
   paymentReference?: string | null
   isPaid?: boolean
   paidAt?: Date | string | null
+  clientPaymentConfirmed?: boolean
+  clientPaymentConfirmedAt?: Date | string | null
+  artisanPaymentConfirmed?: boolean
+  artisanPaymentConfirmedAt?: Date | string | null
+  paymentDisputed?: boolean
+  paymentDisputeReason?: string | null
+  paymentDisputedAt?: Date | string | null
+  paymentDisputedBy?: $Enums.PaymentDisputedBy | null
   status?: $Enums.BookingStatus
   note?: string | null
   cancelledBy?: string | null
@@ -558,6 +691,7 @@ export type BookingCreateInput = {
   artisan: Prisma.ArtisanCreateNestedOneWithoutBookingsInput
   service?: Prisma.ArtisanServiceCreateNestedOneWithoutBookingsInput
   review?: Prisma.ReviewCreateNestedOneWithoutBookingInput
+  thread?: Prisma.BookingThreadCreateNestedOneWithoutBookingInput
 }
 
 export type BookingUncheckedCreateInput = {
@@ -574,9 +708,19 @@ export type BookingUncheckedCreateInput = {
   agreedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
   commissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentMethod?: $Enums.PaymentMethod
+  paymentTiming?: $Enums.PaymentTiming
   paymentReference?: string | null
   isPaid?: boolean
   paidAt?: Date | string | null
+  clientPaymentConfirmed?: boolean
+  clientPaymentConfirmedAt?: Date | string | null
+  artisanPaymentConfirmed?: boolean
+  artisanPaymentConfirmedAt?: Date | string | null
+  paymentDisputed?: boolean
+  paymentDisputeReason?: string | null
+  paymentDisputedAt?: Date | string | null
+  paymentDisputedBy?: $Enums.PaymentDisputedBy | null
   status?: $Enums.BookingStatus
   note?: string | null
   cancelledBy?: string | null
@@ -588,6 +732,7 @@ export type BookingUncheckedCreateInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   review?: Prisma.ReviewUncheckedCreateNestedOneWithoutBookingInput
+  thread?: Prisma.BookingThreadUncheckedCreateNestedOneWithoutBookingInput
 }
 
 export type BookingUpdateInput = {
@@ -602,9 +747,19 @@ export type BookingUpdateInput = {
   agreedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   commissionAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  paymentTiming?: Prisma.EnumPaymentTimingFieldUpdateOperationsInput | $Enums.PaymentTiming
   paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isPaid?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clientPaymentConfirmed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  clientPaymentConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  artisanPaymentConfirmed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  artisanPaymentConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDisputed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentDisputeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentDisputedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDisputedBy?: Prisma.NullableEnumPaymentDisputedByFieldUpdateOperationsInput | $Enums.PaymentDisputedBy | null
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -618,6 +773,7 @@ export type BookingUpdateInput = {
   artisan?: Prisma.ArtisanUpdateOneRequiredWithoutBookingsNestedInput
   service?: Prisma.ArtisanServiceUpdateOneWithoutBookingsNestedInput
   review?: Prisma.ReviewUpdateOneWithoutBookingNestedInput
+  thread?: Prisma.BookingThreadUpdateOneWithoutBookingNestedInput
 }
 
 export type BookingUncheckedUpdateInput = {
@@ -634,9 +790,19 @@ export type BookingUncheckedUpdateInput = {
   agreedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   commissionAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  paymentTiming?: Prisma.EnumPaymentTimingFieldUpdateOperationsInput | $Enums.PaymentTiming
   paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isPaid?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clientPaymentConfirmed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  clientPaymentConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  artisanPaymentConfirmed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  artisanPaymentConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDisputed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentDisputeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentDisputedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDisputedBy?: Prisma.NullableEnumPaymentDisputedByFieldUpdateOperationsInput | $Enums.PaymentDisputedBy | null
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -648,6 +814,7 @@ export type BookingUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   review?: Prisma.ReviewUncheckedUpdateOneWithoutBookingNestedInput
+  thread?: Prisma.BookingThreadUncheckedUpdateOneWithoutBookingNestedInput
 }
 
 export type BookingCreateManyInput = {
@@ -664,9 +831,19 @@ export type BookingCreateManyInput = {
   agreedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
   commissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentMethod?: $Enums.PaymentMethod
+  paymentTiming?: $Enums.PaymentTiming
   paymentReference?: string | null
   isPaid?: boolean
   paidAt?: Date | string | null
+  clientPaymentConfirmed?: boolean
+  clientPaymentConfirmedAt?: Date | string | null
+  artisanPaymentConfirmed?: boolean
+  artisanPaymentConfirmedAt?: Date | string | null
+  paymentDisputed?: boolean
+  paymentDisputeReason?: string | null
+  paymentDisputedAt?: Date | string | null
+  paymentDisputedBy?: $Enums.PaymentDisputedBy | null
   status?: $Enums.BookingStatus
   note?: string | null
   cancelledBy?: string | null
@@ -691,9 +868,19 @@ export type BookingUpdateManyMutationInput = {
   agreedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   commissionAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  paymentTiming?: Prisma.EnumPaymentTimingFieldUpdateOperationsInput | $Enums.PaymentTiming
   paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isPaid?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clientPaymentConfirmed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  clientPaymentConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  artisanPaymentConfirmed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  artisanPaymentConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDisputed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentDisputeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentDisputedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDisputedBy?: Prisma.NullableEnumPaymentDisputedByFieldUpdateOperationsInput | $Enums.PaymentDisputedBy | null
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -720,9 +907,19 @@ export type BookingUncheckedUpdateManyInput = {
   agreedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   commissionAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  paymentTiming?: Prisma.EnumPaymentTimingFieldUpdateOperationsInput | $Enums.PaymentTiming
   paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isPaid?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clientPaymentConfirmed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  clientPaymentConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  artisanPaymentConfirmed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  artisanPaymentConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDisputed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentDisputeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentDisputedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDisputedBy?: Prisma.NullableEnumPaymentDisputedByFieldUpdateOperationsInput | $Enums.PaymentDisputedBy | null
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -745,6 +942,11 @@ export type BookingOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type BookingNullableScalarRelationFilter = {
+  is?: Prisma.BookingWhereInput | null
+  isNot?: Prisma.BookingWhereInput | null
+}
+
 export type BookingCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   artisanId?: Prisma.SortOrder
@@ -759,9 +961,19 @@ export type BookingCountOrderByAggregateInput = {
   agreedPrice?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   commissionAmount?: Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrder
+  paymentTiming?: Prisma.SortOrder
   paymentReference?: Prisma.SortOrder
   isPaid?: Prisma.SortOrder
   paidAt?: Prisma.SortOrder
+  clientPaymentConfirmed?: Prisma.SortOrder
+  clientPaymentConfirmedAt?: Prisma.SortOrder
+  artisanPaymentConfirmed?: Prisma.SortOrder
+  artisanPaymentConfirmedAt?: Prisma.SortOrder
+  paymentDisputed?: Prisma.SortOrder
+  paymentDisputeReason?: Prisma.SortOrder
+  paymentDisputedAt?: Prisma.SortOrder
+  paymentDisputedBy?: Prisma.SortOrder
   status?: Prisma.SortOrder
   note?: Prisma.SortOrder
   cancelledBy?: Prisma.SortOrder
@@ -794,9 +1006,19 @@ export type BookingMaxOrderByAggregateInput = {
   agreedPrice?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   commissionAmount?: Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrder
+  paymentTiming?: Prisma.SortOrder
   paymentReference?: Prisma.SortOrder
   isPaid?: Prisma.SortOrder
   paidAt?: Prisma.SortOrder
+  clientPaymentConfirmed?: Prisma.SortOrder
+  clientPaymentConfirmedAt?: Prisma.SortOrder
+  artisanPaymentConfirmed?: Prisma.SortOrder
+  artisanPaymentConfirmedAt?: Prisma.SortOrder
+  paymentDisputed?: Prisma.SortOrder
+  paymentDisputeReason?: Prisma.SortOrder
+  paymentDisputedAt?: Prisma.SortOrder
+  paymentDisputedBy?: Prisma.SortOrder
   status?: Prisma.SortOrder
   note?: Prisma.SortOrder
   cancelledBy?: Prisma.SortOrder
@@ -823,9 +1045,19 @@ export type BookingMinOrderByAggregateInput = {
   agreedPrice?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   commissionAmount?: Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrder
+  paymentTiming?: Prisma.SortOrder
   paymentReference?: Prisma.SortOrder
   isPaid?: Prisma.SortOrder
   paidAt?: Prisma.SortOrder
+  clientPaymentConfirmed?: Prisma.SortOrder
+  clientPaymentConfirmedAt?: Prisma.SortOrder
+  artisanPaymentConfirmed?: Prisma.SortOrder
+  artisanPaymentConfirmedAt?: Prisma.SortOrder
+  paymentDisputed?: Prisma.SortOrder
+  paymentDisputeReason?: Prisma.SortOrder
+  paymentDisputedAt?: Prisma.SortOrder
+  paymentDisputedBy?: Prisma.SortOrder
   status?: Prisma.SortOrder
   note?: Prisma.SortOrder
   cancelledBy?: Prisma.SortOrder
@@ -842,11 +1074,6 @@ export type BookingSumOrderByAggregateInput = {
   duration?: Prisma.SortOrder
   agreedPrice?: Prisma.SortOrder
   commissionAmount?: Prisma.SortOrder
-}
-
-export type BookingNullableScalarRelationFilter = {
-  is?: Prisma.BookingWhereInput | null
-  isNot?: Prisma.BookingWhereInput | null
 }
 
 export type BookingCreateNestedManyWithoutArtisanInput = {
@@ -933,6 +1160,34 @@ export type BookingUncheckedUpdateManyWithoutServiceNestedInput = {
   deleteMany?: Prisma.BookingScalarWhereInput | Prisma.BookingScalarWhereInput[]
 }
 
+export type BookingCreateNestedOneWithoutThreadInput = {
+  create?: Prisma.XOR<Prisma.BookingCreateWithoutThreadInput, Prisma.BookingUncheckedCreateWithoutThreadInput>
+  connectOrCreate?: Prisma.BookingCreateOrConnectWithoutThreadInput
+  connect?: Prisma.BookingWhereUniqueInput
+}
+
+export type BookingUpdateOneWithoutThreadNestedInput = {
+  create?: Prisma.XOR<Prisma.BookingCreateWithoutThreadInput, Prisma.BookingUncheckedCreateWithoutThreadInput>
+  connectOrCreate?: Prisma.BookingCreateOrConnectWithoutThreadInput
+  upsert?: Prisma.BookingUpsertWithoutThreadInput
+  disconnect?: Prisma.BookingWhereInput | boolean
+  delete?: Prisma.BookingWhereInput | boolean
+  connect?: Prisma.BookingWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BookingUpdateToOneWithWhereWithoutThreadInput, Prisma.BookingUpdateWithoutThreadInput>, Prisma.BookingUncheckedUpdateWithoutThreadInput>
+}
+
+export type EnumPaymentMethodFieldUpdateOperationsInput = {
+  set?: $Enums.PaymentMethod
+}
+
+export type EnumPaymentTimingFieldUpdateOperationsInput = {
+  set?: $Enums.PaymentTiming
+}
+
+export type NullableEnumPaymentDisputedByFieldUpdateOperationsInput = {
+  set?: $Enums.PaymentDisputedBy | null
+}
+
 export type EnumBookingStatusFieldUpdateOperationsInput = {
   set?: $Enums.BookingStatus
 }
@@ -965,9 +1220,19 @@ export type BookingCreateWithoutArtisanInput = {
   agreedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
   commissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentMethod?: $Enums.PaymentMethod
+  paymentTiming?: $Enums.PaymentTiming
   paymentReference?: string | null
   isPaid?: boolean
   paidAt?: Date | string | null
+  clientPaymentConfirmed?: boolean
+  clientPaymentConfirmedAt?: Date | string | null
+  artisanPaymentConfirmed?: boolean
+  artisanPaymentConfirmedAt?: Date | string | null
+  paymentDisputed?: boolean
+  paymentDisputeReason?: string | null
+  paymentDisputedAt?: Date | string | null
+  paymentDisputedBy?: $Enums.PaymentDisputedBy | null
   status?: $Enums.BookingStatus
   note?: string | null
   cancelledBy?: string | null
@@ -980,6 +1245,7 @@ export type BookingCreateWithoutArtisanInput = {
   deletedAt?: Date | string | null
   service?: Prisma.ArtisanServiceCreateNestedOneWithoutBookingsInput
   review?: Prisma.ReviewCreateNestedOneWithoutBookingInput
+  thread?: Prisma.BookingThreadCreateNestedOneWithoutBookingInput
 }
 
 export type BookingUncheckedCreateWithoutArtisanInput = {
@@ -995,9 +1261,19 @@ export type BookingUncheckedCreateWithoutArtisanInput = {
   agreedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
   commissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentMethod?: $Enums.PaymentMethod
+  paymentTiming?: $Enums.PaymentTiming
   paymentReference?: string | null
   isPaid?: boolean
   paidAt?: Date | string | null
+  clientPaymentConfirmed?: boolean
+  clientPaymentConfirmedAt?: Date | string | null
+  artisanPaymentConfirmed?: boolean
+  artisanPaymentConfirmedAt?: Date | string | null
+  paymentDisputed?: boolean
+  paymentDisputeReason?: string | null
+  paymentDisputedAt?: Date | string | null
+  paymentDisputedBy?: $Enums.PaymentDisputedBy | null
   status?: $Enums.BookingStatus
   note?: string | null
   cancelledBy?: string | null
@@ -1009,6 +1285,7 @@ export type BookingUncheckedCreateWithoutArtisanInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   review?: Prisma.ReviewUncheckedCreateNestedOneWithoutBookingInput
+  thread?: Prisma.BookingThreadUncheckedCreateNestedOneWithoutBookingInput
 }
 
 export type BookingCreateOrConnectWithoutArtisanInput = {
@@ -1054,9 +1331,19 @@ export type BookingScalarWhereInput = {
   agreedPrice?: Prisma.DecimalNullableFilter<"Booking"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFilter<"Booking"> | string
   commissionAmount?: Prisma.DecimalNullableFilter<"Booking"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentMethod?: Prisma.EnumPaymentMethodFilter<"Booking"> | $Enums.PaymentMethod
+  paymentTiming?: Prisma.EnumPaymentTimingFilter<"Booking"> | $Enums.PaymentTiming
   paymentReference?: Prisma.StringNullableFilter<"Booking"> | string | null
   isPaid?: Prisma.BoolFilter<"Booking"> | boolean
   paidAt?: Prisma.DateTimeNullableFilter<"Booking"> | Date | string | null
+  clientPaymentConfirmed?: Prisma.BoolFilter<"Booking"> | boolean
+  clientPaymentConfirmedAt?: Prisma.DateTimeNullableFilter<"Booking"> | Date | string | null
+  artisanPaymentConfirmed?: Prisma.BoolFilter<"Booking"> | boolean
+  artisanPaymentConfirmedAt?: Prisma.DateTimeNullableFilter<"Booking"> | Date | string | null
+  paymentDisputed?: Prisma.BoolFilter<"Booking"> | boolean
+  paymentDisputeReason?: Prisma.StringNullableFilter<"Booking"> | string | null
+  paymentDisputedAt?: Prisma.DateTimeNullableFilter<"Booking"> | Date | string | null
+  paymentDisputedBy?: Prisma.EnumPaymentDisputedByNullableFilter<"Booking"> | $Enums.PaymentDisputedBy | null
   status?: Prisma.EnumBookingStatusFilter<"Booking"> | $Enums.BookingStatus
   note?: Prisma.StringNullableFilter<"Booking"> | string | null
   cancelledBy?: Prisma.StringNullableFilter<"Booking"> | string | null
@@ -1081,9 +1368,19 @@ export type BookingCreateWithoutServiceInput = {
   agreedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
   commissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentMethod?: $Enums.PaymentMethod
+  paymentTiming?: $Enums.PaymentTiming
   paymentReference?: string | null
   isPaid?: boolean
   paidAt?: Date | string | null
+  clientPaymentConfirmed?: boolean
+  clientPaymentConfirmedAt?: Date | string | null
+  artisanPaymentConfirmed?: boolean
+  artisanPaymentConfirmedAt?: Date | string | null
+  paymentDisputed?: boolean
+  paymentDisputeReason?: string | null
+  paymentDisputedAt?: Date | string | null
+  paymentDisputedBy?: $Enums.PaymentDisputedBy | null
   status?: $Enums.BookingStatus
   note?: string | null
   cancelledBy?: string | null
@@ -1096,6 +1393,7 @@ export type BookingCreateWithoutServiceInput = {
   deletedAt?: Date | string | null
   artisan: Prisma.ArtisanCreateNestedOneWithoutBookingsInput
   review?: Prisma.ReviewCreateNestedOneWithoutBookingInput
+  thread?: Prisma.BookingThreadCreateNestedOneWithoutBookingInput
 }
 
 export type BookingUncheckedCreateWithoutServiceInput = {
@@ -1111,9 +1409,19 @@ export type BookingUncheckedCreateWithoutServiceInput = {
   agreedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
   commissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentMethod?: $Enums.PaymentMethod
+  paymentTiming?: $Enums.PaymentTiming
   paymentReference?: string | null
   isPaid?: boolean
   paidAt?: Date | string | null
+  clientPaymentConfirmed?: boolean
+  clientPaymentConfirmedAt?: Date | string | null
+  artisanPaymentConfirmed?: boolean
+  artisanPaymentConfirmedAt?: Date | string | null
+  paymentDisputed?: boolean
+  paymentDisputeReason?: string | null
+  paymentDisputedAt?: Date | string | null
+  paymentDisputedBy?: $Enums.PaymentDisputedBy | null
   status?: $Enums.BookingStatus
   note?: string | null
   cancelledBy?: string | null
@@ -1125,6 +1433,7 @@ export type BookingUncheckedCreateWithoutServiceInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   review?: Prisma.ReviewUncheckedCreateNestedOneWithoutBookingInput
+  thread?: Prisma.BookingThreadUncheckedCreateNestedOneWithoutBookingInput
 }
 
 export type BookingCreateOrConnectWithoutServiceInput = {
@@ -1153,7 +1462,7 @@ export type BookingUpdateManyWithWhereWithoutServiceInput = {
   data: Prisma.XOR<Prisma.BookingUpdateManyMutationInput, Prisma.BookingUncheckedUpdateManyWithoutServiceInput>
 }
 
-export type BookingCreateWithoutReviewInput = {
+export type BookingCreateWithoutThreadInput = {
   id?: string
   customerUserId: string
   customerProfileId?: string | null
@@ -1165,9 +1474,19 @@ export type BookingCreateWithoutReviewInput = {
   agreedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
   commissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentMethod?: $Enums.PaymentMethod
+  paymentTiming?: $Enums.PaymentTiming
   paymentReference?: string | null
   isPaid?: boolean
   paidAt?: Date | string | null
+  clientPaymentConfirmed?: boolean
+  clientPaymentConfirmedAt?: Date | string | null
+  artisanPaymentConfirmed?: boolean
+  artisanPaymentConfirmedAt?: Date | string | null
+  paymentDisputed?: boolean
+  paymentDisputeReason?: string | null
+  paymentDisputedAt?: Date | string | null
+  paymentDisputedBy?: $Enums.PaymentDisputedBy | null
   status?: $Enums.BookingStatus
   note?: string | null
   cancelledBy?: string | null
@@ -1180,6 +1499,183 @@ export type BookingCreateWithoutReviewInput = {
   deletedAt?: Date | string | null
   artisan: Prisma.ArtisanCreateNestedOneWithoutBookingsInput
   service?: Prisma.ArtisanServiceCreateNestedOneWithoutBookingsInput
+  review?: Prisma.ReviewCreateNestedOneWithoutBookingInput
+}
+
+export type BookingUncheckedCreateWithoutThreadInput = {
+  id?: string
+  artisanId: string
+  serviceId?: string | null
+  customerUserId: string
+  customerProfileId?: string | null
+  customerName?: string | null
+  customerPhone?: string | null
+  scheduledDate: Date | string
+  scheduledTime?: string | null
+  duration?: number | null
+  agreedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currency?: string
+  commissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentMethod?: $Enums.PaymentMethod
+  paymentTiming?: $Enums.PaymentTiming
+  paymentReference?: string | null
+  isPaid?: boolean
+  paidAt?: Date | string | null
+  clientPaymentConfirmed?: boolean
+  clientPaymentConfirmedAt?: Date | string | null
+  artisanPaymentConfirmed?: boolean
+  artisanPaymentConfirmedAt?: Date | string | null
+  paymentDisputed?: boolean
+  paymentDisputeReason?: string | null
+  paymentDisputedAt?: Date | string | null
+  paymentDisputedBy?: $Enums.PaymentDisputedBy | null
+  status?: $Enums.BookingStatus
+  note?: string | null
+  cancelledBy?: string | null
+  cancellationReason?: string | null
+  cancelledAt?: Date | string | null
+  startedAt?: Date | string | null
+  completedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  review?: Prisma.ReviewUncheckedCreateNestedOneWithoutBookingInput
+}
+
+export type BookingCreateOrConnectWithoutThreadInput = {
+  where: Prisma.BookingWhereUniqueInput
+  create: Prisma.XOR<Prisma.BookingCreateWithoutThreadInput, Prisma.BookingUncheckedCreateWithoutThreadInput>
+}
+
+export type BookingUpsertWithoutThreadInput = {
+  update: Prisma.XOR<Prisma.BookingUpdateWithoutThreadInput, Prisma.BookingUncheckedUpdateWithoutThreadInput>
+  create: Prisma.XOR<Prisma.BookingCreateWithoutThreadInput, Prisma.BookingUncheckedCreateWithoutThreadInput>
+  where?: Prisma.BookingWhereInput
+}
+
+export type BookingUpdateToOneWithWhereWithoutThreadInput = {
+  where?: Prisma.BookingWhereInput
+  data: Prisma.XOR<Prisma.BookingUpdateWithoutThreadInput, Prisma.BookingUncheckedUpdateWithoutThreadInput>
+}
+
+export type BookingUpdateWithoutThreadInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  customerProfileId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  scheduledTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  agreedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  commissionAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  paymentTiming?: Prisma.EnumPaymentTimingFieldUpdateOperationsInput | $Enums.PaymentTiming
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isPaid?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clientPaymentConfirmed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  clientPaymentConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  artisanPaymentConfirmed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  artisanPaymentConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDisputed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentDisputeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentDisputedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDisputedBy?: Prisma.NullableEnumPaymentDisputedByFieldUpdateOperationsInput | $Enums.PaymentDisputedBy | null
+  status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cancelledBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  artisan?: Prisma.ArtisanUpdateOneRequiredWithoutBookingsNestedInput
+  service?: Prisma.ArtisanServiceUpdateOneWithoutBookingsNestedInput
+  review?: Prisma.ReviewUpdateOneWithoutBookingNestedInput
+}
+
+export type BookingUncheckedUpdateWithoutThreadInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  artisanId?: Prisma.StringFieldUpdateOperationsInput | string
+  serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  customerProfileId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  scheduledTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  agreedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  commissionAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  paymentTiming?: Prisma.EnumPaymentTimingFieldUpdateOperationsInput | $Enums.PaymentTiming
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isPaid?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clientPaymentConfirmed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  clientPaymentConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  artisanPaymentConfirmed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  artisanPaymentConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDisputed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentDisputeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentDisputedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDisputedBy?: Prisma.NullableEnumPaymentDisputedByFieldUpdateOperationsInput | $Enums.PaymentDisputedBy | null
+  status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cancelledBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  review?: Prisma.ReviewUncheckedUpdateOneWithoutBookingNestedInput
+}
+
+export type BookingCreateWithoutReviewInput = {
+  id?: string
+  customerUserId: string
+  customerProfileId?: string | null
+  customerName?: string | null
+  customerPhone?: string | null
+  scheduledDate: Date | string
+  scheduledTime?: string | null
+  duration?: number | null
+  agreedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currency?: string
+  commissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentMethod?: $Enums.PaymentMethod
+  paymentTiming?: $Enums.PaymentTiming
+  paymentReference?: string | null
+  isPaid?: boolean
+  paidAt?: Date | string | null
+  clientPaymentConfirmed?: boolean
+  clientPaymentConfirmedAt?: Date | string | null
+  artisanPaymentConfirmed?: boolean
+  artisanPaymentConfirmedAt?: Date | string | null
+  paymentDisputed?: boolean
+  paymentDisputeReason?: string | null
+  paymentDisputedAt?: Date | string | null
+  paymentDisputedBy?: $Enums.PaymentDisputedBy | null
+  status?: $Enums.BookingStatus
+  note?: string | null
+  cancelledBy?: string | null
+  cancellationReason?: string | null
+  cancelledAt?: Date | string | null
+  startedAt?: Date | string | null
+  completedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  artisan: Prisma.ArtisanCreateNestedOneWithoutBookingsInput
+  service?: Prisma.ArtisanServiceCreateNestedOneWithoutBookingsInput
+  thread?: Prisma.BookingThreadCreateNestedOneWithoutBookingInput
 }
 
 export type BookingUncheckedCreateWithoutReviewInput = {
@@ -1196,9 +1692,19 @@ export type BookingUncheckedCreateWithoutReviewInput = {
   agreedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
   commissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentMethod?: $Enums.PaymentMethod
+  paymentTiming?: $Enums.PaymentTiming
   paymentReference?: string | null
   isPaid?: boolean
   paidAt?: Date | string | null
+  clientPaymentConfirmed?: boolean
+  clientPaymentConfirmedAt?: Date | string | null
+  artisanPaymentConfirmed?: boolean
+  artisanPaymentConfirmedAt?: Date | string | null
+  paymentDisputed?: boolean
+  paymentDisputeReason?: string | null
+  paymentDisputedAt?: Date | string | null
+  paymentDisputedBy?: $Enums.PaymentDisputedBy | null
   status?: $Enums.BookingStatus
   note?: string | null
   cancelledBy?: string | null
@@ -1209,6 +1715,7 @@ export type BookingUncheckedCreateWithoutReviewInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  thread?: Prisma.BookingThreadUncheckedCreateNestedOneWithoutBookingInput
 }
 
 export type BookingCreateOrConnectWithoutReviewInput = {
@@ -1239,9 +1746,19 @@ export type BookingUpdateWithoutReviewInput = {
   agreedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   commissionAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  paymentTiming?: Prisma.EnumPaymentTimingFieldUpdateOperationsInput | $Enums.PaymentTiming
   paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isPaid?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clientPaymentConfirmed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  clientPaymentConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  artisanPaymentConfirmed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  artisanPaymentConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDisputed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentDisputeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentDisputedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDisputedBy?: Prisma.NullableEnumPaymentDisputedByFieldUpdateOperationsInput | $Enums.PaymentDisputedBy | null
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1254,6 +1771,7 @@ export type BookingUpdateWithoutReviewInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   artisan?: Prisma.ArtisanUpdateOneRequiredWithoutBookingsNestedInput
   service?: Prisma.ArtisanServiceUpdateOneWithoutBookingsNestedInput
+  thread?: Prisma.BookingThreadUpdateOneWithoutBookingNestedInput
 }
 
 export type BookingUncheckedUpdateWithoutReviewInput = {
@@ -1270,9 +1788,19 @@ export type BookingUncheckedUpdateWithoutReviewInput = {
   agreedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   commissionAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  paymentTiming?: Prisma.EnumPaymentTimingFieldUpdateOperationsInput | $Enums.PaymentTiming
   paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isPaid?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clientPaymentConfirmed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  clientPaymentConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  artisanPaymentConfirmed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  artisanPaymentConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDisputed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentDisputeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentDisputedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDisputedBy?: Prisma.NullableEnumPaymentDisputedByFieldUpdateOperationsInput | $Enums.PaymentDisputedBy | null
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1283,6 +1811,7 @@ export type BookingUncheckedUpdateWithoutReviewInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  thread?: Prisma.BookingThreadUncheckedUpdateOneWithoutBookingNestedInput
 }
 
 export type BookingCreateManyArtisanInput = {
@@ -1298,9 +1827,19 @@ export type BookingCreateManyArtisanInput = {
   agreedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
   commissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentMethod?: $Enums.PaymentMethod
+  paymentTiming?: $Enums.PaymentTiming
   paymentReference?: string | null
   isPaid?: boolean
   paidAt?: Date | string | null
+  clientPaymentConfirmed?: boolean
+  clientPaymentConfirmedAt?: Date | string | null
+  artisanPaymentConfirmed?: boolean
+  artisanPaymentConfirmedAt?: Date | string | null
+  paymentDisputed?: boolean
+  paymentDisputeReason?: string | null
+  paymentDisputedAt?: Date | string | null
+  paymentDisputedBy?: $Enums.PaymentDisputedBy | null
   status?: $Enums.BookingStatus
   note?: string | null
   cancelledBy?: string | null
@@ -1325,9 +1864,19 @@ export type BookingUpdateWithoutArtisanInput = {
   agreedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   commissionAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  paymentTiming?: Prisma.EnumPaymentTimingFieldUpdateOperationsInput | $Enums.PaymentTiming
   paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isPaid?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clientPaymentConfirmed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  clientPaymentConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  artisanPaymentConfirmed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  artisanPaymentConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDisputed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentDisputeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentDisputedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDisputedBy?: Prisma.NullableEnumPaymentDisputedByFieldUpdateOperationsInput | $Enums.PaymentDisputedBy | null
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1340,6 +1889,7 @@ export type BookingUpdateWithoutArtisanInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   service?: Prisma.ArtisanServiceUpdateOneWithoutBookingsNestedInput
   review?: Prisma.ReviewUpdateOneWithoutBookingNestedInput
+  thread?: Prisma.BookingThreadUpdateOneWithoutBookingNestedInput
 }
 
 export type BookingUncheckedUpdateWithoutArtisanInput = {
@@ -1355,9 +1905,19 @@ export type BookingUncheckedUpdateWithoutArtisanInput = {
   agreedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   commissionAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  paymentTiming?: Prisma.EnumPaymentTimingFieldUpdateOperationsInput | $Enums.PaymentTiming
   paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isPaid?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clientPaymentConfirmed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  clientPaymentConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  artisanPaymentConfirmed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  artisanPaymentConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDisputed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentDisputeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentDisputedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDisputedBy?: Prisma.NullableEnumPaymentDisputedByFieldUpdateOperationsInput | $Enums.PaymentDisputedBy | null
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1369,6 +1929,7 @@ export type BookingUncheckedUpdateWithoutArtisanInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   review?: Prisma.ReviewUncheckedUpdateOneWithoutBookingNestedInput
+  thread?: Prisma.BookingThreadUncheckedUpdateOneWithoutBookingNestedInput
 }
 
 export type BookingUncheckedUpdateManyWithoutArtisanInput = {
@@ -1384,9 +1945,19 @@ export type BookingUncheckedUpdateManyWithoutArtisanInput = {
   agreedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   commissionAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  paymentTiming?: Prisma.EnumPaymentTimingFieldUpdateOperationsInput | $Enums.PaymentTiming
   paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isPaid?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clientPaymentConfirmed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  clientPaymentConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  artisanPaymentConfirmed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  artisanPaymentConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDisputed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentDisputeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentDisputedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDisputedBy?: Prisma.NullableEnumPaymentDisputedByFieldUpdateOperationsInput | $Enums.PaymentDisputedBy | null
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1412,9 +1983,19 @@ export type BookingCreateManyServiceInput = {
   agreedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
   commissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentMethod?: $Enums.PaymentMethod
+  paymentTiming?: $Enums.PaymentTiming
   paymentReference?: string | null
   isPaid?: boolean
   paidAt?: Date | string | null
+  clientPaymentConfirmed?: boolean
+  clientPaymentConfirmedAt?: Date | string | null
+  artisanPaymentConfirmed?: boolean
+  artisanPaymentConfirmedAt?: Date | string | null
+  paymentDisputed?: boolean
+  paymentDisputeReason?: string | null
+  paymentDisputedAt?: Date | string | null
+  paymentDisputedBy?: $Enums.PaymentDisputedBy | null
   status?: $Enums.BookingStatus
   note?: string | null
   cancelledBy?: string | null
@@ -1439,9 +2020,19 @@ export type BookingUpdateWithoutServiceInput = {
   agreedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   commissionAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  paymentTiming?: Prisma.EnumPaymentTimingFieldUpdateOperationsInput | $Enums.PaymentTiming
   paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isPaid?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clientPaymentConfirmed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  clientPaymentConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  artisanPaymentConfirmed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  artisanPaymentConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDisputed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentDisputeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentDisputedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDisputedBy?: Prisma.NullableEnumPaymentDisputedByFieldUpdateOperationsInput | $Enums.PaymentDisputedBy | null
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1454,6 +2045,7 @@ export type BookingUpdateWithoutServiceInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   artisan?: Prisma.ArtisanUpdateOneRequiredWithoutBookingsNestedInput
   review?: Prisma.ReviewUpdateOneWithoutBookingNestedInput
+  thread?: Prisma.BookingThreadUpdateOneWithoutBookingNestedInput
 }
 
 export type BookingUncheckedUpdateWithoutServiceInput = {
@@ -1469,9 +2061,19 @@ export type BookingUncheckedUpdateWithoutServiceInput = {
   agreedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   commissionAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  paymentTiming?: Prisma.EnumPaymentTimingFieldUpdateOperationsInput | $Enums.PaymentTiming
   paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isPaid?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clientPaymentConfirmed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  clientPaymentConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  artisanPaymentConfirmed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  artisanPaymentConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDisputed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentDisputeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentDisputedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDisputedBy?: Prisma.NullableEnumPaymentDisputedByFieldUpdateOperationsInput | $Enums.PaymentDisputedBy | null
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1483,6 +2085,7 @@ export type BookingUncheckedUpdateWithoutServiceInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   review?: Prisma.ReviewUncheckedUpdateOneWithoutBookingNestedInput
+  thread?: Prisma.BookingThreadUncheckedUpdateOneWithoutBookingNestedInput
 }
 
 export type BookingUncheckedUpdateManyWithoutServiceInput = {
@@ -1498,9 +2101,19 @@ export type BookingUncheckedUpdateManyWithoutServiceInput = {
   agreedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   commissionAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  paymentTiming?: Prisma.EnumPaymentTimingFieldUpdateOperationsInput | $Enums.PaymentTiming
   paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isPaid?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  clientPaymentConfirmed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  clientPaymentConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  artisanPaymentConfirmed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  artisanPaymentConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDisputed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentDisputeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentDisputedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDisputedBy?: Prisma.NullableEnumPaymentDisputedByFieldUpdateOperationsInput | $Enums.PaymentDisputedBy | null
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1529,9 +2142,19 @@ export type BookingSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   agreedPrice?: boolean
   currency?: boolean
   commissionAmount?: boolean
+  paymentMethod?: boolean
+  paymentTiming?: boolean
   paymentReference?: boolean
   isPaid?: boolean
   paidAt?: boolean
+  clientPaymentConfirmed?: boolean
+  clientPaymentConfirmedAt?: boolean
+  artisanPaymentConfirmed?: boolean
+  artisanPaymentConfirmedAt?: boolean
+  paymentDisputed?: boolean
+  paymentDisputeReason?: boolean
+  paymentDisputedAt?: boolean
+  paymentDisputedBy?: boolean
   status?: boolean
   note?: boolean
   cancelledBy?: boolean
@@ -1545,6 +2168,7 @@ export type BookingSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   artisan?: boolean | Prisma.ArtisanDefaultArgs<ExtArgs>
   service?: boolean | Prisma.Booking$serviceArgs<ExtArgs>
   review?: boolean | Prisma.Booking$reviewArgs<ExtArgs>
+  thread?: boolean | Prisma.Booking$threadArgs<ExtArgs>
 }, ExtArgs["result"]["booking"]>
 
 export type BookingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1561,9 +2185,19 @@ export type BookingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   agreedPrice?: boolean
   currency?: boolean
   commissionAmount?: boolean
+  paymentMethod?: boolean
+  paymentTiming?: boolean
   paymentReference?: boolean
   isPaid?: boolean
   paidAt?: boolean
+  clientPaymentConfirmed?: boolean
+  clientPaymentConfirmedAt?: boolean
+  artisanPaymentConfirmed?: boolean
+  artisanPaymentConfirmedAt?: boolean
+  paymentDisputed?: boolean
+  paymentDisputeReason?: boolean
+  paymentDisputedAt?: boolean
+  paymentDisputedBy?: boolean
   status?: boolean
   note?: boolean
   cancelledBy?: boolean
@@ -1592,9 +2226,19 @@ export type BookingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   agreedPrice?: boolean
   currency?: boolean
   commissionAmount?: boolean
+  paymentMethod?: boolean
+  paymentTiming?: boolean
   paymentReference?: boolean
   isPaid?: boolean
   paidAt?: boolean
+  clientPaymentConfirmed?: boolean
+  clientPaymentConfirmedAt?: boolean
+  artisanPaymentConfirmed?: boolean
+  artisanPaymentConfirmedAt?: boolean
+  paymentDisputed?: boolean
+  paymentDisputeReason?: boolean
+  paymentDisputedAt?: boolean
+  paymentDisputedBy?: boolean
   status?: boolean
   note?: boolean
   cancelledBy?: boolean
@@ -1623,9 +2267,19 @@ export type BookingSelectScalar = {
   agreedPrice?: boolean
   currency?: boolean
   commissionAmount?: boolean
+  paymentMethod?: boolean
+  paymentTiming?: boolean
   paymentReference?: boolean
   isPaid?: boolean
   paidAt?: boolean
+  clientPaymentConfirmed?: boolean
+  clientPaymentConfirmedAt?: boolean
+  artisanPaymentConfirmed?: boolean
+  artisanPaymentConfirmedAt?: boolean
+  paymentDisputed?: boolean
+  paymentDisputeReason?: boolean
+  paymentDisputedAt?: boolean
+  paymentDisputedBy?: boolean
   status?: boolean
   note?: boolean
   cancelledBy?: boolean
@@ -1638,11 +2292,12 @@ export type BookingSelectScalar = {
   deletedAt?: boolean
 }
 
-export type BookingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "artisanId" | "serviceId" | "customerUserId" | "customerProfileId" | "customerName" | "customerPhone" | "scheduledDate" | "scheduledTime" | "duration" | "agreedPrice" | "currency" | "commissionAmount" | "paymentReference" | "isPaid" | "paidAt" | "status" | "note" | "cancelledBy" | "cancellationReason" | "cancelledAt" | "startedAt" | "completedAt" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["booking"]>
+export type BookingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "artisanId" | "serviceId" | "customerUserId" | "customerProfileId" | "customerName" | "customerPhone" | "scheduledDate" | "scheduledTime" | "duration" | "agreedPrice" | "currency" | "commissionAmount" | "paymentMethod" | "paymentTiming" | "paymentReference" | "isPaid" | "paidAt" | "clientPaymentConfirmed" | "clientPaymentConfirmedAt" | "artisanPaymentConfirmed" | "artisanPaymentConfirmedAt" | "paymentDisputed" | "paymentDisputeReason" | "paymentDisputedAt" | "paymentDisputedBy" | "status" | "note" | "cancelledBy" | "cancellationReason" | "cancelledAt" | "startedAt" | "completedAt" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["booking"]>
 export type BookingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   artisan?: boolean | Prisma.ArtisanDefaultArgs<ExtArgs>
   service?: boolean | Prisma.Booking$serviceArgs<ExtArgs>
   review?: boolean | Prisma.Booking$reviewArgs<ExtArgs>
+  thread?: boolean | Prisma.Booking$threadArgs<ExtArgs>
 }
 export type BookingIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   artisan?: boolean | Prisma.ArtisanDefaultArgs<ExtArgs>
@@ -1659,6 +2314,7 @@ export type $BookingPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     artisan: Prisma.$ArtisanPayload<ExtArgs>
     service: Prisma.$ArtisanServicePayload<ExtArgs> | null
     review: Prisma.$ReviewPayload<ExtArgs> | null
+    thread: Prisma.$BookingThreadPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1674,9 +2330,19 @@ export type $BookingPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     agreedPrice: runtime.Decimal | null
     currency: string
     commissionAmount: runtime.Decimal | null
+    paymentMethod: $Enums.PaymentMethod
+    paymentTiming: $Enums.PaymentTiming
     paymentReference: string | null
     isPaid: boolean
     paidAt: Date | null
+    clientPaymentConfirmed: boolean
+    clientPaymentConfirmedAt: Date | null
+    artisanPaymentConfirmed: boolean
+    artisanPaymentConfirmedAt: Date | null
+    paymentDisputed: boolean
+    paymentDisputeReason: string | null
+    paymentDisputedAt: Date | null
+    paymentDisputedBy: $Enums.PaymentDisputedBy | null
     status: $Enums.BookingStatus
     note: string | null
     cancelledBy: string | null
@@ -2084,6 +2750,7 @@ export interface Prisma__BookingClient<T, Null = never, ExtArgs extends runtime.
   artisan<T extends Prisma.ArtisanDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ArtisanDefaultArgs<ExtArgs>>): Prisma.Prisma__ArtisanClient<runtime.Types.Result.GetResult<Prisma.$ArtisanPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   service<T extends Prisma.Booking$serviceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Booking$serviceArgs<ExtArgs>>): Prisma.Prisma__ArtisanServiceClient<runtime.Types.Result.GetResult<Prisma.$ArtisanServicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   review<T extends Prisma.Booking$reviewArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Booking$reviewArgs<ExtArgs>>): Prisma.Prisma__ReviewClient<runtime.Types.Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  thread<T extends Prisma.Booking$threadArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Booking$threadArgs<ExtArgs>>): Prisma.Prisma__BookingThreadClient<runtime.Types.Result.GetResult<Prisma.$BookingThreadPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2126,9 +2793,19 @@ export interface BookingFieldRefs {
   readonly agreedPrice: Prisma.FieldRef<"Booking", 'Decimal'>
   readonly currency: Prisma.FieldRef<"Booking", 'String'>
   readonly commissionAmount: Prisma.FieldRef<"Booking", 'Decimal'>
+  readonly paymentMethod: Prisma.FieldRef<"Booking", 'PaymentMethod'>
+  readonly paymentTiming: Prisma.FieldRef<"Booking", 'PaymentTiming'>
   readonly paymentReference: Prisma.FieldRef<"Booking", 'String'>
   readonly isPaid: Prisma.FieldRef<"Booking", 'Boolean'>
   readonly paidAt: Prisma.FieldRef<"Booking", 'DateTime'>
+  readonly clientPaymentConfirmed: Prisma.FieldRef<"Booking", 'Boolean'>
+  readonly clientPaymentConfirmedAt: Prisma.FieldRef<"Booking", 'DateTime'>
+  readonly artisanPaymentConfirmed: Prisma.FieldRef<"Booking", 'Boolean'>
+  readonly artisanPaymentConfirmedAt: Prisma.FieldRef<"Booking", 'DateTime'>
+  readonly paymentDisputed: Prisma.FieldRef<"Booking", 'Boolean'>
+  readonly paymentDisputeReason: Prisma.FieldRef<"Booking", 'String'>
+  readonly paymentDisputedAt: Prisma.FieldRef<"Booking", 'DateTime'>
+  readonly paymentDisputedBy: Prisma.FieldRef<"Booking", 'PaymentDisputedBy'>
   readonly status: Prisma.FieldRef<"Booking", 'BookingStatus'>
   readonly note: Prisma.FieldRef<"Booking", 'String'>
   readonly cancelledBy: Prisma.FieldRef<"Booking", 'String'>
@@ -2570,6 +3247,25 @@ export type Booking$reviewArgs<ExtArgs extends runtime.Types.Extensions.Internal
    */
   include?: Prisma.ReviewInclude<ExtArgs> | null
   where?: Prisma.ReviewWhereInput
+}
+
+/**
+ * Booking.thread
+ */
+export type Booking$threadArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BookingThread
+   */
+  select?: Prisma.BookingThreadSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BookingThread
+   */
+  omit?: Prisma.BookingThreadOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BookingThreadInclude<ExtArgs> | null
+  where?: Prisma.BookingThreadWhereInput
 }
 
 /**

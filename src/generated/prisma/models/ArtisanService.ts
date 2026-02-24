@@ -282,6 +282,7 @@ export type ArtisanServiceWhereInput = {
   deletedAt?: Prisma.DateTimeNullableFilter<"ArtisanService"> | Date | string | null
   artisan?: Prisma.XOR<Prisma.ArtisanScalarRelationFilter, Prisma.ArtisanWhereInput>
   bookings?: Prisma.BookingListRelationFilter
+  threads?: Prisma.BookingThreadListRelationFilter
 }
 
 export type ArtisanServiceOrderByWithRelationInput = {
@@ -299,6 +300,7 @@ export type ArtisanServiceOrderByWithRelationInput = {
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   artisan?: Prisma.ArtisanOrderByWithRelationInput
   bookings?: Prisma.BookingOrderByRelationAggregateInput
+  threads?: Prisma.BookingThreadOrderByRelationAggregateInput
 }
 
 export type ArtisanServiceWhereUniqueInput = Prisma.AtLeast<{
@@ -319,6 +321,7 @@ export type ArtisanServiceWhereUniqueInput = Prisma.AtLeast<{
   deletedAt?: Prisma.DateTimeNullableFilter<"ArtisanService"> | Date | string | null
   artisan?: Prisma.XOR<Prisma.ArtisanScalarRelationFilter, Prisma.ArtisanWhereInput>
   bookings?: Prisma.BookingListRelationFilter
+  threads?: Prisma.BookingThreadListRelationFilter
 }, "id">
 
 export type ArtisanServiceOrderByWithAggregationInput = {
@@ -373,6 +376,7 @@ export type ArtisanServiceCreateInput = {
   deletedAt?: Date | string | null
   artisan: Prisma.ArtisanCreateNestedOneWithoutServicesInput
   bookings?: Prisma.BookingCreateNestedManyWithoutServiceInput
+  threads?: Prisma.BookingThreadCreateNestedManyWithoutServiceInput
 }
 
 export type ArtisanServiceUncheckedCreateInput = {
@@ -389,6 +393,7 @@ export type ArtisanServiceUncheckedCreateInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutServiceInput
+  threads?: Prisma.BookingThreadUncheckedCreateNestedManyWithoutServiceInput
 }
 
 export type ArtisanServiceUpdateInput = {
@@ -405,6 +410,7 @@ export type ArtisanServiceUpdateInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   artisan?: Prisma.ArtisanUpdateOneRequiredWithoutServicesNestedInput
   bookings?: Prisma.BookingUpdateManyWithoutServiceNestedInput
+  threads?: Prisma.BookingThreadUpdateManyWithoutServiceNestedInput
 }
 
 export type ArtisanServiceUncheckedUpdateInput = {
@@ -421,6 +427,7 @@ export type ArtisanServiceUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutServiceNestedInput
+  threads?: Prisma.BookingThreadUncheckedUpdateManyWithoutServiceNestedInput
 }
 
 export type ArtisanServiceCreateManyInput = {
@@ -589,6 +596,22 @@ export type NullableDecimalFieldUpdateOperationsInput = {
   divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
+export type ArtisanServiceCreateNestedOneWithoutThreadsInput = {
+  create?: Prisma.XOR<Prisma.ArtisanServiceCreateWithoutThreadsInput, Prisma.ArtisanServiceUncheckedCreateWithoutThreadsInput>
+  connectOrCreate?: Prisma.ArtisanServiceCreateOrConnectWithoutThreadsInput
+  connect?: Prisma.ArtisanServiceWhereUniqueInput
+}
+
+export type ArtisanServiceUpdateOneWithoutThreadsNestedInput = {
+  create?: Prisma.XOR<Prisma.ArtisanServiceCreateWithoutThreadsInput, Prisma.ArtisanServiceUncheckedCreateWithoutThreadsInput>
+  connectOrCreate?: Prisma.ArtisanServiceCreateOrConnectWithoutThreadsInput
+  upsert?: Prisma.ArtisanServiceUpsertWithoutThreadsInput
+  disconnect?: Prisma.ArtisanServiceWhereInput | boolean
+  delete?: Prisma.ArtisanServiceWhereInput | boolean
+  connect?: Prisma.ArtisanServiceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ArtisanServiceUpdateToOneWithWhereWithoutThreadsInput, Prisma.ArtisanServiceUpdateWithoutThreadsInput>, Prisma.ArtisanServiceUncheckedUpdateWithoutThreadsInput>
+}
+
 export type ArtisanServiceCreateNestedOneWithoutBookingsInput = {
   create?: Prisma.XOR<Prisma.ArtisanServiceCreateWithoutBookingsInput, Prisma.ArtisanServiceUncheckedCreateWithoutBookingsInput>
   connectOrCreate?: Prisma.ArtisanServiceCreateOrConnectWithoutBookingsInput
@@ -618,6 +641,7 @@ export type ArtisanServiceCreateWithoutArtisanInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   bookings?: Prisma.BookingCreateNestedManyWithoutServiceInput
+  threads?: Prisma.BookingThreadCreateNestedManyWithoutServiceInput
 }
 
 export type ArtisanServiceUncheckedCreateWithoutArtisanInput = {
@@ -633,6 +657,7 @@ export type ArtisanServiceUncheckedCreateWithoutArtisanInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutServiceInput
+  threads?: Prisma.BookingThreadUncheckedCreateNestedManyWithoutServiceInput
 }
 
 export type ArtisanServiceCreateOrConnectWithoutArtisanInput = {
@@ -679,6 +704,86 @@ export type ArtisanServiceScalarWhereInput = {
   deletedAt?: Prisma.DateTimeNullableFilter<"ArtisanService"> | Date | string | null
 }
 
+export type ArtisanServiceCreateWithoutThreadsInput = {
+  id?: string
+  name: string
+  description?: string | null
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currency?: string
+  duration?: number | null
+  isActive?: boolean
+  order?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  artisan: Prisma.ArtisanCreateNestedOneWithoutServicesInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutServiceInput
+}
+
+export type ArtisanServiceUncheckedCreateWithoutThreadsInput = {
+  id?: string
+  artisanId: string
+  name: string
+  description?: string | null
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currency?: string
+  duration?: number | null
+  isActive?: boolean
+  order?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutServiceInput
+}
+
+export type ArtisanServiceCreateOrConnectWithoutThreadsInput = {
+  where: Prisma.ArtisanServiceWhereUniqueInput
+  create: Prisma.XOR<Prisma.ArtisanServiceCreateWithoutThreadsInput, Prisma.ArtisanServiceUncheckedCreateWithoutThreadsInput>
+}
+
+export type ArtisanServiceUpsertWithoutThreadsInput = {
+  update: Prisma.XOR<Prisma.ArtisanServiceUpdateWithoutThreadsInput, Prisma.ArtisanServiceUncheckedUpdateWithoutThreadsInput>
+  create: Prisma.XOR<Prisma.ArtisanServiceCreateWithoutThreadsInput, Prisma.ArtisanServiceUncheckedCreateWithoutThreadsInput>
+  where?: Prisma.ArtisanServiceWhereInput
+}
+
+export type ArtisanServiceUpdateToOneWithWhereWithoutThreadsInput = {
+  where?: Prisma.ArtisanServiceWhereInput
+  data: Prisma.XOR<Prisma.ArtisanServiceUpdateWithoutThreadsInput, Prisma.ArtisanServiceUncheckedUpdateWithoutThreadsInput>
+}
+
+export type ArtisanServiceUpdateWithoutThreadsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  price?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  order?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  artisan?: Prisma.ArtisanUpdateOneRequiredWithoutServicesNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutServiceNestedInput
+}
+
+export type ArtisanServiceUncheckedUpdateWithoutThreadsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  artisanId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  price?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  order?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutServiceNestedInput
+}
+
 export type ArtisanServiceCreateWithoutBookingsInput = {
   id?: string
   name: string
@@ -692,6 +797,7 @@ export type ArtisanServiceCreateWithoutBookingsInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   artisan: Prisma.ArtisanCreateNestedOneWithoutServicesInput
+  threads?: Prisma.BookingThreadCreateNestedManyWithoutServiceInput
 }
 
 export type ArtisanServiceUncheckedCreateWithoutBookingsInput = {
@@ -707,6 +813,7 @@ export type ArtisanServiceUncheckedCreateWithoutBookingsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  threads?: Prisma.BookingThreadUncheckedCreateNestedManyWithoutServiceInput
 }
 
 export type ArtisanServiceCreateOrConnectWithoutBookingsInput = {
@@ -738,6 +845,7 @@ export type ArtisanServiceUpdateWithoutBookingsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   artisan?: Prisma.ArtisanUpdateOneRequiredWithoutServicesNestedInput
+  threads?: Prisma.BookingThreadUpdateManyWithoutServiceNestedInput
 }
 
 export type ArtisanServiceUncheckedUpdateWithoutBookingsInput = {
@@ -753,6 +861,7 @@ export type ArtisanServiceUncheckedUpdateWithoutBookingsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  threads?: Prisma.BookingThreadUncheckedUpdateManyWithoutServiceNestedInput
 }
 
 export type ArtisanServiceCreateManyArtisanInput = {
@@ -782,6 +891,7 @@ export type ArtisanServiceUpdateWithoutArtisanInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bookings?: Prisma.BookingUpdateManyWithoutServiceNestedInput
+  threads?: Prisma.BookingThreadUpdateManyWithoutServiceNestedInput
 }
 
 export type ArtisanServiceUncheckedUpdateWithoutArtisanInput = {
@@ -797,6 +907,7 @@ export type ArtisanServiceUncheckedUpdateWithoutArtisanInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutServiceNestedInput
+  threads?: Prisma.BookingThreadUncheckedUpdateManyWithoutServiceNestedInput
 }
 
 export type ArtisanServiceUncheckedUpdateManyWithoutArtisanInput = {
@@ -820,10 +931,12 @@ export type ArtisanServiceUncheckedUpdateManyWithoutArtisanInput = {
 
 export type ArtisanServiceCountOutputType = {
   bookings: number
+  threads: number
 }
 
 export type ArtisanServiceCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   bookings?: boolean | ArtisanServiceCountOutputTypeCountBookingsArgs
+  threads?: boolean | ArtisanServiceCountOutputTypeCountThreadsArgs
 }
 
 /**
@@ -843,6 +956,13 @@ export type ArtisanServiceCountOutputTypeCountBookingsArgs<ExtArgs extends runti
   where?: Prisma.BookingWhereInput
 }
 
+/**
+ * ArtisanServiceCountOutputType without action
+ */
+export type ArtisanServiceCountOutputTypeCountThreadsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BookingThreadWhereInput
+}
+
 
 export type ArtisanServiceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -859,6 +979,7 @@ export type ArtisanServiceSelect<ExtArgs extends runtime.Types.Extensions.Intern
   deletedAt?: boolean
   artisan?: boolean | Prisma.ArtisanDefaultArgs<ExtArgs>
   bookings?: boolean | Prisma.ArtisanService$bookingsArgs<ExtArgs>
+  threads?: boolean | Prisma.ArtisanService$threadsArgs<ExtArgs>
   _count?: boolean | Prisma.ArtisanServiceCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["artisanService"]>
 
@@ -913,6 +1034,7 @@ export type ArtisanServiceOmit<ExtArgs extends runtime.Types.Extensions.Internal
 export type ArtisanServiceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   artisan?: boolean | Prisma.ArtisanDefaultArgs<ExtArgs>
   bookings?: boolean | Prisma.ArtisanService$bookingsArgs<ExtArgs>
+  threads?: boolean | Prisma.ArtisanService$threadsArgs<ExtArgs>
   _count?: boolean | Prisma.ArtisanServiceCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ArtisanServiceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -927,6 +1049,7 @@ export type $ArtisanServicePayload<ExtArgs extends runtime.Types.Extensions.Inte
   objects: {
     artisan: Prisma.$ArtisanPayload<ExtArgs>
     bookings: Prisma.$BookingPayload<ExtArgs>[]
+    threads: Prisma.$BookingThreadPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1337,6 +1460,7 @@ export interface Prisma__ArtisanServiceClient<T, Null = never, ExtArgs extends r
   readonly [Symbol.toStringTag]: "PrismaPromise"
   artisan<T extends Prisma.ArtisanDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ArtisanDefaultArgs<ExtArgs>>): Prisma.Prisma__ArtisanClient<runtime.Types.Result.GetResult<Prisma.$ArtisanPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   bookings<T extends Prisma.ArtisanService$bookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ArtisanService$bookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  threads<T extends Prisma.ArtisanService$threadsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ArtisanService$threadsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingThreadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1795,6 +1919,30 @@ export type ArtisanService$bookingsArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.BookingScalarFieldEnum | Prisma.BookingScalarFieldEnum[]
+}
+
+/**
+ * ArtisanService.threads
+ */
+export type ArtisanService$threadsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BookingThread
+   */
+  select?: Prisma.BookingThreadSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BookingThread
+   */
+  omit?: Prisma.BookingThreadOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BookingThreadInclude<ExtArgs> | null
+  where?: Prisma.BookingThreadWhereInput
+  orderBy?: Prisma.BookingThreadOrderByWithRelationInput | Prisma.BookingThreadOrderByWithRelationInput[]
+  cursor?: Prisma.BookingThreadWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BookingThreadScalarFieldEnum | Prisma.BookingThreadScalarFieldEnum[]
 }
 
 /**

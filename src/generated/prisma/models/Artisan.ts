@@ -327,6 +327,7 @@ export type ArtisanWhereInput = {
   bookings?: Prisma.BookingListRelationFilter
   reviews?: Prisma.ReviewListRelationFilter
   promotions?: Prisma.PromotionListRelationFilter
+  threads?: Prisma.BookingThreadListRelationFilter
 }
 
 export type ArtisanOrderByWithRelationInput = {
@@ -354,6 +355,7 @@ export type ArtisanOrderByWithRelationInput = {
   bookings?: Prisma.BookingOrderByRelationAggregateInput
   reviews?: Prisma.ReviewOrderByRelationAggregateInput
   promotions?: Prisma.PromotionOrderByRelationAggregateInput
+  threads?: Prisma.BookingThreadOrderByRelationAggregateInput
 }
 
 export type ArtisanWhereUniqueInput = Prisma.AtLeast<{
@@ -384,6 +386,7 @@ export type ArtisanWhereUniqueInput = Prisma.AtLeast<{
   bookings?: Prisma.BookingListRelationFilter
   reviews?: Prisma.ReviewListRelationFilter
   promotions?: Prisma.PromotionListRelationFilter
+  threads?: Prisma.BookingThreadListRelationFilter
 }, "id" | "profileId">
 
 export type ArtisanOrderByWithAggregationInput = {
@@ -458,6 +461,7 @@ export type ArtisanCreateInput = {
   bookings?: Prisma.BookingCreateNestedManyWithoutArtisanInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutArtisanInput
   promotions?: Prisma.PromotionCreateNestedManyWithoutArtisanInput
+  threads?: Prisma.BookingThreadCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanUncheckedCreateInput = {
@@ -484,6 +488,7 @@ export type ArtisanUncheckedCreateInput = {
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutArtisanInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutArtisanInput
   promotions?: Prisma.PromotionUncheckedCreateNestedManyWithoutArtisanInput
+  threads?: Prisma.BookingThreadUncheckedCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanUpdateInput = {
@@ -510,6 +515,7 @@ export type ArtisanUpdateInput = {
   bookings?: Prisma.BookingUpdateManyWithoutArtisanNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutArtisanNestedInput
   promotions?: Prisma.PromotionUpdateManyWithoutArtisanNestedInput
+  threads?: Prisma.BookingThreadUpdateManyWithoutArtisanNestedInput
 }
 
 export type ArtisanUncheckedUpdateInput = {
@@ -536,6 +542,7 @@ export type ArtisanUncheckedUpdateInput = {
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutArtisanNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutArtisanNestedInput
   promotions?: Prisma.PromotionUncheckedUpdateManyWithoutArtisanNestedInput
+  threads?: Prisma.BookingThreadUncheckedUpdateManyWithoutArtisanNestedInput
 }
 
 export type ArtisanCreateManyInput = {
@@ -765,6 +772,20 @@ export type ArtisanUpdateOneRequiredWithoutPortfolioNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ArtisanUpdateToOneWithWhereWithoutPortfolioInput, Prisma.ArtisanUpdateWithoutPortfolioInput>, Prisma.ArtisanUncheckedUpdateWithoutPortfolioInput>
 }
 
+export type ArtisanCreateNestedOneWithoutThreadsInput = {
+  create?: Prisma.XOR<Prisma.ArtisanCreateWithoutThreadsInput, Prisma.ArtisanUncheckedCreateWithoutThreadsInput>
+  connectOrCreate?: Prisma.ArtisanCreateOrConnectWithoutThreadsInput
+  connect?: Prisma.ArtisanWhereUniqueInput
+}
+
+export type ArtisanUpdateOneRequiredWithoutThreadsNestedInput = {
+  create?: Prisma.XOR<Prisma.ArtisanCreateWithoutThreadsInput, Prisma.ArtisanUncheckedCreateWithoutThreadsInput>
+  connectOrCreate?: Prisma.ArtisanCreateOrConnectWithoutThreadsInput
+  upsert?: Prisma.ArtisanUpsertWithoutThreadsInput
+  connect?: Prisma.ArtisanWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ArtisanUpdateToOneWithWhereWithoutThreadsInput, Prisma.ArtisanUpdateWithoutThreadsInput>, Prisma.ArtisanUncheckedUpdateWithoutThreadsInput>
+}
+
 export type ArtisanCreateNestedOneWithoutBookingsInput = {
   create?: Prisma.XOR<Prisma.ArtisanCreateWithoutBookingsInput, Prisma.ArtisanUncheckedCreateWithoutBookingsInput>
   connectOrCreate?: Prisma.ArtisanCreateOrConnectWithoutBookingsInput
@@ -830,6 +851,7 @@ export type ArtisanCreateWithoutProfileInput = {
   bookings?: Prisma.BookingCreateNestedManyWithoutArtisanInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutArtisanInput
   promotions?: Prisma.PromotionCreateNestedManyWithoutArtisanInput
+  threads?: Prisma.BookingThreadCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanUncheckedCreateWithoutProfileInput = {
@@ -855,6 +877,7 @@ export type ArtisanUncheckedCreateWithoutProfileInput = {
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutArtisanInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutArtisanInput
   promotions?: Prisma.PromotionUncheckedCreateNestedManyWithoutArtisanInput
+  threads?: Prisma.BookingThreadUncheckedCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanCreateOrConnectWithoutProfileInput = {
@@ -896,6 +919,7 @@ export type ArtisanUpdateWithoutProfileInput = {
   bookings?: Prisma.BookingUpdateManyWithoutArtisanNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutArtisanNestedInput
   promotions?: Prisma.PromotionUpdateManyWithoutArtisanNestedInput
+  threads?: Prisma.BookingThreadUpdateManyWithoutArtisanNestedInput
 }
 
 export type ArtisanUncheckedUpdateWithoutProfileInput = {
@@ -921,6 +945,7 @@ export type ArtisanUncheckedUpdateWithoutProfileInput = {
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutArtisanNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutArtisanNestedInput
   promotions?: Prisma.PromotionUncheckedUpdateManyWithoutArtisanNestedInput
+  threads?: Prisma.BookingThreadUncheckedUpdateManyWithoutArtisanNestedInput
 }
 
 export type ArtisanCreateWithoutCategoriesInput = {
@@ -946,6 +971,7 @@ export type ArtisanCreateWithoutCategoriesInput = {
   bookings?: Prisma.BookingCreateNestedManyWithoutArtisanInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutArtisanInput
   promotions?: Prisma.PromotionCreateNestedManyWithoutArtisanInput
+  threads?: Prisma.BookingThreadCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanUncheckedCreateWithoutCategoriesInput = {
@@ -971,6 +997,7 @@ export type ArtisanUncheckedCreateWithoutCategoriesInput = {
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutArtisanInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutArtisanInput
   promotions?: Prisma.PromotionUncheckedCreateNestedManyWithoutArtisanInput
+  threads?: Prisma.BookingThreadUncheckedCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanCreateOrConnectWithoutCategoriesInput = {
@@ -1012,6 +1039,7 @@ export type ArtisanUpdateWithoutCategoriesInput = {
   bookings?: Prisma.BookingUpdateManyWithoutArtisanNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutArtisanNestedInput
   promotions?: Prisma.PromotionUpdateManyWithoutArtisanNestedInput
+  threads?: Prisma.BookingThreadUpdateManyWithoutArtisanNestedInput
 }
 
 export type ArtisanUncheckedUpdateWithoutCategoriesInput = {
@@ -1037,6 +1065,7 @@ export type ArtisanUncheckedUpdateWithoutCategoriesInput = {
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutArtisanNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutArtisanNestedInput
   promotions?: Prisma.PromotionUncheckedUpdateManyWithoutArtisanNestedInput
+  threads?: Prisma.BookingThreadUncheckedUpdateManyWithoutArtisanNestedInput
 }
 
 export type ArtisanCreateWithoutServicesInput = {
@@ -1062,6 +1091,7 @@ export type ArtisanCreateWithoutServicesInput = {
   bookings?: Prisma.BookingCreateNestedManyWithoutArtisanInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutArtisanInput
   promotions?: Prisma.PromotionCreateNestedManyWithoutArtisanInput
+  threads?: Prisma.BookingThreadCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanUncheckedCreateWithoutServicesInput = {
@@ -1087,6 +1117,7 @@ export type ArtisanUncheckedCreateWithoutServicesInput = {
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutArtisanInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutArtisanInput
   promotions?: Prisma.PromotionUncheckedCreateNestedManyWithoutArtisanInput
+  threads?: Prisma.BookingThreadUncheckedCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanCreateOrConnectWithoutServicesInput = {
@@ -1128,6 +1159,7 @@ export type ArtisanUpdateWithoutServicesInput = {
   bookings?: Prisma.BookingUpdateManyWithoutArtisanNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutArtisanNestedInput
   promotions?: Prisma.PromotionUpdateManyWithoutArtisanNestedInput
+  threads?: Prisma.BookingThreadUpdateManyWithoutArtisanNestedInput
 }
 
 export type ArtisanUncheckedUpdateWithoutServicesInput = {
@@ -1153,6 +1185,7 @@ export type ArtisanUncheckedUpdateWithoutServicesInput = {
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutArtisanNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutArtisanNestedInput
   promotions?: Prisma.PromotionUncheckedUpdateManyWithoutArtisanNestedInput
+  threads?: Prisma.BookingThreadUncheckedUpdateManyWithoutArtisanNestedInput
 }
 
 export type ArtisanCreateWithoutPortfolioInput = {
@@ -1178,6 +1211,7 @@ export type ArtisanCreateWithoutPortfolioInput = {
   bookings?: Prisma.BookingCreateNestedManyWithoutArtisanInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutArtisanInput
   promotions?: Prisma.PromotionCreateNestedManyWithoutArtisanInput
+  threads?: Prisma.BookingThreadCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanUncheckedCreateWithoutPortfolioInput = {
@@ -1203,6 +1237,7 @@ export type ArtisanUncheckedCreateWithoutPortfolioInput = {
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutArtisanInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutArtisanInput
   promotions?: Prisma.PromotionUncheckedCreateNestedManyWithoutArtisanInput
+  threads?: Prisma.BookingThreadUncheckedCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanCreateOrConnectWithoutPortfolioInput = {
@@ -1244,6 +1279,7 @@ export type ArtisanUpdateWithoutPortfolioInput = {
   bookings?: Prisma.BookingUpdateManyWithoutArtisanNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutArtisanNestedInput
   promotions?: Prisma.PromotionUpdateManyWithoutArtisanNestedInput
+  threads?: Prisma.BookingThreadUpdateManyWithoutArtisanNestedInput
 }
 
 export type ArtisanUncheckedUpdateWithoutPortfolioInput = {
@@ -1266,6 +1302,127 @@ export type ArtisanUncheckedUpdateWithoutPortfolioInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   categories?: Prisma.ArtisanCategoryMapUncheckedUpdateManyWithoutArtisanNestedInput
   services?: Prisma.ArtisanServiceUncheckedUpdateManyWithoutArtisanNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutArtisanNestedInput
+  reviews?: Prisma.ReviewUncheckedUpdateManyWithoutArtisanNestedInput
+  promotions?: Prisma.PromotionUncheckedUpdateManyWithoutArtisanNestedInput
+  threads?: Prisma.BookingThreadUncheckedUpdateManyWithoutArtisanNestedInput
+}
+
+export type ArtisanCreateWithoutThreadsInput = {
+  id?: string
+  userId: string
+  bio?: string | null
+  status?: $Enums.ArtisanStatus
+  customCategory?: string | null
+  termsAcceptedAt?: Date | string | null
+  activatedAt?: Date | string | null
+  suspendedReason?: string | null
+  averageRating?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReviews?: number
+  totalBookings?: number
+  totalEarnings?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  profile: Prisma.ProfileCreateNestedOneWithoutArtisanInput
+  categories?: Prisma.ArtisanCategoryMapCreateNestedManyWithoutArtisanInput
+  services?: Prisma.ArtisanServiceCreateNestedManyWithoutArtisanInput
+  portfolio?: Prisma.PortfolioItemCreateNestedManyWithoutArtisanInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutArtisanInput
+  reviews?: Prisma.ReviewCreateNestedManyWithoutArtisanInput
+  promotions?: Prisma.PromotionCreateNestedManyWithoutArtisanInput
+}
+
+export type ArtisanUncheckedCreateWithoutThreadsInput = {
+  id?: string
+  profileId: string
+  userId: string
+  bio?: string | null
+  status?: $Enums.ArtisanStatus
+  customCategory?: string | null
+  termsAcceptedAt?: Date | string | null
+  activatedAt?: Date | string | null
+  suspendedReason?: string | null
+  averageRating?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReviews?: number
+  totalBookings?: number
+  totalEarnings?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  categories?: Prisma.ArtisanCategoryMapUncheckedCreateNestedManyWithoutArtisanInput
+  services?: Prisma.ArtisanServiceUncheckedCreateNestedManyWithoutArtisanInput
+  portfolio?: Prisma.PortfolioItemUncheckedCreateNestedManyWithoutArtisanInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutArtisanInput
+  reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutArtisanInput
+  promotions?: Prisma.PromotionUncheckedCreateNestedManyWithoutArtisanInput
+}
+
+export type ArtisanCreateOrConnectWithoutThreadsInput = {
+  where: Prisma.ArtisanWhereUniqueInput
+  create: Prisma.XOR<Prisma.ArtisanCreateWithoutThreadsInput, Prisma.ArtisanUncheckedCreateWithoutThreadsInput>
+}
+
+export type ArtisanUpsertWithoutThreadsInput = {
+  update: Prisma.XOR<Prisma.ArtisanUpdateWithoutThreadsInput, Prisma.ArtisanUncheckedUpdateWithoutThreadsInput>
+  create: Prisma.XOR<Prisma.ArtisanCreateWithoutThreadsInput, Prisma.ArtisanUncheckedCreateWithoutThreadsInput>
+  where?: Prisma.ArtisanWhereInput
+}
+
+export type ArtisanUpdateToOneWithWhereWithoutThreadsInput = {
+  where?: Prisma.ArtisanWhereInput
+  data: Prisma.XOR<Prisma.ArtisanUpdateWithoutThreadsInput, Prisma.ArtisanUncheckedUpdateWithoutThreadsInput>
+}
+
+export type ArtisanUpdateWithoutThreadsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumArtisanStatusFieldUpdateOperationsInput | $Enums.ArtisanStatus
+  customCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  suspendedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  averageRating?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReviews?: Prisma.IntFieldUpdateOperationsInput | number
+  totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
+  totalEarnings?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profile?: Prisma.ProfileUpdateOneRequiredWithoutArtisanNestedInput
+  categories?: Prisma.ArtisanCategoryMapUpdateManyWithoutArtisanNestedInput
+  services?: Prisma.ArtisanServiceUpdateManyWithoutArtisanNestedInput
+  portfolio?: Prisma.PortfolioItemUpdateManyWithoutArtisanNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutArtisanNestedInput
+  reviews?: Prisma.ReviewUpdateManyWithoutArtisanNestedInput
+  promotions?: Prisma.PromotionUpdateManyWithoutArtisanNestedInput
+}
+
+export type ArtisanUncheckedUpdateWithoutThreadsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  profileId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumArtisanStatusFieldUpdateOperationsInput | $Enums.ArtisanStatus
+  customCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  suspendedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  averageRating?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReviews?: Prisma.IntFieldUpdateOperationsInput | number
+  totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
+  totalEarnings?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  categories?: Prisma.ArtisanCategoryMapUncheckedUpdateManyWithoutArtisanNestedInput
+  services?: Prisma.ArtisanServiceUncheckedUpdateManyWithoutArtisanNestedInput
+  portfolio?: Prisma.PortfolioItemUncheckedUpdateManyWithoutArtisanNestedInput
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutArtisanNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutArtisanNestedInput
   promotions?: Prisma.PromotionUncheckedUpdateManyWithoutArtisanNestedInput
@@ -1294,6 +1451,7 @@ export type ArtisanCreateWithoutBookingsInput = {
   portfolio?: Prisma.PortfolioItemCreateNestedManyWithoutArtisanInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutArtisanInput
   promotions?: Prisma.PromotionCreateNestedManyWithoutArtisanInput
+  threads?: Prisma.BookingThreadCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanUncheckedCreateWithoutBookingsInput = {
@@ -1319,6 +1477,7 @@ export type ArtisanUncheckedCreateWithoutBookingsInput = {
   portfolio?: Prisma.PortfolioItemUncheckedCreateNestedManyWithoutArtisanInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutArtisanInput
   promotions?: Prisma.PromotionUncheckedCreateNestedManyWithoutArtisanInput
+  threads?: Prisma.BookingThreadUncheckedCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanCreateOrConnectWithoutBookingsInput = {
@@ -1360,6 +1519,7 @@ export type ArtisanUpdateWithoutBookingsInput = {
   portfolio?: Prisma.PortfolioItemUpdateManyWithoutArtisanNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutArtisanNestedInput
   promotions?: Prisma.PromotionUpdateManyWithoutArtisanNestedInput
+  threads?: Prisma.BookingThreadUpdateManyWithoutArtisanNestedInput
 }
 
 export type ArtisanUncheckedUpdateWithoutBookingsInput = {
@@ -1385,6 +1545,7 @@ export type ArtisanUncheckedUpdateWithoutBookingsInput = {
   portfolio?: Prisma.PortfolioItemUncheckedUpdateManyWithoutArtisanNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutArtisanNestedInput
   promotions?: Prisma.PromotionUncheckedUpdateManyWithoutArtisanNestedInput
+  threads?: Prisma.BookingThreadUncheckedUpdateManyWithoutArtisanNestedInput
 }
 
 export type ArtisanCreateWithoutReviewsInput = {
@@ -1410,6 +1571,7 @@ export type ArtisanCreateWithoutReviewsInput = {
   portfolio?: Prisma.PortfolioItemCreateNestedManyWithoutArtisanInput
   bookings?: Prisma.BookingCreateNestedManyWithoutArtisanInput
   promotions?: Prisma.PromotionCreateNestedManyWithoutArtisanInput
+  threads?: Prisma.BookingThreadCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanUncheckedCreateWithoutReviewsInput = {
@@ -1435,6 +1597,7 @@ export type ArtisanUncheckedCreateWithoutReviewsInput = {
   portfolio?: Prisma.PortfolioItemUncheckedCreateNestedManyWithoutArtisanInput
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutArtisanInput
   promotions?: Prisma.PromotionUncheckedCreateNestedManyWithoutArtisanInput
+  threads?: Prisma.BookingThreadUncheckedCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanCreateOrConnectWithoutReviewsInput = {
@@ -1476,6 +1639,7 @@ export type ArtisanUpdateWithoutReviewsInput = {
   portfolio?: Prisma.PortfolioItemUpdateManyWithoutArtisanNestedInput
   bookings?: Prisma.BookingUpdateManyWithoutArtisanNestedInput
   promotions?: Prisma.PromotionUpdateManyWithoutArtisanNestedInput
+  threads?: Prisma.BookingThreadUpdateManyWithoutArtisanNestedInput
 }
 
 export type ArtisanUncheckedUpdateWithoutReviewsInput = {
@@ -1501,6 +1665,7 @@ export type ArtisanUncheckedUpdateWithoutReviewsInput = {
   portfolio?: Prisma.PortfolioItemUncheckedUpdateManyWithoutArtisanNestedInput
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutArtisanNestedInput
   promotions?: Prisma.PromotionUncheckedUpdateManyWithoutArtisanNestedInput
+  threads?: Prisma.BookingThreadUncheckedUpdateManyWithoutArtisanNestedInput
 }
 
 export type ArtisanCreateWithoutPromotionsInput = {
@@ -1526,6 +1691,7 @@ export type ArtisanCreateWithoutPromotionsInput = {
   portfolio?: Prisma.PortfolioItemCreateNestedManyWithoutArtisanInput
   bookings?: Prisma.BookingCreateNestedManyWithoutArtisanInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutArtisanInput
+  threads?: Prisma.BookingThreadCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanUncheckedCreateWithoutPromotionsInput = {
@@ -1551,6 +1717,7 @@ export type ArtisanUncheckedCreateWithoutPromotionsInput = {
   portfolio?: Prisma.PortfolioItemUncheckedCreateNestedManyWithoutArtisanInput
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutArtisanInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutArtisanInput
+  threads?: Prisma.BookingThreadUncheckedCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanCreateOrConnectWithoutPromotionsInput = {
@@ -1592,6 +1759,7 @@ export type ArtisanUpdateWithoutPromotionsInput = {
   portfolio?: Prisma.PortfolioItemUpdateManyWithoutArtisanNestedInput
   bookings?: Prisma.BookingUpdateManyWithoutArtisanNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutArtisanNestedInput
+  threads?: Prisma.BookingThreadUpdateManyWithoutArtisanNestedInput
 }
 
 export type ArtisanUncheckedUpdateWithoutPromotionsInput = {
@@ -1617,6 +1785,7 @@ export type ArtisanUncheckedUpdateWithoutPromotionsInput = {
   portfolio?: Prisma.PortfolioItemUncheckedUpdateManyWithoutArtisanNestedInput
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutArtisanNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutArtisanNestedInput
+  threads?: Prisma.BookingThreadUncheckedUpdateManyWithoutArtisanNestedInput
 }
 
 
@@ -1631,6 +1800,7 @@ export type ArtisanCountOutputType = {
   bookings: number
   reviews: number
   promotions: number
+  threads: number
 }
 
 export type ArtisanCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1640,6 +1810,7 @@ export type ArtisanCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   bookings?: boolean | ArtisanCountOutputTypeCountBookingsArgs
   reviews?: boolean | ArtisanCountOutputTypeCountReviewsArgs
   promotions?: boolean | ArtisanCountOutputTypeCountPromotionsArgs
+  threads?: boolean | ArtisanCountOutputTypeCountThreadsArgs
 }
 
 /**
@@ -1694,6 +1865,13 @@ export type ArtisanCountOutputTypeCountPromotionsArgs<ExtArgs extends runtime.Ty
   where?: Prisma.PromotionWhereInput
 }
 
+/**
+ * ArtisanCountOutputType without action
+ */
+export type ArtisanCountOutputTypeCountThreadsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BookingThreadWhereInput
+}
+
 
 export type ArtisanSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1720,6 +1898,7 @@ export type ArtisanSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   bookings?: boolean | Prisma.Artisan$bookingsArgs<ExtArgs>
   reviews?: boolean | Prisma.Artisan$reviewsArgs<ExtArgs>
   promotions?: boolean | Prisma.Artisan$promotionsArgs<ExtArgs>
+  threads?: boolean | Prisma.Artisan$threadsArgs<ExtArgs>
   _count?: boolean | Prisma.ArtisanCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["artisan"]>
 
@@ -1794,6 +1973,7 @@ export type ArtisanInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   bookings?: boolean | Prisma.Artisan$bookingsArgs<ExtArgs>
   reviews?: boolean | Prisma.Artisan$reviewsArgs<ExtArgs>
   promotions?: boolean | Prisma.Artisan$promotionsArgs<ExtArgs>
+  threads?: boolean | Prisma.Artisan$threadsArgs<ExtArgs>
   _count?: boolean | Prisma.ArtisanCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ArtisanIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1813,6 +1993,7 @@ export type $ArtisanPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     bookings: Prisma.$BookingPayload<ExtArgs>[]
     reviews: Prisma.$ReviewPayload<ExtArgs>[]
     promotions: Prisma.$PromotionPayload<ExtArgs>[]
+    threads: Prisma.$BookingThreadPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2233,6 +2414,7 @@ export interface Prisma__ArtisanClient<T, Null = never, ExtArgs extends runtime.
   bookings<T extends Prisma.Artisan$bookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Artisan$bookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reviews<T extends Prisma.Artisan$reviewsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Artisan$reviewsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   promotions<T extends Prisma.Artisan$promotionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Artisan$promotionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PromotionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  threads<T extends Prisma.Artisan$threadsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Artisan$threadsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingThreadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2816,6 +2998,30 @@ export type Artisan$promotionsArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.PromotionScalarFieldEnum | Prisma.PromotionScalarFieldEnum[]
+}
+
+/**
+ * Artisan.threads
+ */
+export type Artisan$threadsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BookingThread
+   */
+  select?: Prisma.BookingThreadSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BookingThread
+   */
+  omit?: Prisma.BookingThreadOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BookingThreadInclude<ExtArgs> | null
+  where?: Prisma.BookingThreadWhereInput
+  orderBy?: Prisma.BookingThreadOrderByWithRelationInput | Prisma.BookingThreadOrderByWithRelationInput[]
+  cursor?: Prisma.BookingThreadWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BookingThreadScalarFieldEnum | Prisma.BookingThreadScalarFieldEnum[]
 }
 
 /**
