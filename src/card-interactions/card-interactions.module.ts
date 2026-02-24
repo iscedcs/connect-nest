@@ -4,9 +4,10 @@ import { CardInteractionsController } from './card-interactions.controller';
 import { DatabaseModule } from 'src/database/database.module';
 import { DatabaseService } from 'src/database/database.service';
 import { AuthModule } from 'src/auth/auth.module';
+import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
-  imports: [DatabaseModule, AuthModule],
+  imports: [DatabaseModule, AuthModule, NotificationModule],
   controllers: [CardInteractionsController],
   providers: [CardInteractionsService, DatabaseService],
 })

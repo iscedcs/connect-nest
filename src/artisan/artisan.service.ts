@@ -19,10 +19,14 @@ import {
   CancelBookingDto,
   CreateReviewDto,
 } from './dto/artisan.dto';
+import { NotificationDispatcher } from '../notification/notification-dispatcher.service';
 
 @Injectable()
 export class ArtisanService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly notifications: NotificationDispatcher,
+  ) {}
 
   // ─── Registration ───────────────────────────────────────
 
@@ -540,9 +544,7 @@ export class ArtisanService {
     const isArtisan = booking.artisan?.userId === userId;
 
     if (!isCustomer && !isArtisan) {
-      throw new ForbiddenException(
-        'You are not a participant of this booking',
-      );
+      throw new ForbiddenException('You are not a participant of this booking');
     }
 
     // Find associated thread if any
@@ -847,6 +849,21 @@ export class ArtisanService {
       return created;
     });
 
+    // Notification: review received by artisan
+    if (artisan.userId) {
+      this.notifications
+        .dispatch({
+          userId: artisan.userId,
+          profileId: artisan.profileId,
+          type: 'REVIEW_RECEIVED',
+          title: 'New Review Received',
+          message: `You received a ${dto.rating}-star review${dto.comment ? `: "${dto.comment.slice(0, 60)}"` : ''}`,
+          actionUrl: `/connect/artisan/reviews`,
+          actionLabel: 'View Reviews',
+        })
+        .catch(() => {});
+    }
+
     return { success: true, message: 'Review submitted', data: review };
   }
 
@@ -1128,6 +1145,21 @@ export class ArtisanService {
       data: { status: 'ACTIVE' },
     });
 
+    // Notification: artisan activated
+    if (artisan.userId) {
+      this.notifications
+        .dispatch({
+          userId: artisan.userId,
+          profileId: artisan.profileId,
+          type: 'ARTISAN_ACTIVATED',
+          title: 'Artisan Profile Approved',
+          message: 'Your artisan profile has been approved and is now active!',
+          actionUrl: `/connect/artisan`,
+          actionLabel: 'View Profile',
+        })
+        .catch(() => {});
+    }
+
     return { success: true, message: 'Artisan approved', data: updated };
   }
 
@@ -1143,6 +1175,21 @@ export class ArtisanService {
       where: { id: artisanId },
       data: { status: 'SUSPENDED', suspendedReason: reason },
     });
+
+    // Notification: artisan suspended
+    if (artisan.userId) {
+      this.notifications
+        .dispatch({
+          userId: artisan.userId,
+          profileId: artisan.profileId,
+          type: 'ARTISAN_SUSPENDED',
+          title: 'Artisan Profile Suspended',
+          message: `Your artisan profile has been suspended. Reason: ${reason}`,
+          actionUrl: `/connect/artisan`,
+          actionLabel: 'View Details',
+        })
+        .catch(() => {});
+    }
 
     return { success: true, message: 'Artisan suspended', data: updated };
   }
@@ -1162,6 +1209,22 @@ export class ArtisanService {
       where: { id: artisanId },
       data: { status: 'ACTIVE', suspendedReason: null },
     });
+
+    // Notification: artisan reactivated
+    if (artisan.userId) {
+      this.notifications
+        .dispatch({
+          userId: artisan.userId,
+          profileId: artisan.profileId,
+          type: 'ARTISAN_ACTIVATED',
+          title: 'Artisan Profile Reactivated',
+          message:
+            'Your artisan profile has been reactivated and is now active again!',
+          actionUrl: `/connect/artisan`,
+          actionLabel: 'View Profile',
+        })
+        .catch(() => {});
+    }
 
     return { success: true, message: 'Artisan unsuspended', data: updated };
   }

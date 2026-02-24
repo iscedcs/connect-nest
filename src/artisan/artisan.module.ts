@@ -12,9 +12,10 @@ import { ThreadService } from './thread.service';
 import { ThreadEventService } from './thread-event.service';
 import { ThreadGateway } from './thread.gateway';
 import { DatabaseService } from '../database/database.service';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
-  imports: [DatabaseModule, AuthModule],
+  imports: [DatabaseModule, AuthModule, NotificationModule],
   controllers: [
     ArtisanController,
     DirectoryController,

@@ -35,7 +35,8 @@ export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
   @Post('create')
-  @ApiOperation({ summary: 'Create a new notification for a user' })
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Create a new notification for the current user' })
   @ApiResponse({
     status: 201,
     description: 'Notification created successfully',
@@ -43,8 +44,21 @@ export class NotificationController {
   })
   @ApiResponse({ status: 404, description: 'Profile not found' })
   @ApiBody({ type: CreateNotificationDto })
-  createNotification(@Body(ValidationPipe) dto: CreateNotificationDto) {
-    return this.notificationService.createNotification(dto);
+  createNotification(
+    @Request() req,
+    @Body(ValidationPipe) dto: CreateNotificationDto,
+  ) {
+    const user = req.isce_auth;
+    if (!user) {
+      return { success: false, message: 'User not found' };
+    }
+    // Scope to the authenticated user's own profile
+    return this.notificationService.createNotificationByUserId(
+      user.id,
+      dto.title,
+      dto.message,
+      dto.type,
+    );
   }
 
   @Get('all')
@@ -235,7 +249,8 @@ export class NotificationController {
   @ApiExcludeEndpoint()
   createInternalNotification(
     @Headers('x-internal-key') key: string,
-    @Body() body: { userId: string; title: string; message: string; type: string },
+    @Body()
+    body: { userId: string; title: string; message: string; type: string },
   ) {
     const internalKey = process.env.INTERNAL_NOTIFY_KEY;
     if (!internalKey || key !== internalKey) {

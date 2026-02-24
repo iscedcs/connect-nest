@@ -17,12 +17,14 @@ import {
   ThreadQueryDto,
 } from './dto/artisan.dto';
 import { ThreadEventService } from './thread-event.service';
+import { NotificationDispatcher } from '../notification/notification-dispatcher.service';
 
 @Injectable()
 export class ThreadService {
   constructor(
     private readonly db: DatabaseService,
     private readonly events: ThreadEventService,
+    private readonly notifications: NotificationDispatcher,
   ) {}
 
   /**
@@ -97,6 +99,17 @@ export class ThreadService {
 
     // Return with full includes
     const fullThread = await this.getThreadById(thread.id, userId);
+
+    // Notify artisan about new inquiry
+    this.notifications
+      .dispatchToThreadRecipient(
+        thread.id,
+        userId,
+        'THREAD_NEW_INQUIRY',
+        'New Booking Inquiry',
+        dto.message?.slice(0, 100) || 'You have a new booking inquiry',
+      )
+      .catch(() => {});
 
     return {
       success: true,
@@ -228,6 +241,17 @@ export class ThreadService {
       senderRole,
     });
 
+    // Notification: new message
+    this.notifications
+      .dispatchToThreadRecipient(
+        threadId,
+        userId,
+        'THREAD_NEW_MESSAGE',
+        'New Message',
+        dto.content.slice(0, 100),
+      )
+      .catch(() => {});
+
     return { success: true, message: 'Message sent', data: message };
   }
 
@@ -311,6 +335,17 @@ export class ThreadService {
     this.events.emit('status_changed', threadId, {
       status: 'PROPOSAL_SENT',
     });
+
+    // Notification: proposal received by client
+    this.notifications
+      .dispatchToThreadRecipient(
+        threadId,
+        userId,
+        'THREAD_PROPOSAL_RECEIVED',
+        'New Proposal Received',
+        `You received a proposal for ₦${dto.price}`,
+      )
+      .catch(() => {});
 
     return { success: true, message: 'Proposal sent', data: message };
   }
@@ -411,6 +446,17 @@ export class ThreadService {
       booking: result,
     });
 
+    // Notification: proposal accepted / booking confirmed
+    this.notifications
+      .dispatchToThreadRecipient(
+        threadId,
+        userId,
+        'THREAD_PROPOSAL_ACCEPTED',
+        'Proposal Accepted',
+        'Your proposal has been accepted — booking confirmed!',
+      )
+      .catch(() => {});
+
     return {
       success: true,
       message: 'Proposal accepted, booking created',
@@ -474,6 +520,19 @@ export class ThreadService {
       reason: dto.reason || null,
     });
 
+    // Notification: proposal declined
+    this.notifications
+      .dispatchToThreadRecipient(
+        threadId,
+        userId,
+        'THREAD_PROPOSAL_DECLINED',
+        'Proposal Declined',
+        dto.reason
+          ? `Your proposal was declined: ${dto.reason}`
+          : 'Your proposal was declined',
+      )
+      .catch(() => {});
+
     return { success: true, message: 'Proposal declined' };
   }
 
@@ -514,6 +573,17 @@ export class ThreadService {
     this.events.emit('thread_closed', threadId, {
       closedBy: role,
     });
+
+    // Notification: thread closed
+    this.notifications
+      .dispatchToThreadRecipient(
+        threadId,
+        userId,
+        'BOOKING_CANCELLED',
+        'Thread Closed',
+        `Thread was closed by the ${role === 'CLIENT' ? 'client' : 'artisan'}`,
+      )
+      .catch(() => {});
 
     return { success: true, message: 'Thread closed' };
   }
@@ -592,6 +662,17 @@ export class ThreadService {
         artisanConfirmed: updated.artisanPaymentConfirmed,
         isPaid: updated.artisanPaymentConfirmed,
       });
+
+      // Notification: payment sent confirmed
+      this.notifications
+        .dispatchToThreadRecipient(
+          paymentThread.id,
+          userId,
+          'PAYMENT_SENT_CONFIRMED',
+          'Payment Sent',
+          'Client has confirmed that payment was sent',
+        )
+        .catch(() => {});
     }
 
     return {
@@ -677,6 +758,17 @@ export class ThreadService {
         artisanConfirmed: true,
         isPaid: updated.clientPaymentConfirmed,
       });
+
+      // Notification: payment received confirmed
+      this.notifications
+        .dispatchToThreadRecipient(
+          receiptThread.id,
+          userId,
+          'PAYMENT_RECEIVED_CONFIRMED',
+          'Payment Received',
+          'Artisan has confirmed receiving your payment',
+        )
+        .catch(() => {});
     }
 
     return {
@@ -757,6 +849,17 @@ export class ThreadService {
         reason: dto.reason,
         disputedBy: isClient ? 'CLIENT' : 'ARTISAN',
       });
+
+      // Notification: payment disputed
+      this.notifications
+        .dispatchToThreadRecipient(
+          disputeThread.id,
+          userId,
+          'PAYMENT_DISPUTED',
+          'Payment Disputed',
+          `Payment has been disputed: ${dto.reason}`,
+        )
+        .catch(() => {});
     }
 
     return {

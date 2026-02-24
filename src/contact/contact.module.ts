@@ -7,9 +7,10 @@ import {
 } from './contact.controller';
 import { DatabaseModule } from 'src/database/database.module';
 import { DatabaseService } from 'src/database/database.service';
+import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
-  imports: [DatabaseModule, HttpModule],
+  imports: [DatabaseModule, HttpModule, NotificationModule],
   controllers: [ContactController, ProfileContactController],
   providers: [ContactService, DatabaseService],
 })

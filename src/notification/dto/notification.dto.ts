@@ -58,11 +58,11 @@ export class UpdateNotificationDto {
 
   @ApiPropertyOptional({
     description: 'Type of notification',
-    enum: ['CARD_INTERACTION', 'CONTACT_SHARED'],
+    enum: NotificationType,
   })
   @IsOptional()
-  @IsEnum(['CARD_INTERACTION', 'CONTACT_SHARED'])
-  type?: string;
+  @IsEnum(NotificationType)
+  type?: NotificationType;
 
   @ApiPropertyOptional({
     description: 'Whether the notification has been read',
@@ -102,10 +102,10 @@ export class NotificationResponseDto {
 
   @ApiProperty({
     description: 'Type of notification',
-    enum: ['CARD_INTERACTION', 'CONTACT_SHARED'],
+    enum: NotificationType,
   })
-  @IsEnum(['CARD_INTERACTION', 'CONTACT_SHARED'])
-  type: string;
+  @IsEnum(NotificationType)
+  type: NotificationType;
 
   @ApiProperty({
     description: 'Whether the notification has been read',

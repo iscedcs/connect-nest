@@ -3,6 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { DatabaseService } from 'src/database/database.service';
 import { CreateContactDto } from './dto/contact.dto';
+import { NotificationDispatcher } from 'src/notification/notification-dispatcher.service';
 
 @Injectable()
 export class ContactService {
@@ -11,6 +12,7 @@ export class ContactService {
   constructor(
     private readonly databaseService: DatabaseService,
     private readonly httpService: HttpService,
+    private readonly notifications: NotificationDispatcher,
   ) {}
 
   async leaveContact(dto: CreateContactDto) {
@@ -71,6 +73,32 @@ export class ContactService {
             : false,
         },
       });
+
+      // Notify the profile owner that someone left their contact
+      const contactName =
+        [dto.firstName, dto.lastName].filter(Boolean).join(' ') || 'Someone';
+      this.databaseService.profile
+        .findUnique({
+          where: { id: dto.profileId },
+          select: { userId: true },
+        })
+        .then((p) => {
+          if (p?.userId) {
+            this.notifications
+              .dispatch({
+                userId: p.userId,
+                profileId: dto.profileId,
+                type: 'CONTACT_SAVED',
+                title: 'New Contact Received',
+                message: `${contactName} just left their contact information on your profile.`,
+                data: { contactId: contact.id },
+                actionUrl: '/connect/contacts',
+                actionLabel: 'View Contact',
+              })
+              .catch(() => {});
+          }
+        })
+        .catch(() => {});
 
       return {
         success: true,

@@ -42,6 +42,18 @@ export class AuthClientService {
     }
   }
 
+  /** Fetch user email from isce-auth by userId (internal endpoint). */
+  async getUserEmail(userId: string): Promise<string | null> {
+    try {
+      const response = await axios.get(`${this.authUrl}/user/${userId}`, {
+        headers: { 'x-internal-key': this.internalKey ?? '' },
+      });
+      return response.data?.data?.email || response.data?.email || null;
+    } catch {
+      return null;
+    }
+  }
+
   /** Fetch FCM tokens for a user from isce-auth (internal endpoint). */
   async getFcmTokens(userId: string): Promise<string[]> {
     try {

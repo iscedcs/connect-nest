@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { AuthClientService } from 'src/auth/auth-client.service';
 import { PushService } from 'src/push/push.service';
+import { NotificationDispatcher } from 'src/notification/notification-dispatcher.service';
 import {
   CreateCardInteractionDto,
   UpdateCardInteractionDto,
@@ -14,6 +15,7 @@ export class CardInteractionsService {
     private readonly databaseService: DatabaseService,
     private readonly authClientService: AuthClientService,
     private readonly pushService: PushService,
+    private readonly notifications: NotificationDispatcher,
   ) {}
 
   async recordCardInteraction(dto: CreateCardInteractionDto) {
@@ -116,12 +118,19 @@ export class CardInteractionsService {
               (dto.method ?? ScanType.TAP) === ScanType.TAP
                 ? 'tapped'
                 : 'scanned';
-            this.pushService.sendToUser(
-              p.userId,
-              'Your card was ' + method + '! 👆',
-              'Someone just viewed your digital card.',
-              { type: 'CARD_INTERACTION', interactionId: cardInteraction.id },
-            );
+            this.notifications.dispatch({
+              userId: p.userId,
+              profileId,
+              type: 'CARD_INTERACTION',
+              title: `Your card was ${method}! 👆`,
+              message: 'Someone just viewed your digital card.',
+              data: {
+                interactionId: cardInteraction.id,
+                method: dto.method ?? ScanType.TAP,
+              },
+              actionUrl: '/connect/analytics',
+              actionLabel: 'View Analytics',
+            });
           }
         })
         .catch(() => {
