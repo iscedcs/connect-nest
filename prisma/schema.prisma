@@ -640,7 +640,7 @@ model Booking {
   customerPhone     String?
 
   // Scheduling
-  scheduledDate DateTime
+  scheduledDate DateTime?
   scheduledTime String? // "14:00" — separate from date for flexibility
   duration      Int? // Minutes, copied from service or custom
 
@@ -650,7 +650,7 @@ model Booking {
   commissionAmount Decimal? @db.Decimal(18, 4) // Platform commission
 
   // Payment tracking
-  paymentMethod    PaymentMethod @default(NONE)
+  paymentMethod    PaymentMethod @default(WALLET)
   paymentTiming    PaymentTiming @default(ON_COMPLETION)
   paymentReference String? // wallet-nest escrow ID for WALLET payments
   isPaid           Boolean       @default(false)

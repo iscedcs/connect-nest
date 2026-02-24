@@ -271,7 +271,7 @@ export class ThreadService {
       date: dto.date,
       time: dto.time || null,
       duration: dto.duration || null,
-      paymentPreference: dto.paymentPreference || 'NONE',
+      paymentPreference: dto.paymentPreference || 'WALLET',
       paymentTiming: dto.paymentTiming || 'ON_COMPLETION',
       note: dto.note || null,
     };
@@ -358,7 +358,9 @@ export class ThreadService {
           customerProfileId: thread.clientProfileId || null,
           customerName: thread.clientName || null,
           customerPhone: thread.clientPhone || null,
-          scheduledDate: new Date(proposal.date as string),
+          scheduledDate: proposal.date
+            ? new Date(proposal.date as string)
+            : null,
           scheduledTime: (proposal.time as string) || null,
           duration: (proposal.duration as number) || null,
           agreedPrice:
@@ -367,11 +369,9 @@ export class ThreadService {
               : null,
           currency: (proposal.currency as string) || 'NGN',
           paymentMethod:
-            (proposal.paymentPreference as string) === 'WALLET'
-              ? 'WALLET'
-              : (proposal.paymentPreference as string) === 'OFFLINE'
-                ? 'OFFLINE'
-                : 'NONE',
+            (proposal.paymentPreference as string) === 'OFFLINE'
+              ? 'OFFLINE'
+              : 'WALLET',
           paymentTiming:
             (proposal.paymentTiming as string) === 'UPFRONT'
               ? 'UPFRONT'

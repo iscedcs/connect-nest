@@ -593,12 +593,13 @@ export class SendProposalDto {
   @IsString()
   currency?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'Proposed date',
     example: '2025-03-15',
   })
+  @IsOptional()
   @IsDateString()
-  date: string;
+  date?: string;
 
   @ApiPropertyOptional({
     description: 'Proposed time',
@@ -616,12 +617,12 @@ export class SendProposalDto {
 
   @ApiPropertyOptional({
     description: 'Payment preference',
-    enum: ['WALLET', 'OFFLINE', 'NONE'],
-    default: 'NONE',
+    enum: ['WALLET', 'OFFLINE'],
+    default: 'WALLET',
   })
   @IsOptional()
-  @IsEnum(['WALLET', 'OFFLINE', 'NONE'])
-  paymentPreference?: 'WALLET' | 'OFFLINE' | 'NONE';
+  @IsEnum(['WALLET', 'OFFLINE'])
+  paymentPreference?: 'WALLET' | 'OFFLINE';
 
   @ApiPropertyOptional({
     description: 'Payment timing',
