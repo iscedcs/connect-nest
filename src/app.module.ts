@@ -23,6 +23,7 @@ import { DeviceProfileModule } from './device-profile/device-profile.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { PushModule } from './push/push.module';
 import { ArtisanModule } from './artisan/artisan.module';
+import { InternalModule } from './internal/internal.module';
 
 @Module({
   providers: [
@@ -63,6 +64,7 @@ import { ArtisanModule } from './artisan/artisan.module';
     DeviceProfileModule,
     PushModule,
     ArtisanModule,
+    InternalModule,
   ],
 })
 export class AppModule {}
