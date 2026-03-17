@@ -24,6 +24,7 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { PushModule } from './push/push.module';
 import { ArtisanModule } from './artisan/artisan.module';
 import { InternalModule } from './internal/internal.module';
+import { MailClientModule } from './mail/mail-client.module';
 
 @Module({
   providers: [
@@ -65,6 +66,7 @@ import { InternalModule } from './internal/internal.module';
     PushModule,
     ArtisanModule,
     InternalModule,
+    MailClientModule,
   ],
 })
 export class AppModule {}
