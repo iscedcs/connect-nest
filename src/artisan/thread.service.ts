@@ -18,6 +18,8 @@ import {
 } from './dto/artisan.dto';
 import { ThreadEventService } from './thread-event.service';
 import { NotificationDispatcher } from '../notification/notification-dispatcher.service';
+import { AuthClientService } from '../auth/auth-client.service';
+import { MailClientService } from '../mail/mail-client.service';
 
 @Injectable()
 export class ThreadService {
@@ -25,6 +27,8 @@ export class ThreadService {
     private readonly db: DatabaseService,
     private readonly events: ThreadEventService,
     private readonly notifications: NotificationDispatcher,
+    private readonly authClient: AuthClientService,
+    private readonly mail: MailClientService,
   ) {}
 
   /**
@@ -110,6 +114,19 @@ export class ThreadService {
         dto.message?.slice(0, 100) || 'You have a new booking inquiry',
       )
       .catch(() => {});
+
+    const webUrl = process.env.CONNECT_WEB_URL ?? '';
+    this.emailThreadRecipient(
+      thread.id,
+      userId,
+      'New Booking Inquiry',
+      `<div style="font-family:sans-serif;max-width:600px;margin:0 auto">
+  <h2 style="margin-bottom:8px">New Booking Inquiry</h2>
+  <p>You have received a new booking inquiry.</p>
+  ${dto.message ? `<blockquote style="border-left:3px solid #ccc;margin:16px 0;padding:8px 16px;color:#555">${dto.message.slice(0, 200)}</blockquote>` : ''}
+  <a href="${webUrl}/connect/artisan/threads/${thread.id}" style="display:inline-block;padding:10px 20px;background:#000;color:#fff;text-decoration:none;border-radius:6px">View Thread</a>
+</div>`,
+    ).catch(() => {});
 
     return {
       success: true,
@@ -252,6 +269,19 @@ export class ThreadService {
       )
       .catch(() => {});
 
+    const webUrl = process.env.CONNECT_WEB_URL ?? '';
+    this.emailThreadRecipient(
+      threadId,
+      userId,
+      'New Message',
+      `<div style="font-family:sans-serif;max-width:600px;margin:0 auto">
+  <h2 style="margin-bottom:8px">New Message</h2>
+  <p>You have a new message in your booking thread.</p>
+  <blockquote style="border-left:3px solid #ccc;margin:16px 0;padding:8px 16px;color:#555">${dto.content.slice(0, 200)}</blockquote>
+  <a href="${webUrl}/connect/artisan/threads/${threadId}" style="display:inline-block;padding:10px 20px;background:#000;color:#fff;text-decoration:none;border-radius:6px">View Thread</a>
+</div>`,
+    ).catch(() => {});
+
     return { success: true, message: 'Message sent', data: message };
   }
 
@@ -346,6 +376,24 @@ export class ThreadService {
         `You received a proposal for ₦${dto.price}`,
       )
       .catch(() => {});
+
+    const webUrl = process.env.CONNECT_WEB_URL ?? '';
+    this.emailThreadRecipient(
+      threadId,
+      userId,
+      'New Proposal Received',
+      `<div style="font-family:sans-serif;max-width:600px;margin:0 auto">
+  <h2 style="margin-bottom:8px">New Proposal Received</h2>
+  <p>You have received a new proposal.</p>
+  <table style="border-collapse:collapse;margin:16px 0">
+    <tr><td style="padding:6px 12px 6px 0;color:#888">Amount</td><td style="padding:6px 0"><strong>₦${dto.price}</strong></td></tr>
+    ${dto.date ? `<tr><td style="padding:6px 12px 6px 0;color:#888">Date</td><td style="padding:6px 0">${dto.date}</td></tr>` : ''}
+    ${dto.time ? `<tr><td style="padding:6px 12px 6px 0;color:#888">Time</td><td style="padding:6px 0">${dto.time}</td></tr>` : ''}
+  </table>
+  ${dto.note ? `<blockquote style="border-left:3px solid #ccc;margin:16px 0;padding:8px 16px;color:#555">${dto.note}</blockquote>` : ''}
+  <a href="${webUrl}/connect/artisan/threads/${threadId}" style="display:inline-block;padding:10px 20px;background:#000;color:#fff;text-decoration:none;border-radius:6px">View Proposal</a>
+</div>`,
+    ).catch(() => {});
 
     return { success: true, message: 'Proposal sent', data: message };
   }
@@ -457,6 +505,18 @@ export class ThreadService {
       )
       .catch(() => {});
 
+    const webUrl = process.env.CONNECT_WEB_URL ?? '';
+    this.emailThreadRecipient(
+      threadId,
+      userId,
+      'Proposal Accepted — Booking Confirmed!',
+      `<div style="font-family:sans-serif;max-width:600px;margin:0 auto">
+  <h2 style="margin-bottom:8px">Booking Confirmed!</h2>
+  <p>Your proposal has been accepted and the booking is now confirmed.</p>
+  <a href="${webUrl}/connect/artisan/threads/${threadId}" style="display:inline-block;padding:10px 20px;background:#000;color:#fff;text-decoration:none;border-radius:6px">View Booking</a>
+</div>`,
+    ).catch(() => {});
+
     return {
       success: true,
       message: 'Proposal accepted, booking created',
@@ -533,6 +593,20 @@ export class ThreadService {
       )
       .catch(() => {});
 
+    const webUrl = process.env.CONNECT_WEB_URL ?? '';
+    this.emailThreadRecipient(
+      threadId,
+      userId,
+      'Proposal Declined',
+      `<div style="font-family:sans-serif;max-width:600px;margin:0 auto">
+  <h2 style="margin-bottom:8px">Proposal Declined</h2>
+  <p>Your proposal has been declined.</p>
+  ${dto.reason ? `<blockquote style="border-left:3px solid #ccc;margin:16px 0;padding:8px 16px;color:#555">${dto.reason}</blockquote>` : ''}
+  <p>You can send a revised proposal if you'd like.</p>
+  <a href="${webUrl}/connect/artisan/threads/${threadId}" style="display:inline-block;padding:10px 20px;background:#000;color:#fff;text-decoration:none;border-radius:6px">View Thread</a>
+</div>`,
+    ).catch(() => {});
+
     return { success: true, message: 'Proposal declined' };
   }
 
@@ -584,6 +658,18 @@ export class ThreadService {
         `Thread was closed by the ${role === 'CLIENT' ? 'client' : 'artisan'}`,
       )
       .catch(() => {});
+
+    const webUrl = process.env.CONNECT_WEB_URL ?? '';
+    this.emailThreadRecipient(
+      threadId,
+      userId,
+      'Thread Closed',
+      `<div style="font-family:sans-serif;max-width:600px;margin:0 auto">
+  <h2 style="margin-bottom:8px">Thread Closed</h2>
+  <p>This booking thread has been closed by the ${role === 'CLIENT' ? 'client' : 'artisan'}.</p>
+  <a href="${webUrl}/connect/artisan/threads/${threadId}" style="display:inline-block;padding:10px 20px;background:#000;color:#fff;text-decoration:none;border-radius:6px">View Thread</a>
+</div>`,
+    ).catch(() => {});
 
     return { success: true, message: 'Thread closed' };
   }
@@ -673,6 +759,18 @@ export class ThreadService {
           'Client has confirmed that payment was sent',
         )
         .catch(() => {});
+
+      const webUrl = process.env.CONNECT_WEB_URL ?? '';
+      this.emailThreadRecipient(
+        paymentThread.id,
+        userId,
+        'Payment Sent Confirmation',
+        `<div style="font-family:sans-serif;max-width:600px;margin:0 auto">
+  <h2 style="margin-bottom:8px">Payment Sent</h2>
+  <p>The client has confirmed that payment has been sent for your booking.</p>
+  <a href="${webUrl}/connect/artisan/threads/${paymentThread.id}" style="display:inline-block;padding:10px 20px;background:#000;color:#fff;text-decoration:none;border-radius:6px">View Booking</a>
+</div>`,
+      ).catch(() => {});
     }
 
     return {
@@ -769,6 +867,18 @@ export class ThreadService {
           'Artisan has confirmed receiving your payment',
         )
         .catch(() => {});
+
+      const webUrl = process.env.CONNECT_WEB_URL ?? '';
+      this.emailThreadRecipient(
+        receiptThread.id,
+        userId,
+        'Payment Received Confirmation',
+        `<div style="font-family:sans-serif;max-width:600px;margin:0 auto">
+  <h2 style="margin-bottom:8px">Payment Received</h2>
+  <p>The artisan has confirmed receiving your payment. Your booking is now complete.</p>
+  <a href="${webUrl}/connect/artisan/threads/${receiptThread.id}" style="display:inline-block;padding:10px 20px;background:#000;color:#fff;text-decoration:none;border-radius:6px">View Booking</a>
+</div>`,
+      ).catch(() => {});
     }
 
     return {
@@ -860,6 +970,20 @@ export class ThreadService {
           `Payment has been disputed: ${dto.reason}`,
         )
         .catch(() => {});
+
+      const webUrl = process.env.CONNECT_WEB_URL ?? '';
+      this.emailThreadRecipient(
+        disputeThread.id,
+        userId,
+        'Payment Dispute Raised',
+        `<div style="font-family:sans-serif;max-width:600px;margin:0 auto">
+  <h2 style="margin-bottom:8px">Payment Dispute Raised</h2>
+  <p>A payment dispute has been raised for your booking.</p>
+  <blockquote style="border-left:3px solid #e53e3e;margin:16px 0;padding:8px 16px;color:#555">${dto.reason}</blockquote>
+  <p>Our team will review this dispute. Please ensure your records are up to date.</p>
+  <a href="${webUrl}/connect/artisan/threads/${disputeThread.id}" style="display:inline-block;padding:10px 20px;background:#000;color:#fff;text-decoration:none;border-radius:6px">View Thread</a>
+</div>`,
+      ).catch(() => {});
     }
 
     return {
@@ -889,6 +1013,32 @@ export class ThreadService {
   }
 
   // ─── Helpers ────────────────────────────────────────────
+
+  private async emailThreadRecipient(
+    threadId: string,
+    senderUserId: string,
+    subject: string,
+    html: string,
+  ): Promise<void> {
+    const thread = await this.db.bookingThread.findUnique({
+      where: { id: threadId },
+      select: {
+        clientUserId: true,
+        artisan: { select: { userId: true } },
+      },
+    });
+    if (!thread) return;
+
+    const recipientUserId =
+      thread.clientUserId === senderUserId
+        ? thread.artisan?.userId
+        : thread.clientUserId;
+    if (!recipientUserId) return;
+
+    const email = await this.authClient.getUserEmail(recipientUserId);
+    if (!email) return;
+    await this.mail.sendEmail({ to: email, subject, html });
+  }
 
   private async findAndValidateThread(threadId: string, userId: string) {
     const thread = await this.db.bookingThread.findUnique({

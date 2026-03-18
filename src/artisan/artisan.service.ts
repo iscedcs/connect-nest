@@ -20,12 +20,16 @@ import {
   CreateReviewDto,
 } from './dto/artisan.dto';
 import { NotificationDispatcher } from '../notification/notification-dispatcher.service';
+import { AuthClientService } from '../auth/auth-client.service';
+import { MailClientService } from '../mail/mail-client.service';
 
 @Injectable()
 export class ArtisanService {
   constructor(
     private readonly databaseService: DatabaseService,
     private readonly notifications: NotificationDispatcher,
+    private readonly authClient: AuthClientService,
+    private readonly mail: MailClientService,
   ) {}
 
   // ─── Registration ───────────────────────────────────────
@@ -862,6 +866,27 @@ export class ArtisanService {
           actionLabel: 'View Reviews',
         })
         .catch(() => {});
+
+      const webUrl = process.env.CONNECT_WEB_URL ?? '';
+      const stars = '★'.repeat(dto.rating) + '☆'.repeat(5 - dto.rating);
+      this.authClient
+        .getUserEmail(artisan.userId)
+        .then((email) => {
+          if (!email) return;
+          this.mail
+            .sendEmail({
+              to: email,
+              subject: 'New Review Received',
+              html: `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px">
+  <h2 style="margin-top:0">New Review Received</h2>
+  <p>You received a <strong>${dto.rating}-star</strong> review ${stars}</p>
+  ${dto.comment ? `<blockquote style="border-left:3px solid #ccc;padding-left:12px;color:#555;font-style:italic">&ldquo;${dto.comment}&rdquo;</blockquote>` : ''}
+  <a href="${webUrl}/connect/artisan/reviews" style="display:inline-block;margin-top:16px;padding:10px 20px;background:#000;color:#fff;text-decoration:none;border-radius:6px">View Reviews</a>
+</div>`,
+            })
+            .catch(() => {});
+        })
+        .catch(() => {});
     }
 
     return { success: true, message: 'Review submitted', data: review };
@@ -882,9 +907,32 @@ export class ArtisanService {
       }),
     ]);
 
+    // Enrich reviews with reviewer profile info (name + photo)
+    const reviewerIds = [
+      ...new Set(reviews.map((r) => r.reviewerUserId).filter(Boolean)),
+    ];
+    const profiles =
+      reviewerIds.length > 0
+        ? await this.databaseService.profile.findMany({
+            where: { id: { in: reviewerIds } },
+            select: { id: true, name: true, profilePhoto: true },
+          })
+        : [];
+    const profileMap = new Map(profiles.map((p) => [p.id, p]));
+
+    const enrichedReviews = reviews.map((r) => {
+      const profile = profileMap.get(r.reviewerUserId);
+      return {
+        ...r,
+        reviewer: profile
+          ? { name: profile.name, profilePhoto: profile.profilePhoto ?? null }
+          : null,
+      };
+    });
+
     return {
       success: true,
-      data: reviews,
+      data: enrichedReviews,
       meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
     };
   }
@@ -1158,6 +1206,25 @@ export class ArtisanService {
           actionLabel: 'View Profile',
         })
         .catch(() => {});
+
+      const webUrl = process.env.CONNECT_WEB_URL ?? '';
+      this.authClient
+        .getUserEmail(artisan.userId)
+        .then((email) => {
+          if (!email) return;
+          this.mail
+            .sendEmail({
+              to: email,
+              subject: 'Your Artisan Profile Has Been Approved!',
+              html: `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px">
+  <h2 style="margin-top:0">Artisan Profile Approved 🎉</h2>
+  <p>Congratulations! Your artisan profile has been reviewed and approved. You are now live on ISCE Connect and can start receiving bookings.</p>
+  <a href="${webUrl}/connect/artisan" style="display:inline-block;margin-top:16px;padding:10px 20px;background:#000;color:#fff;text-decoration:none;border-radius:6px">View Your Profile</a>
+</div>`,
+            })
+            .catch(() => {});
+        })
+        .catch(() => {});
     }
 
     return { success: true, message: 'Artisan approved', data: updated };
@@ -1187,6 +1254,27 @@ export class ArtisanService {
           message: `Your artisan profile has been suspended. Reason: ${reason}`,
           actionUrl: `/connect/artisan`,
           actionLabel: 'View Details',
+        })
+        .catch(() => {});
+
+      const webUrl = process.env.CONNECT_WEB_URL ?? '';
+      this.authClient
+        .getUserEmail(artisan.userId)
+        .then((email) => {
+          if (!email) return;
+          this.mail
+            .sendEmail({
+              to: email,
+              subject: 'Your Artisan Profile Has Been Suspended',
+              html: `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px">
+  <h2 style="margin-top:0">Artisan Profile Suspended</h2>
+  <p>Your artisan profile has been suspended for the following reason:</p>
+  <blockquote style="border-left:3px solid #e53e3e;padding-left:12px;color:#555">${reason}</blockquote>
+  <p>If you believe this is a mistake, please contact our support team.</p>
+  <a href="${webUrl}/connect/artisan" style="display:inline-block;margin-top:16px;padding:10px 20px;background:#000;color:#fff;text-decoration:none;border-radius:6px">View Details</a>
+</div>`,
+            })
+            .catch(() => {});
         })
         .catch(() => {});
     }
@@ -1222,6 +1310,25 @@ export class ArtisanService {
             'Your artisan profile has been reactivated and is now active again!',
           actionUrl: `/connect/artisan`,
           actionLabel: 'View Profile',
+        })
+        .catch(() => {});
+
+      const webUrl = process.env.CONNECT_WEB_URL ?? '';
+      this.authClient
+        .getUserEmail(artisan.userId)
+        .then((email) => {
+          if (!email) return;
+          this.mail
+            .sendEmail({
+              to: email,
+              subject: 'Your Artisan Profile Has Been Reactivated',
+              html: `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px">
+  <h2 style="margin-top:0">Artisan Profile Reactivated</h2>
+  <p>Good news! Your artisan profile has been reactivated and is now live on ISCE Connect again.</p>
+  <a href="${webUrl}/connect/artisan" style="display:inline-block;margin-top:16px;padding:10px 20px;background:#000;color:#fff;text-decoration:none;border-radius:6px">View Your Profile</a>
+</div>`,
+            })
+            .catch(() => {});
         })
         .catch(() => {});
     }
