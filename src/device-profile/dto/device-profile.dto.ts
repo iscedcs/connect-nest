@@ -21,3 +21,22 @@ export class DeviceProfileResponseDto {
   @ApiProperty() profileId: string;
   @ApiPropertyOptional() linkedAt: Date;
 }
+
+export class AdminReassignDeviceDto {
+  @ApiProperty({ description: 'Device product ID to reassign' })
+  @IsString()
+  @IsNotEmpty()
+  deviceId: string;
+
+  @ApiProperty({ description: 'Target profile ID to assign the device to' })
+  @IsString()
+  @IsNotEmpty()
+  newProfileId: string;
+}
+
+export class AdminUnlinkDeviceDto {
+  @ApiProperty({ description: 'Device product ID to unlink' })
+  @IsString()
+  @IsNotEmpty()
+  deviceId: string;
+}

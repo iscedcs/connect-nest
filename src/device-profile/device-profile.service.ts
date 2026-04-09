@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  BadRequestException,
 } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 
@@ -177,5 +178,98 @@ export class DeviceProfileService {
     });
 
     return link?.profile ?? null;
+  }
+
+  /**
+   * [ADMIN] Reassign a device from its current profile to a new profile.
+   * Bypasses user ownership checks — only callable by super admins.
+   */
+  async adminReassignDevice(deviceId: string, newProfileId: string) {
+    // Verify the target profile exists
+    const newProfile = await this.prisma.profile.findFirst({
+      where: { id: newProfileId, deletedAt: null },
+      select: { id: true, name: true, slug: true, userId: true },
+    });
+
+    if (!newProfile) {
+      throw new NotFoundException('Target profile not found');
+    }
+
+    // Check if device is currently linked
+    const existing = await this.prisma.deviceProfile.findUnique({
+      where: { deviceId },
+      include: {
+        profile: {
+          select: { id: true, name: true, slug: true, userId: true },
+        },
+      },
+    });
+
+    if (existing && existing.profileId === newProfileId) {
+      throw new BadRequestException('Device is already linked to this profile');
+    }
+
+    let previousProfile = existing?.profile ?? null;
+
+    if (existing) {
+      // Update existing link
+      const updated = await this.prisma.deviceProfile.update({
+        where: { deviceId },
+        data: { profileId: newProfileId, linkedAt: new Date() },
+      });
+
+      return {
+        success: true,
+        message: 'Device reassigned to new profile successfully',
+        data: {
+          binding: updated,
+          previousProfile,
+          newProfile,
+        },
+      };
+    }
+
+    // No existing link — create new one
+    const link = await this.prisma.deviceProfile.create({
+      data: { deviceId, profileId: newProfileId },
+    });
+
+    return {
+      success: true,
+      message: 'Device linked to new profile successfully',
+      data: {
+        binding: link,
+        previousProfile: null,
+        newProfile,
+      },
+    };
+  }
+
+  /**
+   * [ADMIN] Unlink a device from its current profile without reassigning.
+   */
+  async adminUnlinkDevice(deviceId: string) {
+    const existing = await this.prisma.deviceProfile.findUnique({
+      where: { deviceId },
+      include: {
+        profile: {
+          select: { id: true, name: true, slug: true, userId: true },
+        },
+      },
+    });
+
+    if (!existing) {
+      throw new NotFoundException('Device is not linked to any profile');
+    }
+
+    await this.prisma.deviceProfile.delete({
+      where: { deviceId },
+    });
+
+    return {
+      success: true,
+      message: 'Device unlinked from profile successfully',
+      data: { previousProfile: existing.profile },
+    };
   }
 }
