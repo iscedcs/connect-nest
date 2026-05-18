@@ -80,7 +80,10 @@ export const ModelName = {
   Booking: 'Booking',
   Review: 'Review',
   Promotion: 'Promotion',
-  PlatformSetting: 'PlatformSetting'
+  PlatformSetting: 'PlatformSetting',
+  Plan: 'Plan',
+  Subscription: 'Subscription',
+  PaymentRecord: 'PaymentRecord'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -604,6 +607,53 @@ export const PlatformSettingScalarFieldEnum = {
 } as const
 
 export type PlatformSettingScalarFieldEnum = (typeof PlatformSettingScalarFieldEnum)[keyof typeof PlatformSettingScalarFieldEnum]
+
+
+export const PlanScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  name: 'name',
+  priceMonthly: 'priceMonthly',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PlanScalarFieldEnum = (typeof PlanScalarFieldEnum)[keyof typeof PlanScalarFieldEnum]
+
+
+export const SubscriptionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  planId: 'planId',
+  status: 'status',
+  trialStartDate: 'trialStartDate',
+  trialEndDate: 'trialEndDate',
+  trialUsed: 'trialUsed',
+  currentPeriodStart: 'currentPeriodStart',
+  currentPeriodEnd: 'currentPeriodEnd',
+  cancelledAt: 'cancelledAt',
+  gatewayCustomerId: 'gatewayCustomerId',
+  gatewaySubId: 'gatewaySubId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SubscriptionScalarFieldEnum = (typeof SubscriptionScalarFieldEnum)[keyof typeof SubscriptionScalarFieldEnum]
+
+
+export const PaymentRecordScalarFieldEnum = {
+  id: 'id',
+  subscriptionId: 'subscriptionId',
+  amount: 'amount',
+  currency: 'currency',
+  status: 'status',
+  gatewayRef: 'gatewayRef',
+  paidAt: 'paidAt',
+  createdAt: 'createdAt'
+} as const
+
+export type PaymentRecordScalarFieldEnum = (typeof PaymentRecordScalarFieldEnum)[keyof typeof PaymentRecordScalarFieldEnum]
 
 
 export const SortOrder = {

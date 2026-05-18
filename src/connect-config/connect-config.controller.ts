@@ -1,7 +1,9 @@
-import { Controller, Get, Patch, Body, Request, ValidationPipe, Param } from '@nestjs/common';
+import { Controller, Get, Patch, Body, Request, ValidationPipe, Param, UseGuards } from '@nestjs/common';
 import { ConnectConfigService } from './connect-config.service';
 import { UpdateConnectConfigDto, ReorderModulesDto, ConnectConfigResponseDto } from './dto/connect-config.dto';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags, ApiParam } from '@nestjs/swagger';
+import { PlanFeature } from '../subscriptions/decorators/plan-feature.decorator';
+import { PlanLimitGuard } from '../subscriptions/guards/plan-limit.guard';
 
 @ApiTags('Connect Config')
 @ApiBearerAuth('access-token')
@@ -31,6 +33,8 @@ export class ConnectConfigController {
   }
 
   @Patch('config/reorder-modules')
+  @PlanFeature('moduleReordering')
+  @UseGuards(PlanLimitGuard)
   @ApiOperation({ summary: 'Reorder modules in connect page configuration' })
   @ApiResponse({ status: 200, description: 'Modules reordered successfully', type: ConnectConfigResponseDto })
   @ApiParam({ name: 'profileId', description: 'Profile ID' })

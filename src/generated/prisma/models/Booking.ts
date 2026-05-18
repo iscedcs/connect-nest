@@ -381,7 +381,7 @@ export type BookingGroupByOutputType = {
   customerProfileId: string | null
   customerName: string | null
   customerPhone: string | null
-  scheduledDate: Date
+  scheduledDate: Date | null
   scheduledTime: string | null
   duration: number | null
   agreedPrice: runtime.Decimal | null
@@ -443,7 +443,7 @@ export type BookingWhereInput = {
   customerProfileId?: Prisma.StringNullableFilter<"Booking"> | string | null
   customerName?: Prisma.StringNullableFilter<"Booking"> | string | null
   customerPhone?: Prisma.StringNullableFilter<"Booking"> | string | null
-  scheduledDate?: Prisma.DateTimeFilter<"Booking"> | Date | string
+  scheduledDate?: Prisma.DateTimeNullableFilter<"Booking"> | Date | string | null
   scheduledTime?: Prisma.StringNullableFilter<"Booking"> | string | null
   duration?: Prisma.IntNullableFilter<"Booking"> | number | null
   agreedPrice?: Prisma.DecimalNullableFilter<"Booking"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -486,7 +486,7 @@ export type BookingOrderByWithRelationInput = {
   customerProfileId?: Prisma.SortOrderInput | Prisma.SortOrder
   customerName?: Prisma.SortOrderInput | Prisma.SortOrder
   customerPhone?: Prisma.SortOrderInput | Prisma.SortOrder
-  scheduledDate?: Prisma.SortOrder
+  scheduledDate?: Prisma.SortOrderInput | Prisma.SortOrder
   scheduledTime?: Prisma.SortOrderInput | Prisma.SortOrder
   duration?: Prisma.SortOrderInput | Prisma.SortOrder
   agreedPrice?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -532,7 +532,7 @@ export type BookingWhereUniqueInput = Prisma.AtLeast<{
   customerProfileId?: Prisma.StringNullableFilter<"Booking"> | string | null
   customerName?: Prisma.StringNullableFilter<"Booking"> | string | null
   customerPhone?: Prisma.StringNullableFilter<"Booking"> | string | null
-  scheduledDate?: Prisma.DateTimeFilter<"Booking"> | Date | string
+  scheduledDate?: Prisma.DateTimeNullableFilter<"Booking"> | Date | string | null
   scheduledTime?: Prisma.StringNullableFilter<"Booking"> | string | null
   duration?: Prisma.IntNullableFilter<"Booking"> | number | null
   agreedPrice?: Prisma.DecimalNullableFilter<"Booking"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -575,7 +575,7 @@ export type BookingOrderByWithAggregationInput = {
   customerProfileId?: Prisma.SortOrderInput | Prisma.SortOrder
   customerName?: Prisma.SortOrderInput | Prisma.SortOrder
   customerPhone?: Prisma.SortOrderInput | Prisma.SortOrder
-  scheduledDate?: Prisma.SortOrder
+  scheduledDate?: Prisma.SortOrderInput | Prisma.SortOrder
   scheduledTime?: Prisma.SortOrderInput | Prisma.SortOrder
   duration?: Prisma.SortOrderInput | Prisma.SortOrder
   agreedPrice?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -622,7 +622,7 @@ export type BookingScalarWhereWithAggregatesInput = {
   customerProfileId?: Prisma.StringNullableWithAggregatesFilter<"Booking"> | string | null
   customerName?: Prisma.StringNullableWithAggregatesFilter<"Booking"> | string | null
   customerPhone?: Prisma.StringNullableWithAggregatesFilter<"Booking"> | string | null
-  scheduledDate?: Prisma.DateTimeWithAggregatesFilter<"Booking"> | Date | string
+  scheduledDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Booking"> | Date | string | null
   scheduledTime?: Prisma.StringNullableWithAggregatesFilter<"Booking"> | string | null
   duration?: Prisma.IntNullableWithAggregatesFilter<"Booking"> | number | null
   agreedPrice?: Prisma.DecimalNullableWithAggregatesFilter<"Booking"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -659,7 +659,7 @@ export type BookingCreateInput = {
   customerProfileId?: string | null
   customerName?: string | null
   customerPhone?: string | null
-  scheduledDate: Date | string
+  scheduledDate?: Date | string | null
   scheduledTime?: string | null
   duration?: number | null
   agreedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -702,7 +702,7 @@ export type BookingUncheckedCreateInput = {
   customerProfileId?: string | null
   customerName?: string | null
   customerPhone?: string | null
-  scheduledDate: Date | string
+  scheduledDate?: Date | string | null
   scheduledTime?: string | null
   duration?: number | null
   agreedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -741,7 +741,7 @@ export type BookingUpdateInput = {
   customerProfileId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  scheduledDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   agreedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -784,7 +784,7 @@ export type BookingUncheckedUpdateInput = {
   customerProfileId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  scheduledDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   agreedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -825,7 +825,7 @@ export type BookingCreateManyInput = {
   customerProfileId?: string | null
   customerName?: string | null
   customerPhone?: string | null
-  scheduledDate: Date | string
+  scheduledDate?: Date | string | null
   scheduledTime?: string | null
   duration?: number | null
   agreedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -862,7 +862,7 @@ export type BookingUpdateManyMutationInput = {
   customerProfileId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  scheduledDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   agreedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -901,7 +901,7 @@ export type BookingUncheckedUpdateManyInput = {
   customerProfileId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  scheduledDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   agreedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1214,7 +1214,7 @@ export type BookingCreateWithoutArtisanInput = {
   customerProfileId?: string | null
   customerName?: string | null
   customerPhone?: string | null
-  scheduledDate: Date | string
+  scheduledDate?: Date | string | null
   scheduledTime?: string | null
   duration?: number | null
   agreedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1255,7 +1255,7 @@ export type BookingUncheckedCreateWithoutArtisanInput = {
   customerProfileId?: string | null
   customerName?: string | null
   customerPhone?: string | null
-  scheduledDate: Date | string
+  scheduledDate?: Date | string | null
   scheduledTime?: string | null
   duration?: number | null
   agreedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1325,7 +1325,7 @@ export type BookingScalarWhereInput = {
   customerProfileId?: Prisma.StringNullableFilter<"Booking"> | string | null
   customerName?: Prisma.StringNullableFilter<"Booking"> | string | null
   customerPhone?: Prisma.StringNullableFilter<"Booking"> | string | null
-  scheduledDate?: Prisma.DateTimeFilter<"Booking"> | Date | string
+  scheduledDate?: Prisma.DateTimeNullableFilter<"Booking"> | Date | string | null
   scheduledTime?: Prisma.StringNullableFilter<"Booking"> | string | null
   duration?: Prisma.IntNullableFilter<"Booking"> | number | null
   agreedPrice?: Prisma.DecimalNullableFilter<"Booking"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1362,7 +1362,7 @@ export type BookingCreateWithoutServiceInput = {
   customerProfileId?: string | null
   customerName?: string | null
   customerPhone?: string | null
-  scheduledDate: Date | string
+  scheduledDate?: Date | string | null
   scheduledTime?: string | null
   duration?: number | null
   agreedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1403,7 +1403,7 @@ export type BookingUncheckedCreateWithoutServiceInput = {
   customerProfileId?: string | null
   customerName?: string | null
   customerPhone?: string | null
-  scheduledDate: Date | string
+  scheduledDate?: Date | string | null
   scheduledTime?: string | null
   duration?: number | null
   agreedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1468,7 +1468,7 @@ export type BookingCreateWithoutThreadInput = {
   customerProfileId?: string | null
   customerName?: string | null
   customerPhone?: string | null
-  scheduledDate: Date | string
+  scheduledDate?: Date | string | null
   scheduledTime?: string | null
   duration?: number | null
   agreedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1510,7 +1510,7 @@ export type BookingUncheckedCreateWithoutThreadInput = {
   customerProfileId?: string | null
   customerName?: string | null
   customerPhone?: string | null
-  scheduledDate: Date | string
+  scheduledDate?: Date | string | null
   scheduledTime?: string | null
   duration?: number | null
   agreedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1564,7 +1564,7 @@ export type BookingUpdateWithoutThreadInput = {
   customerProfileId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  scheduledDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   agreedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1606,7 +1606,7 @@ export type BookingUncheckedUpdateWithoutThreadInput = {
   customerProfileId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  scheduledDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   agreedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1644,7 +1644,7 @@ export type BookingCreateWithoutReviewInput = {
   customerProfileId?: string | null
   customerName?: string | null
   customerPhone?: string | null
-  scheduledDate: Date | string
+  scheduledDate?: Date | string | null
   scheduledTime?: string | null
   duration?: number | null
   agreedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1686,7 +1686,7 @@ export type BookingUncheckedCreateWithoutReviewInput = {
   customerProfileId?: string | null
   customerName?: string | null
   customerPhone?: string | null
-  scheduledDate: Date | string
+  scheduledDate?: Date | string | null
   scheduledTime?: string | null
   duration?: number | null
   agreedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1740,7 +1740,7 @@ export type BookingUpdateWithoutReviewInput = {
   customerProfileId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  scheduledDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   agreedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1782,7 +1782,7 @@ export type BookingUncheckedUpdateWithoutReviewInput = {
   customerProfileId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  scheduledDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   agreedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1821,7 +1821,7 @@ export type BookingCreateManyArtisanInput = {
   customerProfileId?: string | null
   customerName?: string | null
   customerPhone?: string | null
-  scheduledDate: Date | string
+  scheduledDate?: Date | string | null
   scheduledTime?: string | null
   duration?: number | null
   agreedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1858,7 +1858,7 @@ export type BookingUpdateWithoutArtisanInput = {
   customerProfileId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  scheduledDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   agreedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1899,7 +1899,7 @@ export type BookingUncheckedUpdateWithoutArtisanInput = {
   customerProfileId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  scheduledDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   agreedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1939,7 +1939,7 @@ export type BookingUncheckedUpdateManyWithoutArtisanInput = {
   customerProfileId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  scheduledDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   agreedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1977,7 +1977,7 @@ export type BookingCreateManyServiceInput = {
   customerProfileId?: string | null
   customerName?: string | null
   customerPhone?: string | null
-  scheduledDate: Date | string
+  scheduledDate?: Date | string | null
   scheduledTime?: string | null
   duration?: number | null
   agreedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -2014,7 +2014,7 @@ export type BookingUpdateWithoutServiceInput = {
   customerProfileId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  scheduledDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   agreedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -2055,7 +2055,7 @@ export type BookingUncheckedUpdateWithoutServiceInput = {
   customerProfileId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  scheduledDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   agreedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -2095,7 +2095,7 @@ export type BookingUncheckedUpdateManyWithoutServiceInput = {
   customerProfileId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  scheduledDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduledTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   agreedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -2324,7 +2324,7 @@ export type $BookingPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     customerProfileId: string | null
     customerName: string | null
     customerPhone: string | null
-    scheduledDate: Date
+    scheduledDate: Date | null
     scheduledTime: string | null
     duration: number | null
     agreedPrice: runtime.Decimal | null
@@ -3012,6 +3012,11 @@ export type BookingFindManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Skip the first `n` Bookings.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of Bookings.
+   */
   distinct?: Prisma.BookingScalarFieldEnum | Prisma.BookingScalarFieldEnum[]
 }
 

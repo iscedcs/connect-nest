@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import {
   CreateProfileDto,
@@ -7,6 +7,9 @@ import {
 } from './dto/profile.dto';
 import { AuthClientService } from '../auth/auth-client.service';
 import { WalletClientService } from '../auth/wallet-client.service';
+import { SubscriptionsService } from '../subscriptions/subscriptions.service';
+import { PlanLimitException } from '../subscriptions/exceptions/plan-limit.exception';
+import { PlanTier } from '../generated/prisma/client';
 
 @Injectable()
 export class ProfileService {
@@ -14,6 +17,7 @@ export class ProfileService {
     private readonly databaseService: DatabaseService,
     private readonly authClientService: AuthClientService,
     private readonly walletClientService: WalletClientService,
+    private readonly subscriptionsService: SubscriptionsService,
   ) {}
 
   async createProfile(user: any, dto: CreateProfileDto) {
@@ -22,6 +26,21 @@ export class ProfileService {
       const existingProfiles = await this.databaseService.profile.findMany({
         where: { userId: user.id, deletedAt: null },
       });
+
+      // Auto-bootstrap a FREE subscription for brand new users (fire-and-forget)
+      if (existingProfiles.length === 0) {
+        await this.subscriptionsService.createSubscription(
+          user.id,
+          PlanTier.FREE,
+          true, // skipConflictCheck
+        );
+      } else {
+        // Enforce profile limit for existing users
+        const limits = await this.subscriptionsService.getUserLimits(user.id);
+        if (existingProfiles.length >= limits.profiles) {
+          throw new PlanLimitException('profiles', PlanTier.PRO_LITE);
+        }
+      }
 
       // If this is the first profile, set it as default
       const isDefault = existingProfiles.length === 0;
@@ -48,6 +67,7 @@ export class ProfileService {
         },
       };
     } catch (error) {
+      if (error instanceof HttpException) throw error;
       return {
         success: false,
         message: error.message,

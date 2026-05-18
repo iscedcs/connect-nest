@@ -1,21 +1,37 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { CreateFormDto, UpdateFormDto, CreateFormFromTemplateDto, CreateTemplateDto, BulkVisibilityDto, BulkDeleteDto, BulkRestoreDto, FormStatus, SubmitFormDto } from './dto/form.dto';
+import { SubscriptionsService } from '../subscriptions/subscriptions.service';
+import { PlanLimitException } from '../subscriptions/exceptions/plan-limit.exception';
+import { PlanTier } from '../generated/prisma/client';
 
 @Injectable()
 export class FormsService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly subscriptionsService: SubscriptionsService,
+  ) {}
 
   async createForm(user: any, profileId: string, dto: CreateFormDto) {
     try {
       const profile = await this.databaseService.profile.findFirst({ where: { id: profileId, userId: user.id, deletedAt: null } });
       if (!profile) return { success: false, message: 'Profile not found' };
 
+      // Enforce custom forms limit (aggregate across all user profiles)
+      const limits = await this.subscriptionsService.getUserLimits(user.id);
+      const currentCount = await this.databaseService.form.count({
+        where: { profile: { userId: user.id }, deletedAt: null },
+      });
+      if (currentCount >= limits.customForms) {
+        throw new PlanLimitException('customForms', PlanTier.PRO_LITE);
+      }
+
       const form = await this.databaseService.form.create({
         data: { profileId, title: dto.title, description: dto.description, form_type: dto.form_type, template_id: dto.template_id, status: dto.status as any, fields: dto.fields as any, form_url: dto.form_url, is_visible: dto.is_visible !== undefined ? dto.is_visible : true },
       });
       return { success: true, message: 'Form created successfully', data: { form } };
     } catch (error) {
+      if (error instanceof HttpException) throw error;
       return { success: false, message: error.message };
     }
   }

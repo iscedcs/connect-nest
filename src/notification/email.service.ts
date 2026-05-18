@@ -139,6 +139,10 @@ export class EmailService {
       PAYMENT_SENT_CONFIRMED: '💸',
       PAYMENT_RECEIVED_CONFIRMED: '💰',
       PAYMENT_DISPUTED: '⚠️',
+      SUBSCRIPTION_TRIAL_EXPIRED: '⏳',
+      SUBSCRIPTION_ACTIVATED: '🎉',
+      SUBSCRIPTION_CANCELLED: '🚫',
+      SUBSCRIPTION_PAST_DUE: '⚠️',
     };
     return map[type] || '🔔';
   }

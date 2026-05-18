@@ -1192,6 +1192,11 @@ export type SupportRequestFindManyArgs<ExtArgs extends runtime.Types.Extensions.
    * Skip the first `n` SupportRequests.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of SupportRequests.
+   */
   distinct?: Prisma.SupportRequestScalarFieldEnum | Prisma.SupportRequestScalarFieldEnum[]
 }
 

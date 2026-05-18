@@ -1297,6 +1297,11 @@ export type AppointmentLinkFindManyArgs<ExtArgs extends runtime.Types.Extensions
    * Skip the first `n` AppointmentLinks.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of AppointmentLinks.
+   */
   distinct?: Prisma.AppointmentLinkScalarFieldEnum | Prisma.AppointmentLinkScalarFieldEnum[]
 }
 

@@ -1698,6 +1698,11 @@ export type ArtisanServiceFindManyArgs<ExtArgs extends runtime.Types.Extensions.
    * Skip the first `n` ArtisanServices.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of ArtisanServices.
+   */
   distinct?: Prisma.ArtisanServiceScalarFieldEnum | Prisma.ArtisanServiceScalarFieldEnum[]
 }
 

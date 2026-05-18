@@ -13,9 +13,10 @@ import { ThreadEventService } from './thread-event.service';
 import { ThreadGateway } from './thread.gateway';
 import { DatabaseService } from '../database/database.service';
 import { NotificationModule } from '../notification/notification.module';
+import { SubscriptionsModule } from '../subscriptions/subscriptions.module';
 
 @Module({
-  imports: [DatabaseModule, AuthModule, NotificationModule],
+  imports: [DatabaseModule, AuthModule, NotificationModule, SubscriptionsModule],
   controllers: [
     ArtisanController,
     DirectoryController,

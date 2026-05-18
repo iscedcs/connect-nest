@@ -1,10 +1,16 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { CreateSocialDto, UpdateSocialDto, BulkVisibilityDto, BulkDeleteDto, BulkRestoreDto } from './dto/social.dto';
+import { SubscriptionsService } from '../subscriptions/subscriptions.service';
+import { PlanLimitException } from '../subscriptions/exceptions/plan-limit.exception';
+import { PlanTier } from '../generated/prisma/client';
 
 @Injectable()
 export class SocialService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly subscriptionsService: SubscriptionsService,
+  ) {}
 
   async addSocial(user: any, dto: CreateSocialDto) {
     try {
@@ -15,6 +21,15 @@ export class SocialService {
 
       if (!profile) {
         throw new BadRequestException('Profile not found');
+      }
+
+      // Enforce social links limit (aggregate across all user profiles)
+      const limits = await this.subscriptionsService.getUserLimits(user.id);
+      const currentCount = await this.databaseService.social.count({
+        where: { user: { userId: user.id }, deletedAt: null },
+      });
+      if (currentCount >= limits.socialLinks) {
+        throw new PlanLimitException('socialLinks', PlanTier.PRO_LITE);
       }
 
       const social = await this.databaseService.social.create({

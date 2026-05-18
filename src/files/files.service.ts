@@ -1,13 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { CreateFileDto, UpdateFileDto, BulkVisibilityDto, BulkDeleteDto, BulkRestoreDto } from './dto/file.dto';
+import { SubscriptionsService } from '../subscriptions/subscriptions.service';
+import { PlanLimitException } from '../subscriptions/exceptions/plan-limit.exception';
+import { PlanTier } from '../generated/prisma/client';
 // TODO: Import AWS SDK or Digital Ocean Spaces SDK for file operations
 // import { S3Client, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 // import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 @Injectable()
 export class FilesService {
-  constructor(private readonly databaseService: DatabaseService) {
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly subscriptionsService: SubscriptionsService,
+  ) {
     // TODO: Initialize Digital Ocean Spaces client
     // this.spacesClient = new S3Client({
     //   endpoint: process.env.DO_SPACES_ENDPOINT,
@@ -24,11 +30,33 @@ export class FilesService {
       const profile = await this.databaseService.profile.findFirst({ where: { id: profileId, userId: user.id, deletedAt: null } });
       if (!profile) return { success: false, message: 'Profile not found' };
 
+      // Enforce files count limit (aggregate across all user profiles)
+      const limits = await this.subscriptionsService.getUserLimits(user.id);
+      const currentCount = await this.databaseService.fileItem.count({
+        where: { profile: { userId: user.id }, deletedAt: null },
+      });
+      if (currentCount >= limits.files) {
+        throw new PlanLimitException('files', PlanTier.PRO_LITE);
+      }
+
+      // Enforce storage bytes limit
+      if (limits.storageBytes !== Infinity) {
+        const storageResult = await this.databaseService.fileItem.aggregate({
+          _sum: { size_bytes: true },
+          where: { profile: { userId: user.id }, deletedAt: null },
+        });
+        const usedBytes = storageResult._sum.size_bytes ?? 0;
+        if (usedBytes + (dto.size_bytes ?? 0) > limits.storageBytes) {
+          throw new PlanLimitException('storageBytes', PlanTier.PRO_LITE);
+        }
+      }
+
       const file = await this.databaseService.fileItem.create({
         data: { profileId, filename: dto.filename, storage_key: dto.storage_key, media_type: dto.media_type, size_bytes: dto.size_bytes, checksum: dto.checksum, spaces_url: dto.spaces_url, is_visible: dto.is_visible !== undefined ? dto.is_visible : true },
       });
       return { success: true, message: 'File created successfully', data: { file } };
     } catch (error) {
+      if (error instanceof HttpException) throw error;
       return { success: false, message: error.message };
     }
   }

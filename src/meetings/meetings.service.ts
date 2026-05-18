@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { 
   CreateMeetingDto, 
@@ -7,10 +7,16 @@ import {
   BulkDeleteDto,
   BulkRestoreDto
 } from './dto/meeting.dto';
+import { SubscriptionsService } from '../subscriptions/subscriptions.service';
+import { PlanLimitException } from '../subscriptions/exceptions/plan-limit.exception';
+import { PlanTier } from '../generated/prisma/client';
 
 @Injectable()
 export class MeetingsService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly subscriptionsService: SubscriptionsService,
+  ) {}
 
   async createMeeting(user: any, profileId: string, dto: CreateMeetingDto) {
     try {
@@ -20,6 +26,15 @@ export class MeetingsService {
 
       if (!profile) {
         return { success: false, message: 'Profile not found' };
+      }
+
+      // Enforce meeting links limit (aggregate across all user profiles)
+      const limits = await this.subscriptionsService.getUserLimits(user.id);
+      const currentCount = await this.databaseService.meetingLink.count({
+        where: { profile: { userId: user.id }, deletedAt: null },
+      });
+      if (currentCount >= limits.meetingLinks) {
+        throw new PlanLimitException('meetingLinks', PlanTier.PRO_LITE);
       }
 
       const meeting = await this.databaseService.meetingLink.create({
@@ -35,6 +50,7 @@ export class MeetingsService {
 
       return { success: true, message: 'Meeting created successfully', data: { meeting } };
     } catch (error) {
+      if (error instanceof HttpException) throw error;
       return { success: false, message: error.message };
     }
   }

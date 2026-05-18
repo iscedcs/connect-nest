@@ -1,21 +1,37 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { CreateSpotifyDto, UpdateSpotifyDto, BulkVisibilityDto, BulkDeleteDto, BulkRestoreDto } from './dto/spotify.dto';
+import { SubscriptionsService } from '../subscriptions/subscriptions.service';
+import { PlanLimitException } from '../subscriptions/exceptions/plan-limit.exception';
+import { PlanTier } from '../generated/prisma/client';
 
 @Injectable()
 export class SpotifyService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly subscriptionsService: SubscriptionsService,
+  ) {}
 
   async createSpotifyItem(user: any, profileId: string, dto: CreateSpotifyDto) {
     try {
       const profile = await this.databaseService.profile.findFirst({ where: { id: profileId, userId: user.id, deletedAt: null } });
       if (!profile) return { success: false, message: 'Profile not found' };
 
+      // Enforce Spotify items limit (aggregate across all user profiles)
+      const limits = await this.subscriptionsService.getUserLimits(user.id);
+      const currentCount = await this.databaseService.spotifyItem.count({
+        where: { profile: { userId: user.id }, deletedAt: null },
+      });
+      if (currentCount >= limits.spotifyItems) {
+        throw new PlanLimitException('spotifyItems', PlanTier.PRO_LITE);
+      }
+
       const item = await this.databaseService.spotifyItem.create({
         data: { profileId, type: dto.type, external_url: dto.external_url, title: dto.title, is_visible: dto.is_visible !== undefined ? dto.is_visible : true, order: dto.order },
       });
       return { success: true, message: 'Spotify item created successfully', data: { item } };
     } catch (error) {
+      if (error instanceof HttpException) throw error;
       return { success: false, message: error.message };
     }
   }

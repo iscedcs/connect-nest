@@ -1341,6 +1341,11 @@ export type SpotifyItemFindManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Skip the first `n` SpotifyItems.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of SpotifyItems.
+   */
   distinct?: Prisma.SpotifyItemScalarFieldEnum | Prisma.SpotifyItemScalarFieldEnum[]
 }
 

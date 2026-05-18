@@ -1,21 +1,37 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { CreateWalletDto, UpdateWalletDto, BulkVisibilityDto, BulkDeleteDto, BulkRestoreDto } from './dto/wallet.dto';
+import { SubscriptionsService } from '../subscriptions/subscriptions.service';
+import { PlanLimitException } from '../subscriptions/exceptions/plan-limit.exception';
+import { PlanTier } from '../generated/prisma/client';
 
 @Injectable()
 export class WalletsService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly subscriptionsService: SubscriptionsService,
+  ) {}
 
   async createWallet(user: any, profileId: string, dto: CreateWalletDto) {
     try {
       const profile = await this.databaseService.profile.findFirst({ where: { id: profileId, userId: user.id, deletedAt: null } });
       if (!profile) return { success: false, message: 'Profile not found' };
 
+      // Enforce crypto wallets limit (aggregate across all user profiles)
+      const limits = await this.subscriptionsService.getUserLimits(user.id);
+      const currentCount = await this.databaseService.wallet.count({
+        where: { profile: { userId: user.id }, deletedAt: null },
+      });
+      if (currentCount >= limits.cryptoWallets) {
+        throw new PlanLimitException('cryptoWallets', PlanTier.PRO_PLUS);
+      }
+
       const wallet = await this.databaseService.wallet.create({
         data: { profileId, network: dto.network, address: dto.address, label: dto.label, ens: dto.ens, is_default: false, is_visible: dto.is_visible !== undefined ? dto.is_visible : true },
       });
       return { success: true, message: 'Wallet created successfully', data: { wallet } };
     } catch (error) {
+      if (error instanceof HttpException) throw error;
       return { success: false, message: error.message };
     }
   }

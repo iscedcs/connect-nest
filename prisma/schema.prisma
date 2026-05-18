@@ -141,6 +141,10 @@ enum NotificationType {
   PAYMENT_SENT_CONFIRMED
   PAYMENT_RECEIVED_CONFIRMED
   PAYMENT_DISPUTED
+  SUBSCRIPTION_TRIAL_EXPIRED
+  SUBSCRIPTION_ACTIVATED
+  SUBSCRIPTION_CANCELLED
+  SUBSCRIPTION_PAST_DUE
 }
 
 model SupportRequest {
@@ -754,4 +758,71 @@ model PlatformSetting {
   minPortfolioItems     Int      @default(2)
   maxCategories         Int      @default(3)
   updatedAt             DateTime @updatedAt
+}
+
+// ─── Subscription ─────────────────────────────────────────
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  EXPIRED
+}
+
+enum PlanTier {
+  FREE
+  PRO_LITE
+  PRO_PLUS
+}
+
+model Plan {
+  id            String         @id @default(uuid())
+  key           PlanTier       @unique
+  name          String
+  priceMonthly  Int            // in kobo; 0 for FREE
+  isActive      Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id                 String             @id @default(uuid())
+  userId             String             @unique // userId from JWT, no FK
+  planId             String
+  status             SubscriptionStatus @default(TRIALING)
+  trialStartDate     DateTime?
+  trialEndDate       DateTime?
+  trialUsed          Boolean            @default(false)
+  currentPeriodStart DateTime?
+  currentPeriodEnd   DateTime?
+  cancelledAt        DateTime?
+  gatewayCustomerId  String?
+  gatewaySubId       String?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  plan           Plan            @relation(fields: [planId], references: [id])
+  paymentHistory PaymentRecord[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([trialEndDate])
+  @@index([currentPeriodEnd])
+}
+
+model PaymentRecord {
+  id             String       @id @default(uuid())
+  subscriptionId String
+  amount         Int          // in kobo
+  currency       String       @default("NGN")
+  status         String       // 'success' | 'failed' | 'pending'
+  gatewayRef     String?
+  paidAt         DateTime?
+  createdAt      DateTime     @default(now())
+
+  subscription Subscription @relation(fields: [subscriptionId], references: [id])
+
+  @@index([subscriptionId])
 }

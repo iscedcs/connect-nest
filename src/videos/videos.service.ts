@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { 
   CreateVideoDto, 
@@ -7,10 +7,16 @@ import {
   BulkDeleteDto,
   BulkRestoreDto
 } from './dto/video.dto';
+import { SubscriptionsService } from '../subscriptions/subscriptions.service';
+import { PlanLimitException } from '../subscriptions/exceptions/plan-limit.exception';
+import { PlanTier } from '../generated/prisma/client';
 
 @Injectable()
 export class VideosService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly subscriptionsService: SubscriptionsService,
+  ) {}
 
   async createVideo(user: any, profileId: string, dto: CreateVideoDto) {
     try {
@@ -30,6 +36,15 @@ export class VideosService {
         };
       }
 
+      // Enforce videos limit (aggregate across all user profiles)
+      const limits = await this.subscriptionsService.getUserLimits(user.id);
+      const currentCount = await this.databaseService.video.count({
+        where: { profile: { userId: user.id }, deletedAt: null },
+      });
+      if (currentCount >= limits.videos) {
+        throw new PlanLimitException('videos', PlanTier.PRO_LITE);
+      }
+
       const video = await this.databaseService.video.create({
         data: {
           profileId,
@@ -42,18 +57,10 @@ export class VideosService {
         },
       });
 
-      return {
-        success: true,
-        message: 'Video created successfully',
-        data: {
-          video,
-        },
-      };
+      return { success: true, message: 'Video created successfully', data: { video } };
     } catch (error) {
-      return {
-        success: false,
-        message: error.message,
-      };
+      if (error instanceof HttpException) throw error;
+      return { success: false, message: error.message };
     }
   }
 

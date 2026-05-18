@@ -22,6 +22,9 @@ import {
 import { NotificationDispatcher } from '../notification/notification-dispatcher.service';
 import { AuthClientService } from '../auth/auth-client.service';
 import { MailClientService } from '../mail/mail-client.service';
+import { SubscriptionsService } from '../subscriptions/subscriptions.service';
+import { PlanLimitException } from '../subscriptions/exceptions/plan-limit.exception';
+import { PlanTier } from '../generated/prisma/client';
 
 @Injectable()
 export class ArtisanService {
@@ -30,6 +33,7 @@ export class ArtisanService {
     private readonly notifications: NotificationDispatcher,
     private readonly authClient: AuthClientService,
     private readonly mail: MailClientService,
+    private readonly subscriptionsService: SubscriptionsService,
   ) {}
 
   // ─── Registration ───────────────────────────────────────
@@ -84,6 +88,12 @@ export class ArtisanService {
     // 4. Validate categories / custom category
     const settings = await this.getOrCreateSettings();
 
+    // Enforce subscription plan limits for artisan features
+    const limits = await this.subscriptionsService.getUserLimits(userId);
+    if (!limits.artisanDirectoryEligible) {
+      throw new PlanLimitException('artisanDirectoryEligible', PlanTier.PRO_LITE);
+    }
+
     if (dto.categoryIds.length === 0 && !dto.customCategory?.trim()) {
       throw new BadRequestException(
         'Select at least one category or provide a custom category',
@@ -94,6 +104,11 @@ export class ArtisanService {
       throw new BadRequestException(
         `Maximum ${settings.maxCategories} categories allowed`,
       );
+    }
+
+    // Enforce subscription plan limit on number of categories
+    if (dto.categoryIds.length > limits.serviceCategories) {
+      throw new PlanLimitException('serviceCategories', PlanTier.PRO_PLUS);
     }
 
     let categories: { id: string }[] = [];
@@ -413,6 +428,15 @@ export class ArtisanService {
 
   async updateCategories(userId: string, dto: UpdateCategoriesDto) {
     const artisan = await this.findOwnArtisan(userId, dto.profileId);
+
+    // Enforce subscription plan limit for service categories
+    const limits = await this.subscriptionsService.getUserLimits(userId);
+    if (limits.serviceCategories === 0) {
+      throw new PlanLimitException('serviceCategories', PlanTier.PRO_LITE);
+    }
+    if (dto.categoryIds.length > limits.serviceCategories) {
+      throw new PlanLimitException('serviceCategories', PlanTier.PRO_PLUS);
+    }
 
     const settings = await this.getOrCreateSettings();
     if (dto.categoryIds.length > settings.maxCategories) {

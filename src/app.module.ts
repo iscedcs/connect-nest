@@ -25,6 +25,8 @@ import { PushModule } from './push/push.module';
 import { ArtisanModule } from './artisan/artisan.module';
 import { InternalModule } from './internal/internal.module';
 import { MailClientModule } from './mail/mail-client.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 
 @Module({
   providers: [
@@ -44,6 +46,8 @@ import { MailClientModule } from './mail/mail-client.module';
         limit: 30,
       },
     ]),
+    ScheduleModule.forRoot(),
+    SubscriptionsModule,
     AuthModule,
     DatabaseModule,
     ContactModule,
