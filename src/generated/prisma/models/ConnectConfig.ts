@@ -160,7 +160,7 @@ export type ConnectConfigGroupByOutputType = {
   _max: ConnectConfigMaxAggregateOutputType | null
 }
 
-type GetConnectConfigGroupByPayload<T extends ConnectConfigGroupByArgs> = Prisma.PrismaPromise<
+export type GetConnectConfigGroupByPayload<T extends ConnectConfigGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ConnectConfigGroupByOutputType, T['by']> &
       {
@@ -1118,6 +1118,11 @@ export type ConnectConfigFindManyArgs<ExtArgs extends runtime.Types.Extensions.I
    * Skip the first `n` ConnectConfigs.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of ConnectConfigs.
+   */
   distinct?: Prisma.ConnectConfigScalarFieldEnum | Prisma.ConnectConfigScalarFieldEnum[]
 }
 

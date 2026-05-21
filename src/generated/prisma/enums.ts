@@ -163,3 +163,187 @@ export const PaymentDisputedBy = {
 } as const
 
 export type PaymentDisputedBy = (typeof PaymentDisputedBy)[keyof typeof PaymentDisputedBy]
+
+
+export const CpOrgStatus = {
+  ACTIVE: 'ACTIVE',
+  SUSPENDED: 'SUSPENDED',
+  ARCHIVED: 'ARCHIVED'
+} as const
+
+export type CpOrgStatus = (typeof CpOrgStatus)[keyof typeof CpOrgStatus]
+
+
+export const CpWorkspaceStatus = {
+  ACTIVE: 'ACTIVE',
+  SUSPENDED: 'SUSPENDED',
+  ARCHIVED: 'ARCHIVED'
+} as const
+
+export type CpWorkspaceStatus = (typeof CpWorkspaceStatus)[keyof typeof CpWorkspaceStatus]
+
+
+export const CpMemberStatus = {
+  ACTIVE: 'ACTIVE',
+  SUSPENDED: 'SUSPENDED',
+  REMOVED: 'REMOVED'
+} as const
+
+export type CpMemberStatus = (typeof CpMemberStatus)[keyof typeof CpMemberStatus]
+
+
+export const CpRole = {
+  CREATOR: 'CREATOR',
+  WORKSPACE_ADMIN: 'WORKSPACE_ADMIN',
+  STAFF: 'STAFF',
+  CLIENT: 'CLIENT',
+  VISITOR: 'VISITOR'
+} as const
+
+export type CpRole = (typeof CpRole)[keyof typeof CpRole]
+
+
+export const CpLeadSource = {
+  CARD_TAP: 'CARD_TAP',
+  QR_SCAN: 'QR_SCAN',
+  MANUAL: 'MANUAL',
+  FORM_SUBMIT: 'FORM_SUBMIT'
+} as const
+
+export type CpLeadSource = (typeof CpLeadSource)[keyof typeof CpLeadSource]
+
+
+export const CpLeadStatus = {
+  NEW: 'NEW',
+  CONTACTED: 'CONTACTED',
+  VALIDATED: 'VALIDATED',
+  REJECTED: 'REJECTED',
+  CONVERTED: 'CONVERTED'
+} as const
+
+export type CpLeadStatus = (typeof CpLeadStatus)[keyof typeof CpLeadStatus]
+
+
+export const CpAppointmentType = {
+  PUBLIC: 'PUBLIC',
+  CLIENT: 'CLIENT'
+} as const
+
+export type CpAppointmentType = (typeof CpAppointmentType)[keyof typeof CpAppointmentType]
+
+
+export const CpAppointmentStatus = {
+  PENDING: 'PENDING',
+  CONFIRMED: 'CONFIRMED',
+  RESCHEDULED: 'RESCHEDULED',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
+  NO_SHOW: 'NO_SHOW'
+} as const
+
+export type CpAppointmentStatus = (typeof CpAppointmentStatus)[keyof typeof CpAppointmentStatus]
+
+
+export const CpConversationType = {
+  WORKSPACE_GROUP: 'WORKSPACE_GROUP',
+  DIRECT: 'DIRECT',
+  CLIENT_STAFF: 'CLIENT_STAFF'
+} as const
+
+export type CpConversationType = (typeof CpConversationType)[keyof typeof CpConversationType]
+
+
+export const CpSenderRole = {
+  STAFF: 'STAFF',
+  CLIENT: 'CLIENT',
+  SYSTEM: 'SYSTEM'
+} as const
+
+export type CpSenderRole = (typeof CpSenderRole)[keyof typeof CpSenderRole]
+
+
+export const CpParticipantRole = {
+  MEMBER: 'MEMBER',
+  ADMIN: 'ADMIN'
+} as const
+
+export type CpParticipantRole = (typeof CpParticipantRole)[keyof typeof CpParticipantRole]
+
+
+export const CpInvoiceStatus = {
+  DRAFT: 'DRAFT',
+  SENT: 'SENT',
+  PAID: 'PAID',
+  OVERDUE: 'OVERDUE',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type CpInvoiceStatus = (typeof CpInvoiceStatus)[keyof typeof CpInvoiceStatus]
+
+
+export const CpCardStatus = {
+  UNASSIGNED: 'UNASSIGNED',
+  ACTIVE: 'ACTIVE',
+  SUSPENDED: 'SUSPENDED',
+  LOST: 'LOST'
+} as const
+
+export type CpCardStatus = (typeof CpCardStatus)[keyof typeof CpCardStatus]
+
+
+export const CpNotificationType = {
+  APPOINTMENT_BOOKED: 'APPOINTMENT_BOOKED',
+  APPOINTMENT_CONFIRMED: 'APPOINTMENT_CONFIRMED',
+  APPOINTMENT_RESCHEDULED: 'APPOINTMENT_RESCHEDULED',
+  APPOINTMENT_CANCELLED: 'APPOINTMENT_CANCELLED',
+  LEAD_ASSIGNED: 'LEAD_ASSIGNED',
+  LEAD_VALIDATED: 'LEAD_VALIDATED',
+  CLIENT_INVITED: 'CLIENT_INVITED',
+  CLIENT_MESSAGE: 'CLIENT_MESSAGE',
+  INVOICE_ISSUED: 'INVOICE_ISSUED',
+  INVOICE_OVERDUE: 'INVOICE_OVERDUE',
+  INVOICE_PAID: 'INVOICE_PAID',
+  INVOICE_CANCELLED: 'INVOICE_CANCELLED',
+  ATTENDANCE_LATE: 'ATTENDANCE_LATE',
+  ATTENDANCE_OVERRIDE: 'ATTENDANCE_OVERRIDE',
+  WORKSPACE_INVITE_SENT: 'WORKSPACE_INVITE_SENT',
+  WORKSPACE_INVITE_ACCEPTED: 'WORKSPACE_INVITE_ACCEPTED',
+  STAFF_SUSPENDED: 'STAFF_SUSPENDED',
+  STAFF_REMOVED: 'STAFF_REMOVED',
+  WORKSPACE_CREATED: 'WORKSPACE_CREATED',
+  WORKSPACE_SUSPENDED: 'WORKSPACE_SUSPENDED',
+  ORG_ALERT: 'ORG_ALERT',
+  NEW_MESSAGE: 'NEW_MESSAGE'
+} as const
+
+export type CpNotificationType = (typeof CpNotificationType)[keyof typeof CpNotificationType]
+
+
+export const CpAuditSource = {
+  WEB: 'WEB',
+  MOBILE: 'MOBILE',
+  API: 'API',
+  SYSTEM: 'SYSTEM'
+} as const
+
+export type CpAuditSource = (typeof CpAuditSource)[keyof typeof CpAuditSource]
+
+
+export const CpSubscriptionPlan = {
+  FREE: 'FREE',
+  STARTER: 'STARTER',
+  GROWTH: 'GROWTH',
+  BUSINESS: 'BUSINESS'
+} as const
+
+export type CpSubscriptionPlan = (typeof CpSubscriptionPlan)[keyof typeof CpSubscriptionPlan]
+
+
+export const CpSubscriptionStatus = {
+  TRIALING: 'TRIALING',
+  ACTIVE: 'ACTIVE',
+  PAST_DUE: 'PAST_DUE',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type CpSubscriptionStatus = (typeof CpSubscriptionStatus)[keyof typeof CpSubscriptionStatus]

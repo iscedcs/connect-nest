@@ -193,7 +193,7 @@ export type MeetingLinkGroupByOutputType = {
   _max: MeetingLinkMaxAggregateOutputType | null
 }
 
-type GetMeetingLinkGroupByPayload<T extends MeetingLinkGroupByArgs> = Prisma.PrismaPromise<
+export type GetMeetingLinkGroupByPayload<T extends MeetingLinkGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<MeetingLinkGroupByOutputType, T['by']> &
       {
@@ -1297,6 +1297,11 @@ export type MeetingLinkFindManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Skip the first `n` MeetingLinks.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of MeetingLinks.
+   */
   distinct?: Prisma.MeetingLinkScalarFieldEnum | Prisma.MeetingLinkScalarFieldEnum[]
 }
 

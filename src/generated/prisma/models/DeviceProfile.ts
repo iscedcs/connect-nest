@@ -165,7 +165,7 @@ export type DeviceProfileGroupByOutputType = {
   _max: DeviceProfileMaxAggregateOutputType | null
 }
 
-type GetDeviceProfileGroupByPayload<T extends DeviceProfileGroupByArgs> = Prisma.PrismaPromise<
+export type GetDeviceProfileGroupByPayload<T extends DeviceProfileGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<DeviceProfileGroupByOutputType, T['by']> &
       {
@@ -1157,6 +1157,11 @@ export type DeviceProfileFindManyArgs<ExtArgs extends runtime.Types.Extensions.I
    * Skip the first `n` DeviceProfiles.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of DeviceProfiles.
+   */
   distinct?: Prisma.DeviceProfileScalarFieldEnum | Prisma.DeviceProfileScalarFieldEnum[]
 }
 

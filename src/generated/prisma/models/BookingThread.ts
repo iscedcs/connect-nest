@@ -221,7 +221,7 @@ export type BookingThreadGroupByOutputType = {
   _max: BookingThreadMaxAggregateOutputType | null
 }
 
-type GetBookingThreadGroupByPayload<T extends BookingThreadGroupByArgs> = Prisma.PrismaPromise<
+export type GetBookingThreadGroupByPayload<T extends BookingThreadGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<BookingThreadGroupByOutputType, T['by']> &
       {
@@ -1899,6 +1899,11 @@ export type BookingThreadFindManyArgs<ExtArgs extends runtime.Types.Extensions.I
    * Skip the first `n` BookingThreads.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of BookingThreads.
+   */
   distinct?: Prisma.BookingThreadScalarFieldEnum | Prisma.BookingThreadScalarFieldEnum[]
 }
 

@@ -25,6 +25,7 @@ import { PushModule } from './push/push.module';
 import { ArtisanModule } from './artisan/artisan.module';
 import { InternalModule } from './internal/internal.module';
 import { MailClientModule } from './mail/mail-client.module';
+import { ConnectPlusModule } from './connect-plus/connect-plus.module';
 
 @Module({
   providers: [
@@ -67,6 +68,7 @@ import { MailClientModule } from './mail/mail-client.module';
     ArtisanModule,
     InternalModule,
     MailClientModule,
+    ConnectPlusModule,
   ],
 })
 export class AppModule {}

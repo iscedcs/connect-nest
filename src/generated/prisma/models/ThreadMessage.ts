@@ -182,7 +182,7 @@ export type ThreadMessageGroupByOutputType = {
   _max: ThreadMessageMaxAggregateOutputType | null
 }
 
-type GetThreadMessageGroupByPayload<T extends ThreadMessageGroupByArgs> = Prisma.PrismaPromise<
+export type GetThreadMessageGroupByPayload<T extends ThreadMessageGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ThreadMessageGroupByOutputType, T['by']> &
       {
@@ -1264,6 +1264,11 @@ export type ThreadMessageFindManyArgs<ExtArgs extends runtime.Types.Extensions.I
    * Skip the first `n` ThreadMessages.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of ThreadMessages.
+   */
   distinct?: Prisma.ThreadMessageScalarFieldEnum | Prisma.ThreadMessageScalarFieldEnum[]
 }
 

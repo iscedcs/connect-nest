@@ -229,7 +229,7 @@ export type PlatformSettingGroupByOutputType = {
   _max: PlatformSettingMaxAggregateOutputType | null
 }
 
-type GetPlatformSettingGroupByPayload<T extends PlatformSettingGroupByArgs> = Prisma.PrismaPromise<
+export type GetPlatformSettingGroupByPayload<T extends PlatformSettingGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<PlatformSettingGroupByOutputType, T['by']> &
       {
@@ -1106,6 +1106,11 @@ export type PlatformSettingFindManyArgs<ExtArgs extends runtime.Types.Extensions
    * Skip the first `n` PlatformSettings.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of PlatformSettings.
+   */
   distinct?: Prisma.PlatformSettingScalarFieldEnum | Prisma.PlatformSettingScalarFieldEnum[]
 }
 

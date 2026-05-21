@@ -151,7 +151,7 @@ export type ArtisanCategoryMapGroupByOutputType = {
   _max: ArtisanCategoryMapMaxAggregateOutputType | null
 }
 
-type GetArtisanCategoryMapGroupByPayload<T extends ArtisanCategoryMapGroupByArgs> = Prisma.PrismaPromise<
+export type GetArtisanCategoryMapGroupByPayload<T extends ArtisanCategoryMapGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ArtisanCategoryMapGroupByOutputType, T['by']> &
       {
@@ -1207,6 +1207,11 @@ export type ArtisanCategoryMapFindManyArgs<ExtArgs extends runtime.Types.Extensi
    * Skip the first `n` ArtisanCategoryMaps.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of ArtisanCategoryMaps.
+   */
   distinct?: Prisma.ArtisanCategoryMapScalarFieldEnum | Prisma.ArtisanCategoryMapScalarFieldEnum[]
 }
 

@@ -193,7 +193,7 @@ export type AppointmentLinkGroupByOutputType = {
   _max: AppointmentLinkMaxAggregateOutputType | null
 }
 
-type GetAppointmentLinkGroupByPayload<T extends AppointmentLinkGroupByArgs> = Prisma.PrismaPromise<
+export type GetAppointmentLinkGroupByPayload<T extends AppointmentLinkGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<AppointmentLinkGroupByOutputType, T['by']> &
       {
@@ -1297,6 +1297,11 @@ export type AppointmentLinkFindManyArgs<ExtArgs extends runtime.Types.Extensions
    * Skip the first `n` AppointmentLinks.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of AppointmentLinks.
+   */
   distinct?: Prisma.AppointmentLinkScalarFieldEnum | Prisma.AppointmentLinkScalarFieldEnum[]
 }
 

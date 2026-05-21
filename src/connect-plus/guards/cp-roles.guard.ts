@@ -1,0 +1,42 @@
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+} from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { CpRole } from '../../generated/prisma/client';
+import { CP_ROLES_KEY } from '../decorators/cp-roles.decorator';
+import { CpRequestContext } from '../types/cp-request.types';
+import { Request } from 'express';
+
+@Injectable()
+export class CpRolesGuard implements CanActivate {
+  constructor(private readonly reflector: Reflector) {}
+
+  canActivate(context: ExecutionContext): boolean {
+    const requiredRoles = this.reflector.getAllAndOverride<CpRole[]>(
+      CP_ROLES_KEY,
+      [context.getHandler(), context.getClass()],
+    );
+
+    if (!requiredRoles || requiredRoles.length === 0) {
+      return true;
+    }
+
+    const req = context
+      .switchToHttp()
+      .getRequest<Request & { cp?: CpRequestContext }>();
+    const cpCtx = req.cp;
+
+    if (!cpCtx) {
+      throw new ForbiddenException('Workspace context not resolved');
+    }
+
+    if (!requiredRoles.includes(cpCtx.role)) {
+      throw new ForbiddenException('Insufficient role');
+    }
+
+    return true;
+  }
+}

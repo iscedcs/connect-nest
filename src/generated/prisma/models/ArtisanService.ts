@@ -249,7 +249,7 @@ export type ArtisanServiceGroupByOutputType = {
   _max: ArtisanServiceMaxAggregateOutputType | null
 }
 
-type GetArtisanServiceGroupByPayload<T extends ArtisanServiceGroupByArgs> = Prisma.PrismaPromise<
+export type GetArtisanServiceGroupByPayload<T extends ArtisanServiceGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ArtisanServiceGroupByOutputType, T['by']> &
       {
@@ -1698,6 +1698,11 @@ export type ArtisanServiceFindManyArgs<ExtArgs extends runtime.Types.Extensions.
    * Skip the first `n` ArtisanServices.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of ArtisanServices.
+   */
   distinct?: Prisma.ArtisanServiceScalarFieldEnum | Prisma.ArtisanServiceScalarFieldEnum[]
 }
 

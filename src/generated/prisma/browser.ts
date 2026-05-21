@@ -167,3 +167,98 @@ export type Promotion = Prisma.PromotionModel
  * 
  */
 export type PlatformSetting = Prisma.PlatformSettingModel
+/**
+ * Model CpOrganization
+ * 
+ */
+export type CpOrganization = Prisma.CpOrganizationModel
+/**
+ * Model CpSubscription
+ * 
+ */
+export type CpSubscription = Prisma.CpSubscriptionModel
+/**
+ * Model CpWorkspace
+ * 
+ */
+export type CpWorkspace = Prisma.CpWorkspaceModel
+/**
+ * Model CpWorkspaceMember
+ * 
+ */
+export type CpWorkspaceMember = Prisma.CpWorkspaceMemberModel
+/**
+ * Model CpCompanyProfile
+ * 
+ */
+export type CpCompanyProfile = Prisma.CpCompanyProfileModel
+/**
+ * Model CpWorkspaceInvite
+ * 
+ */
+export type CpWorkspaceInvite = Prisma.CpWorkspaceInviteModel
+/**
+ * Model CpStaffProfile
+ * 
+ */
+export type CpStaffProfile = Prisma.CpStaffProfileModel
+/**
+ * Model CpConnectCard
+ * 
+ */
+export type CpConnectCard = Prisma.CpConnectCardModel
+/**
+ * Model CpLead
+ * 
+ */
+export type CpLead = Prisma.CpLeadModel
+/**
+ * Model CpClient
+ * 
+ */
+export type CpClient = Prisma.CpClientModel
+/**
+ * Model CpAppointment
+ * 
+ */
+export type CpAppointment = Prisma.CpAppointmentModel
+/**
+ * Model CpAttendance
+ * 
+ */
+export type CpAttendance = Prisma.CpAttendanceModel
+/**
+ * Model CpConversation
+ * 
+ */
+export type CpConversation = Prisma.CpConversationModel
+/**
+ * Model CpConversationParticipant
+ * 
+ */
+export type CpConversationParticipant = Prisma.CpConversationParticipantModel
+/**
+ * Model CpMessage
+ * 
+ */
+export type CpMessage = Prisma.CpMessageModel
+/**
+ * Model CpInvoice
+ * 
+ */
+export type CpInvoice = Prisma.CpInvoiceModel
+/**
+ * Model CpInvoiceItem
+ * 
+ */
+export type CpInvoiceItem = Prisma.CpInvoiceItemModel
+/**
+ * Model CpNotification
+ * 
+ */
+export type CpNotification = Prisma.CpNotificationModel
+/**
+ * Model CpAuditLog
+ * 
+ */
+export type CpAuditLog = Prisma.CpAuditLogModel

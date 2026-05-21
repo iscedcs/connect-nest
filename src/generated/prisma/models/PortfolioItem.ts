@@ -227,7 +227,7 @@ export type PortfolioItemGroupByOutputType = {
   _max: PortfolioItemMaxAggregateOutputType | null
 }
 
-type GetPortfolioItemGroupByPayload<T extends PortfolioItemGroupByArgs> = Prisma.PrismaPromise<
+export type GetPortfolioItemGroupByPayload<T extends PortfolioItemGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<PortfolioItemGroupByOutputType, T['by']> &
       {
@@ -1341,6 +1341,11 @@ export type PortfolioItemFindManyArgs<ExtArgs extends runtime.Types.Extensions.I
    * Skip the first `n` PortfolioItems.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of PortfolioItems.
+   */
   distinct?: Prisma.PortfolioItemScalarFieldEnum | Prisma.PortfolioItemScalarFieldEnum[]
 }
 

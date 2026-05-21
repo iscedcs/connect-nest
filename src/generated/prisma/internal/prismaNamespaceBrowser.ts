@@ -80,7 +80,26 @@ export const ModelName = {
   Booking: 'Booking',
   Review: 'Review',
   Promotion: 'Promotion',
-  PlatformSetting: 'PlatformSetting'
+  PlatformSetting: 'PlatformSetting',
+  CpOrganization: 'CpOrganization',
+  CpSubscription: 'CpSubscription',
+  CpWorkspace: 'CpWorkspace',
+  CpWorkspaceMember: 'CpWorkspaceMember',
+  CpCompanyProfile: 'CpCompanyProfile',
+  CpWorkspaceInvite: 'CpWorkspaceInvite',
+  CpStaffProfile: 'CpStaffProfile',
+  CpConnectCard: 'CpConnectCard',
+  CpLead: 'CpLead',
+  CpClient: 'CpClient',
+  CpAppointment: 'CpAppointment',
+  CpAttendance: 'CpAttendance',
+  CpConversation: 'CpConversation',
+  CpConversationParticipant: 'CpConversationParticipant',
+  CpMessage: 'CpMessage',
+  CpInvoice: 'CpInvoice',
+  CpInvoiceItem: 'CpInvoiceItem',
+  CpNotification: 'CpNotification',
+  CpAuditLog: 'CpAuditLog'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -188,6 +207,8 @@ export const CardInteractionScalarFieldEnum = {
   method: 'method',
   deviceType: 'deviceType',
   referrer: 'referrer',
+  workspaceId: 'workspaceId',
+  workspaceMemberId: 'workspaceMemberId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
@@ -604,6 +625,356 @@ export const PlatformSettingScalarFieldEnum = {
 } as const
 
 export type PlatformSettingScalarFieldEnum = (typeof PlatformSettingScalarFieldEnum)[keyof typeof PlatformSettingScalarFieldEnum]
+
+
+export const CpOrganizationScalarFieldEnum = {
+  id: 'id',
+  creatorAuthId: 'creatorAuthId',
+  name: 'name',
+  slug: 'slug',
+  status: 'status',
+  settings: 'settings',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type CpOrganizationScalarFieldEnum = (typeof CpOrganizationScalarFieldEnum)[keyof typeof CpOrganizationScalarFieldEnum]
+
+
+export const CpSubscriptionScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  plan: 'plan',
+  status: 'status',
+  paystackSubCode: 'paystackSubCode',
+  paystackCustomerCode: 'paystackCustomerCode',
+  currentPeriodStart: 'currentPeriodStart',
+  currentPeriodEnd: 'currentPeriodEnd',
+  cancelledAt: 'cancelledAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CpSubscriptionScalarFieldEnum = (typeof CpSubscriptionScalarFieldEnum)[keyof typeof CpSubscriptionScalarFieldEnum]
+
+
+export const CpWorkspaceScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  name: 'name',
+  slug: 'slug',
+  status: 'status',
+  suspendedAt: 'suspendedAt',
+  archivedAt: 'archivedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type CpWorkspaceScalarFieldEnum = (typeof CpWorkspaceScalarFieldEnum)[keyof typeof CpWorkspaceScalarFieldEnum]
+
+
+export const CpWorkspaceMemberScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  authUserId: 'authUserId',
+  role: 'role',
+  status: 'status',
+  invitedBy: 'invitedBy',
+  joinedAt: 'joinedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CpWorkspaceMemberScalarFieldEnum = (typeof CpWorkspaceMemberScalarFieldEnum)[keyof typeof CpWorkspaceMemberScalarFieldEnum]
+
+
+export const CpCompanyProfileScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  name: 'name',
+  logo: 'logo',
+  description: 'description',
+  contactEmail: 'contactEmail',
+  contactPhone: 'contactPhone',
+  address: 'address',
+  businessHours: 'businessHours',
+  branding: 'branding',
+  appointmentDefaults: 'appointmentDefaults',
+  invoiceDefaults: 'invoiceDefaults',
+  notificationPrefs: 'notificationPrefs',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CpCompanyProfileScalarFieldEnum = (typeof CpCompanyProfileScalarFieldEnum)[keyof typeof CpCompanyProfileScalarFieldEnum]
+
+
+export const CpWorkspaceInviteScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  email: 'email',
+  role: 'role',
+  token: 'token',
+  status: 'status',
+  invitedById: 'invitedById',
+  expiresAt: 'expiresAt',
+  acceptedAt: 'acceptedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CpWorkspaceInviteScalarFieldEnum = (typeof CpWorkspaceInviteScalarFieldEnum)[keyof typeof CpWorkspaceInviteScalarFieldEnum]
+
+
+export const CpStaffProfileScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  memberId: 'memberId',
+  authUserId: 'authUserId',
+  name: 'name',
+  email: 'email',
+  photo: 'photo',
+  jobTitle: 'jobTitle',
+  department: 'department',
+  staffNumber: 'staffNumber',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type CpStaffProfileScalarFieldEnum = (typeof CpStaffProfileScalarFieldEnum)[keyof typeof CpStaffProfileScalarFieldEnum]
+
+
+export const CpConnectCardScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  staffId: 'staffId',
+  deviceId: 'deviceId',
+  cardCode: 'cardCode',
+  status: 'status',
+  tapConfig: 'tapConfig',
+  pairedBy: 'pairedBy',
+  pairedAt: 'pairedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CpConnectCardScalarFieldEnum = (typeof CpConnectCardScalarFieldEnum)[keyof typeof CpConnectCardScalarFieldEnum]
+
+
+export const CpLeadScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  name: 'name',
+  email: 'email',
+  phone: 'phone',
+  source: 'source',
+  status: 'status',
+  assignedStaffId: 'assignedStaffId',
+  notes: 'notes',
+  convertedAt: 'convertedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type CpLeadScalarFieldEnum = (typeof CpLeadScalarFieldEnum)[keyof typeof CpLeadScalarFieldEnum]
+
+
+export const CpClientScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  memberId: 'memberId',
+  leadId: 'leadId',
+  assignedStaffId: 'assignedStaffId',
+  authUserId: 'authUserId',
+  name: 'name',
+  email: 'email',
+  phone: 'phone',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type CpClientScalarFieldEnum = (typeof CpClientScalarFieldEnum)[keyof typeof CpClientScalarFieldEnum]
+
+
+export const CpAppointmentScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  type: 'type',
+  leadId: 'leadId',
+  clientId: 'clientId',
+  staffId: 'staffId',
+  title: 'title',
+  reason: 'reason',
+  scheduledAt: 'scheduledAt',
+  endsAt: 'endsAt',
+  status: 'status',
+  notes: 'notes',
+  reminderSentAt: 'reminderSentAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type CpAppointmentScalarFieldEnum = (typeof CpAppointmentScalarFieldEnum)[keyof typeof CpAppointmentScalarFieldEnum]
+
+
+export const CpAttendanceScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  staffId: 'staffId',
+  date: 'date',
+  checkIn: 'checkIn',
+  checkOut: 'checkOut',
+  hoursWorked: 'hoursWorked',
+  isLate: 'isLate',
+  isOvertime: 'isOvertime',
+  locationData: 'locationData',
+  notes: 'notes',
+  overriddenBy: 'overriddenBy',
+  overriddenAt: 'overriddenAt',
+  overrideReason: 'overrideReason',
+  autoCheckedOut: 'autoCheckedOut',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CpAttendanceScalarFieldEnum = (typeof CpAttendanceScalarFieldEnum)[keyof typeof CpAttendanceScalarFieldEnum]
+
+
+export const CpConversationScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  type: 'type',
+  name: 'name',
+  clientId: 'clientId',
+  isAutoCreated: 'isAutoCreated',
+  lastMessageAt: 'lastMessageAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type CpConversationScalarFieldEnum = (typeof CpConversationScalarFieldEnum)[keyof typeof CpConversationScalarFieldEnum]
+
+
+export const CpConversationParticipantScalarFieldEnum = {
+  id: 'id',
+  conversationId: 'conversationId',
+  authUserId: 'authUserId',
+  role: 'role',
+  joinedAt: 'joinedAt',
+  leftAt: 'leftAt',
+  lastReadAt: 'lastReadAt'
+} as const
+
+export type CpConversationParticipantScalarFieldEnum = (typeof CpConversationParticipantScalarFieldEnum)[keyof typeof CpConversationParticipantScalarFieldEnum]
+
+
+export const CpMessageScalarFieldEnum = {
+  id: 'id',
+  conversationId: 'conversationId',
+  senderId: 'senderId',
+  senderRole: 'senderRole',
+  content: 'content',
+  attachments: 'attachments',
+  isSystem: 'isSystem',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type CpMessageScalarFieldEnum = (typeof CpMessageScalarFieldEnum)[keyof typeof CpMessageScalarFieldEnum]
+
+
+export const CpInvoiceScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  clientId: 'clientId',
+  createdByStaffId: 'createdByStaffId',
+  invoiceNumber: 'invoiceNumber',
+  status: 'status',
+  dueDate: 'dueDate',
+  notes: 'notes',
+  totalAmount: 'totalAmount',
+  taxAmount: 'taxAmount',
+  discountAmount: 'discountAmount',
+  currency: 'currency',
+  sentAt: 'sentAt',
+  paidAt: 'paidAt',
+  overdueAt: 'overdueAt',
+  paidVia: 'paidVia',
+  externalRef: 'externalRef',
+  pdfUrl: 'pdfUrl',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type CpInvoiceScalarFieldEnum = (typeof CpInvoiceScalarFieldEnum)[keyof typeof CpInvoiceScalarFieldEnum]
+
+
+export const CpInvoiceItemScalarFieldEnum = {
+  id: 'id',
+  invoiceId: 'invoiceId',
+  description: 'description',
+  quantity: 'quantity',
+  unitPrice: 'unitPrice',
+  total: 'total',
+  order: 'order',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CpInvoiceItemScalarFieldEnum = (typeof CpInvoiceItemScalarFieldEnum)[keyof typeof CpInvoiceItemScalarFieldEnum]
+
+
+export const CpNotificationScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  organizationId: 'organizationId',
+  recipientAuthId: 'recipientAuthId',
+  title: 'title',
+  message: 'message',
+  type: 'type',
+  isRead: 'isRead',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CpNotificationScalarFieldEnum = (typeof CpNotificationScalarFieldEnum)[keyof typeof CpNotificationScalarFieldEnum]
+
+
+export const CpAuditLogScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  workspaceId: 'workspaceId',
+  actorId: 'actorId',
+  actorRole: 'actorRole',
+  isSystemEvent: 'isSystemEvent',
+  eventType: 'eventType',
+  targetEntity: 'targetEntity',
+  targetEntityId: 'targetEntityId',
+  action: 'action',
+  before: 'before',
+  after: 'after',
+  metadata: 'metadata',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  source: 'source',
+  success: 'success',
+  errorMessage: 'errorMessage',
+  hash: 'hash',
+  previousHash: 'previousHash',
+  createdAt: 'createdAt'
+} as const
+
+export type CpAuditLogScalarFieldEnum = (typeof CpAuditLogScalarFieldEnum)[keyof typeof CpAuditLogScalarFieldEnum]
 
 
 export const SortOrder = {

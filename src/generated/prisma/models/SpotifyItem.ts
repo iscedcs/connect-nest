@@ -227,7 +227,7 @@ export type SpotifyItemGroupByOutputType = {
   _max: SpotifyItemMaxAggregateOutputType | null
 }
 
-type GetSpotifyItemGroupByPayload<T extends SpotifyItemGroupByArgs> = Prisma.PrismaPromise<
+export type GetSpotifyItemGroupByPayload<T extends SpotifyItemGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<SpotifyItemGroupByOutputType, T['by']> &
       {
@@ -1341,6 +1341,11 @@ export type SpotifyItemFindManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Skip the first `n` SpotifyItems.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of SpotifyItems.
+   */
   distinct?: Prisma.SpotifyItemScalarFieldEnum | Prisma.SpotifyItemScalarFieldEnum[]
 }
 

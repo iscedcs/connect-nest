@@ -227,7 +227,7 @@ export type SocialGroupByOutputType = {
   _max: SocialMaxAggregateOutputType | null
 }
 
-type GetSocialGroupByPayload<T extends SocialGroupByArgs> = Prisma.PrismaPromise<
+export type GetSocialGroupByPayload<T extends SocialGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<SocialGroupByOutputType, T['by']> &
       {
@@ -1349,6 +1349,11 @@ export type SocialFindManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Skip the first `n` Socials.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of Socials.
+   */
   distinct?: Prisma.SocialScalarFieldEnum | Prisma.SocialScalarFieldEnum[]
 }
 
