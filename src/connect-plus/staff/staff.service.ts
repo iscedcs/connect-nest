@@ -1,20 +1,18 @@
 import {
   Injectable,
   NotFoundException,
-  ConflictException,
   ForbiddenException,
 } from '@nestjs/common';
-import { randomBytes, createHash } from 'crypto';
 import { DatabaseService } from '../../database/database.service';
 import { CpRequestContext } from '../types/cp-request.types';
 import { CpAuditLogService } from '../audit-logs/cp-audit-log.service';
 import { CpNotificationsService } from '../notifications/notifications.service';
-import { IsceAuthService } from '../isce-auth/isce-auth.service';
 import {
   CpRole,
   CpNotificationType,
 } from '../../generated/prisma/client';
 import { CpSubscriptionsService } from '../subscriptions/subscriptions.service';
+import { CpInvitesService } from '../invites/invites.service';
 import { InviteStaffDto } from './dto/invite-staff.dto';
 import { UpdateStaffProfileDto } from './dto/update-staff-profile.dto';
 import { UpdateStaffStatusDto } from './dto/update-staff-status.dto';
@@ -29,8 +27,8 @@ export class CpStaffService {
     private readonly db: DatabaseService,
     private readonly auditLog: CpAuditLogService,
     private readonly notifications: CpNotificationsService,
-    private readonly isceAuth: IsceAuthService,
     private readonly subscriptions: CpSubscriptionsService,
+    private readonly invites: CpInvitesService,
   ) {}
 
   async inviteStaff(
@@ -38,86 +36,11 @@ export class CpStaffService {
     dto: InviteStaffDto,
     req: Request,
   ) {
-    const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
-
-    // Plan limit check
-    const limitCheck = await this.subscriptions.checkLimit(
-      ctx.organizationId,
-      'staff',
-      workspaceId,
-    );
-    if (!limitCheck.allowed) {
-      throw new ForbiddenException(
-        `Plan limit reached (${limitCheck.current}/${limitCheck.limit} staff). Upgrade your subscription.`,
-      );
-    }
-
-    // Check for existing pending invite
-    const existing = await this.db.cpWorkspaceInvite.findFirst({
-      where: { workspaceId, email: dto.email, status: 'PENDING' },
-    });
-    if (existing) throw new ConflictException('Pending invite already exists for this email');
-
-    // Resolve inviter member
-    const inviterMember = await this.db.cpWorkspaceMember.findFirst({
-      where: { workspaceId, authUserId: ctx.authUserId },
-    });
-    if (!inviterMember) throw new ForbiddenException('Inviter is not a workspace member');
-
-    const rawToken = randomBytes(32).toString('hex');
-    const hashedToken = createHash('sha256').update(rawToken).digest('hex');
-
-    const invite = await this.db.cpWorkspaceInvite.create({
-      data: {
-        workspaceId,
-        email: dto.email,
-        role: CpRole.STAFF,
-        token: hashedToken,
-        status: 'PENDING',
-        invitedById: inviterMember.id,
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      },
-    });
-
-    const workspace = await this.db.cpWorkspace.findUnique({
-      where: { id: workspaceId },
-      include: { companyProfile: true },
-    });
-
-    void this.isceAuth.sendStaffInvite({
-      email: dto.email,
-      token: rawToken,
-      role: CpRole.STAFF,
-      workspaceName: workspace?.companyProfile?.name ?? workspace?.name ?? workspaceId,
-      inviterName: ctx.authUserId,
-      name: dto.name,
-      jobTitle: dto.jobTitle,
-    });
-
-    this.auditLog.write({
-      ctx,
-      req,
-      workspaceId,
-      organizationId: ctx.organizationId,
-      eventType: 'STAFF_INVITED',
-      targetEntity: 'CpWorkspaceInvite',
-      targetEntityId: invite.id,
-      action: 'SEND',
-      after: { email: invite.email, role: invite.role } as Record<string, unknown>,
-    });
-
-    return { message: 'Staff invitation sent', inviteId: invite.id };
+    return this.invites.sendInvite(ctx, dto, req);
   }
 
   async listInvites(ctx: CpRequestContext) {
-    const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
-
-    return this.db.cpWorkspaceInvite.findMany({
-      where: { workspaceId },
-      orderBy: { createdAt: 'desc' },
-    });
+    return this.invites.listInvites(ctx);
   }
 
   async listStaff(ctx: CpRequestContext, query: PaginateQueryDto) {

@@ -31,6 +31,17 @@ export class CpContextGuard implements CanActivate {
       const org = await this.db.cpOrganization.findFirst({
         where: { creatorAuthId: authUserId },
       });
+
+      // Allow POST /api/cp/organizations even before an org exists (first-time creation)
+      if (!org && req.method === 'POST' && req.path === '/api/cp/organizations') {
+        req.cp = {
+          authUserId,
+          organizationId: '',
+          role: CpRole.CREATOR,
+        };
+        return true;
+      }
+
       if (!org) {
         throw new ForbiddenException('No organization found for this user');
       }
