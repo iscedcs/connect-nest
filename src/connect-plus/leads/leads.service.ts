@@ -110,6 +110,23 @@ export class CpLeadsService {
       after: { assignedStaffId: dto.assignedStaffId } as Record<string, unknown>,
     });
 
+    if (dto.assignedStaffId && dto.assignedStaffId !== lead.assignedStaffId) {
+      const staff = await this.db.cpStaffProfile.findFirst({
+        where: { id: dto.assignedStaffId, workspaceId }
+      });
+      if (staff?.authUserId) {
+        void this.notifications.send({
+          recipientAuthId: staff.authUserId,
+          type: CpNotificationType.LEAD_ASSIGNED,
+          title: 'New Lead Assigned',
+          message: `You have been assigned a new lead: ${lead.name}`,
+          workspaceId,
+          organizationId: ctx.organizationId,
+          metadata: { leadId },
+        });
+      }
+    }
+
     return updated;
   }
 
@@ -223,6 +240,18 @@ export class CpLeadsService {
       before: { status: lead.status } as Record<string, unknown>,
       after: { status: 'CONVERTED', clientId: result.client.id } as Record<string, unknown>,
     });
+
+    if (staffProfile?.authUserId) {
+      void this.notifications.send({
+        recipientAuthId: staffProfile.authUserId,
+        type: CpNotificationType.LEAD_VALIDATED,
+        title: 'Lead Converted to Client',
+        message: `Lead ${lead.name} has been converted to a client.`,
+        workspaceId,
+        organizationId: ctx.organizationId,
+        metadata: { leadId, clientId: result.client.id },
+      });
+    }
 
     return { clientId: result.client.id, conversationId: result.conversation.id };
   }
