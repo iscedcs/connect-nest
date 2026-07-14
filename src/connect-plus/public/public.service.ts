@@ -1,12 +1,6 @@
-import {
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service';
-import {
-  CpLeadSource,
-  CpAppointmentType,
-} from '../../generated/prisma/client';
+import { CpLeadSource, CpAppointmentType } from '../../generated/prisma/client';
 import { BookAppointmentDto } from './dto/book-appointment.dto';
 import { SaveContactDto } from './dto/save-contact.dto';
 import { RecordInteractionDto } from './dto/record-interaction.dto';
@@ -95,7 +89,11 @@ export class CpPublicService {
     return { leadId: lead.id };
   }
 
-  async recordInteraction(workspaceSlug: string, dto: RecordInteractionDto, ip?: string) {
+  async recordInteraction(
+    workspaceSlug: string,
+    dto: RecordInteractionDto,
+    ip?: string,
+  ) {
     const workspace = await this.db.cpWorkspace.findUnique({
       where: { slug: workspaceSlug },
     });
@@ -122,4 +120,3 @@ export class CpPublicService {
     return { ok: true };
   }
 }
-

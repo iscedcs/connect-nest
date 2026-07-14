@@ -23,10 +23,15 @@ export class CpClientsService {
 
   async getMe(ctx: CpRequestContext) {
     const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+    if (!workspaceId)
+      throw new ForbiddenException('Workspace context required');
 
     const client = await this.db.cpClient.findFirst({
-      where: { workspaceId, member: { authUserId: ctx.authUserId }, deletedAt: null },
+      where: {
+        workspaceId,
+        member: { authUserId: ctx.authUserId },
+        deletedAt: null,
+      },
       include: { lead: true, assignedStaff: true },
     });
     if (!client) throw new NotFoundException('Client profile not found');
@@ -35,7 +40,8 @@ export class CpClientsService {
 
   async list(ctx: CpRequestContext, query: PaginateQueryDto) {
     const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+    if (!workspaceId)
+      throw new ForbiddenException('Workspace context required');
 
     const { page = 1, limit = 20 } = query;
     const skip = (page - 1) * limit;
@@ -56,7 +62,8 @@ export class CpClientsService {
 
   async listAssigned(ctx: CpRequestContext, query: PaginateQueryDto) {
     const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+    if (!workspaceId)
+      throw new ForbiddenException('Workspace context required');
 
     // Get staff profile for this member
     const staffProfile = await this.db.cpStaffProfile.findFirst({
@@ -69,14 +76,22 @@ export class CpClientsService {
 
     const [data, total] = await this.db.$transaction([
       this.db.cpClient.findMany({
-        where: { workspaceId, assignedStaffId: staffProfile.id, deletedAt: null },
+        where: {
+          workspaceId,
+          assignedStaffId: staffProfile.id,
+          deletedAt: null,
+        },
         include: { lead: true, member: true },
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
       }),
       this.db.cpClient.count({
-        where: { workspaceId, assignedStaffId: staffProfile.id, deletedAt: null },
+        where: {
+          workspaceId,
+          assignedStaffId: staffProfile.id,
+          deletedAt: null,
+        },
       }),
     ]);
 
@@ -85,7 +100,8 @@ export class CpClientsService {
 
   async findById(ctx: CpRequestContext, clientId: string) {
     const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+    if (!workspaceId)
+      throw new ForbiddenException('Workspace context required');
 
     const client = await this.db.cpClient.findFirst({
       where: { id: clientId, workspaceId, deletedAt: null },
@@ -113,7 +129,8 @@ export class CpClientsService {
     req: Request,
   ) {
     const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+    if (!workspaceId)
+      throw new ForbiddenException('Workspace context required');
 
     const client = await this.db.cpClient.findFirst({
       where: { id: clientId, workspaceId, deletedAt: null },
@@ -141,11 +158,16 @@ export class CpClientsService {
       targetEntity: 'CpClient',
       targetEntityId: clientId,
       action: 'UPDATE',
-      before: { assignedStaffId: client.assignedStaffId } as Record<string, unknown>,
-      after: { assignedStaffId: dto.assignedStaffId } as Record<string, unknown>,
+      before: { assignedStaffId: client.assignedStaffId } as Record<
+        string,
+        unknown
+      >,
+      after: { assignedStaffId: dto.assignedStaffId } as Record<
+        string,
+        unknown
+      >,
     });
 
     return updated;
   }
 }
-

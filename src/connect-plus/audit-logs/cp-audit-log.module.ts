@@ -11,4 +11,3 @@ import { CpAuditLogService } from './cp-audit-log.service';
   exports: [CpAuditLogService],
 })
 export class CpAuditLogModule {}
-

@@ -126,4 +126,3 @@ export class CpStaffController {
     return this.service.updateStaffRole(ctx, staffId, dto, req);
   }
 }
-

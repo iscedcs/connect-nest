@@ -6,15 +6,10 @@ export function verifyWebhookSignature(
   signature: string,
   secret: string,
 ): void {
-  const expected = createHmac('sha256', secret)
-    .update(rawBody)
-    .digest('hex');
+  const expected = createHmac('sha256', secret).update(rawBody).digest('hex');
   const sigBuf = Buffer.from(signature);
   const expBuf = Buffer.from(expected);
-  if (
-    sigBuf.length !== expBuf.length ||
-    !timingSafeEqual(sigBuf, expBuf)
-  ) {
+  if (sigBuf.length !== expBuf.length || !timingSafeEqual(sigBuf, expBuf)) {
     throw new UnauthorizedException('Invalid webhook signature');
   }
 }

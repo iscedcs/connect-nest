@@ -38,11 +38,9 @@ export class IsceAuthService {
   async sendStaffInvite(payload: StaffInvitePayload): Promise<void> {
     try {
       await firstValueFrom(
-        this.http.post(
-          `${this.apiUrl}/internal/cp/invite-staff`,
-          payload,
-          { headers: { 'x-api-key': this.apiKey } },
-        ),
+        this.http.post(`${this.apiUrl}/internal/cp/invite-staff`, payload, {
+          headers: { 'x-api-key': this.apiKey },
+        }),
       );
     } catch (err) {
       // Non-blocking: log error but do not throw
@@ -55,11 +53,9 @@ export class IsceAuthService {
   async sendAdminInvite(payload: AdminInvitePayload): Promise<void> {
     try {
       await firstValueFrom(
-        this.http.post(
-          `${this.apiUrl}/internal/cp/invite-admin`,
-          payload,
-          { headers: { 'x-api-key': this.apiKey } },
-        ),
+        this.http.post(`${this.apiUrl}/internal/cp/invite-admin`, payload, {
+          headers: { 'x-api-key': this.apiKey },
+        }),
       );
     } catch (err) {
       this.logger.error(
@@ -71,11 +67,9 @@ export class IsceAuthService {
   async sendClientInvite(payload: ClientInvitePayload): Promise<void> {
     try {
       await firstValueFrom(
-        this.http.post(
-          `${this.apiUrl}/internal/cp/invite-client`,
-          payload,
-          { headers: { 'x-api-key': this.apiKey } },
-        ),
+        this.http.post(`${this.apiUrl}/internal/cp/invite-client`, payload, {
+          headers: { 'x-api-key': this.apiKey },
+        }),
       );
     } catch (err) {
       this.logger.error(

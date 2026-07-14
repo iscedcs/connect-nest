@@ -5,7 +5,10 @@ import { CpAuditLogModule } from '../audit-logs/cp-audit-log.module';
 import { CpNotificationsModule } from '../notifications/notifications.module';
 import { IsceAuthModule } from '../isce-auth/isce-auth.module';
 import { CpSubscriptionsModule } from '../subscriptions/subscriptions.module';
-import { CpWorkspacesController, CpMyWorkspacesController } from './workspaces.controller';
+import {
+  CpWorkspacesController,
+  CpMyWorkspacesController,
+} from './workspaces.controller';
 import { CpWorkspacesService } from './workspaces.service';
 
 @Module({

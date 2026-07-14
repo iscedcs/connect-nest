@@ -13,5 +13,10 @@ export class SendMessageDto {
   })
   @IsOptional()
   @IsArray()
-  attachments?: Array<{ url: string; name: string; type: string; size: number }>;
+  attachments?: Array<{
+    url: string;
+    name: string;
+    type: string;
+    size: number;
+  }>;
 }

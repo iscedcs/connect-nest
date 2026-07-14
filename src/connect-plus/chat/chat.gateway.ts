@@ -11,7 +11,11 @@ import { Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Server, Socket } from 'socket.io';
 import { DatabaseService } from '../../database/database.service';
-import { CpMemberStatus, CpRole, CpSenderRole } from '../../generated/prisma/client';
+import {
+  CpMemberStatus,
+  CpRole,
+  CpSenderRole,
+} from '../../generated/prisma/client';
 
 interface JwtPayload {
   id: string;
@@ -25,9 +29,7 @@ interface JwtPayload {
     credentials: true,
   },
 })
-export class CpChatGateway
-  implements OnGatewayConnection, OnGatewayDisconnect
-{
+export class CpChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server!: Server;
 
@@ -51,7 +53,9 @@ export class CpChatGateway
       });
       client.data.authUserId = payload.id;
       this.connectedUsers.set(payload.id, client.id);
-      this.logger.debug(`CP socket connected: ${client.id} (user: ${payload.id})`);
+      this.logger.debug(
+        `CP socket connected: ${client.id} (user: ${payload.id})`,
+      );
     } catch {
       client.emit('cp:error', { message: 'Unauthorized' });
       client.disconnect(true);
@@ -115,7 +119,12 @@ export class CpChatGateway
     payload: {
       conversationId: string;
       content: string;
-      attachments?: Array<{ url: string; name: string; type: string; size: number }>;
+      attachments?: Array<{
+        url: string;
+        name: string;
+        type: string;
+        size: number;
+      }>;
     },
   ): Promise<void> {
     try {
@@ -143,7 +152,9 @@ export class CpChatGateway
         },
       });
       if (!participant || participant.leftAt) {
-        client.emit('cp:error', { message: 'Not a participant in this conversation' });
+        client.emit('cp:error', {
+          message: 'Not a participant in this conversation',
+        });
         return;
       }
 
@@ -152,7 +163,9 @@ export class CpChatGateway
         where: { workspaceId_authUserId: { workspaceId, authUserId } },
       });
       const senderRole =
-        member?.role === CpRole.CLIENT ? CpSenderRole.CLIENT : CpSenderRole.STAFF;
+        member?.role === CpRole.CLIENT
+          ? CpSenderRole.CLIENT
+          : CpSenderRole.STAFF;
 
       const message = await this.db.cpMessage.create({
         data: {
@@ -210,12 +223,10 @@ export class CpChatGateway
     });
     if (!participant || participant.leftAt) return;
 
-    client
-      .to(`conversation:${payload.conversationId}`)
-      .emit('cp:typing', {
-        conversationId: payload.conversationId,
-        authUserId,
-      });
+    client.to(`conversation:${payload.conversationId}`).emit('cp:typing', {
+      conversationId: payload.conversationId,
+      authUserId,
+    });
   }
 
   // ─── Leave workspace ─────────────────────────────────────────
@@ -238,4 +249,3 @@ export class CpChatGateway
     if (socketId) this.server.to(socketId).emit(event, data);
   }
 }
-

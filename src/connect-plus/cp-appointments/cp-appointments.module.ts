@@ -8,7 +8,12 @@ import { CpAppointmentsService } from './cp-appointments.service';
 import { AppointmentsScheduler } from './appointments.scheduler';
 
 @Module({
-  imports: [DatabaseModule, CpGuardsModule, CpAuditLogModule, CpNotificationsModule],
+  imports: [
+    DatabaseModule,
+    CpGuardsModule,
+    CpAuditLogModule,
+    CpNotificationsModule,
+  ],
   controllers: [CpAppointmentsController],
   providers: [CpAppointmentsService, AppointmentsScheduler],
   exports: [CpAppointmentsService],

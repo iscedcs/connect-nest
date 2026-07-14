@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service';
 import { CpRequestContext } from '../types/cp-request.types';
 import { CpAuditLogService } from '../audit-logs/cp-audit-log.service';
@@ -15,7 +19,8 @@ export class CpCompanyProfileService {
 
   async get(ctx: CpRequestContext) {
     const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+    if (!workspaceId)
+      throw new ForbiddenException('Workspace context required');
 
     const profile = await this.db.cpCompanyProfile.findUnique({
       where: { workspaceId },
@@ -30,7 +35,8 @@ export class CpCompanyProfileService {
     req: Request,
   ) {
     const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+    if (!workspaceId)
+      throw new ForbiddenException('Workspace context required');
 
     const existing = await this.db.cpCompanyProfile.findUnique({
       where: { workspaceId },
@@ -48,9 +54,12 @@ export class CpCompanyProfileService {
         address: dto.address as Prisma.InputJsonValue | undefined,
         businessHours: dto.businessHours as Prisma.InputJsonValue | undefined,
         branding: dto.branding as Prisma.InputJsonValue | undefined,
-        appointmentDefaults: dto.appointmentDefaults as Prisma.InputJsonValue | undefined,
-        invoiceDefaults: dto.invoiceDefaults as Prisma.InputJsonValue | undefined,
-        notificationPrefs: dto.notificationPrefs as Prisma.InputJsonValue | undefined,
+        appointmentDefaults: dto.appointmentDefaults as
+          Prisma.InputJsonValue | undefined,
+        invoiceDefaults: dto.invoiceDefaults as
+          Prisma.InputJsonValue | undefined,
+        notificationPrefs: dto.notificationPrefs as
+          Prisma.InputJsonValue | undefined,
       },
       update: {
         name: dto.name,
@@ -61,9 +70,12 @@ export class CpCompanyProfileService {
         address: dto.address as Prisma.InputJsonValue | undefined,
         businessHours: dto.businessHours as Prisma.InputJsonValue | undefined,
         branding: dto.branding as Prisma.InputJsonValue | undefined,
-        appointmentDefaults: dto.appointmentDefaults as Prisma.InputJsonValue | undefined,
-        invoiceDefaults: dto.invoiceDefaults as Prisma.InputJsonValue | undefined,
-        notificationPrefs: dto.notificationPrefs as Prisma.InputJsonValue | undefined,
+        appointmentDefaults: dto.appointmentDefaults as
+          Prisma.InputJsonValue | undefined,
+        invoiceDefaults: dto.invoiceDefaults as
+          Prisma.InputJsonValue | undefined,
+        notificationPrefs: dto.notificationPrefs as
+          Prisma.InputJsonValue | undefined,
       },
     });
 
@@ -72,7 +84,9 @@ export class CpCompanyProfileService {
       req,
       workspaceId,
       organizationId: ctx.organizationId,
-      eventType: existing ? 'COMPANY_PROFILE_UPDATED' : 'COMPANY_PROFILE_CREATED',
+      eventType: existing
+        ? 'COMPANY_PROFILE_UPDATED'
+        : 'COMPANY_PROFILE_CREATED',
       targetEntity: 'CpCompanyProfile',
       targetEntityId: profile.id,
       action: existing ? 'UPDATE' : 'CREATE',
@@ -83,4 +97,3 @@ export class CpCompanyProfileService {
     return profile;
   }
 }
-

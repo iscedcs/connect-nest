@@ -3,7 +3,10 @@ import { Cron } from '@nestjs/schedule';
 import { DatabaseService } from '../../database/database.service';
 import { CpNotificationsService } from '../notifications/notifications.service';
 import { MailClientService } from '../../mail/mail-client.service';
-import { CpAppointmentStatus, CpNotificationType } from '../../generated/prisma/client';
+import {
+  CpAppointmentStatus,
+  CpNotificationType,
+} from '../../generated/prisma/client';
 
 @Injectable()
 export class AppointmentsScheduler {
@@ -27,7 +30,9 @@ export class AppointmentsScheduler {
     const appointments = await this.db.cpAppointment.findMany({
       where: {
         scheduledAt: { gte: windowStart, lte: windowEnd },
-        status: { in: [CpAppointmentStatus.PENDING, CpAppointmentStatus.CONFIRMED] },
+        status: {
+          in: [CpAppointmentStatus.PENDING, CpAppointmentStatus.CONFIRMED],
+        },
         reminderSentAt: null,
         deletedAt: null,
       },
@@ -46,9 +51,12 @@ export class AppointmentsScheduler {
     await Promise.all(
       appointments.map(async (appt) => {
         try {
-          const recipientEmail = appt.client?.email ?? appt.staff?.email ?? null;
-          const recipientAuthId = appt.client?.authUserId ?? appt.staff?.authUserId ?? null;
-          const recipientName = appt.client?.name ?? appt.staff?.name ?? 'there';
+          const recipientEmail =
+            appt.client?.email ?? appt.staff?.email ?? null;
+          const recipientAuthId =
+            appt.client?.authUserId ?? appt.staff?.authUserId ?? null;
+          const recipientName =
+            appt.client?.name ?? appt.staff?.name ?? 'there';
 
           // Email reminder
           if (recipientEmail) {
@@ -60,7 +68,10 @@ export class AppointmentsScheduler {
                 text: `Reminder: ${appt.title} at ${appt.scheduledAt.toISOString()} with ${appt.workspace.name}.`,
               })
               .catch((err: unknown) =>
-                this.logger.warn(`Reminder email failed for appt ${appt.id}`, err),
+                this.logger.warn(
+                  `Reminder email failed for appt ${appt.id}`,
+                  err,
+                ),
               );
           }
 
@@ -86,6 +97,8 @@ export class AppointmentsScheduler {
       }),
     );
 
-    this.logger.log(`Appointment reminders: sent for ${appointments.length} appointment(s)`);
+    this.logger.log(
+      `Appointment reminders: sent for ${appointments.length} appointment(s)`,
+    );
   }
 }

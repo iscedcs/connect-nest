@@ -115,4 +115,3 @@ export class CpLeadsController {
     return this.service.remove(ctx, leadId, req);
   }
 }
-

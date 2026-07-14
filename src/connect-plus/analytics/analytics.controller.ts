@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Get,
-  Param,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -66,7 +60,9 @@ export class CpAnalyticsController {
 
   @Get('staff/:staffId')
   @CpRoles(CpRole.WORKSPACE_ADMIN, CpRole.STAFF)
-  @ApiOperation({ summary: 'Individual staff metrics (STAFF can only view self)' })
+  @ApiOperation({
+    summary: 'Individual staff metrics (STAFF can only view self)',
+  })
   @ApiResponse({ status: 200, description: 'Staff analytics' })
   @ApiParam({ name: 'wsId', description: 'Workspace ID' })
   @ApiParam({ name: 'staffId', description: 'Staff Profile ID' })
@@ -78,5 +74,3 @@ export class CpAnalyticsController {
     return this.service.getStaffMetrics(ctx, staffId, query);
   }
 }
-
-

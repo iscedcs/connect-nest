@@ -29,10 +29,15 @@ export class CpAppointmentsService {
 
   async getMe(ctx: CpRequestContext) {
     const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+    if (!workspaceId)
+      throw new ForbiddenException('Workspace context required');
 
     const client = await this.db.cpClient.findFirst({
-      where: { workspaceId, member: { authUserId: ctx.authUserId }, deletedAt: null },
+      where: {
+        workspaceId,
+        member: { authUserId: ctx.authUserId },
+        deletedAt: null,
+      },
     });
     if (!client) throw new NotFoundException('Client profile not found');
 
@@ -44,7 +49,8 @@ export class CpAppointmentsService {
 
   async list(ctx: CpRequestContext, query: PaginateQueryDto) {
     const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+    if (!workspaceId)
+      throw new ForbiddenException('Workspace context required');
 
     const { page = 1, limit = 20 } = query;
     const skip = (page - 1) * limit;
@@ -65,7 +71,8 @@ export class CpAppointmentsService {
 
   async listAssigned(ctx: CpRequestContext, query: PaginateQueryDto) {
     const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+    if (!workspaceId)
+      throw new ForbiddenException('Workspace context required');
 
     const staffProfile = await this.db.cpStaffProfile.findFirst({
       where: { workspaceId, memberId: ctx.memberId, deletedAt: null },
@@ -93,7 +100,8 @@ export class CpAppointmentsService {
 
   async findById(ctx: CpRequestContext, appointmentId: string) {
     const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+    if (!workspaceId)
+      throw new ForbiddenException('Workspace context required');
 
     const appt = await this.db.cpAppointment.findFirst({
       where: { id: appointmentId, workspaceId, deletedAt: null },
@@ -103,13 +111,10 @@ export class CpAppointmentsService {
     return appt;
   }
 
-  async create(
-    ctx: CpRequestContext,
-    dto: CreateAppointmentDto,
-    req: Request,
-  ) {
+  async create(ctx: CpRequestContext, dto: CreateAppointmentDto, req: Request) {
     const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+    if (!workspaceId)
+      throw new ForbiddenException('Workspace context required');
 
     const appt = await this.db.cpAppointment.create({
       data: {
@@ -138,7 +143,9 @@ export class CpAppointmentsService {
     });
 
     if (dto.clientId) {
-      const client = await this.db.cpClient.findUnique({ where: { id: dto.clientId } });
+      const client = await this.db.cpClient.findUnique({
+        where: { id: dto.clientId },
+      });
       if (client?.authUserId) {
         void this.notifications.send({
           recipientAuthId: client.authUserId,
@@ -162,7 +169,8 @@ export class CpAppointmentsService {
     req: Request,
   ) {
     const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+    if (!workspaceId)
+      throw new ForbiddenException('Workspace context required');
 
     const appt = await this.db.cpAppointment.findFirst({
       where: { id: appointmentId, workspaceId, deletedAt: null },
@@ -183,7 +191,8 @@ export class CpAppointmentsService {
     if (dto.title !== undefined) updateData.title = dto.title;
     if (dto.reason !== undefined) updateData.reason = dto.reason;
     if (dto.notes !== undefined) updateData.notes = dto.notes;
-    if (dto.scheduledAt !== undefined) updateData.scheduledAt = new Date(dto.scheduledAt);
+    if (dto.scheduledAt !== undefined)
+      updateData.scheduledAt = new Date(dto.scheduledAt);
     if (dto.endsAt !== undefined) updateData.endsAt = new Date(dto.endsAt);
     if (dto.staffId !== undefined) updateData.staffId = dto.staffId;
     if (dto.clientId !== undefined) updateData.clientId = dto.clientId;
@@ -216,7 +225,8 @@ export class CpAppointmentsService {
     req: Request,
   ) {
     const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+    if (!workspaceId)
+      throw new ForbiddenException('Workspace context required');
 
     const appt = await this.db.cpAppointment.findFirst({
       where: { id: appointmentId, workspaceId, deletedAt: null },
@@ -244,13 +254,10 @@ export class CpAppointmentsService {
     return updated;
   }
 
-  async cancel(
-    ctx: CpRequestContext,
-    appointmentId: string,
-    req: Request,
-  ) {
+  async cancel(ctx: CpRequestContext, appointmentId: string, req: Request) {
     const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+    if (!workspaceId)
+      throw new ForbiddenException('Workspace context required');
 
     const appt = await this.db.cpAppointment.findFirst({
       where: { id: appointmentId, workspaceId, deletedAt: null },

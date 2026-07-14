@@ -1,7 +1,4 @@
-import {
-  Injectable,
-  ForbiddenException,
-} from '@nestjs/common';
+import { Injectable, ForbiddenException } from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service';
 import { CpRequestContext } from '../types/cp-request.types';
 import {
@@ -11,7 +8,7 @@ import {
 import { UpgradePlanDto } from './dto/upgrade-plan.dto';
 
 type PlanLimits = {
-  workspaces: number;       // -1 = unlimited
+  workspaces: number; // -1 = unlimited
   staffPerWorkspace: number;
   clientsPerWorkspace: number;
 };
@@ -66,7 +63,8 @@ export class CpSubscriptionsService {
       data: {
         plan: dto.plan,
         paystackSubCode: dto.paystackSubCode ?? sub.paystackSubCode,
-        paystackCustomerCode: dto.paystackCustomerCode ?? sub.paystackCustomerCode,
+        paystackCustomerCode:
+          dto.paystackCustomerCode ?? sub.paystackCustomerCode,
         status: CpSubscriptionStatus.ACTIVE,
       },
     });

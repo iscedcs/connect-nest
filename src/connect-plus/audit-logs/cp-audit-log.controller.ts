@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Get,
-  Query,
-  UseGuards,
-  Header,
-} from '@nestjs/common';
+import { Controller, Get, Query, UseGuards, Header } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -29,7 +23,9 @@ export class CpAuditLogController {
 
   @Get()
   @CpRoles(CpRole.WORKSPACE_ADMIN)
-  @ApiOperation({ summary: 'List workspace audit logs (paginated, filterable)' })
+  @ApiOperation({
+    summary: 'List workspace audit logs (paginated, filterable)',
+  })
   @ApiResponse({ status: 200, description: 'Paginated audit log entries' })
   list(
     @CpContext() ctx: CpRequestContext,
@@ -59,4 +55,3 @@ export class CpAuditLogController {
     return this.service.verifyChain(ctx);
   }
 }
-

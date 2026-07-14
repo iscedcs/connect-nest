@@ -25,5 +25,3 @@ import { ANALYTICS_QUEUE } from './analytics.queue';
   exports: [CpAnalyticsService],
 })
 export class CpAnalyticsModule {}
-
-

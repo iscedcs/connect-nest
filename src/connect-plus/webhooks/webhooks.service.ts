@@ -77,7 +77,11 @@ export class CpWebhooksService {
 
       // Add to workspace group conversation if exists
       const groupConversation = await tx.cpConversation.findFirst({
-        where: { workspaceId: invite.workspaceId, type: 'WORKSPACE_GROUP', isAutoCreated: true },
+        where: {
+          workspaceId: invite.workspaceId,
+          type: 'WORKSPACE_GROUP',
+          isAutoCreated: true,
+        },
       });
       if (groupConversation) {
         await tx.cpConversationParticipant.create({
@@ -111,10 +115,7 @@ export class CpWebhooksService {
     const expected = createHmac('sha512', secret).update(rawBody).digest('hex');
     const sigBuf = Buffer.from(signature);
     const expBuf = Buffer.from(expected);
-    if (
-      sigBuf.length !== expBuf.length ||
-      !timingSafeEqual(sigBuf, expBuf)
-    ) {
+    if (sigBuf.length !== expBuf.length || !timingSafeEqual(sigBuf, expBuf)) {
       throw new UnauthorizedException('Invalid Paystack webhook signature');
     }
 
@@ -195,7 +196,9 @@ export class CpWebhooksService {
         plan: resolvedPlan ?? sub.plan,
         status: CpSubscriptionStatus.ACTIVE,
         currentPeriodStart: new Date(),
-        currentPeriodEnd: nextPaymentDate ? new Date(nextPaymentDate) : undefined,
+        currentPeriodEnd: nextPaymentDate
+          ? new Date(nextPaymentDate)
+          : undefined,
       },
     });
   }

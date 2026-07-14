@@ -1,31 +1,31 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Patch, 
-  Body, 
-  Request, 
-  ValidationPipe, 
-  Param, 
-  Query
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Body,
+  Request,
+  ValidationPipe,
+  Param,
+  Query,
 } from '@nestjs/common';
 import { VideosService } from './videos.service';
-import { 
-  CreateVideoDto, 
+import {
+  CreateVideoDto,
   UpdateVideoDto,
   BulkVisibilityDto,
   BulkDeleteDto,
   BulkRestoreDto,
-  VideoResponseDto
+  VideoResponseDto,
 } from './dto/video.dto';
-import { 
-  ApiBearerAuth, 
-  ApiBody, 
-  ApiOperation, 
-  ApiResponse, 
-  ApiTags, 
-  ApiParam, 
-  ApiQuery 
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiParam,
+  ApiQuery,
 } from '@nestjs/swagger';
 
 @ApiTags('Videos')
@@ -36,10 +36,10 @@ export class VideosController {
 
   @Post('add')
   @ApiOperation({ summary: 'Add a video to a profile' })
-  @ApiResponse({ 
-    status: 201, 
+  @ApiResponse({
+    status: 201,
     description: 'Video created successfully',
-    type: VideoResponseDto
+    type: VideoResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Profile not found' })
   @ApiParam({ name: 'profileId', description: 'Profile ID' })
@@ -47,7 +47,7 @@ export class VideosController {
   createVideo(
     @Request() req,
     @Param('profileId') profileId: string,
-    @Body(ValidationPipe) dto: CreateVideoDto
+    @Body(ValidationPipe) dto: CreateVideoDto,
   ) {
     const user = req.isce_auth;
     if (!user) {
@@ -58,17 +58,42 @@ export class VideosController {
 
   @Get('all')
   @ApiOperation({ summary: 'List all videos for a profile' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Videos retrieved successfully',
-    type: [VideoResponseDto]
+    type: [VideoResponseDto],
   })
   @ApiParam({ name: 'profileId', description: 'Profile ID' })
-  @ApiQuery({ name: 'page', required: false, description: 'Page number', example: 1 })
-  @ApiQuery({ name: 'per_page', required: false, description: 'Items per page', example: 25 })
-  @ApiQuery({ name: 'include_deleted', required: false, description: 'Include deleted videos', example: false })
-  @ApiQuery({ name: 'sort', required: false, description: 'Field to sort by', example: 'createdAt' })
-  @ApiQuery({ name: 'order', required: false, description: 'Sort order', enum: ['asc', 'desc'] })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Page number',
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'per_page',
+    required: false,
+    description: 'Items per page',
+    example: 25,
+  })
+  @ApiQuery({
+    name: 'include_deleted',
+    required: false,
+    description: 'Include deleted videos',
+    example: false,
+  })
+  @ApiQuery({
+    name: 'sort',
+    required: false,
+    description: 'Field to sort by',
+    example: 'createdAt',
+  })
+  @ApiQuery({
+    name: 'order',
+    required: false,
+    description: 'Sort order',
+    enum: ['asc', 'desc'],
+  })
   getAllVideos(
     @Request() req,
     @Param('profileId') profileId: string,
@@ -76,21 +101,29 @@ export class VideosController {
     @Query('per_page') perPage: number = 25,
     @Query('include_deleted') includeDeleted: boolean = false,
     @Query('sort') sort?: string,
-    @Query('order') order: 'asc' | 'desc' = 'asc'
+    @Query('order') order: 'asc' | 'desc' = 'asc',
   ) {
     const user = req.isce_auth;
     if (!user) {
       return { success: false, message: 'User not found' };
     }
-    return this.videosService.getAllVideos(user, profileId, page, perPage, includeDeleted, sort, order);
+    return this.videosService.getAllVideos(
+      user,
+      profileId,
+      page,
+      perPage,
+      includeDeleted,
+      sort,
+      order,
+    );
   }
 
   @Get('one/:id')
   @ApiOperation({ summary: 'Get a specific video by ID' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Video retrieved successfully',
-    type: VideoResponseDto
+    type: VideoResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Video not found' })
   @ApiParam({ name: 'profileId', description: 'Profile ID' })
@@ -98,7 +131,7 @@ export class VideosController {
   getVideoById(
     @Request() req,
     @Param('profileId') profileId: string,
-    @Param('id') id: string
+    @Param('id') id: string,
   ) {
     const user = req.isce_auth;
     if (!user) {
@@ -109,10 +142,10 @@ export class VideosController {
 
   @Patch('update/:id')
   @ApiOperation({ summary: 'Update a specific video' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Video updated successfully',
-    type: VideoResponseDto
+    type: VideoResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Video not found' })
   @ApiParam({ name: 'profileId', description: 'Profile ID' })
@@ -122,7 +155,7 @@ export class VideosController {
     @Request() req,
     @Param('profileId') profileId: string,
     @Param('id') id: string,
-    @Body(ValidationPipe) dto: UpdateVideoDto
+    @Body(ValidationPipe) dto: UpdateVideoDto,
   ) {
     const user = req.isce_auth;
     if (!user) {
@@ -140,7 +173,7 @@ export class VideosController {
   deleteVideo(
     @Request() req,
     @Param('profileId') profileId: string,
-    @Param('id') id: string
+    @Param('id') id: string,
   ) {
     const user = req.isce_auth;
     if (!user) {
@@ -151,10 +184,10 @@ export class VideosController {
 
   @Patch('restore/:id')
   @ApiOperation({ summary: 'Restore a soft-deleted video' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Video restored successfully',
-    type: VideoResponseDto
+    type: VideoResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Video not found' })
   @ApiParam({ name: 'profileId', description: 'Profile ID' })
@@ -162,7 +195,7 @@ export class VideosController {
   restoreVideo(
     @Request() req,
     @Param('profileId') profileId: string,
-    @Param('id') id: string
+    @Param('id') id: string,
   ) {
     const user = req.isce_auth;
     if (!user) {
@@ -173,20 +206,22 @@ export class VideosController {
 
   @Patch('visibility/:id')
   @ApiOperation({ summary: 'Toggle visibility of a video' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Video visibility updated successfully',
-    type: VideoResponseDto
+    type: VideoResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Video not found' })
   @ApiParam({ name: 'profileId', description: 'Profile ID' })
   @ApiParam({ name: 'id', description: 'Video ID' })
-  @ApiBody({ schema: { type: 'object', properties: { is_visible: { type: 'boolean' } } } })
+  @ApiBody({
+    schema: { type: 'object', properties: { is_visible: { type: 'boolean' } } },
+  })
   toggleVisibility(
     @Request() req,
     @Param('profileId') profileId: string,
     @Param('id') id: string,
-    @Body('is_visible') isVisible: boolean
+    @Body('is_visible') isVisible: boolean,
   ) {
     const user = req.isce_auth;
     if (!user) {
@@ -197,10 +232,10 @@ export class VideosController {
 
   @Patch('feature/:id')
   @ApiOperation({ summary: 'Mark a video as featured (onboarding video)' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Video featured successfully',
-    type: VideoResponseDto
+    type: VideoResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Video not found' })
   @ApiParam({ name: 'profileId', description: 'Profile ID' })
@@ -208,7 +243,7 @@ export class VideosController {
   featureVideo(
     @Request() req,
     @Param('profileId') profileId: string,
-    @Param('id') id: string
+    @Param('id') id: string,
   ) {
     const user = req.isce_auth;
     if (!user) {
@@ -219,17 +254,14 @@ export class VideosController {
 
   @Get('featured')
   @ApiOperation({ summary: 'Get the featured video for a profile' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Featured video retrieved successfully',
-    type: VideoResponseDto
+    type: VideoResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Featured video not found' })
   @ApiParam({ name: 'profileId', description: 'Profile ID' })
-  getFeaturedVideo(
-    @Request() req,
-    @Param('profileId') profileId: string
-  ) {
+  getFeaturedVideo(@Request() req, @Param('profileId') profileId: string) {
     const user = req.isce_auth;
     if (!user) {
       return { success: false, message: 'User not found' };
@@ -239,18 +271,21 @@ export class VideosController {
 
   @Get('platform/:platform')
   @ApiOperation({ summary: 'Get videos by platform for a profile' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Videos retrieved successfully',
-    type: [VideoResponseDto]
+    type: [VideoResponseDto],
   })
   @ApiResponse({ status: 404, description: 'Profile not found' })
   @ApiParam({ name: 'profileId', description: 'Profile ID' })
-  @ApiParam({ name: 'platform', description: 'Platform name (e.g., youtube, vimeo)' })
+  @ApiParam({
+    name: 'platform',
+    description: 'Platform name (e.g., youtube, vimeo)',
+  })
   getVideosByPlatform(
     @Request() req,
     @Param('profileId') profileId: string,
-    @Param('platform') platform: string
+    @Param('platform') platform: string,
   ) {
     const user = req.isce_auth;
     if (!user) {
@@ -267,7 +302,7 @@ export class VideosController {
   bulkDelete(
     @Request() req,
     @Param('profileId') profileId: string,
-    @Body(ValidationPipe) dto: BulkDeleteDto
+    @Body(ValidationPipe) dto: BulkDeleteDto,
   ) {
     const user = req.isce_auth;
     if (!user) {
@@ -284,7 +319,7 @@ export class VideosController {
   bulkRestore(
     @Request() req,
     @Param('profileId') profileId: string,
-    @Body(ValidationPipe) dto: BulkRestoreDto
+    @Body(ValidationPipe) dto: BulkRestoreDto,
   ) {
     const user = req.isce_auth;
     if (!user) {
@@ -295,13 +330,16 @@ export class VideosController {
 
   @Patch('visibility/all')
   @ApiOperation({ summary: 'Bulk update visibility of videos' })
-  @ApiResponse({ status: 204, description: 'Videos visibility updated successfully' })
+  @ApiResponse({
+    status: 204,
+    description: 'Videos visibility updated successfully',
+  })
   @ApiParam({ name: 'profileId', description: 'Profile ID' })
   @ApiBody({ type: BulkVisibilityDto })
   bulkVisibility(
     @Request() req,
     @Param('profileId') profileId: string,
-    @Body(ValidationPipe) dto: BulkVisibilityDto
+    @Body(ValidationPipe) dto: BulkVisibilityDto,
   ) {
     const user = req.isce_auth;
     if (!user) {
@@ -310,4 +348,3 @@ export class VideosController {
     return this.videosService.bulkVisibility(user, profileId, dto);
   }
 }
-

@@ -16,7 +16,9 @@ export class CreateInvoiceDto {
   @IsString()
   clientId!: string;
 
-  @ApiPropertyOptional({ description: 'ISO due date; defaults to company profile payment terms' })
+  @ApiPropertyOptional({
+    description: 'ISO due date; defaults to company profile payment terms',
+  })
   @IsOptional()
   @IsDateString()
   dueDate?: string;

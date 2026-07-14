@@ -8,7 +8,12 @@ import { CpAttendanceService } from './attendance.service';
 import { AttendanceScheduler } from './attendance.scheduler';
 
 @Module({
-  imports: [DatabaseModule, CpGuardsModule, CpAuditLogModule, CpNotificationsModule],
+  imports: [
+    DatabaseModule,
+    CpGuardsModule,
+    CpAuditLogModule,
+    CpNotificationsModule,
+  ],
   controllers: [CpAttendanceController],
   providers: [CpAttendanceService, AttendanceScheduler],
   exports: [CpAttendanceService],

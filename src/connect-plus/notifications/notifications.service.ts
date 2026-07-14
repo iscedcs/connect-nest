@@ -1,6 +1,18 @@
-import { Injectable, Logger, Optional, Inject, forwardRef, ForbiddenException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  Optional,
+  Inject,
+  forwardRef,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service';
-import { CpNotificationType, CpRole, Prisma } from '../../generated/prisma/client';
+import {
+  CpNotificationType,
+  CpRole,
+  Prisma,
+} from '../../generated/prisma/client';
 import { CpRequestContext } from '../types/cp-request.types';
 import { CpChatGateway } from '../chat/chat.gateway';
 import { MailClientService } from '../../mail/mail-client.service';
@@ -37,7 +49,9 @@ export class CpNotificationsService {
 
   constructor(
     private readonly db: DatabaseService,
-    @Optional() @Inject(forwardRef(() => CpChatGateway)) private readonly chatGateway: CpChatGateway | null,
+    @Optional()
+    @Inject(forwardRef(() => CpChatGateway))
+    private readonly chatGateway: CpChatGateway | null,
     @Optional() private readonly mailClient: MailClientService | null,
     @Optional() private readonly pushService: PushService | null,
   ) {}
@@ -59,12 +73,16 @@ export class CpNotificationsService {
       .then((notification) => {
         // 2. Real-time in-app via gateway
         if (this.chatGateway) {
-          this.chatGateway.emitToUser(params.recipientAuthId, 'cp:notification', {
-            id: notification.id,
-            type: params.type,
-            title: params.title,
-            message: params.message,
-          });
+          this.chatGateway.emitToUser(
+            params.recipientAuthId,
+            'cp:notification',
+            {
+              id: notification.id,
+              type: params.type,
+              title: params.title,
+              message: params.message,
+            },
+          );
         }
         // 3. Async delivery (fire-and-forget)
         this.deliver(params).catch((err: unknown) =>
@@ -94,7 +112,9 @@ export class CpNotificationsService {
           html: `<p>${message}</p>`,
           text: message,
         })
-        .catch((err: unknown) => this.logger.warn('email delivery failed', err));
+        .catch((err: unknown) =>
+          this.logger.warn('email delivery failed', err),
+        );
     }
 
     // FCM Push — STAFF and WORKSPACE_ADMIN only
@@ -112,7 +132,11 @@ export class CpNotificationsService {
   private async resolveRecipient(
     authUserId: string,
     workspaceId?: string,
-  ): Promise<{ email: string | null; role: CpRole; fcmToken: string | null } | null> {
+  ): Promise<{
+    email: string | null;
+    role: CpRole;
+    fcmToken: string | null;
+  } | null> {
     // Try staff profile first
     const staff = await this.db.cpStaffProfile.findFirst({
       where: {
@@ -125,15 +149,27 @@ export class CpNotificationsService {
 
     if (staff) {
       const fcmToken = await this.resolveFcmToken(authUserId);
-      return { email: staff.email ?? null, role: staff.member.role as CpRole, fcmToken };
+      return {
+        email: staff.email ?? null,
+        role: staff.member.role as CpRole,
+        fcmToken,
+      };
     }
 
     // Try client record
     const client = await this.db.cpClient.findFirst({
-      where: { authUserId, ...(workspaceId ? { workspaceId } : {}), deletedAt: null },
+      where: {
+        authUserId,
+        ...(workspaceId ? { workspaceId } : {}),
+        deletedAt: null,
+      },
     });
     if (client) {
-      return { email: client.email ?? null, role: CpRole.CLIENT, fcmToken: null };
+      return {
+        email: client.email ?? null,
+        role: CpRole.CLIENT,
+        fcmToken: null,
+      };
     }
 
     return null;
@@ -143,7 +179,8 @@ export class CpNotificationsService {
 
   async list(ctx: CpRequestContext) {
     const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+    if (!workspaceId)
+      throw new ForbiddenException('Workspace context required');
 
     return this.db.cpNotification.findMany({
       where: { recipientAuthId: ctx.authUserId, workspaceId },
@@ -154,7 +191,8 @@ export class CpNotificationsService {
 
   async markRead(ctx: CpRequestContext, id: string) {
     const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+    if (!workspaceId)
+      throw new ForbiddenException('Workspace context required');
 
     const notification = await this.db.cpNotification.findFirst({
       where: { id, recipientAuthId: ctx.authUserId, workspaceId },
@@ -171,7 +209,8 @@ export class CpNotificationsService {
 
   async markAllRead(ctx: CpRequestContext) {
     const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+    if (!workspaceId)
+      throw new ForbiddenException('Workspace context required');
 
     await this.db.cpNotification.updateMany({
       where: { recipientAuthId: ctx.authUserId, workspaceId, isRead: false },
@@ -192,7 +231,6 @@ export class CpNotificationsService {
         },
       },
     });
-    return (profile?.deviceProfiles?.[0]?.fcmToken) ?? null;
+    return profile?.deviceProfiles?.[0]?.fcmToken ?? null;
   }
 }
-

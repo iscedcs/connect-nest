@@ -8,7 +8,12 @@ import { CpInvoicesService } from './invoices.service';
 import { CpInvoicesScheduler } from './invoices.scheduler';
 
 @Module({
-  imports: [DatabaseModule, CpGuardsModule, CpAuditLogModule, CpNotificationsModule],
+  imports: [
+    DatabaseModule,
+    CpGuardsModule,
+    CpAuditLogModule,
+    CpNotificationsModule,
+  ],
   controllers: [CpInvoicesController],
   providers: [CpInvoicesService, CpInvoicesScheduler],
   exports: [CpInvoicesService],

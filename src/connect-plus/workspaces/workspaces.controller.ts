@@ -110,11 +110,13 @@ export class CpMyWorkspacesController {
   constructor(private readonly service: CpWorkspacesService) {}
 
   @Get('my-workspaces')
-  @ApiOperation({ summary: 'List all workspaces the authenticated user belongs to' })
+  @ApiOperation({
+    summary: 'List all workspaces the authenticated user belongs to',
+  })
   @ApiResponse({ status: 200, description: 'Workspace memberships' })
   myWorkspaces(@Req() req: Request) {
-    const authUserId = (req as Request & { isce_auth?: { id: string } }).isce_auth?.id;
+    const authUserId = (req as Request & { isce_auth?: { id: string } })
+      .isce_auth?.id;
     return this.service.getMyWorkspaces(authUserId ?? '');
   }
 }
-

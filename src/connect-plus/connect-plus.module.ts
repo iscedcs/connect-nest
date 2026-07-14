@@ -57,4 +57,3 @@ import { CpSubscriptionsModule } from './subscriptions/subscriptions.module';
   ],
 })
 export class ConnectPlusModule {}
-

@@ -3,7 +3,12 @@ import { Cron } from '@nestjs/schedule';
 import { DatabaseService } from '../../database/database.service';
 import { CpAuditLogService } from '../audit-logs/cp-audit-log.service';
 import { CpNotificationsService } from '../notifications/notifications.service';
-import { CpInvoiceStatus, CpNotificationType, CpRole, CpMemberStatus } from '../../generated/prisma/client';
+import {
+  CpInvoiceStatus,
+  CpNotificationType,
+  CpRole,
+  CpMemberStatus,
+} from '../../generated/prisma/client';
 
 @Injectable()
 export class CpInvoicesScheduler {
@@ -56,11 +61,17 @@ export class CpInvoicesScheduler {
         });
 
         const recipients = new Set<string>();
-        if (invoice.client.member?.authUserId) recipients.add(invoice.client.member.authUserId);
-        if (invoice.createdByStaff?.member?.authUserId) recipients.add(invoice.createdByStaff.member.authUserId);
+        if (invoice.client.member?.authUserId)
+          recipients.add(invoice.client.member.authUserId);
+        if (invoice.createdByStaff?.member?.authUserId)
+          recipients.add(invoice.createdByStaff.member.authUserId);
 
         const admins = await this.db.cpWorkspaceMember.findMany({
-          where: { workspaceId: invoice.workspaceId, role: CpRole.WORKSPACE_ADMIN, status: CpMemberStatus.ACTIVE },
+          where: {
+            workspaceId: invoice.workspaceId,
+            role: CpRole.WORKSPACE_ADMIN,
+            status: CpMemberStatus.ACTIVE,
+          },
           select: { authUserId: true },
         });
         admins.forEach((admin) => {
@@ -77,7 +88,10 @@ export class CpInvoicesScheduler {
           });
         }
       } catch (error) {
-        this.logger.error(`Failed to mark invoice ${invoice.id} overdue`, error as Error);
+        this.logger.error(
+          `Failed to mark invoice ${invoice.id} overdue`,
+          error as Error,
+        );
       }
     }
   }

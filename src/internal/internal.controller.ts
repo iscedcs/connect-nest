@@ -19,7 +19,10 @@ export class InternalController {
       'Requires X-Internal-Secret header.',
   })
   @ApiResponse({ status: 200, description: 'User data soft-deleted.' })
-  @ApiResponse({ status: 403, description: 'Invalid or missing internal secret.' })
+  @ApiResponse({
+    status: 403,
+    description: 'Invalid or missing internal secret.',
+  })
   deleteUserData(@Param('userId') userId: string) {
     return this.internalService.deleteUserData(userId);
   }
@@ -32,7 +35,10 @@ export class InternalController {
       'Requires X-Internal-Secret header.',
   })
   @ApiResponse({ status: 200, description: 'User data returned.' })
-  @ApiResponse({ status: 403, description: 'Invalid or missing internal secret.' })
+  @ApiResponse({
+    status: 403,
+    description: 'Invalid or missing internal secret.',
+  })
   exportUserData(@Param('userId') userId: string) {
     return this.internalService.exportUserData(userId);
   }

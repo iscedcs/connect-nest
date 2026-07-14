@@ -93,4 +93,3 @@ export class CpOrganizationsController {
     return this.analyticsService.getOrgAnalytics(ctx, query);
   }
 }
-

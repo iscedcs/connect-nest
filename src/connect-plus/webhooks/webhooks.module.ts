@@ -7,7 +7,12 @@ import { CpWebhooksController } from './webhooks.controller';
 import { CpWebhooksService } from './webhooks.service';
 
 @Module({
-  imports: [DatabaseModule, CpAuditLogModule, CpNotificationsModule, CpSubscriptionsModule],
+  imports: [
+    DatabaseModule,
+    CpAuditLogModule,
+    CpNotificationsModule,
+    CpSubscriptionsModule,
+  ],
   controllers: [CpWebhooksController],
   providers: [CpWebhooksService],
 })

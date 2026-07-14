@@ -7,10 +7,14 @@ import { CpOrganizationsController } from './organizations.controller';
 import { CpOrganizationsService } from './organizations.service';
 
 @Module({
-  imports: [DatabaseModule, CpGuardsModule, CpAuditLogModule, CpAnalyticsModule],
+  imports: [
+    DatabaseModule,
+    CpGuardsModule,
+    CpAuditLogModule,
+    CpAnalyticsModule,
+  ],
   controllers: [CpOrganizationsController],
   providers: [CpOrganizationsService],
   exports: [CpOrganizationsService],
 })
 export class CpOrganizationsModule {}
-

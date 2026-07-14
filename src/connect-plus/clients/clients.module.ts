@@ -7,7 +7,12 @@ import { CpClientsController } from './clients.controller';
 import { CpClientsService } from './clients.service';
 
 @Module({
-  imports: [DatabaseModule, CpGuardsModule, CpAuditLogModule, CpNotificationsModule],
+  imports: [
+    DatabaseModule,
+    CpGuardsModule,
+    CpAuditLogModule,
+    CpNotificationsModule,
+  ],
   controllers: [CpClientsController],
   providers: [CpClientsService],
   exports: [CpClientsService],

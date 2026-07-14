@@ -33,11 +33,7 @@ export class CpWorkspacesService {
     private readonly subscriptions: CpSubscriptionsService,
   ) {}
 
-  async create(
-    ctx: CpRequestContext,
-    dto: CreateWorkspaceDto,
-    req: Request,
-  ) {
+  async create(ctx: CpRequestContext, dto: CreateWorkspaceDto, req: Request) {
     const limitCheck = await this.subscriptions.checkLimit(
       ctx.organizationId,
       'workspace',
@@ -154,7 +150,8 @@ export class CpWorkspacesService {
 
     const now = new Date();
     const updateData: Record<string, unknown> = { status: dto.status };
-    if (dto.status === CpWorkspaceStatus.SUSPENDED) updateData.suspendedAt = now;
+    if (dto.status === CpWorkspaceStatus.SUSPENDED)
+      updateData.suspendedAt = now;
     if (dto.status === CpWorkspaceStatus.ARCHIVED) {
       updateData.archivedAt = now;
       updateData.deletedAt = now;
@@ -215,7 +212,9 @@ export class CpWorkspacesService {
       },
     });
     if (existingInvite) {
-      throw new ConflictException('A pending invite already exists for this email');
+      throw new ConflictException(
+        'A pending invite already exists for this email',
+      );
     }
 
     // Generate and hash token
@@ -273,7 +272,10 @@ export class CpWorkspacesService {
       targetEntity: 'CpWorkspaceInvite',
       targetEntityId: invite.id,
       action: 'SEND',
-      after: { email: invite.email, role: invite.role } as Record<string, unknown>,
+      after: { email: invite.email, role: invite.role } as Record<
+        string,
+        unknown
+      >,
     });
 
     return { message: 'Invitation sent', inviteId: invite.id };
@@ -282,7 +284,11 @@ export class CpWorkspacesService {
   private async resolveWorkspace(ctx: CpRequestContext, workspaceId: string) {
     const where =
       ctx.role === CpRole.CREATOR
-        ? { id: workspaceId, organizationId: ctx.organizationId, deletedAt: null as Date | null }
+        ? {
+            id: workspaceId,
+            organizationId: ctx.organizationId,
+            deletedAt: null as Date | null,
+          }
         : { id: workspaceId, deletedAt: null as Date | null };
 
     const workspace = await this.db.cpWorkspace.findFirst({ where });
@@ -303,7 +309,9 @@ export class CpWorkspacesService {
     const base = toSlug(name);
     let slug = base || `ws-${randomBytes(2).toString('hex')}`;
     for (let attempt = 0; attempt < 6; attempt++) {
-      const existing = await this.db.cpWorkspace.findUnique({ where: { slug } });
+      const existing = await this.db.cpWorkspace.findUnique({
+        where: { slug },
+      });
       if (!existing) return slug;
       slug = toSlugWithSuffix(base || 'ws');
     }
@@ -339,4 +347,3 @@ export class CpWorkspacesService {
     }));
   }
 }
-

@@ -76,4 +76,3 @@ export class CpChatController {
     return this.service.markRead(ctx, convId);
   }
 }
-

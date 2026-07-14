@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
-import { 
-  CreateVideoDto, 
+import {
+  CreateVideoDto,
   UpdateVideoDto,
   BulkVisibilityDto,
   BulkDeleteDto,
-  BulkRestoreDto
+  BulkRestoreDto,
 } from './dto/video.dto';
 
 @Injectable()
@@ -64,7 +64,7 @@ export class VideosService {
     perPage: number = 25,
     includeDeleted: boolean = false,
     sort?: string,
-    order: 'asc' | 'desc' = 'asc'
+    order: 'asc' | 'desc' = 'asc',
   ) {
     try {
       // Verify profile belongs to user
@@ -84,7 +84,7 @@ export class VideosService {
 
       const skip = (page - 1) * perPage;
       const where: any = { profileId };
-      
+
       if (!includeDeleted) {
         where.deletedAt = null;
       }
@@ -178,7 +178,7 @@ export class VideosService {
     user: any,
     profileId: string,
     videoId: string,
-    dto: UpdateVideoDto
+    dto: UpdateVideoDto,
   ) {
     try {
       // Verify profile belongs to user
@@ -218,8 +218,9 @@ export class VideosService {
       if (dto.url !== undefined) updateData.url = dto.url;
       if (dto.thumbnail !== undefined) updateData.thumbnail = dto.thumbnail;
       if (dto.is_visible !== undefined) updateData.is_visible = dto.is_visible;
-      if (dto.is_featured !== undefined) updateData.is_featured = dto.is_featured;
-      
+      if (dto.is_featured !== undefined)
+        updateData.is_featured = dto.is_featured;
+
       const updatedVideo = await this.databaseService.video.update({
         where: { id: videoId },
         data: updateData,
@@ -345,7 +346,12 @@ export class VideosService {
     }
   }
 
-  async toggleVisibility(user: any, profileId: string, videoId: string, isVisible: boolean) {
+  async toggleVisibility(
+    user: any,
+    profileId: string,
+    videoId: string,
+    isVisible: boolean,
+  ) {
     try {
       // Verify profile belongs to user
       const profile = await this.databaseService.profile.findFirst({
@@ -578,7 +584,7 @@ export class VideosService {
       }
 
       const where: any = { profileId, deletedAt: null };
-      
+
       if (dto.ids && dto.ids.length > 0) {
         where.id = { in: dto.ids };
       }
@@ -686,4 +692,3 @@ export class VideosService {
     }
   }
 }
-

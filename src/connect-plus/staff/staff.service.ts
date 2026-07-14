@@ -10,10 +10,7 @@ import { CpRequestContext } from '../types/cp-request.types';
 import { CpAuditLogService } from '../audit-logs/cp-audit-log.service';
 import { CpNotificationsService } from '../notifications/notifications.service';
 import { IsceAuthService } from '../isce-auth/isce-auth.service';
-import {
-  CpRole,
-  CpNotificationType,
-} from '../../generated/prisma/client';
+import { CpRole, CpNotificationType } from '../../generated/prisma/client';
 import { CpSubscriptionsService } from '../subscriptions/subscriptions.service';
 import { InviteStaffDto } from './dto/invite-staff.dto';
 import { UpdateStaffProfileDto } from './dto/update-staff-profile.dto';
@@ -33,13 +30,10 @@ export class CpStaffService {
     private readonly subscriptions: CpSubscriptionsService,
   ) {}
 
-  async inviteStaff(
-    ctx: CpRequestContext,
-    dto: InviteStaffDto,
-    req: Request,
-  ) {
+  async inviteStaff(ctx: CpRequestContext, dto: InviteStaffDto, req: Request) {
     const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+    if (!workspaceId)
+      throw new ForbiddenException('Workspace context required');
 
     // Plan limit check
     const limitCheck = await this.subscriptions.checkLimit(
@@ -57,13 +51,17 @@ export class CpStaffService {
     const existing = await this.db.cpWorkspaceInvite.findFirst({
       where: { workspaceId, email: dto.email, status: 'PENDING' },
     });
-    if (existing) throw new ConflictException('Pending invite already exists for this email');
+    if (existing)
+      throw new ConflictException(
+        'Pending invite already exists for this email',
+      );
 
     // Resolve inviter member
     const inviterMember = await this.db.cpWorkspaceMember.findFirst({
       where: { workspaceId, authUserId: ctx.authUserId },
     });
-    if (!inviterMember) throw new ForbiddenException('Inviter is not a workspace member');
+    if (!inviterMember)
+      throw new ForbiddenException('Inviter is not a workspace member');
 
     const rawToken = randomBytes(32).toString('hex');
     const hashedToken = createHash('sha256').update(rawToken).digest('hex');
@@ -89,7 +87,8 @@ export class CpStaffService {
       email: dto.email,
       token: rawToken,
       role: CpRole.STAFF,
-      workspaceName: workspace?.companyProfile?.name ?? workspace?.name ?? workspaceId,
+      workspaceName:
+        workspace?.companyProfile?.name ?? workspace?.name ?? workspaceId,
       inviterName: ctx.authUserId,
       name: dto.name,
       jobTitle: dto.jobTitle,
@@ -104,7 +103,10 @@ export class CpStaffService {
       targetEntity: 'CpWorkspaceInvite',
       targetEntityId: invite.id,
       action: 'SEND',
-      after: { email: invite.email, role: invite.role } as Record<string, unknown>,
+      after: { email: invite.email, role: invite.role } as Record<
+        string,
+        unknown
+      >,
     });
 
     return { message: 'Staff invitation sent', inviteId: invite.id };
@@ -112,7 +114,8 @@ export class CpStaffService {
 
   async listInvites(ctx: CpRequestContext) {
     const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+    if (!workspaceId)
+      throw new ForbiddenException('Workspace context required');
 
     return this.db.cpWorkspaceInvite.findMany({
       where: { workspaceId },
@@ -122,7 +125,8 @@ export class CpStaffService {
 
   async listStaff(ctx: CpRequestContext, query: PaginateQueryDto) {
     const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+    if (!workspaceId)
+      throw new ForbiddenException('Workspace context required');
 
     const { page = 1, limit = 20 } = query;
     const skip = (page - 1) * limit;
@@ -143,7 +147,8 @@ export class CpStaffService {
 
   async getStaff(ctx: CpRequestContext, staffId: string) {
     const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+    if (!workspaceId)
+      throw new ForbiddenException('Workspace context required');
 
     // STAFF can only access own profile
     if (ctx.role === CpRole.STAFF) {
@@ -172,7 +177,8 @@ export class CpStaffService {
     req: Request,
   ) {
     const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+    if (!workspaceId)
+      throw new ForbiddenException('Workspace context required');
 
     const profile = await this.db.cpStaffProfile.findFirst({
       where: { id: staffId, workspaceId, deletedAt: null },
@@ -213,7 +219,8 @@ export class CpStaffService {
     req: Request,
   ) {
     const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+    if (!workspaceId)
+      throw new ForbiddenException('Workspace context required');
 
     const profile = await this.db.cpStaffProfile.findFirst({
       where: { id: staffId, workspaceId, deletedAt: null },
@@ -253,7 +260,10 @@ export class CpStaffService {
 
     void this.notifications.send({
       recipientAuthId: profile.authUserId,
-      type: dto.status === 'REMOVED' ? CpNotificationType.STAFF_REMOVED : CpNotificationType.STAFF_SUSPENDED,
+      type:
+        dto.status === 'REMOVED'
+          ? CpNotificationType.STAFF_REMOVED
+          : CpNotificationType.STAFF_SUSPENDED,
       title: `Account ${dto.status.toLowerCase()}`,
       message: `Your account has been ${dto.status.toLowerCase()}`,
       workspaceId,
@@ -270,7 +280,8 @@ export class CpStaffService {
     req: Request,
   ) {
     const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+    if (!workspaceId)
+      throw new ForbiddenException('Workspace context required');
 
     const profile = await this.db.cpStaffProfile.findFirst({
       where: { id: staffId, workspaceId, deletedAt: null },
@@ -299,4 +310,3 @@ export class CpStaffService {
     return updated;
   }
 }
-

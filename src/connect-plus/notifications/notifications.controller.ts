@@ -1,5 +1,10 @@
 import { Controller, Get, Patch, Param, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { CpNotificationsService } from './notifications.service';
 import { CpContextGuard } from '../guards/cp-context.guard';
 import { CpRolesGuard } from '../guards/cp-roles.guard';
@@ -19,10 +24,7 @@ export class CpNotificationsController {
   @CpRoles(CpRole.WORKSPACE_ADMIN, CpRole.STAFF, CpRole.CLIENT, CpRole.CREATOR)
   @ApiOperation({ summary: 'List my notifications' })
   @ApiResponse({ status: 200, description: 'Notification list' })
-  list(
-    @CpContext() ctx: CpRequestContext,
-    @Param('wsId') _wsId: string,
-  ) {
+  list(@CpContext() ctx: CpRequestContext, @Param('wsId') _wsId: string) {
     return this.service.list(ctx);
   }
 

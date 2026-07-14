@@ -34,7 +34,8 @@ export class CpLeadsService {
 
   async list(ctx: CpRequestContext, query: ListLeadsQueryDto) {
     const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+    if (!workspaceId)
+      throw new ForbiddenException('Workspace context required');
 
     const page = parseInt(query.page ?? '1', 10) || 1;
     const limit = Math.min(parseInt(query.limit ?? '20', 10) || 20, 100);
@@ -61,7 +62,8 @@ export class CpLeadsService {
 
   async findById(ctx: CpRequestContext, leadId: string) {
     const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+    if (!workspaceId)
+      throw new ForbiddenException('Workspace context required');
 
     const lead = await this.db.cpLead.findFirst({
       where: { id: leadId, workspaceId, deletedAt: null },
@@ -77,7 +79,8 @@ export class CpLeadsService {
     req: Request,
   ) {
     const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+    if (!workspaceId)
+      throw new ForbiddenException('Workspace context required');
 
     const lead = await this.db.cpLead.findFirst({
       where: { id: leadId, workspaceId, deletedAt: null },
@@ -106,20 +109,23 @@ export class CpLeadsService {
       targetEntity: 'CpLead',
       targetEntityId: leadId,
       action: 'UPDATE',
-      before: { assignedStaffId: lead.assignedStaffId } as Record<string, unknown>,
-      after: { assignedStaffId: dto.assignedStaffId } as Record<string, unknown>,
+      before: { assignedStaffId: lead.assignedStaffId } as Record<
+        string,
+        unknown
+      >,
+      after: { assignedStaffId: dto.assignedStaffId } as Record<
+        string,
+        unknown
+      >,
     });
 
     return updated;
   }
 
-  async validate(
-    ctx: CpRequestContext,
-    leadId: string,
-    req: Request,
-  ) {
+  async validate(ctx: CpRequestContext, leadId: string, req: Request) {
     const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+    if (!workspaceId)
+      throw new ForbiddenException('Workspace context required');
 
     const lead = await this.db.cpLead.findFirst({
       where: { id: leadId, workspaceId, deletedAt: null },
@@ -221,10 +227,16 @@ export class CpLeadsService {
       targetEntityId: leadId,
       action: 'UPDATE',
       before: { status: lead.status } as Record<string, unknown>,
-      after: { status: 'CONVERTED', clientId: result.client.id } as Record<string, unknown>,
+      after: { status: 'CONVERTED', clientId: result.client.id } as Record<
+        string,
+        unknown
+      >,
     });
 
-    return { clientId: result.client.id, conversationId: result.conversation.id };
+    return {
+      clientId: result.client.id,
+      conversationId: result.conversation.id,
+    };
   }
 
   async reject(
@@ -234,7 +246,8 @@ export class CpLeadsService {
     req: Request,
   ) {
     const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+    if (!workspaceId)
+      throw new ForbiddenException('Workspace context required');
 
     const lead = await this.db.cpLead.findFirst({
       where: { id: leadId, workspaceId, deletedAt: null },
@@ -245,7 +258,9 @@ export class CpLeadsService {
       where: { id: leadId },
       data: {
         status: 'REJECTED',
-        notes: dto.reason ? `${lead.notes ? lead.notes + '\n' : ''}Rejection reason: ${dto.reason}` : lead.notes,
+        notes: dto.reason
+          ? `${lead.notes ? lead.notes + '\n' : ''}Rejection reason: ${dto.reason}`
+          : lead.notes,
       },
     });
 
@@ -267,7 +282,8 @@ export class CpLeadsService {
 
   async remove(ctx: CpRequestContext, leadId: string, req: Request) {
     const workspaceId = ctx.workspaceId;
-    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+    if (!workspaceId)
+      throw new ForbiddenException('Workspace context required');
 
     const lead = await this.db.cpLead.findFirst({
       where: { id: leadId, workspaceId, deletedAt: null },
@@ -294,4 +310,3 @@ export class CpLeadsService {
     return { message: 'Lead deleted' };
   }
 }
-

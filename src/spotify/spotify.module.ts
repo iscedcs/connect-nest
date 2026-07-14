@@ -10,4 +10,3 @@ import { DatabaseModule } from 'src/database/database.module';
   exports: [SpotifyService],
 })
 export class SpotifyModule {}
-

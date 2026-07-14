@@ -5,7 +5,11 @@ import {
   ForbiddenException,
   GoneException,
 } from '@nestjs/common';
-import { Prisma, CpCardStatus, CpLeadSource } from '../../generated/prisma/client';
+import {
+  Prisma,
+  CpCardStatus,
+  CpLeadSource,
+} from '../../generated/prisma/client';
 import { DatabaseService } from '../../database/database.service';
 import { CpAuditLogService } from '../audit-logs/cp-audit-log.service';
 import { CpRequestContext } from '../types/cp-request.types';
@@ -34,13 +38,22 @@ export class CpConnectCardsService {
     if (existing) throw new ConflictException('Card code already exists');
 
     const card = await this.db.cpConnectCard.create({
-      data: { workspaceId, cardCode: dto.cardCode, status: CpCardStatus.UNASSIGNED },
+      data: {
+        workspaceId,
+        cardCode: dto.cardCode,
+        status: CpCardStatus.UNASSIGNED,
+      },
     });
 
     this.auditLog.write({
-      ctx, req, workspaceId, organizationId: ctx.organizationId,
-      eventType: 'CARD_CREATED', targetEntity: 'CpConnectCard',
-      targetEntityId: card.id, action: 'CREATE',
+      ctx,
+      req,
+      workspaceId,
+      organizationId: ctx.organizationId,
+      eventType: 'CARD_CREATED',
+      targetEntity: 'CpConnectCard',
+      targetEntityId: card.id,
+      action: 'CREATE',
       after: card as unknown as Record<string, unknown>,
     });
 
@@ -48,7 +61,12 @@ export class CpConnectCardsService {
   }
 
   // ─── Admin: pair card ─────────────────────────────────────────
-  async pair(ctx: CpRequestContext, cardId: string, dto: PairCardDto, req: Request) {
+  async pair(
+    ctx: CpRequestContext,
+    cardId: string,
+    dto: PairCardDto,
+    req: Request,
+  ) {
     const workspaceId = ctx.workspaceId!;
 
     const card = await this.db.cpConnectCard.findFirst({
@@ -79,7 +97,8 @@ export class CpConnectCardsService {
       const device = await this.db.deviceProfile.findUnique({
         where: { deviceId: dto.deviceId },
       });
-      if (!device) throw new NotFoundException('DeviceProfile not found for deviceId');
+      if (!device)
+        throw new NotFoundException('DeviceProfile not found for deviceId');
     }
 
     const before = card;
@@ -95,9 +114,14 @@ export class CpConnectCardsService {
     });
 
     this.auditLog.write({
-      ctx, req, workspaceId, organizationId: ctx.organizationId,
-      eventType: 'CARD_PAIRED', targetEntity: 'CpConnectCard',
-      targetEntityId: cardId, action: 'UPDATE',
+      ctx,
+      req,
+      workspaceId,
+      organizationId: ctx.organizationId,
+      eventType: 'CARD_PAIRED',
+      targetEntity: 'CpConnectCard',
+      targetEntityId: cardId,
+      action: 'UPDATE',
       before: before as unknown as Record<string, unknown>,
       after: updated as unknown as Record<string, unknown>,
     });
@@ -125,9 +149,14 @@ export class CpConnectCardsService {
     });
 
     this.auditLog.write({
-      ctx, req, workspaceId, organizationId: ctx.organizationId,
-      eventType: 'CARD_UNPAIRED', targetEntity: 'CpConnectCard',
-      targetEntityId: cardId, action: 'UPDATE',
+      ctx,
+      req,
+      workspaceId,
+      organizationId: ctx.organizationId,
+      eventType: 'CARD_UNPAIRED',
+      targetEntity: 'CpConnectCard',
+      targetEntityId: cardId,
+      action: 'UPDATE',
       before: card as unknown as Record<string, unknown>,
       after: updated as unknown as Record<string, unknown>,
     });
@@ -136,7 +165,12 @@ export class CpConnectCardsService {
   }
 
   // ─── Admin: update tap config ─────────────────────────────────
-  async updateConfig(ctx: CpRequestContext, cardId: string, dto: UpdateCardConfigDto, req: Request) {
+  async updateConfig(
+    ctx: CpRequestContext,
+    cardId: string,
+    dto: UpdateCardConfigDto,
+    req: Request,
+  ) {
     const workspaceId = ctx.workspaceId!;
     const card = await this.db.cpConnectCard.findFirst({
       where: { id: cardId, workspaceId },
@@ -149,9 +183,14 @@ export class CpConnectCardsService {
     });
 
     this.auditLog.write({
-      ctx, req, workspaceId, organizationId: ctx.organizationId,
-      eventType: 'CARD_CONFIG_UPDATED', targetEntity: 'CpConnectCard',
-      targetEntityId: cardId, action: 'UPDATE',
+      ctx,
+      req,
+      workspaceId,
+      organizationId: ctx.organizationId,
+      eventType: 'CARD_CONFIG_UPDATED',
+      targetEntity: 'CpConnectCard',
+      targetEntityId: cardId,
+      action: 'UPDATE',
       before: card as unknown as Record<string, unknown>,
       after: updated as unknown as Record<string, unknown>,
     });
@@ -160,10 +199,17 @@ export class CpConnectCardsService {
   }
 
   // ─── Admin: update card status ────────────────────────────────
-  async updateStatus(ctx: CpRequestContext, cardId: string, dto: UpdateCardStatusDto, req: Request) {
+  async updateStatus(
+    ctx: CpRequestContext,
+    cardId: string,
+    dto: UpdateCardStatusDto,
+    req: Request,
+  ) {
     const workspaceId = ctx.workspaceId!;
     if (dto.status === CpCardStatus.UNASSIGNED) {
-      throw new ForbiddenException('Cannot set status back to UNASSIGNED via this endpoint');
+      throw new ForbiddenException(
+        'Cannot set status back to UNASSIGNED via this endpoint',
+      );
     }
 
     const card = await this.db.cpConnectCard.findFirst({
@@ -182,9 +228,14 @@ export class CpConnectCardsService {
     });
 
     this.auditLog.write({
-      ctx, req, workspaceId, organizationId: ctx.organizationId,
-      eventType: 'CARD_STATUS_CHANGED', targetEntity: 'CpConnectCard',
-      targetEntityId: cardId, action: 'UPDATE',
+      ctx,
+      req,
+      workspaceId,
+      organizationId: ctx.organizationId,
+      eventType: 'CARD_STATUS_CHANGED',
+      targetEntity: 'CpConnectCard',
+      targetEntityId: cardId,
+      action: 'UPDATE',
       before: card as unknown as Record<string, unknown>,
       after: updated as unknown as Record<string, unknown>,
     });
@@ -194,13 +245,17 @@ export class CpConnectCardsService {
 
   // ─── Admin: list cards ────────────────────────────────────────
   async list(ctx: CpRequestContext, query: ListCardsQueryDto) {
-    const where: Prisma.CpConnectCardWhereInput = { workspaceId: ctx.workspaceId! };
+    const where: Prisma.CpConnectCardWhereInput = {
+      workspaceId: ctx.workspaceId!,
+    };
     if (query.status) where.status = query.status as CpCardStatus;
 
     return this.db.cpConnectCard.findMany({
       where,
       include: {
-        staff: { select: { id: true, name: true, photo: true, jobTitle: true } },
+        staff: {
+          select: { id: true, name: true, photo: true, jobTitle: true },
+        },
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -213,13 +268,23 @@ export class CpConnectCardsService {
       include: {
         workspace: { select: { id: true, status: true } },
         staff: {
-          select: { id: true, name: true, photo: true, jobTitle: true, department: true, authUserId: true },
+          select: {
+            id: true,
+            name: true,
+            photo: true,
+            jobTitle: true,
+            department: true,
+            authUserId: true,
+          },
         },
       },
     });
 
     if (!card) throw new NotFoundException('Card not found');
-    if (card.status === CpCardStatus.SUSPENDED || card.status === CpCardStatus.LOST) {
+    if (
+      card.status === CpCardStatus.SUSPENDED ||
+      card.status === CpCardStatus.LOST
+    ) {
       throw new GoneException('Card is no longer active');
     }
 
@@ -229,7 +294,12 @@ export class CpConnectCardsService {
 
     const companyProfile = await this.db.cpCompanyProfile.findUnique({
       where: { workspaceId: card.workspaceId },
-      select: { name: true, logo: true, contactEmail: true, contactPhone: true },
+      select: {
+        name: true,
+        logo: true,
+        contactEmail: true,
+        contactPhone: true,
+      },
     });
 
     // Best-effort CardInteraction — requires a Profile.userId for the FK
@@ -238,16 +308,18 @@ export class CpConnectCardsService {
         where: { userId: card.staff.authUserId },
       });
       if (profile) {
-        await this.db.cardInteraction.create({
-          data: {
-            userId: profile.id,
-            deviceId: card.cardCode,
-            method: 'TAP',
-            workspaceId: card.workspaceId,
-            workspaceMemberId: card.staffId ?? undefined,
-            deviceType: (req.headers['x-device-type'] as string) ?? null,
-          },
-        }).catch(() => {});
+        await this.db.cardInteraction
+          .create({
+            data: {
+              userId: profile.id,
+              deviceId: card.cardCode,
+              method: 'TAP',
+              workspaceId: card.workspaceId,
+              workspaceMemberId: card.staffId ?? undefined,
+              deviceType: (req.headers['x-device-type'] as string) ?? null,
+            },
+          })
+          .catch(() => {});
       }
     }
 
@@ -255,7 +327,11 @@ export class CpConnectCardsService {
     let leadId: string | null = null;
     if (dto.visitorEmail) {
       const existing = await this.db.cpLead.findFirst({
-        where: { workspaceId: card.workspaceId, email: dto.visitorEmail, deletedAt: null },
+        where: {
+          workspaceId: card.workspaceId,
+          email: dto.visitorEmail,
+          deletedAt: null,
+        },
       });
       if (existing) {
         leadId = existing.id;
@@ -280,7 +356,10 @@ export class CpConnectCardsService {
       targetEntity: 'CpConnectCard',
       targetEntityId: card.id,
       action: 'TAP',
-      metadata: { cardCode, visitorEmail: dto.visitorEmail ?? null } as unknown as Record<string, unknown>,
+      metadata: {
+        cardCode,
+        visitorEmail: dto.visitorEmail ?? null,
+      } as unknown as Record<string, unknown>,
     });
 
     return {
@@ -329,7 +408,8 @@ export class CpConnectCardsService {
     // Top cards by tap count
     const tapsByCard: Record<string, number> = {};
     for (const log of tapLogs) {
-      tapsByCard[log.targetEntityId] = (tapsByCard[log.targetEntityId] ?? 0) + 1;
+      tapsByCard[log.targetEntityId] =
+        (tapsByCard[log.targetEntityId] ?? 0) + 1;
     }
 
     const topCards = Object.entries(tapsByCard)

@@ -95,4 +95,3 @@ export class CpAttendanceController {
     return this.service.override(ctx, recordId, dto, req);
   }
 }
-

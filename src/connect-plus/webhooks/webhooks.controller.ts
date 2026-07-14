@@ -24,7 +24,10 @@ export class CpWebhooksController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Handle invite accepted webhook from isce-auth' })
   @ApiResponse({ status: 200, description: 'Webhook processed' })
-  async inviteAccepted(@Body() dto: InviteAcceptedWebhookDto, @Req() req: Request) {
+  async inviteAccepted(
+    @Body() dto: InviteAcceptedWebhookDto,
+    @Req() req: Request,
+  ) {
     const signature = req.headers['x-webhook-signature'] as string | undefined;
     const rawBody = (req as Request & { rawBody?: Buffer }).rawBody;
 
@@ -49,7 +52,8 @@ export class CpWebhooksController {
     @Headers('x-paystack-signature') signature: string,
     @Req() req: Request,
   ) {
-    const rawBody = (req as Request & { rawBody?: Buffer }).rawBody ?? Buffer.alloc(0);
+    const rawBody =
+      (req as Request & { rawBody?: Buffer }).rawBody ?? Buffer.alloc(0);
     await this.service.handlePaystackEvent(signature ?? '', rawBody);
     return { ok: true };
   }

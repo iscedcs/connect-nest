@@ -42,10 +42,7 @@ export class CpAppointmentsController {
   @CpRoles(CpRole.CLIENT)
   @ApiOperation({ summary: 'Get my appointments (client)' })
   @ApiResponse({ status: 200, description: 'My appointments' })
-  getMe(
-    @CpContext() ctx: CpRequestContext,
-    @Param('wsId') _wsId: string,
-  ) {
+  getMe(@CpContext() ctx: CpRequestContext, @Param('wsId') _wsId: string) {
     return this.service.getMe(ctx);
   }
 

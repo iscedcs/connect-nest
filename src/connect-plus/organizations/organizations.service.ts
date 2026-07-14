@@ -61,7 +61,12 @@ export class CpOrganizationsService {
   async getMyOrg(ctx: CpRequestContext) {
     const org = await this.db.cpOrganization.findFirst({
       where: { creatorAuthId: ctx.authUserId, deletedAt: null },
-      include: { workspaces: { where: { deletedAt: null }, select: { id: true, name: true, slug: true, status: true } } },
+      include: {
+        workspaces: {
+          where: { deletedAt: null },
+          select: { id: true, name: true, slug: true, status: true },
+        },
+      },
     });
     if (!org) throw new NotFoundException('Organization not found');
     return org;
@@ -143,4 +148,3 @@ export class CpOrganizationsService {
     throw new ConflictException('Could not generate a unique slug');
   }
 }
-

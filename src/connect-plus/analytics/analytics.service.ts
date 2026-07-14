@@ -30,42 +30,37 @@ export class CpAnalyticsService {
 
     const dateFilter = this.buildDateFilter(query);
 
-    const [
-      totalRecords,
-      lateRecords,
-      overtimeRecords,
-      hoursAgg,
-      uniqueStaff,
-    ] = await Promise.all([
-      this.db.cpAttendance.count({
-        where: { workspaceId: ctx.workspaceId, ...dateFilter },
-      }),
-      this.db.cpAttendance.count({
-        where: { workspaceId: ctx.workspaceId, isLate: true, ...dateFilter },
-      }),
-      this.db.cpAttendance.count({
-        where: {
-          workspaceId: ctx.workspaceId,
-          isOvertime: true,
-          ...dateFilter,
-        },
-      }),
-      this.db.cpAttendance.aggregate({
-        where: {
-          workspaceId: ctx.workspaceId,
-          hoursWorked: { not: null },
-          ...dateFilter,
-        },
-        _avg: { hoursWorked: true },
-        _sum: { hoursWorked: true },
-      }),
-      this.db.cpAttendance
-        .groupBy({
-          by: ['staffId'],
+    const [totalRecords, lateRecords, overtimeRecords, hoursAgg, uniqueStaff] =
+      await Promise.all([
+        this.db.cpAttendance.count({
           where: { workspaceId: ctx.workspaceId, ...dateFilter },
-        })
-        .then((r) => r.length),
-    ]);
+        }),
+        this.db.cpAttendance.count({
+          where: { workspaceId: ctx.workspaceId, isLate: true, ...dateFilter },
+        }),
+        this.db.cpAttendance.count({
+          where: {
+            workspaceId: ctx.workspaceId,
+            isOvertime: true,
+            ...dateFilter,
+          },
+        }),
+        this.db.cpAttendance.aggregate({
+          where: {
+            workspaceId: ctx.workspaceId,
+            hoursWorked: { not: null },
+            ...dateFilter,
+          },
+          _avg: { hoursWorked: true },
+          _sum: { hoursWorked: true },
+        }),
+        this.db.cpAttendance
+          .groupBy({
+            by: ['staffId'],
+            where: { workspaceId: ctx.workspaceId, ...dateFilter },
+          })
+          .then((r) => r.length),
+      ]);
 
     const result = {
       totalRecords,
@@ -100,35 +95,35 @@ export class CpAnalyticsService {
 
     const dateFilter = this.buildDateFilter(query, 'createdAt');
 
-    const [
-      totalClients,
-      activeClients,
-      clientsWithInvoices,
-      appointmentStats,
-    ] = await Promise.all([
-      this.db.cpClient.count({
-        where: { workspaceId: ctx.workspaceId, deletedAt: null, ...dateFilter },
-      }),
-      this.db.cpClient.count({
-        where: {
-          workspaceId: ctx.workspaceId,
-          deletedAt: null,
-          invoices: { some: { deletedAt: null } },
-        },
-      }),
-      this.db.cpClient.count({
-        where: {
-          workspaceId: ctx.workspaceId,
-          deletedAt: null,
-          invoices: { some: { deletedAt: null } },
-        },
-      }),
-      this.db.cpAppointment.groupBy({
-        by: ['status'],
-        where: { workspaceId: ctx.workspaceId, ...dateFilter },
-        _count: { id: true },
-      }),
-    ]);
+    const [totalClients, activeClients, clientsWithInvoices, appointmentStats] =
+      await Promise.all([
+        this.db.cpClient.count({
+          where: {
+            workspaceId: ctx.workspaceId,
+            deletedAt: null,
+            ...dateFilter,
+          },
+        }),
+        this.db.cpClient.count({
+          where: {
+            workspaceId: ctx.workspaceId,
+            deletedAt: null,
+            invoices: { some: { deletedAt: null } },
+          },
+        }),
+        this.db.cpClient.count({
+          where: {
+            workspaceId: ctx.workspaceId,
+            deletedAt: null,
+            invoices: { some: { deletedAt: null } },
+          },
+        }),
+        this.db.cpAppointment.groupBy({
+          by: ['status'],
+          where: { workspaceId: ctx.workspaceId, ...dateFilter },
+          _count: { id: true },
+        }),
+      ]);
 
     const apptByStatus = Object.fromEntries(
       appointmentStats.map((s) => [s.status, s._count.id]),
@@ -205,9 +200,7 @@ export class CpAnalyticsService {
         s.status,
         {
           count: s._count.id,
-          totalAmount: s._sum.totalAmount
-            ? Number(s._sum.totalAmount)
-            : 0,
+          totalAmount: s._sum.totalAmount ? Number(s._sum.totalAmount) : 0,
         },
       ]),
     );
@@ -228,8 +221,7 @@ export class CpAnalyticsService {
         : 0,
       byStatus: statusSummary,
       collectionRate:
-        totalAgg._sum.totalAmount &&
-        Number(totalAgg._sum.totalAmount) > 0
+        totalAgg._sum.totalAmount && Number(totalAgg._sum.totalAmount) > 0
           ? (Number(paidAgg._sum.totalAmount ?? 0) /
               Number(totalAgg._sum.totalAmount)) *
             100
@@ -253,15 +245,18 @@ export class CpAnalyticsService {
 
     const staffProfile = await this.db.cpStaffProfile.findFirst({
       where: { id: staffId, workspaceId: ctx.workspaceId, deletedAt: null },
-      select: { memberId: true, authUserId: true, name: true, jobTitle: true, department: true },
+      select: {
+        memberId: true,
+        authUserId: true,
+        name: true,
+        jobTitle: true,
+        department: true,
+      },
     });
     if (!staffProfile) throw new ForbiddenException('Staff not found');
 
     // STAFF can only see own metrics
-    if (
-      ctx.role === CpRole.STAFF &&
-      staffProfile.memberId !== ctx.memberId
-    ) {
+    if (ctx.role === CpRole.STAFF && staffProfile.memberId !== ctx.memberId) {
       throw new ForbiddenException('You can only view your own metrics');
     }
 
@@ -286,10 +281,20 @@ export class CpAnalyticsService {
         _sum: { hoursWorked: true },
       }),
       this.db.cpAttendance.count({
-        where: { staffId, workspaceId: ctx.workspaceId, isLate: true, ...dateFilter },
+        where: {
+          staffId,
+          workspaceId: ctx.workspaceId,
+          isLate: true,
+          ...dateFilter,
+        },
       }),
       this.db.cpAttendance.count({
-        where: { staffId, workspaceId: ctx.workspaceId, isOvertime: true, ...dateFilter },
+        where: {
+          staffId,
+          workspaceId: ctx.workspaceId,
+          isOvertime: true,
+          ...dateFilter,
+        },
       }),
       this.db.cpClient.count({
         where: {
@@ -308,9 +313,7 @@ export class CpAnalyticsService {
           createdByStaffId: staffId,
           workspaceId: ctx.workspaceId,
           deletedAt: null,
-          ...(dateFilter.date
-            ? { createdAt: dateFilter.date }
-            : {}),
+          ...(dateFilter.date ? { createdAt: dateFilter.date } : {}),
         },
         _count: { id: true },
         _sum: { totalAmount: true },
@@ -424,7 +427,11 @@ export class CpAnalyticsService {
     > = {};
     for (const row of invoiceAgg) {
       if (!invoiceByWs[row.workspaceId]) {
-        invoiceByWs[row.workspaceId] = { count: 0, totalBilled: 0, totalPaid: 0 };
+        invoiceByWs[row.workspaceId] = {
+          count: 0,
+          totalBilled: 0,
+          totalPaid: 0,
+        };
       }
       invoiceByWs[row.workspaceId].count += row._count.id;
       invoiceByWs[row.workspaceId].totalBilled += row._sum.totalAmount
@@ -486,4 +493,3 @@ export class CpAnalyticsService {
     return { [field]: filter };
   }
 }
-

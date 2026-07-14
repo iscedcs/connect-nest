@@ -36,10 +36,7 @@ export class CpClientsController {
   @CpRoles(CpRole.CLIENT)
   @ApiOperation({ summary: 'Get my client profile' })
   @ApiResponse({ status: 200, description: 'My client profile' })
-  getMe(
-    @CpContext() ctx: CpRequestContext,
-    @Param('wsId') _wsId: string,
-  ) {
+  getMe(@CpContext() ctx: CpRequestContext, @Param('wsId') _wsId: string) {
     return this.service.getMe(ctx);
   }
 
@@ -93,4 +90,3 @@ export class CpClientsController {
     return this.service.assign(ctx, clientId, dto, req);
   }
 }
-

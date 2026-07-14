@@ -34,10 +34,7 @@ export class CpCompanyProfileController {
   @CpRoles(CpRole.WORKSPACE_ADMIN, CpRole.STAFF, CpRole.CREATOR)
   @ApiOperation({ summary: 'Get company profile' })
   @ApiResponse({ status: 200, description: 'Company profile' })
-  get(
-    @CpContext() ctx: CpRequestContext,
-    @Param('wsId') _wsId: string,
-  ) {
+  get(@CpContext() ctx: CpRequestContext, @Param('wsId') _wsId: string) {
     return this.service.get(ctx);
   }
 
@@ -54,4 +51,3 @@ export class CpCompanyProfileController {
     return this.service.upsert(ctx, dto, req);
   }
 }
-

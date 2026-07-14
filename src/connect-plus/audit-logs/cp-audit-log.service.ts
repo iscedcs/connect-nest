@@ -61,7 +61,10 @@ export class CpAuditLogService {
         const lastEntry = await this.db.cpAuditLog.findFirst({
           where: resolvedWorkspaceId
             ? { workspaceId: resolvedWorkspaceId }
-            : { organizationId: organizationId ?? ctx?.organizationId ?? undefined },
+            : {
+                organizationId:
+                  organizationId ?? ctx?.organizationId ?? undefined,
+              },
           orderBy: { createdAt: 'desc' },
           select: { hash: true },
         });
@@ -160,7 +163,10 @@ export class CpAuditLogService {
   // ---------------------------------------------------------------------------
   // Export audit logs as CSV (WORKSPACE_ADMIN)
   // ---------------------------------------------------------------------------
-  async exportCsv(ctx: CpRequestContext, query: ListAuditLogsQueryDto): Promise<string> {
+  async exportCsv(
+    ctx: CpRequestContext,
+    query: ListAuditLogsQueryDto,
+  ): Promise<string> {
     const { entity, entityId, eventType, actorId, from, to } = query;
 
     const where: Prisma.CpAuditLogWhereInput = {
@@ -234,7 +240,8 @@ export class CpAuditLogService {
       },
     });
 
-    const brokenLinks: Array<{ id: string; index: number; reason: string }> = [];
+    const brokenLinks: Array<{ id: string; index: number; reason: string }> =
+      [];
 
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
@@ -266,7 +273,11 @@ export class CpAuditLogService {
       const expectedHash = createHash('sha256').update(hashInput).digest('hex');
 
       if (row.hash !== expectedHash) {
-        brokenLinks.push({ id: row.id, index: i, reason: 'Hash recomputation mismatch' });
+        brokenLinks.push({
+          id: row.id,
+          index: i,
+          reason: 'Hash recomputation mismatch',
+        });
       }
     }
 
@@ -277,4 +288,3 @@ export class CpAuditLogService {
     };
   }
 }
-

@@ -16,9 +16,11 @@ export class CpContextGuard implements CanActivate {
   constructor(private readonly db: DatabaseService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const req = context.switchToHttp().getRequest<
-      Request & { isce_auth?: IsceAuthPayload; cp?: CpRequestContext }
-    >();
+    const req = context
+      .switchToHttp()
+      .getRequest<
+        Request & { isce_auth?: IsceAuthPayload; cp?: CpRequestContext }
+      >();
 
     const authPayload = req.isce_auth;
     if (!authPayload?.id) {

@@ -33,7 +33,13 @@ export class AttendanceScheduler {
       },
       include: {
         staff: { include: { member: { select: { authUserId: true } } } },
-        workspace: { select: { id: true, organizationId: true, companyProfile: { select: { businessHours: true } } } },
+        workspace: {
+          select: {
+            id: true,
+            organizationId: true,
+            companyProfile: { select: { businessHours: true } },
+          },
+        },
       },
     });
 
@@ -57,13 +63,18 @@ export class AttendanceScheduler {
             | null
             | undefined;
           // Estimate standard hours from business hours entry; fallback to 9
-          const standardHours = bhJson?.[0]?.startTime && bhJson?.[0]?.endTime
-            ? (() => {
-                const [sh, sm] = (bhJson[0].startTime as string).split(':').map(Number);
-                const [eh, em] = (bhJson[0].endTime as string).split(':').map(Number);
-                return (eh * 60 + em - sh * 60 - sm) / 60;
-              })()
-            : 9;
+          const standardHours =
+            bhJson?.[0]?.startTime && bhJson?.[0]?.endTime
+              ? (() => {
+                  const [sh, sm] = (bhJson[0].startTime as string)
+                    .split(':')
+                    .map(Number);
+                  const [eh, em] = (bhJson[0].endTime as string)
+                    .split(':')
+                    .map(Number);
+                  return (eh * 60 + em - sh * 60 - sm) / 60;
+                })()
+              : 9;
           const isOvertime = hoursWorked > standardHours;
 
           await this.db.cpAttendance.update({
@@ -105,7 +116,10 @@ export class AttendanceScheduler {
             after: { checkOut: now, autoCheckedOut: true },
           });
         } catch (err) {
-          this.logger.error(`Auto-checkout failed for record ${record.id}`, err);
+          this.logger.error(
+            `Auto-checkout failed for record ${record.id}`,
+            err,
+          );
         }
       }),
     );

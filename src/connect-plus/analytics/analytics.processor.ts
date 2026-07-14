@@ -1,7 +1,11 @@
 import { Processor, Process } from '@nestjs/bull';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
-import { ANALYTICS_QUEUE, AnalyticsJobPayload, AnalyticsJobType } from './analytics.queue';
+import {
+  ANALYTICS_QUEUE,
+  AnalyticsJobPayload,
+  AnalyticsJobType,
+} from './analytics.queue';
 import { CpAnalyticsService } from './analytics.service';
 
 @Processor(ANALYTICS_QUEUE)
@@ -12,10 +16,19 @@ export class AnalyticsProcessor {
 
   @Process()
   async handleAnalyticsJob(job: Job<AnalyticsJobPayload>): Promise<void> {
-    const { type, workspaceId, organizationId, staffId, from, to, requestedByAuthId } =
-      job.data;
+    const {
+      type,
+      workspaceId,
+      organizationId,
+      staffId,
+      from,
+      to,
+      requestedByAuthId,
+    } = job.data;
 
-    this.logger.debug(`Processing analytics job [${type}] for requester ${requestedByAuthId}`);
+    this.logger.debug(
+      `Processing analytics job [${type}] for requester ${requestedByAuthId}`,
+    );
 
     const query = { from, to };
 
@@ -51,7 +64,9 @@ export class AnalyticsProcessor {
       }
       this.logger.debug(`Analytics job [${type}] completed`);
     } catch (err) {
-      this.logger.error(`Analytics job [${type}] failed: ${(err as Error).message}`);
+      this.logger.error(
+        `Analytics job [${type}] failed: ${(err as Error).message}`,
+      );
       throw err; // Bull will mark job as failed and retry per queue config
     }
   }

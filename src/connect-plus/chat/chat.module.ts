@@ -7,11 +7,7 @@ import { CpChatService } from './chat.service';
 import { CpChatGateway } from './chat.gateway';
 
 @Module({
-  imports: [
-    DatabaseModule,
-    CpGuardsModule,
-    JwtModule.register({}),
-  ],
+  imports: [DatabaseModule, CpGuardsModule, JwtModule.register({})],
   controllers: [CpChatController],
   providers: [CpChatService, CpChatGateway],
   exports: [CpChatService, CpChatGateway],

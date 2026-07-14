@@ -3,7 +3,9 @@ import { IsDateString, IsOptional, IsString } from 'class-validator';
 import { PaginateQueryDto } from '../../common/dto/paginate-query.dto';
 
 export class ListAuditLogsQueryDto extends PaginateQueryDto {
-  @ApiPropertyOptional({ description: 'Filter by target entity name (e.g. Invoice, Client)' })
+  @ApiPropertyOptional({
+    description: 'Filter by target entity name (e.g. Invoice, Client)',
+  })
   @IsOptional()
   @IsString()
   entity?: string;
@@ -13,7 +15,9 @@ export class ListAuditLogsQueryDto extends PaginateQueryDto {
   @IsString()
   entityId?: string;
 
-  @ApiPropertyOptional({ description: 'Filter by event type (e.g. INVOICE_CREATED)' })
+  @ApiPropertyOptional({
+    description: 'Filter by event type (e.g. INVOICE_CREATED)',
+  })
   @IsOptional()
   @IsString()
   eventType?: string;
