@@ -235,6 +235,8 @@ export type CpWorkspaceWhereInput = {
   auditLogs?: Prisma.CpAuditLogListRelationFilter
   connectCards?: Prisma.CpConnectCardListRelationFilter
   invites?: Prisma.CpWorkspaceInviteListRelationFilter
+  jobPosts?: Prisma.CpJobPostListRelationFilter
+  savedTalent?: Prisma.CpSavedTalentListRelationFilter
 }
 
 export type CpWorkspaceOrderByWithRelationInput = {
@@ -261,6 +263,8 @@ export type CpWorkspaceOrderByWithRelationInput = {
   auditLogs?: Prisma.CpAuditLogOrderByRelationAggregateInput
   connectCards?: Prisma.CpConnectCardOrderByRelationAggregateInput
   invites?: Prisma.CpWorkspaceInviteOrderByRelationAggregateInput
+  jobPosts?: Prisma.CpJobPostOrderByRelationAggregateInput
+  savedTalent?: Prisma.CpSavedTalentOrderByRelationAggregateInput
 }
 
 export type CpWorkspaceWhereUniqueInput = Prisma.AtLeast<{
@@ -290,6 +294,8 @@ export type CpWorkspaceWhereUniqueInput = Prisma.AtLeast<{
   auditLogs?: Prisma.CpAuditLogListRelationFilter
   connectCards?: Prisma.CpConnectCardListRelationFilter
   invites?: Prisma.CpWorkspaceInviteListRelationFilter
+  jobPosts?: Prisma.CpJobPostListRelationFilter
+  savedTalent?: Prisma.CpSavedTalentListRelationFilter
 }, "id" | "slug">
 
 export type CpWorkspaceOrderByWithAggregationInput = {
@@ -347,6 +353,8 @@ export type CpWorkspaceCreateInput = {
   auditLogs?: Prisma.CpAuditLogCreateNestedManyWithoutWorkspaceInput
   connectCards?: Prisma.CpConnectCardCreateNestedManyWithoutWorkspaceInput
   invites?: Prisma.CpWorkspaceInviteCreateNestedManyWithoutWorkspaceInput
+  jobPosts?: Prisma.CpJobPostCreateNestedManyWithoutWorkspaceInput
+  savedTalent?: Prisma.CpSavedTalentCreateNestedManyWithoutWorkspaceInput
 }
 
 export type CpWorkspaceUncheckedCreateInput = {
@@ -372,6 +380,8 @@ export type CpWorkspaceUncheckedCreateInput = {
   auditLogs?: Prisma.CpAuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
   connectCards?: Prisma.CpConnectCardUncheckedCreateNestedManyWithoutWorkspaceInput
   invites?: Prisma.CpWorkspaceInviteUncheckedCreateNestedManyWithoutWorkspaceInput
+  jobPosts?: Prisma.CpJobPostUncheckedCreateNestedManyWithoutWorkspaceInput
+  savedTalent?: Prisma.CpSavedTalentUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type CpWorkspaceUpdateInput = {
@@ -397,6 +407,8 @@ export type CpWorkspaceUpdateInput = {
   auditLogs?: Prisma.CpAuditLogUpdateManyWithoutWorkspaceNestedInput
   connectCards?: Prisma.CpConnectCardUpdateManyWithoutWorkspaceNestedInput
   invites?: Prisma.CpWorkspaceInviteUpdateManyWithoutWorkspaceNestedInput
+  jobPosts?: Prisma.CpJobPostUpdateManyWithoutWorkspaceNestedInput
+  savedTalent?: Prisma.CpSavedTalentUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type CpWorkspaceUncheckedUpdateInput = {
@@ -422,6 +434,8 @@ export type CpWorkspaceUncheckedUpdateInput = {
   auditLogs?: Prisma.CpAuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
   connectCards?: Prisma.CpConnectCardUncheckedUpdateManyWithoutWorkspaceNestedInput
   invites?: Prisma.CpWorkspaceInviteUncheckedUpdateManyWithoutWorkspaceNestedInput
+  jobPosts?: Prisma.CpJobPostUncheckedUpdateManyWithoutWorkspaceNestedInput
+  savedTalent?: Prisma.CpSavedTalentUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type CpWorkspaceCreateManyInput = {
@@ -739,6 +753,34 @@ export type CpWorkspaceUpdateOneWithoutAuditLogsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CpWorkspaceUpdateToOneWithWhereWithoutAuditLogsInput, Prisma.CpWorkspaceUpdateWithoutAuditLogsInput>, Prisma.CpWorkspaceUncheckedUpdateWithoutAuditLogsInput>
 }
 
+export type CpWorkspaceCreateNestedOneWithoutJobPostsInput = {
+  create?: Prisma.XOR<Prisma.CpWorkspaceCreateWithoutJobPostsInput, Prisma.CpWorkspaceUncheckedCreateWithoutJobPostsInput>
+  connectOrCreate?: Prisma.CpWorkspaceCreateOrConnectWithoutJobPostsInput
+  connect?: Prisma.CpWorkspaceWhereUniqueInput
+}
+
+export type CpWorkspaceUpdateOneRequiredWithoutJobPostsNestedInput = {
+  create?: Prisma.XOR<Prisma.CpWorkspaceCreateWithoutJobPostsInput, Prisma.CpWorkspaceUncheckedCreateWithoutJobPostsInput>
+  connectOrCreate?: Prisma.CpWorkspaceCreateOrConnectWithoutJobPostsInput
+  upsert?: Prisma.CpWorkspaceUpsertWithoutJobPostsInput
+  connect?: Prisma.CpWorkspaceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CpWorkspaceUpdateToOneWithWhereWithoutJobPostsInput, Prisma.CpWorkspaceUpdateWithoutJobPostsInput>, Prisma.CpWorkspaceUncheckedUpdateWithoutJobPostsInput>
+}
+
+export type CpWorkspaceCreateNestedOneWithoutSavedTalentInput = {
+  create?: Prisma.XOR<Prisma.CpWorkspaceCreateWithoutSavedTalentInput, Prisma.CpWorkspaceUncheckedCreateWithoutSavedTalentInput>
+  connectOrCreate?: Prisma.CpWorkspaceCreateOrConnectWithoutSavedTalentInput
+  connect?: Prisma.CpWorkspaceWhereUniqueInput
+}
+
+export type CpWorkspaceUpdateOneRequiredWithoutSavedTalentNestedInput = {
+  create?: Prisma.XOR<Prisma.CpWorkspaceCreateWithoutSavedTalentInput, Prisma.CpWorkspaceUncheckedCreateWithoutSavedTalentInput>
+  connectOrCreate?: Prisma.CpWorkspaceCreateOrConnectWithoutSavedTalentInput
+  upsert?: Prisma.CpWorkspaceUpsertWithoutSavedTalentInput
+  connect?: Prisma.CpWorkspaceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CpWorkspaceUpdateToOneWithWhereWithoutSavedTalentInput, Prisma.CpWorkspaceUpdateWithoutSavedTalentInput>, Prisma.CpWorkspaceUncheckedUpdateWithoutSavedTalentInput>
+}
+
 export type CpWorkspaceCreateWithoutOrganizationInput = {
   id?: string
   name: string
@@ -761,6 +803,8 @@ export type CpWorkspaceCreateWithoutOrganizationInput = {
   auditLogs?: Prisma.CpAuditLogCreateNestedManyWithoutWorkspaceInput
   connectCards?: Prisma.CpConnectCardCreateNestedManyWithoutWorkspaceInput
   invites?: Prisma.CpWorkspaceInviteCreateNestedManyWithoutWorkspaceInput
+  jobPosts?: Prisma.CpJobPostCreateNestedManyWithoutWorkspaceInput
+  savedTalent?: Prisma.CpSavedTalentCreateNestedManyWithoutWorkspaceInput
 }
 
 export type CpWorkspaceUncheckedCreateWithoutOrganizationInput = {
@@ -785,6 +829,8 @@ export type CpWorkspaceUncheckedCreateWithoutOrganizationInput = {
   auditLogs?: Prisma.CpAuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
   connectCards?: Prisma.CpConnectCardUncheckedCreateNestedManyWithoutWorkspaceInput
   invites?: Prisma.CpWorkspaceInviteUncheckedCreateNestedManyWithoutWorkspaceInput
+  jobPosts?: Prisma.CpJobPostUncheckedCreateNestedManyWithoutWorkspaceInput
+  savedTalent?: Prisma.CpSavedTalentUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type CpWorkspaceCreateOrConnectWithoutOrganizationInput = {
@@ -851,6 +897,8 @@ export type CpWorkspaceCreateWithoutMembersInput = {
   auditLogs?: Prisma.CpAuditLogCreateNestedManyWithoutWorkspaceInput
   connectCards?: Prisma.CpConnectCardCreateNestedManyWithoutWorkspaceInput
   invites?: Prisma.CpWorkspaceInviteCreateNestedManyWithoutWorkspaceInput
+  jobPosts?: Prisma.CpJobPostCreateNestedManyWithoutWorkspaceInput
+  savedTalent?: Prisma.CpSavedTalentCreateNestedManyWithoutWorkspaceInput
 }
 
 export type CpWorkspaceUncheckedCreateWithoutMembersInput = {
@@ -875,6 +923,8 @@ export type CpWorkspaceUncheckedCreateWithoutMembersInput = {
   auditLogs?: Prisma.CpAuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
   connectCards?: Prisma.CpConnectCardUncheckedCreateNestedManyWithoutWorkspaceInput
   invites?: Prisma.CpWorkspaceInviteUncheckedCreateNestedManyWithoutWorkspaceInput
+  jobPosts?: Prisma.CpJobPostUncheckedCreateNestedManyWithoutWorkspaceInput
+  savedTalent?: Prisma.CpSavedTalentUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type CpWorkspaceCreateOrConnectWithoutMembersInput = {
@@ -915,6 +965,8 @@ export type CpWorkspaceUpdateWithoutMembersInput = {
   auditLogs?: Prisma.CpAuditLogUpdateManyWithoutWorkspaceNestedInput
   connectCards?: Prisma.CpConnectCardUpdateManyWithoutWorkspaceNestedInput
   invites?: Prisma.CpWorkspaceInviteUpdateManyWithoutWorkspaceNestedInput
+  jobPosts?: Prisma.CpJobPostUpdateManyWithoutWorkspaceNestedInput
+  savedTalent?: Prisma.CpSavedTalentUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type CpWorkspaceUncheckedUpdateWithoutMembersInput = {
@@ -939,6 +991,8 @@ export type CpWorkspaceUncheckedUpdateWithoutMembersInput = {
   auditLogs?: Prisma.CpAuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
   connectCards?: Prisma.CpConnectCardUncheckedUpdateManyWithoutWorkspaceNestedInput
   invites?: Prisma.CpWorkspaceInviteUncheckedUpdateManyWithoutWorkspaceNestedInput
+  jobPosts?: Prisma.CpJobPostUncheckedUpdateManyWithoutWorkspaceNestedInput
+  savedTalent?: Prisma.CpSavedTalentUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type CpWorkspaceCreateWithoutCompanyProfileInput = {
@@ -963,6 +1017,8 @@ export type CpWorkspaceCreateWithoutCompanyProfileInput = {
   auditLogs?: Prisma.CpAuditLogCreateNestedManyWithoutWorkspaceInput
   connectCards?: Prisma.CpConnectCardCreateNestedManyWithoutWorkspaceInput
   invites?: Prisma.CpWorkspaceInviteCreateNestedManyWithoutWorkspaceInput
+  jobPosts?: Prisma.CpJobPostCreateNestedManyWithoutWorkspaceInput
+  savedTalent?: Prisma.CpSavedTalentCreateNestedManyWithoutWorkspaceInput
 }
 
 export type CpWorkspaceUncheckedCreateWithoutCompanyProfileInput = {
@@ -987,6 +1043,8 @@ export type CpWorkspaceUncheckedCreateWithoutCompanyProfileInput = {
   auditLogs?: Prisma.CpAuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
   connectCards?: Prisma.CpConnectCardUncheckedCreateNestedManyWithoutWorkspaceInput
   invites?: Prisma.CpWorkspaceInviteUncheckedCreateNestedManyWithoutWorkspaceInput
+  jobPosts?: Prisma.CpJobPostUncheckedCreateNestedManyWithoutWorkspaceInput
+  savedTalent?: Prisma.CpSavedTalentUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type CpWorkspaceCreateOrConnectWithoutCompanyProfileInput = {
@@ -1027,6 +1085,8 @@ export type CpWorkspaceUpdateWithoutCompanyProfileInput = {
   auditLogs?: Prisma.CpAuditLogUpdateManyWithoutWorkspaceNestedInput
   connectCards?: Prisma.CpConnectCardUpdateManyWithoutWorkspaceNestedInput
   invites?: Prisma.CpWorkspaceInviteUpdateManyWithoutWorkspaceNestedInput
+  jobPosts?: Prisma.CpJobPostUpdateManyWithoutWorkspaceNestedInput
+  savedTalent?: Prisma.CpSavedTalentUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type CpWorkspaceUncheckedUpdateWithoutCompanyProfileInput = {
@@ -1051,6 +1111,8 @@ export type CpWorkspaceUncheckedUpdateWithoutCompanyProfileInput = {
   auditLogs?: Prisma.CpAuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
   connectCards?: Prisma.CpConnectCardUncheckedUpdateManyWithoutWorkspaceNestedInput
   invites?: Prisma.CpWorkspaceInviteUncheckedUpdateManyWithoutWorkspaceNestedInput
+  jobPosts?: Prisma.CpJobPostUncheckedUpdateManyWithoutWorkspaceNestedInput
+  savedTalent?: Prisma.CpSavedTalentUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type CpWorkspaceCreateWithoutInvitesInput = {
@@ -1075,6 +1137,8 @@ export type CpWorkspaceCreateWithoutInvitesInput = {
   notifications?: Prisma.CpNotificationCreateNestedManyWithoutWorkspaceInput
   auditLogs?: Prisma.CpAuditLogCreateNestedManyWithoutWorkspaceInput
   connectCards?: Prisma.CpConnectCardCreateNestedManyWithoutWorkspaceInput
+  jobPosts?: Prisma.CpJobPostCreateNestedManyWithoutWorkspaceInput
+  savedTalent?: Prisma.CpSavedTalentCreateNestedManyWithoutWorkspaceInput
 }
 
 export type CpWorkspaceUncheckedCreateWithoutInvitesInput = {
@@ -1099,6 +1163,8 @@ export type CpWorkspaceUncheckedCreateWithoutInvitesInput = {
   notifications?: Prisma.CpNotificationUncheckedCreateNestedManyWithoutWorkspaceInput
   auditLogs?: Prisma.CpAuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
   connectCards?: Prisma.CpConnectCardUncheckedCreateNestedManyWithoutWorkspaceInput
+  jobPosts?: Prisma.CpJobPostUncheckedCreateNestedManyWithoutWorkspaceInput
+  savedTalent?: Prisma.CpSavedTalentUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type CpWorkspaceCreateOrConnectWithoutInvitesInput = {
@@ -1139,6 +1205,8 @@ export type CpWorkspaceUpdateWithoutInvitesInput = {
   notifications?: Prisma.CpNotificationUpdateManyWithoutWorkspaceNestedInput
   auditLogs?: Prisma.CpAuditLogUpdateManyWithoutWorkspaceNestedInput
   connectCards?: Prisma.CpConnectCardUpdateManyWithoutWorkspaceNestedInput
+  jobPosts?: Prisma.CpJobPostUpdateManyWithoutWorkspaceNestedInput
+  savedTalent?: Prisma.CpSavedTalentUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type CpWorkspaceUncheckedUpdateWithoutInvitesInput = {
@@ -1163,6 +1231,8 @@ export type CpWorkspaceUncheckedUpdateWithoutInvitesInput = {
   notifications?: Prisma.CpNotificationUncheckedUpdateManyWithoutWorkspaceNestedInput
   auditLogs?: Prisma.CpAuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
   connectCards?: Prisma.CpConnectCardUncheckedUpdateManyWithoutWorkspaceNestedInput
+  jobPosts?: Prisma.CpJobPostUncheckedUpdateManyWithoutWorkspaceNestedInput
+  savedTalent?: Prisma.CpSavedTalentUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type CpWorkspaceCreateWithoutConnectCardsInput = {
@@ -1187,6 +1257,8 @@ export type CpWorkspaceCreateWithoutConnectCardsInput = {
   notifications?: Prisma.CpNotificationCreateNestedManyWithoutWorkspaceInput
   auditLogs?: Prisma.CpAuditLogCreateNestedManyWithoutWorkspaceInput
   invites?: Prisma.CpWorkspaceInviteCreateNestedManyWithoutWorkspaceInput
+  jobPosts?: Prisma.CpJobPostCreateNestedManyWithoutWorkspaceInput
+  savedTalent?: Prisma.CpSavedTalentCreateNestedManyWithoutWorkspaceInput
 }
 
 export type CpWorkspaceUncheckedCreateWithoutConnectCardsInput = {
@@ -1211,6 +1283,8 @@ export type CpWorkspaceUncheckedCreateWithoutConnectCardsInput = {
   notifications?: Prisma.CpNotificationUncheckedCreateNestedManyWithoutWorkspaceInput
   auditLogs?: Prisma.CpAuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
   invites?: Prisma.CpWorkspaceInviteUncheckedCreateNestedManyWithoutWorkspaceInput
+  jobPosts?: Prisma.CpJobPostUncheckedCreateNestedManyWithoutWorkspaceInput
+  savedTalent?: Prisma.CpSavedTalentUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type CpWorkspaceCreateOrConnectWithoutConnectCardsInput = {
@@ -1251,6 +1325,8 @@ export type CpWorkspaceUpdateWithoutConnectCardsInput = {
   notifications?: Prisma.CpNotificationUpdateManyWithoutWorkspaceNestedInput
   auditLogs?: Prisma.CpAuditLogUpdateManyWithoutWorkspaceNestedInput
   invites?: Prisma.CpWorkspaceInviteUpdateManyWithoutWorkspaceNestedInput
+  jobPosts?: Prisma.CpJobPostUpdateManyWithoutWorkspaceNestedInput
+  savedTalent?: Prisma.CpSavedTalentUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type CpWorkspaceUncheckedUpdateWithoutConnectCardsInput = {
@@ -1275,6 +1351,8 @@ export type CpWorkspaceUncheckedUpdateWithoutConnectCardsInput = {
   notifications?: Prisma.CpNotificationUncheckedUpdateManyWithoutWorkspaceNestedInput
   auditLogs?: Prisma.CpAuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
   invites?: Prisma.CpWorkspaceInviteUncheckedUpdateManyWithoutWorkspaceNestedInput
+  jobPosts?: Prisma.CpJobPostUncheckedUpdateManyWithoutWorkspaceNestedInput
+  savedTalent?: Prisma.CpSavedTalentUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type CpWorkspaceCreateWithoutLeadsInput = {
@@ -1299,6 +1377,8 @@ export type CpWorkspaceCreateWithoutLeadsInput = {
   auditLogs?: Prisma.CpAuditLogCreateNestedManyWithoutWorkspaceInput
   connectCards?: Prisma.CpConnectCardCreateNestedManyWithoutWorkspaceInput
   invites?: Prisma.CpWorkspaceInviteCreateNestedManyWithoutWorkspaceInput
+  jobPosts?: Prisma.CpJobPostCreateNestedManyWithoutWorkspaceInput
+  savedTalent?: Prisma.CpSavedTalentCreateNestedManyWithoutWorkspaceInput
 }
 
 export type CpWorkspaceUncheckedCreateWithoutLeadsInput = {
@@ -1323,6 +1403,8 @@ export type CpWorkspaceUncheckedCreateWithoutLeadsInput = {
   auditLogs?: Prisma.CpAuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
   connectCards?: Prisma.CpConnectCardUncheckedCreateNestedManyWithoutWorkspaceInput
   invites?: Prisma.CpWorkspaceInviteUncheckedCreateNestedManyWithoutWorkspaceInput
+  jobPosts?: Prisma.CpJobPostUncheckedCreateNestedManyWithoutWorkspaceInput
+  savedTalent?: Prisma.CpSavedTalentUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type CpWorkspaceCreateOrConnectWithoutLeadsInput = {
@@ -1363,6 +1445,8 @@ export type CpWorkspaceUpdateWithoutLeadsInput = {
   auditLogs?: Prisma.CpAuditLogUpdateManyWithoutWorkspaceNestedInput
   connectCards?: Prisma.CpConnectCardUpdateManyWithoutWorkspaceNestedInput
   invites?: Prisma.CpWorkspaceInviteUpdateManyWithoutWorkspaceNestedInput
+  jobPosts?: Prisma.CpJobPostUpdateManyWithoutWorkspaceNestedInput
+  savedTalent?: Prisma.CpSavedTalentUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type CpWorkspaceUncheckedUpdateWithoutLeadsInput = {
@@ -1387,6 +1471,8 @@ export type CpWorkspaceUncheckedUpdateWithoutLeadsInput = {
   auditLogs?: Prisma.CpAuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
   connectCards?: Prisma.CpConnectCardUncheckedUpdateManyWithoutWorkspaceNestedInput
   invites?: Prisma.CpWorkspaceInviteUncheckedUpdateManyWithoutWorkspaceNestedInput
+  jobPosts?: Prisma.CpJobPostUncheckedUpdateManyWithoutWorkspaceNestedInput
+  savedTalent?: Prisma.CpSavedTalentUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type CpWorkspaceCreateWithoutClientsInput = {
@@ -1411,6 +1497,8 @@ export type CpWorkspaceCreateWithoutClientsInput = {
   auditLogs?: Prisma.CpAuditLogCreateNestedManyWithoutWorkspaceInput
   connectCards?: Prisma.CpConnectCardCreateNestedManyWithoutWorkspaceInput
   invites?: Prisma.CpWorkspaceInviteCreateNestedManyWithoutWorkspaceInput
+  jobPosts?: Prisma.CpJobPostCreateNestedManyWithoutWorkspaceInput
+  savedTalent?: Prisma.CpSavedTalentCreateNestedManyWithoutWorkspaceInput
 }
 
 export type CpWorkspaceUncheckedCreateWithoutClientsInput = {
@@ -1435,6 +1523,8 @@ export type CpWorkspaceUncheckedCreateWithoutClientsInput = {
   auditLogs?: Prisma.CpAuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
   connectCards?: Prisma.CpConnectCardUncheckedCreateNestedManyWithoutWorkspaceInput
   invites?: Prisma.CpWorkspaceInviteUncheckedCreateNestedManyWithoutWorkspaceInput
+  jobPosts?: Prisma.CpJobPostUncheckedCreateNestedManyWithoutWorkspaceInput
+  savedTalent?: Prisma.CpSavedTalentUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type CpWorkspaceCreateOrConnectWithoutClientsInput = {
@@ -1475,6 +1565,8 @@ export type CpWorkspaceUpdateWithoutClientsInput = {
   auditLogs?: Prisma.CpAuditLogUpdateManyWithoutWorkspaceNestedInput
   connectCards?: Prisma.CpConnectCardUpdateManyWithoutWorkspaceNestedInput
   invites?: Prisma.CpWorkspaceInviteUpdateManyWithoutWorkspaceNestedInput
+  jobPosts?: Prisma.CpJobPostUpdateManyWithoutWorkspaceNestedInput
+  savedTalent?: Prisma.CpSavedTalentUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type CpWorkspaceUncheckedUpdateWithoutClientsInput = {
@@ -1499,6 +1591,8 @@ export type CpWorkspaceUncheckedUpdateWithoutClientsInput = {
   auditLogs?: Prisma.CpAuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
   connectCards?: Prisma.CpConnectCardUncheckedUpdateManyWithoutWorkspaceNestedInput
   invites?: Prisma.CpWorkspaceInviteUncheckedUpdateManyWithoutWorkspaceNestedInput
+  jobPosts?: Prisma.CpJobPostUncheckedUpdateManyWithoutWorkspaceNestedInput
+  savedTalent?: Prisma.CpSavedTalentUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type CpWorkspaceCreateWithoutAppointmentsInput = {
@@ -1523,6 +1617,8 @@ export type CpWorkspaceCreateWithoutAppointmentsInput = {
   auditLogs?: Prisma.CpAuditLogCreateNestedManyWithoutWorkspaceInput
   connectCards?: Prisma.CpConnectCardCreateNestedManyWithoutWorkspaceInput
   invites?: Prisma.CpWorkspaceInviteCreateNestedManyWithoutWorkspaceInput
+  jobPosts?: Prisma.CpJobPostCreateNestedManyWithoutWorkspaceInput
+  savedTalent?: Prisma.CpSavedTalentCreateNestedManyWithoutWorkspaceInput
 }
 
 export type CpWorkspaceUncheckedCreateWithoutAppointmentsInput = {
@@ -1547,6 +1643,8 @@ export type CpWorkspaceUncheckedCreateWithoutAppointmentsInput = {
   auditLogs?: Prisma.CpAuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
   connectCards?: Prisma.CpConnectCardUncheckedCreateNestedManyWithoutWorkspaceInput
   invites?: Prisma.CpWorkspaceInviteUncheckedCreateNestedManyWithoutWorkspaceInput
+  jobPosts?: Prisma.CpJobPostUncheckedCreateNestedManyWithoutWorkspaceInput
+  savedTalent?: Prisma.CpSavedTalentUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type CpWorkspaceCreateOrConnectWithoutAppointmentsInput = {
@@ -1587,6 +1685,8 @@ export type CpWorkspaceUpdateWithoutAppointmentsInput = {
   auditLogs?: Prisma.CpAuditLogUpdateManyWithoutWorkspaceNestedInput
   connectCards?: Prisma.CpConnectCardUpdateManyWithoutWorkspaceNestedInput
   invites?: Prisma.CpWorkspaceInviteUpdateManyWithoutWorkspaceNestedInput
+  jobPosts?: Prisma.CpJobPostUpdateManyWithoutWorkspaceNestedInput
+  savedTalent?: Prisma.CpSavedTalentUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type CpWorkspaceUncheckedUpdateWithoutAppointmentsInput = {
@@ -1611,6 +1711,8 @@ export type CpWorkspaceUncheckedUpdateWithoutAppointmentsInput = {
   auditLogs?: Prisma.CpAuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
   connectCards?: Prisma.CpConnectCardUncheckedUpdateManyWithoutWorkspaceNestedInput
   invites?: Prisma.CpWorkspaceInviteUncheckedUpdateManyWithoutWorkspaceNestedInput
+  jobPosts?: Prisma.CpJobPostUncheckedUpdateManyWithoutWorkspaceNestedInput
+  savedTalent?: Prisma.CpSavedTalentUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type CpWorkspaceCreateWithoutAttendanceInput = {
@@ -1635,6 +1737,8 @@ export type CpWorkspaceCreateWithoutAttendanceInput = {
   auditLogs?: Prisma.CpAuditLogCreateNestedManyWithoutWorkspaceInput
   connectCards?: Prisma.CpConnectCardCreateNestedManyWithoutWorkspaceInput
   invites?: Prisma.CpWorkspaceInviteCreateNestedManyWithoutWorkspaceInput
+  jobPosts?: Prisma.CpJobPostCreateNestedManyWithoutWorkspaceInput
+  savedTalent?: Prisma.CpSavedTalentCreateNestedManyWithoutWorkspaceInput
 }
 
 export type CpWorkspaceUncheckedCreateWithoutAttendanceInput = {
@@ -1659,6 +1763,8 @@ export type CpWorkspaceUncheckedCreateWithoutAttendanceInput = {
   auditLogs?: Prisma.CpAuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
   connectCards?: Prisma.CpConnectCardUncheckedCreateNestedManyWithoutWorkspaceInput
   invites?: Prisma.CpWorkspaceInviteUncheckedCreateNestedManyWithoutWorkspaceInput
+  jobPosts?: Prisma.CpJobPostUncheckedCreateNestedManyWithoutWorkspaceInput
+  savedTalent?: Prisma.CpSavedTalentUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type CpWorkspaceCreateOrConnectWithoutAttendanceInput = {
@@ -1699,6 +1805,8 @@ export type CpWorkspaceUpdateWithoutAttendanceInput = {
   auditLogs?: Prisma.CpAuditLogUpdateManyWithoutWorkspaceNestedInput
   connectCards?: Prisma.CpConnectCardUpdateManyWithoutWorkspaceNestedInput
   invites?: Prisma.CpWorkspaceInviteUpdateManyWithoutWorkspaceNestedInput
+  jobPosts?: Prisma.CpJobPostUpdateManyWithoutWorkspaceNestedInput
+  savedTalent?: Prisma.CpSavedTalentUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type CpWorkspaceUncheckedUpdateWithoutAttendanceInput = {
@@ -1723,6 +1831,8 @@ export type CpWorkspaceUncheckedUpdateWithoutAttendanceInput = {
   auditLogs?: Prisma.CpAuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
   connectCards?: Prisma.CpConnectCardUncheckedUpdateManyWithoutWorkspaceNestedInput
   invites?: Prisma.CpWorkspaceInviteUncheckedUpdateManyWithoutWorkspaceNestedInput
+  jobPosts?: Prisma.CpJobPostUncheckedUpdateManyWithoutWorkspaceNestedInput
+  savedTalent?: Prisma.CpSavedTalentUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type CpWorkspaceCreateWithoutConversationsInput = {
@@ -1747,6 +1857,8 @@ export type CpWorkspaceCreateWithoutConversationsInput = {
   auditLogs?: Prisma.CpAuditLogCreateNestedManyWithoutWorkspaceInput
   connectCards?: Prisma.CpConnectCardCreateNestedManyWithoutWorkspaceInput
   invites?: Prisma.CpWorkspaceInviteCreateNestedManyWithoutWorkspaceInput
+  jobPosts?: Prisma.CpJobPostCreateNestedManyWithoutWorkspaceInput
+  savedTalent?: Prisma.CpSavedTalentCreateNestedManyWithoutWorkspaceInput
 }
 
 export type CpWorkspaceUncheckedCreateWithoutConversationsInput = {
@@ -1771,6 +1883,8 @@ export type CpWorkspaceUncheckedCreateWithoutConversationsInput = {
   auditLogs?: Prisma.CpAuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
   connectCards?: Prisma.CpConnectCardUncheckedCreateNestedManyWithoutWorkspaceInput
   invites?: Prisma.CpWorkspaceInviteUncheckedCreateNestedManyWithoutWorkspaceInput
+  jobPosts?: Prisma.CpJobPostUncheckedCreateNestedManyWithoutWorkspaceInput
+  savedTalent?: Prisma.CpSavedTalentUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type CpWorkspaceCreateOrConnectWithoutConversationsInput = {
@@ -1811,6 +1925,8 @@ export type CpWorkspaceUpdateWithoutConversationsInput = {
   auditLogs?: Prisma.CpAuditLogUpdateManyWithoutWorkspaceNestedInput
   connectCards?: Prisma.CpConnectCardUpdateManyWithoutWorkspaceNestedInput
   invites?: Prisma.CpWorkspaceInviteUpdateManyWithoutWorkspaceNestedInput
+  jobPosts?: Prisma.CpJobPostUpdateManyWithoutWorkspaceNestedInput
+  savedTalent?: Prisma.CpSavedTalentUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type CpWorkspaceUncheckedUpdateWithoutConversationsInput = {
@@ -1835,6 +1951,8 @@ export type CpWorkspaceUncheckedUpdateWithoutConversationsInput = {
   auditLogs?: Prisma.CpAuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
   connectCards?: Prisma.CpConnectCardUncheckedUpdateManyWithoutWorkspaceNestedInput
   invites?: Prisma.CpWorkspaceInviteUncheckedUpdateManyWithoutWorkspaceNestedInput
+  jobPosts?: Prisma.CpJobPostUncheckedUpdateManyWithoutWorkspaceNestedInput
+  savedTalent?: Prisma.CpSavedTalentUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type CpWorkspaceCreateWithoutInvoicesInput = {
@@ -1859,6 +1977,8 @@ export type CpWorkspaceCreateWithoutInvoicesInput = {
   auditLogs?: Prisma.CpAuditLogCreateNestedManyWithoutWorkspaceInput
   connectCards?: Prisma.CpConnectCardCreateNestedManyWithoutWorkspaceInput
   invites?: Prisma.CpWorkspaceInviteCreateNestedManyWithoutWorkspaceInput
+  jobPosts?: Prisma.CpJobPostCreateNestedManyWithoutWorkspaceInput
+  savedTalent?: Prisma.CpSavedTalentCreateNestedManyWithoutWorkspaceInput
 }
 
 export type CpWorkspaceUncheckedCreateWithoutInvoicesInput = {
@@ -1883,6 +2003,8 @@ export type CpWorkspaceUncheckedCreateWithoutInvoicesInput = {
   auditLogs?: Prisma.CpAuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
   connectCards?: Prisma.CpConnectCardUncheckedCreateNestedManyWithoutWorkspaceInput
   invites?: Prisma.CpWorkspaceInviteUncheckedCreateNestedManyWithoutWorkspaceInput
+  jobPosts?: Prisma.CpJobPostUncheckedCreateNestedManyWithoutWorkspaceInput
+  savedTalent?: Prisma.CpSavedTalentUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type CpWorkspaceCreateOrConnectWithoutInvoicesInput = {
@@ -1923,6 +2045,8 @@ export type CpWorkspaceUpdateWithoutInvoicesInput = {
   auditLogs?: Prisma.CpAuditLogUpdateManyWithoutWorkspaceNestedInput
   connectCards?: Prisma.CpConnectCardUpdateManyWithoutWorkspaceNestedInput
   invites?: Prisma.CpWorkspaceInviteUpdateManyWithoutWorkspaceNestedInput
+  jobPosts?: Prisma.CpJobPostUpdateManyWithoutWorkspaceNestedInput
+  savedTalent?: Prisma.CpSavedTalentUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type CpWorkspaceUncheckedUpdateWithoutInvoicesInput = {
@@ -1947,6 +2071,8 @@ export type CpWorkspaceUncheckedUpdateWithoutInvoicesInput = {
   auditLogs?: Prisma.CpAuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
   connectCards?: Prisma.CpConnectCardUncheckedUpdateManyWithoutWorkspaceNestedInput
   invites?: Prisma.CpWorkspaceInviteUncheckedUpdateManyWithoutWorkspaceNestedInput
+  jobPosts?: Prisma.CpJobPostUncheckedUpdateManyWithoutWorkspaceNestedInput
+  savedTalent?: Prisma.CpSavedTalentUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type CpWorkspaceCreateWithoutNotificationsInput = {
@@ -1971,6 +2097,8 @@ export type CpWorkspaceCreateWithoutNotificationsInput = {
   auditLogs?: Prisma.CpAuditLogCreateNestedManyWithoutWorkspaceInput
   connectCards?: Prisma.CpConnectCardCreateNestedManyWithoutWorkspaceInput
   invites?: Prisma.CpWorkspaceInviteCreateNestedManyWithoutWorkspaceInput
+  jobPosts?: Prisma.CpJobPostCreateNestedManyWithoutWorkspaceInput
+  savedTalent?: Prisma.CpSavedTalentCreateNestedManyWithoutWorkspaceInput
 }
 
 export type CpWorkspaceUncheckedCreateWithoutNotificationsInput = {
@@ -1995,6 +2123,8 @@ export type CpWorkspaceUncheckedCreateWithoutNotificationsInput = {
   auditLogs?: Prisma.CpAuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
   connectCards?: Prisma.CpConnectCardUncheckedCreateNestedManyWithoutWorkspaceInput
   invites?: Prisma.CpWorkspaceInviteUncheckedCreateNestedManyWithoutWorkspaceInput
+  jobPosts?: Prisma.CpJobPostUncheckedCreateNestedManyWithoutWorkspaceInput
+  savedTalent?: Prisma.CpSavedTalentUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type CpWorkspaceCreateOrConnectWithoutNotificationsInput = {
@@ -2035,6 +2165,8 @@ export type CpWorkspaceUpdateWithoutNotificationsInput = {
   auditLogs?: Prisma.CpAuditLogUpdateManyWithoutWorkspaceNestedInput
   connectCards?: Prisma.CpConnectCardUpdateManyWithoutWorkspaceNestedInput
   invites?: Prisma.CpWorkspaceInviteUpdateManyWithoutWorkspaceNestedInput
+  jobPosts?: Prisma.CpJobPostUpdateManyWithoutWorkspaceNestedInput
+  savedTalent?: Prisma.CpSavedTalentUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type CpWorkspaceUncheckedUpdateWithoutNotificationsInput = {
@@ -2059,6 +2191,8 @@ export type CpWorkspaceUncheckedUpdateWithoutNotificationsInput = {
   auditLogs?: Prisma.CpAuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
   connectCards?: Prisma.CpConnectCardUncheckedUpdateManyWithoutWorkspaceNestedInput
   invites?: Prisma.CpWorkspaceInviteUncheckedUpdateManyWithoutWorkspaceNestedInput
+  jobPosts?: Prisma.CpJobPostUncheckedUpdateManyWithoutWorkspaceNestedInput
+  savedTalent?: Prisma.CpSavedTalentUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type CpWorkspaceCreateWithoutAuditLogsInput = {
@@ -2083,6 +2217,8 @@ export type CpWorkspaceCreateWithoutAuditLogsInput = {
   notifications?: Prisma.CpNotificationCreateNestedManyWithoutWorkspaceInput
   connectCards?: Prisma.CpConnectCardCreateNestedManyWithoutWorkspaceInput
   invites?: Prisma.CpWorkspaceInviteCreateNestedManyWithoutWorkspaceInput
+  jobPosts?: Prisma.CpJobPostCreateNestedManyWithoutWorkspaceInput
+  savedTalent?: Prisma.CpSavedTalentCreateNestedManyWithoutWorkspaceInput
 }
 
 export type CpWorkspaceUncheckedCreateWithoutAuditLogsInput = {
@@ -2107,6 +2243,8 @@ export type CpWorkspaceUncheckedCreateWithoutAuditLogsInput = {
   notifications?: Prisma.CpNotificationUncheckedCreateNestedManyWithoutWorkspaceInput
   connectCards?: Prisma.CpConnectCardUncheckedCreateNestedManyWithoutWorkspaceInput
   invites?: Prisma.CpWorkspaceInviteUncheckedCreateNestedManyWithoutWorkspaceInput
+  jobPosts?: Prisma.CpJobPostUncheckedCreateNestedManyWithoutWorkspaceInput
+  savedTalent?: Prisma.CpSavedTalentUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type CpWorkspaceCreateOrConnectWithoutAuditLogsInput = {
@@ -2147,6 +2285,8 @@ export type CpWorkspaceUpdateWithoutAuditLogsInput = {
   notifications?: Prisma.CpNotificationUpdateManyWithoutWorkspaceNestedInput
   connectCards?: Prisma.CpConnectCardUpdateManyWithoutWorkspaceNestedInput
   invites?: Prisma.CpWorkspaceInviteUpdateManyWithoutWorkspaceNestedInput
+  jobPosts?: Prisma.CpJobPostUpdateManyWithoutWorkspaceNestedInput
+  savedTalent?: Prisma.CpSavedTalentUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type CpWorkspaceUncheckedUpdateWithoutAuditLogsInput = {
@@ -2171,6 +2311,248 @@ export type CpWorkspaceUncheckedUpdateWithoutAuditLogsInput = {
   notifications?: Prisma.CpNotificationUncheckedUpdateManyWithoutWorkspaceNestedInput
   connectCards?: Prisma.CpConnectCardUncheckedUpdateManyWithoutWorkspaceNestedInput
   invites?: Prisma.CpWorkspaceInviteUncheckedUpdateManyWithoutWorkspaceNestedInput
+  jobPosts?: Prisma.CpJobPostUncheckedUpdateManyWithoutWorkspaceNestedInput
+  savedTalent?: Prisma.CpSavedTalentUncheckedUpdateManyWithoutWorkspaceNestedInput
+}
+
+export type CpWorkspaceCreateWithoutJobPostsInput = {
+  id?: string
+  name: string
+  slug: string
+  status?: $Enums.CpWorkspaceStatus
+  suspendedAt?: Date | string | null
+  archivedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  organization: Prisma.CpOrganizationCreateNestedOneWithoutWorkspacesInput
+  companyProfile?: Prisma.CpCompanyProfileCreateNestedOneWithoutWorkspaceInput
+  members?: Prisma.CpWorkspaceMemberCreateNestedManyWithoutWorkspaceInput
+  leads?: Prisma.CpLeadCreateNestedManyWithoutWorkspaceInput
+  clients?: Prisma.CpClientCreateNestedManyWithoutWorkspaceInput
+  appointments?: Prisma.CpAppointmentCreateNestedManyWithoutWorkspaceInput
+  attendance?: Prisma.CpAttendanceCreateNestedManyWithoutWorkspaceInput
+  conversations?: Prisma.CpConversationCreateNestedManyWithoutWorkspaceInput
+  invoices?: Prisma.CpInvoiceCreateNestedManyWithoutWorkspaceInput
+  notifications?: Prisma.CpNotificationCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.CpAuditLogCreateNestedManyWithoutWorkspaceInput
+  connectCards?: Prisma.CpConnectCardCreateNestedManyWithoutWorkspaceInput
+  invites?: Prisma.CpWorkspaceInviteCreateNestedManyWithoutWorkspaceInput
+  savedTalent?: Prisma.CpSavedTalentCreateNestedManyWithoutWorkspaceInput
+}
+
+export type CpWorkspaceUncheckedCreateWithoutJobPostsInput = {
+  id?: string
+  organizationId: string
+  name: string
+  slug: string
+  status?: $Enums.CpWorkspaceStatus
+  suspendedAt?: Date | string | null
+  archivedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  companyProfile?: Prisma.CpCompanyProfileUncheckedCreateNestedOneWithoutWorkspaceInput
+  members?: Prisma.CpWorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
+  leads?: Prisma.CpLeadUncheckedCreateNestedManyWithoutWorkspaceInput
+  clients?: Prisma.CpClientUncheckedCreateNestedManyWithoutWorkspaceInput
+  appointments?: Prisma.CpAppointmentUncheckedCreateNestedManyWithoutWorkspaceInput
+  attendance?: Prisma.CpAttendanceUncheckedCreateNestedManyWithoutWorkspaceInput
+  conversations?: Prisma.CpConversationUncheckedCreateNestedManyWithoutWorkspaceInput
+  invoices?: Prisma.CpInvoiceUncheckedCreateNestedManyWithoutWorkspaceInput
+  notifications?: Prisma.CpNotificationUncheckedCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.CpAuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  connectCards?: Prisma.CpConnectCardUncheckedCreateNestedManyWithoutWorkspaceInput
+  invites?: Prisma.CpWorkspaceInviteUncheckedCreateNestedManyWithoutWorkspaceInput
+  savedTalent?: Prisma.CpSavedTalentUncheckedCreateNestedManyWithoutWorkspaceInput
+}
+
+export type CpWorkspaceCreateOrConnectWithoutJobPostsInput = {
+  where: Prisma.CpWorkspaceWhereUniqueInput
+  create: Prisma.XOR<Prisma.CpWorkspaceCreateWithoutJobPostsInput, Prisma.CpWorkspaceUncheckedCreateWithoutJobPostsInput>
+}
+
+export type CpWorkspaceUpsertWithoutJobPostsInput = {
+  update: Prisma.XOR<Prisma.CpWorkspaceUpdateWithoutJobPostsInput, Prisma.CpWorkspaceUncheckedUpdateWithoutJobPostsInput>
+  create: Prisma.XOR<Prisma.CpWorkspaceCreateWithoutJobPostsInput, Prisma.CpWorkspaceUncheckedCreateWithoutJobPostsInput>
+  where?: Prisma.CpWorkspaceWhereInput
+}
+
+export type CpWorkspaceUpdateToOneWithWhereWithoutJobPostsInput = {
+  where?: Prisma.CpWorkspaceWhereInput
+  data: Prisma.XOR<Prisma.CpWorkspaceUpdateWithoutJobPostsInput, Prisma.CpWorkspaceUncheckedUpdateWithoutJobPostsInput>
+}
+
+export type CpWorkspaceUpdateWithoutJobPostsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumCpWorkspaceStatusFieldUpdateOperationsInput | $Enums.CpWorkspaceStatus
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organization?: Prisma.CpOrganizationUpdateOneRequiredWithoutWorkspacesNestedInput
+  companyProfile?: Prisma.CpCompanyProfileUpdateOneWithoutWorkspaceNestedInput
+  members?: Prisma.CpWorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
+  leads?: Prisma.CpLeadUpdateManyWithoutWorkspaceNestedInput
+  clients?: Prisma.CpClientUpdateManyWithoutWorkspaceNestedInput
+  appointments?: Prisma.CpAppointmentUpdateManyWithoutWorkspaceNestedInput
+  attendance?: Prisma.CpAttendanceUpdateManyWithoutWorkspaceNestedInput
+  conversations?: Prisma.CpConversationUpdateManyWithoutWorkspaceNestedInput
+  invoices?: Prisma.CpInvoiceUpdateManyWithoutWorkspaceNestedInput
+  notifications?: Prisma.CpNotificationUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.CpAuditLogUpdateManyWithoutWorkspaceNestedInput
+  connectCards?: Prisma.CpConnectCardUpdateManyWithoutWorkspaceNestedInput
+  invites?: Prisma.CpWorkspaceInviteUpdateManyWithoutWorkspaceNestedInput
+  savedTalent?: Prisma.CpSavedTalentUpdateManyWithoutWorkspaceNestedInput
+}
+
+export type CpWorkspaceUncheckedUpdateWithoutJobPostsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumCpWorkspaceStatusFieldUpdateOperationsInput | $Enums.CpWorkspaceStatus
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  companyProfile?: Prisma.CpCompanyProfileUncheckedUpdateOneWithoutWorkspaceNestedInput
+  members?: Prisma.CpWorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
+  leads?: Prisma.CpLeadUncheckedUpdateManyWithoutWorkspaceNestedInput
+  clients?: Prisma.CpClientUncheckedUpdateManyWithoutWorkspaceNestedInput
+  appointments?: Prisma.CpAppointmentUncheckedUpdateManyWithoutWorkspaceNestedInput
+  attendance?: Prisma.CpAttendanceUncheckedUpdateManyWithoutWorkspaceNestedInput
+  conversations?: Prisma.CpConversationUncheckedUpdateManyWithoutWorkspaceNestedInput
+  invoices?: Prisma.CpInvoiceUncheckedUpdateManyWithoutWorkspaceNestedInput
+  notifications?: Prisma.CpNotificationUncheckedUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.CpAuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  connectCards?: Prisma.CpConnectCardUncheckedUpdateManyWithoutWorkspaceNestedInput
+  invites?: Prisma.CpWorkspaceInviteUncheckedUpdateManyWithoutWorkspaceNestedInput
+  savedTalent?: Prisma.CpSavedTalentUncheckedUpdateManyWithoutWorkspaceNestedInput
+}
+
+export type CpWorkspaceCreateWithoutSavedTalentInput = {
+  id?: string
+  name: string
+  slug: string
+  status?: $Enums.CpWorkspaceStatus
+  suspendedAt?: Date | string | null
+  archivedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  organization: Prisma.CpOrganizationCreateNestedOneWithoutWorkspacesInput
+  companyProfile?: Prisma.CpCompanyProfileCreateNestedOneWithoutWorkspaceInput
+  members?: Prisma.CpWorkspaceMemberCreateNestedManyWithoutWorkspaceInput
+  leads?: Prisma.CpLeadCreateNestedManyWithoutWorkspaceInput
+  clients?: Prisma.CpClientCreateNestedManyWithoutWorkspaceInput
+  appointments?: Prisma.CpAppointmentCreateNestedManyWithoutWorkspaceInput
+  attendance?: Prisma.CpAttendanceCreateNestedManyWithoutWorkspaceInput
+  conversations?: Prisma.CpConversationCreateNestedManyWithoutWorkspaceInput
+  invoices?: Prisma.CpInvoiceCreateNestedManyWithoutWorkspaceInput
+  notifications?: Prisma.CpNotificationCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.CpAuditLogCreateNestedManyWithoutWorkspaceInput
+  connectCards?: Prisma.CpConnectCardCreateNestedManyWithoutWorkspaceInput
+  invites?: Prisma.CpWorkspaceInviteCreateNestedManyWithoutWorkspaceInput
+  jobPosts?: Prisma.CpJobPostCreateNestedManyWithoutWorkspaceInput
+}
+
+export type CpWorkspaceUncheckedCreateWithoutSavedTalentInput = {
+  id?: string
+  organizationId: string
+  name: string
+  slug: string
+  status?: $Enums.CpWorkspaceStatus
+  suspendedAt?: Date | string | null
+  archivedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  companyProfile?: Prisma.CpCompanyProfileUncheckedCreateNestedOneWithoutWorkspaceInput
+  members?: Prisma.CpWorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
+  leads?: Prisma.CpLeadUncheckedCreateNestedManyWithoutWorkspaceInput
+  clients?: Prisma.CpClientUncheckedCreateNestedManyWithoutWorkspaceInput
+  appointments?: Prisma.CpAppointmentUncheckedCreateNestedManyWithoutWorkspaceInput
+  attendance?: Prisma.CpAttendanceUncheckedCreateNestedManyWithoutWorkspaceInput
+  conversations?: Prisma.CpConversationUncheckedCreateNestedManyWithoutWorkspaceInput
+  invoices?: Prisma.CpInvoiceUncheckedCreateNestedManyWithoutWorkspaceInput
+  notifications?: Prisma.CpNotificationUncheckedCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.CpAuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  connectCards?: Prisma.CpConnectCardUncheckedCreateNestedManyWithoutWorkspaceInput
+  invites?: Prisma.CpWorkspaceInviteUncheckedCreateNestedManyWithoutWorkspaceInput
+  jobPosts?: Prisma.CpJobPostUncheckedCreateNestedManyWithoutWorkspaceInput
+}
+
+export type CpWorkspaceCreateOrConnectWithoutSavedTalentInput = {
+  where: Prisma.CpWorkspaceWhereUniqueInput
+  create: Prisma.XOR<Prisma.CpWorkspaceCreateWithoutSavedTalentInput, Prisma.CpWorkspaceUncheckedCreateWithoutSavedTalentInput>
+}
+
+export type CpWorkspaceUpsertWithoutSavedTalentInput = {
+  update: Prisma.XOR<Prisma.CpWorkspaceUpdateWithoutSavedTalentInput, Prisma.CpWorkspaceUncheckedUpdateWithoutSavedTalentInput>
+  create: Prisma.XOR<Prisma.CpWorkspaceCreateWithoutSavedTalentInput, Prisma.CpWorkspaceUncheckedCreateWithoutSavedTalentInput>
+  where?: Prisma.CpWorkspaceWhereInput
+}
+
+export type CpWorkspaceUpdateToOneWithWhereWithoutSavedTalentInput = {
+  where?: Prisma.CpWorkspaceWhereInput
+  data: Prisma.XOR<Prisma.CpWorkspaceUpdateWithoutSavedTalentInput, Prisma.CpWorkspaceUncheckedUpdateWithoutSavedTalentInput>
+}
+
+export type CpWorkspaceUpdateWithoutSavedTalentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumCpWorkspaceStatusFieldUpdateOperationsInput | $Enums.CpWorkspaceStatus
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organization?: Prisma.CpOrganizationUpdateOneRequiredWithoutWorkspacesNestedInput
+  companyProfile?: Prisma.CpCompanyProfileUpdateOneWithoutWorkspaceNestedInput
+  members?: Prisma.CpWorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
+  leads?: Prisma.CpLeadUpdateManyWithoutWorkspaceNestedInput
+  clients?: Prisma.CpClientUpdateManyWithoutWorkspaceNestedInput
+  appointments?: Prisma.CpAppointmentUpdateManyWithoutWorkspaceNestedInput
+  attendance?: Prisma.CpAttendanceUpdateManyWithoutWorkspaceNestedInput
+  conversations?: Prisma.CpConversationUpdateManyWithoutWorkspaceNestedInput
+  invoices?: Prisma.CpInvoiceUpdateManyWithoutWorkspaceNestedInput
+  notifications?: Prisma.CpNotificationUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.CpAuditLogUpdateManyWithoutWorkspaceNestedInput
+  connectCards?: Prisma.CpConnectCardUpdateManyWithoutWorkspaceNestedInput
+  invites?: Prisma.CpWorkspaceInviteUpdateManyWithoutWorkspaceNestedInput
+  jobPosts?: Prisma.CpJobPostUpdateManyWithoutWorkspaceNestedInput
+}
+
+export type CpWorkspaceUncheckedUpdateWithoutSavedTalentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumCpWorkspaceStatusFieldUpdateOperationsInput | $Enums.CpWorkspaceStatus
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  companyProfile?: Prisma.CpCompanyProfileUncheckedUpdateOneWithoutWorkspaceNestedInput
+  members?: Prisma.CpWorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
+  leads?: Prisma.CpLeadUncheckedUpdateManyWithoutWorkspaceNestedInput
+  clients?: Prisma.CpClientUncheckedUpdateManyWithoutWorkspaceNestedInput
+  appointments?: Prisma.CpAppointmentUncheckedUpdateManyWithoutWorkspaceNestedInput
+  attendance?: Prisma.CpAttendanceUncheckedUpdateManyWithoutWorkspaceNestedInput
+  conversations?: Prisma.CpConversationUncheckedUpdateManyWithoutWorkspaceNestedInput
+  invoices?: Prisma.CpInvoiceUncheckedUpdateManyWithoutWorkspaceNestedInput
+  notifications?: Prisma.CpNotificationUncheckedUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.CpAuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  connectCards?: Prisma.CpConnectCardUncheckedUpdateManyWithoutWorkspaceNestedInput
+  invites?: Prisma.CpWorkspaceInviteUncheckedUpdateManyWithoutWorkspaceNestedInput
+  jobPosts?: Prisma.CpJobPostUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type CpWorkspaceCreateManyOrganizationInput = {
@@ -2207,6 +2589,8 @@ export type CpWorkspaceUpdateWithoutOrganizationInput = {
   auditLogs?: Prisma.CpAuditLogUpdateManyWithoutWorkspaceNestedInput
   connectCards?: Prisma.CpConnectCardUpdateManyWithoutWorkspaceNestedInput
   invites?: Prisma.CpWorkspaceInviteUpdateManyWithoutWorkspaceNestedInput
+  jobPosts?: Prisma.CpJobPostUpdateManyWithoutWorkspaceNestedInput
+  savedTalent?: Prisma.CpSavedTalentUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type CpWorkspaceUncheckedUpdateWithoutOrganizationInput = {
@@ -2231,6 +2615,8 @@ export type CpWorkspaceUncheckedUpdateWithoutOrganizationInput = {
   auditLogs?: Prisma.CpAuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
   connectCards?: Prisma.CpConnectCardUncheckedUpdateManyWithoutWorkspaceNestedInput
   invites?: Prisma.CpWorkspaceInviteUncheckedUpdateManyWithoutWorkspaceNestedInput
+  jobPosts?: Prisma.CpJobPostUncheckedUpdateManyWithoutWorkspaceNestedInput
+  savedTalent?: Prisma.CpSavedTalentUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type CpWorkspaceUncheckedUpdateManyWithoutOrganizationInput = {
@@ -2262,6 +2648,8 @@ export type CpWorkspaceCountOutputType = {
   auditLogs: number
   connectCards: number
   invites: number
+  jobPosts: number
+  savedTalent: number
 }
 
 export type CpWorkspaceCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2276,6 +2664,8 @@ export type CpWorkspaceCountOutputTypeSelect<ExtArgs extends runtime.Types.Exten
   auditLogs?: boolean | CpWorkspaceCountOutputTypeCountAuditLogsArgs
   connectCards?: boolean | CpWorkspaceCountOutputTypeCountConnectCardsArgs
   invites?: boolean | CpWorkspaceCountOutputTypeCountInvitesArgs
+  jobPosts?: boolean | CpWorkspaceCountOutputTypeCountJobPostsArgs
+  savedTalent?: boolean | CpWorkspaceCountOutputTypeCountSavedTalentArgs
 }
 
 /**
@@ -2365,6 +2755,20 @@ export type CpWorkspaceCountOutputTypeCountInvitesArgs<ExtArgs extends runtime.T
   where?: Prisma.CpWorkspaceInviteWhereInput
 }
 
+/**
+ * CpWorkspaceCountOutputType without action
+ */
+export type CpWorkspaceCountOutputTypeCountJobPostsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CpJobPostWhereInput
+}
+
+/**
+ * CpWorkspaceCountOutputType without action
+ */
+export type CpWorkspaceCountOutputTypeCountSavedTalentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CpSavedTalentWhereInput
+}
+
 
 export type CpWorkspaceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2390,6 +2794,8 @@ export type CpWorkspaceSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   auditLogs?: boolean | Prisma.CpWorkspace$auditLogsArgs<ExtArgs>
   connectCards?: boolean | Prisma.CpWorkspace$connectCardsArgs<ExtArgs>
   invites?: boolean | Prisma.CpWorkspace$invitesArgs<ExtArgs>
+  jobPosts?: boolean | Prisma.CpWorkspace$jobPostsArgs<ExtArgs>
+  savedTalent?: boolean | Prisma.CpWorkspace$savedTalentArgs<ExtArgs>
   _count?: boolean | Prisma.CpWorkspaceCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["cpWorkspace"]>
 
@@ -2449,6 +2855,8 @@ export type CpWorkspaceInclude<ExtArgs extends runtime.Types.Extensions.Internal
   auditLogs?: boolean | Prisma.CpWorkspace$auditLogsArgs<ExtArgs>
   connectCards?: boolean | Prisma.CpWorkspace$connectCardsArgs<ExtArgs>
   invites?: boolean | Prisma.CpWorkspace$invitesArgs<ExtArgs>
+  jobPosts?: boolean | Prisma.CpWorkspace$jobPostsArgs<ExtArgs>
+  savedTalent?: boolean | Prisma.CpWorkspace$savedTalentArgs<ExtArgs>
   _count?: boolean | Prisma.CpWorkspaceCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CpWorkspaceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2474,6 +2882,8 @@ export type $CpWorkspacePayload<ExtArgs extends runtime.Types.Extensions.Interna
     auditLogs: Prisma.$CpAuditLogPayload<ExtArgs>[]
     connectCards: Prisma.$CpConnectCardPayload<ExtArgs>[]
     invites: Prisma.$CpWorkspaceInvitePayload<ExtArgs>[]
+    jobPosts: Prisma.$CpJobPostPayload<ExtArgs>[]
+    savedTalent: Prisma.$CpSavedTalentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2893,6 +3303,8 @@ export interface Prisma__CpWorkspaceClient<T, Null = never, ExtArgs extends runt
   auditLogs<T extends Prisma.CpWorkspace$auditLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CpWorkspace$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CpAuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   connectCards<T extends Prisma.CpWorkspace$connectCardsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CpWorkspace$connectCardsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CpConnectCardPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   invites<T extends Prisma.CpWorkspace$invitesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CpWorkspace$invitesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CpWorkspaceInvitePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  jobPosts<T extends Prisma.CpWorkspace$jobPostsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CpWorkspace$jobPostsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CpJobPostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  savedTalent<T extends Prisma.CpWorkspace$savedTalentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CpWorkspace$savedTalentArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CpSavedTalentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3613,6 +4025,54 @@ export type CpWorkspace$invitesArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.CpWorkspaceInviteScalarFieldEnum | Prisma.CpWorkspaceInviteScalarFieldEnum[]
+}
+
+/**
+ * CpWorkspace.jobPosts
+ */
+export type CpWorkspace$jobPostsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CpJobPost
+   */
+  select?: Prisma.CpJobPostSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CpJobPost
+   */
+  omit?: Prisma.CpJobPostOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CpJobPostInclude<ExtArgs> | null
+  where?: Prisma.CpJobPostWhereInput
+  orderBy?: Prisma.CpJobPostOrderByWithRelationInput | Prisma.CpJobPostOrderByWithRelationInput[]
+  cursor?: Prisma.CpJobPostWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CpJobPostScalarFieldEnum | Prisma.CpJobPostScalarFieldEnum[]
+}
+
+/**
+ * CpWorkspace.savedTalent
+ */
+export type CpWorkspace$savedTalentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CpSavedTalent
+   */
+  select?: Prisma.CpSavedTalentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CpSavedTalent
+   */
+  omit?: Prisma.CpSavedTalentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CpSavedTalentInclude<ExtArgs> | null
+  where?: Prisma.CpSavedTalentWhereInput
+  orderBy?: Prisma.CpSavedTalentOrderByWithRelationInput | Prisma.CpSavedTalentOrderByWithRelationInput[]
+  cursor?: Prisma.CpSavedTalentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CpSavedTalentScalarFieldEnum | Prisma.CpSavedTalentScalarFieldEnum[]
 }
 
 /**

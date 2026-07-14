@@ -432,7 +432,10 @@ export const ModelName = {
   CpInvoice: 'CpInvoice',
   CpInvoiceItem: 'CpInvoiceItem',
   CpNotification: 'CpNotification',
-  CpAuditLog: 'CpAuditLog'
+  CpAuditLog: 'CpAuditLog',
+  CpJobPost: 'CpJobPost',
+  CpJobApplication: 'CpJobApplication',
+  CpSavedTalent: 'CpSavedTalent'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -448,7 +451,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "profile" | "social" | "contact" | "notification" | "supportRequest" | "cardInteraction" | "profileContact" | "link" | "video" | "meetingLink" | "appointmentLink" | "spotifyItem" | "fileItem" | "form" | "formTemplate" | "submission" | "wallet" | "connectConfig" | "deviceProfile" | "artisan" | "artisanCategory" | "artisanCategoryMap" | "artisanService" | "portfolioItem" | "bookingThread" | "threadMessage" | "booking" | "review" | "promotion" | "platformSetting" | "cpOrganization" | "cpSubscription" | "cpWorkspace" | "cpWorkspaceMember" | "cpCompanyProfile" | "cpWorkspaceInvite" | "cpStaffProfile" | "cpConnectCard" | "cpLead" | "cpClient" | "cpAppointment" | "cpAttendance" | "cpConversation" | "cpConversationParticipant" | "cpMessage" | "cpInvoice" | "cpInvoiceItem" | "cpNotification" | "cpAuditLog"
+    modelProps: "profile" | "social" | "contact" | "notification" | "supportRequest" | "cardInteraction" | "profileContact" | "link" | "video" | "meetingLink" | "appointmentLink" | "spotifyItem" | "fileItem" | "form" | "formTemplate" | "submission" | "wallet" | "connectConfig" | "deviceProfile" | "artisan" | "artisanCategory" | "artisanCategoryMap" | "artisanService" | "portfolioItem" | "bookingThread" | "threadMessage" | "booking" | "review" | "promotion" | "platformSetting" | "cpOrganization" | "cpSubscription" | "cpWorkspace" | "cpWorkspaceMember" | "cpCompanyProfile" | "cpWorkspaceInvite" | "cpStaffProfile" | "cpConnectCard" | "cpLead" | "cpClient" | "cpAppointment" | "cpAttendance" | "cpConversation" | "cpConversationParticipant" | "cpMessage" | "cpInvoice" | "cpInvoiceItem" | "cpNotification" | "cpAuditLog" | "cpJobPost" | "cpJobApplication" | "cpSavedTalent"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -4078,6 +4081,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    CpJobPost: {
+      payload: Prisma.$CpJobPostPayload<ExtArgs>
+      fields: Prisma.CpJobPostFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CpJobPostFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpJobPostPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CpJobPostFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpJobPostPayload>
+        }
+        findFirst: {
+          args: Prisma.CpJobPostFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpJobPostPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CpJobPostFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpJobPostPayload>
+        }
+        findMany: {
+          args: Prisma.CpJobPostFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpJobPostPayload>[]
+        }
+        create: {
+          args: Prisma.CpJobPostCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpJobPostPayload>
+        }
+        createMany: {
+          args: Prisma.CpJobPostCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CpJobPostCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpJobPostPayload>[]
+        }
+        delete: {
+          args: Prisma.CpJobPostDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpJobPostPayload>
+        }
+        update: {
+          args: Prisma.CpJobPostUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpJobPostPayload>
+        }
+        deleteMany: {
+          args: Prisma.CpJobPostDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CpJobPostUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CpJobPostUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpJobPostPayload>[]
+        }
+        upsert: {
+          args: Prisma.CpJobPostUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpJobPostPayload>
+        }
+        aggregate: {
+          args: Prisma.CpJobPostAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCpJobPost>
+        }
+        groupBy: {
+          args: Prisma.CpJobPostGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CpJobPostGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CpJobPostCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CpJobPostCountAggregateOutputType> | number
+        }
+      }
+    }
+    CpJobApplication: {
+      payload: Prisma.$CpJobApplicationPayload<ExtArgs>
+      fields: Prisma.CpJobApplicationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CpJobApplicationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpJobApplicationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CpJobApplicationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpJobApplicationPayload>
+        }
+        findFirst: {
+          args: Prisma.CpJobApplicationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpJobApplicationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CpJobApplicationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpJobApplicationPayload>
+        }
+        findMany: {
+          args: Prisma.CpJobApplicationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpJobApplicationPayload>[]
+        }
+        create: {
+          args: Prisma.CpJobApplicationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpJobApplicationPayload>
+        }
+        createMany: {
+          args: Prisma.CpJobApplicationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CpJobApplicationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpJobApplicationPayload>[]
+        }
+        delete: {
+          args: Prisma.CpJobApplicationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpJobApplicationPayload>
+        }
+        update: {
+          args: Prisma.CpJobApplicationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpJobApplicationPayload>
+        }
+        deleteMany: {
+          args: Prisma.CpJobApplicationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CpJobApplicationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CpJobApplicationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpJobApplicationPayload>[]
+        }
+        upsert: {
+          args: Prisma.CpJobApplicationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpJobApplicationPayload>
+        }
+        aggregate: {
+          args: Prisma.CpJobApplicationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCpJobApplication>
+        }
+        groupBy: {
+          args: Prisma.CpJobApplicationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CpJobApplicationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CpJobApplicationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CpJobApplicationCountAggregateOutputType> | number
+        }
+      }
+    }
+    CpSavedTalent: {
+      payload: Prisma.$CpSavedTalentPayload<ExtArgs>
+      fields: Prisma.CpSavedTalentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CpSavedTalentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpSavedTalentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CpSavedTalentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpSavedTalentPayload>
+        }
+        findFirst: {
+          args: Prisma.CpSavedTalentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpSavedTalentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CpSavedTalentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpSavedTalentPayload>
+        }
+        findMany: {
+          args: Prisma.CpSavedTalentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpSavedTalentPayload>[]
+        }
+        create: {
+          args: Prisma.CpSavedTalentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpSavedTalentPayload>
+        }
+        createMany: {
+          args: Prisma.CpSavedTalentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CpSavedTalentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpSavedTalentPayload>[]
+        }
+        delete: {
+          args: Prisma.CpSavedTalentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpSavedTalentPayload>
+        }
+        update: {
+          args: Prisma.CpSavedTalentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpSavedTalentPayload>
+        }
+        deleteMany: {
+          args: Prisma.CpSavedTalentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CpSavedTalentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CpSavedTalentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpSavedTalentPayload>[]
+        }
+        upsert: {
+          args: Prisma.CpSavedTalentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpSavedTalentPayload>
+        }
+        aggregate: {
+          args: Prisma.CpSavedTalentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCpSavedTalent>
+        }
+        groupBy: {
+          args: Prisma.CpSavedTalentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CpSavedTalentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CpSavedTalentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CpSavedTalentCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -4432,6 +4657,10 @@ export const ArtisanScalarFieldEnum = {
   totalBookings: 'totalBookings',
   totalEarnings: 'totalEarnings',
   workingHours: 'workingHours',
+  openToWork: 'openToWork',
+  desiredJobTypes: 'desiredJobTypes',
+  desiredWorkModels: 'desiredWorkModels',
+  skills: 'skills',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
@@ -4976,6 +5205,47 @@ export const CpAuditLogScalarFieldEnum = {
 export type CpAuditLogScalarFieldEnum = (typeof CpAuditLogScalarFieldEnum)[keyof typeof CpAuditLogScalarFieldEnum]
 
 
+export const CpJobPostScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  title: 'title',
+  description: 'description',
+  jobType: 'jobType',
+  workModel: 'workModel',
+  requiredSkills: 'requiredSkills',
+  minBudget: 'minBudget',
+  maxBudget: 'maxBudget',
+  isActive: 'isActive',
+  createdAt: 'createdAt'
+} as const
+
+export type CpJobPostScalarFieldEnum = (typeof CpJobPostScalarFieldEnum)[keyof typeof CpJobPostScalarFieldEnum]
+
+
+export const CpJobApplicationScalarFieldEnum = {
+  id: 'id',
+  jobId: 'jobId',
+  artisanId: 'artisanId',
+  coverLetter: 'coverLetter',
+  resumeUrl: 'resumeUrl',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type CpJobApplicationScalarFieldEnum = (typeof CpJobApplicationScalarFieldEnum)[keyof typeof CpJobApplicationScalarFieldEnum]
+
+
+export const CpSavedTalentScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  artisanId: 'artisanId',
+  notes: 'notes',
+  createdAt: 'createdAt'
+} as const
+
+export type CpSavedTalentScalarFieldEnum = (typeof CpSavedTalentScalarFieldEnum)[keyof typeof CpSavedTalentScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -5174,6 +5444,34 @@ export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
  * Reference to a field of type 'Decimal[]'
  */
 export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
+    
+
+
+/**
+ * Reference to a field of type 'JobType[]'
+ */
+export type ListEnumJobTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'JobType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'JobType'
+ */
+export type EnumJobTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'JobType'>
+    
+
+
+/**
+ * Reference to a field of type 'WorkModel[]'
+ */
+export type ListEnumWorkModelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'WorkModel[]'>
+    
+
+
+/**
+ * Reference to a field of type 'WorkModel'
+ */
+export type EnumWorkModelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'WorkModel'>
     
 
 
@@ -5713,6 +6011,9 @@ export type GlobalOmitConfig = {
   cpInvoiceItem?: Prisma.CpInvoiceItemOmit
   cpNotification?: Prisma.CpNotificationOmit
   cpAuditLog?: Prisma.CpAuditLogOmit
+  cpJobPost?: Prisma.CpJobPostOmit
+  cpJobApplication?: Prisma.CpJobApplicationOmit
+  cpSavedTalent?: Prisma.CpSavedTalentOmit
 }
 
 /* Types for Logging */
