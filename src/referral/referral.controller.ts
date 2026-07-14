@@ -11,21 +11,22 @@ export class ReferralController {
   @Get('me')
   @ApiOperation({ summary: 'Get referral summary for current user' })
   getReferralSummary(@Request() req) {
-    const userId = req.isce_auth?.id;
-    return this.authClientService.getReferralSummary(userId);
+    const authHeader = req.headers.authorization;
+    return this.authClientService.getReferralSummary(authHeader);
   }
 
   @Post('business/apply')
   @ApiOperation({ summary: 'Apply for business referrer status' })
   applyForBusinessReferrer(@Request() req) {
-    const userId = req.isce_auth?.id;
-    return this.authClientService.applyForBusinessReferrer(userId);
+    const authHeader = req.headers.authorization;
+    return this.authClientService.applyForBusinessReferrer(authHeader);
   }
 
   @Post('cash-out')
   @ApiOperation({ summary: 'Request cash out for referral earnings' })
   requestCashOut(@Request() req) {
-    const userId = req.isce_auth?.id;
-    return this.authClientService.requestCashOut(userId);
+    const authHeader = req.headers.authorization;
+    return this.authClientService.requestCashOut(authHeader);
   }
 }
+
