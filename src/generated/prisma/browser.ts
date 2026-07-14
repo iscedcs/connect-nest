@@ -261,3 +261,18 @@ export type CpNotification = Prisma.CpNotificationModel
  * 
  */
 export type CpAuditLog = Prisma.CpAuditLogModel
+/**
+ * Model CpJobPost
+ * 
+ */
+export type CpJobPost = Prisma.CpJobPostModel
+/**
+ * Model CpJobApplication
+ * 
+ */
+export type CpJobApplication = Prisma.CpJobApplicationModel
+/**
+ * Model CpSavedTalent
+ * 
+ */
+export type CpSavedTalent = Prisma.CpSavedTalentModel

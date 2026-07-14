@@ -37,7 +37,7 @@ export class CpStaffController {
   constructor(private readonly service: CpStaffService) {}
 
   @Post('invite')
-  @CpRoles(CpRole.WORKSPACE_ADMIN, CpRole.CREATOR)
+  @CpRoles(CpRole.WORKSPACE_ADMIN)
   @ApiOperation({ summary: 'Invite staff member' })
   @ApiResponse({ status: 201, description: 'Staff invitation sent' })
   inviteStaff(

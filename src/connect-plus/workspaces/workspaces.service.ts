@@ -64,6 +64,14 @@ export class CpWorkspacesService {
       },
     });
 
+    // Auto-create company profile
+    await this.db.cpCompanyProfile.create({
+      data: {
+        workspaceId: workspace.id,
+        name: dto.name,
+      },
+    });
+
     this.auditLog.write({
       ctx,
       req,

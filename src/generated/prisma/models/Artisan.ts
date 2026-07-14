@@ -53,6 +53,7 @@ export type ArtisanMinAggregateOutputType = {
   totalReviews: number | null
   totalBookings: number | null
   totalEarnings: runtime.Decimal | null
+  openToWork: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -72,6 +73,7 @@ export type ArtisanMaxAggregateOutputType = {
   totalReviews: number | null
   totalBookings: number | null
   totalEarnings: runtime.Decimal | null
+  openToWork: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -92,6 +94,10 @@ export type ArtisanCountAggregateOutputType = {
   totalBookings: number
   totalEarnings: number
   workingHours: number
+  openToWork: number
+  desiredJobTypes: number
+  desiredWorkModels: number
+  skills: number
   createdAt: number
   updatedAt: number
   deletedAt: number
@@ -127,6 +133,7 @@ export type ArtisanMinAggregateInputType = {
   totalReviews?: true
   totalBookings?: true
   totalEarnings?: true
+  openToWork?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -146,6 +153,7 @@ export type ArtisanMaxAggregateInputType = {
   totalReviews?: true
   totalBookings?: true
   totalEarnings?: true
+  openToWork?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -166,6 +174,10 @@ export type ArtisanCountAggregateInputType = {
   totalBookings?: true
   totalEarnings?: true
   workingHours?: true
+  openToWork?: true
+  desiredJobTypes?: true
+  desiredWorkModels?: true
+  skills?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -273,6 +285,10 @@ export type ArtisanGroupByOutputType = {
   totalBookings: number
   totalEarnings: runtime.Decimal
   workingHours: runtime.JsonValue | null
+  openToWork: boolean
+  desiredJobTypes: $Enums.JobType[]
+  desiredWorkModels: $Enums.WorkModel[]
+  skills: string[]
   createdAt: Date
   updatedAt: Date
   deletedAt: Date | null
@@ -316,6 +332,10 @@ export type ArtisanWhereInput = {
   totalBookings?: Prisma.IntFilter<"Artisan"> | number
   totalEarnings?: Prisma.DecimalFilter<"Artisan"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.JsonNullableFilter<"Artisan">
+  openToWork?: Prisma.BoolFilter<"Artisan"> | boolean
+  desiredJobTypes?: Prisma.EnumJobTypeNullableListFilter<"Artisan">
+  desiredWorkModels?: Prisma.EnumWorkModelNullableListFilter<"Artisan">
+  skills?: Prisma.StringNullableListFilter<"Artisan">
   createdAt?: Prisma.DateTimeFilter<"Artisan"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Artisan"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Artisan"> | Date | string | null
@@ -327,6 +347,8 @@ export type ArtisanWhereInput = {
   reviews?: Prisma.ReviewListRelationFilter
   promotions?: Prisma.PromotionListRelationFilter
   threads?: Prisma.BookingThreadListRelationFilter
+  applications?: Prisma.CpJobApplicationListRelationFilter
+  savedBy?: Prisma.CpSavedTalentListRelationFilter
 }
 
 export type ArtisanOrderByWithRelationInput = {
@@ -344,6 +366,10 @@ export type ArtisanOrderByWithRelationInput = {
   totalBookings?: Prisma.SortOrder
   totalEarnings?: Prisma.SortOrder
   workingHours?: Prisma.SortOrderInput | Prisma.SortOrder
+  openToWork?: Prisma.SortOrder
+  desiredJobTypes?: Prisma.SortOrder
+  desiredWorkModels?: Prisma.SortOrder
+  skills?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -355,6 +381,8 @@ export type ArtisanOrderByWithRelationInput = {
   reviews?: Prisma.ReviewOrderByRelationAggregateInput
   promotions?: Prisma.PromotionOrderByRelationAggregateInput
   threads?: Prisma.BookingThreadOrderByRelationAggregateInput
+  applications?: Prisma.CpJobApplicationOrderByRelationAggregateInput
+  savedBy?: Prisma.CpSavedTalentOrderByRelationAggregateInput
 }
 
 export type ArtisanWhereUniqueInput = Prisma.AtLeast<{
@@ -375,6 +403,10 @@ export type ArtisanWhereUniqueInput = Prisma.AtLeast<{
   totalBookings?: Prisma.IntFilter<"Artisan"> | number
   totalEarnings?: Prisma.DecimalFilter<"Artisan"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.JsonNullableFilter<"Artisan">
+  openToWork?: Prisma.BoolFilter<"Artisan"> | boolean
+  desiredJobTypes?: Prisma.EnumJobTypeNullableListFilter<"Artisan">
+  desiredWorkModels?: Prisma.EnumWorkModelNullableListFilter<"Artisan">
+  skills?: Prisma.StringNullableListFilter<"Artisan">
   createdAt?: Prisma.DateTimeFilter<"Artisan"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Artisan"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Artisan"> | Date | string | null
@@ -386,6 +418,8 @@ export type ArtisanWhereUniqueInput = Prisma.AtLeast<{
   reviews?: Prisma.ReviewListRelationFilter
   promotions?: Prisma.PromotionListRelationFilter
   threads?: Prisma.BookingThreadListRelationFilter
+  applications?: Prisma.CpJobApplicationListRelationFilter
+  savedBy?: Prisma.CpSavedTalentListRelationFilter
 }, "id" | "profileId">
 
 export type ArtisanOrderByWithAggregationInput = {
@@ -403,6 +437,10 @@ export type ArtisanOrderByWithAggregationInput = {
   totalBookings?: Prisma.SortOrder
   totalEarnings?: Prisma.SortOrder
   workingHours?: Prisma.SortOrderInput | Prisma.SortOrder
+  openToWork?: Prisma.SortOrder
+  desiredJobTypes?: Prisma.SortOrder
+  desiredWorkModels?: Prisma.SortOrder
+  skills?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -431,6 +469,10 @@ export type ArtisanScalarWhereWithAggregatesInput = {
   totalBookings?: Prisma.IntWithAggregatesFilter<"Artisan"> | number
   totalEarnings?: Prisma.DecimalWithAggregatesFilter<"Artisan"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.JsonNullableWithAggregatesFilter<"Artisan">
+  openToWork?: Prisma.BoolWithAggregatesFilter<"Artisan"> | boolean
+  desiredJobTypes?: Prisma.EnumJobTypeNullableListFilter<"Artisan">
+  desiredWorkModels?: Prisma.EnumWorkModelNullableListFilter<"Artisan">
+  skills?: Prisma.StringNullableListFilter<"Artisan">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Artisan"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Artisan"> | Date | string
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Artisan"> | Date | string | null
@@ -450,6 +492,10 @@ export type ArtisanCreateInput = {
   totalBookings?: number
   totalEarnings?: runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: boolean
+  desiredJobTypes?: Prisma.ArtisanCreatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanCreatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanCreateskillsInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -461,6 +507,8 @@ export type ArtisanCreateInput = {
   reviews?: Prisma.ReviewCreateNestedManyWithoutArtisanInput
   promotions?: Prisma.PromotionCreateNestedManyWithoutArtisanInput
   threads?: Prisma.BookingThreadCreateNestedManyWithoutArtisanInput
+  applications?: Prisma.CpJobApplicationCreateNestedManyWithoutArtisanInput
+  savedBy?: Prisma.CpSavedTalentCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanUncheckedCreateInput = {
@@ -478,6 +526,10 @@ export type ArtisanUncheckedCreateInput = {
   totalBookings?: number
   totalEarnings?: runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: boolean
+  desiredJobTypes?: Prisma.ArtisanCreatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanCreatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanCreateskillsInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -488,6 +540,8 @@ export type ArtisanUncheckedCreateInput = {
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutArtisanInput
   promotions?: Prisma.PromotionUncheckedCreateNestedManyWithoutArtisanInput
   threads?: Prisma.BookingThreadUncheckedCreateNestedManyWithoutArtisanInput
+  applications?: Prisma.CpJobApplicationUncheckedCreateNestedManyWithoutArtisanInput
+  savedBy?: Prisma.CpSavedTalentUncheckedCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanUpdateInput = {
@@ -504,6 +558,10 @@ export type ArtisanUpdateInput = {
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
   totalEarnings?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  desiredJobTypes?: Prisma.ArtisanUpdatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanUpdatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanUpdateskillsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -515,6 +573,8 @@ export type ArtisanUpdateInput = {
   reviews?: Prisma.ReviewUpdateManyWithoutArtisanNestedInput
   promotions?: Prisma.PromotionUpdateManyWithoutArtisanNestedInput
   threads?: Prisma.BookingThreadUpdateManyWithoutArtisanNestedInput
+  applications?: Prisma.CpJobApplicationUpdateManyWithoutArtisanNestedInput
+  savedBy?: Prisma.CpSavedTalentUpdateManyWithoutArtisanNestedInput
 }
 
 export type ArtisanUncheckedUpdateInput = {
@@ -532,6 +592,10 @@ export type ArtisanUncheckedUpdateInput = {
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
   totalEarnings?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  desiredJobTypes?: Prisma.ArtisanUpdatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanUpdatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanUpdateskillsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -542,6 +606,8 @@ export type ArtisanUncheckedUpdateInput = {
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutArtisanNestedInput
   promotions?: Prisma.PromotionUncheckedUpdateManyWithoutArtisanNestedInput
   threads?: Prisma.BookingThreadUncheckedUpdateManyWithoutArtisanNestedInput
+  applications?: Prisma.CpJobApplicationUncheckedUpdateManyWithoutArtisanNestedInput
+  savedBy?: Prisma.CpSavedTalentUncheckedUpdateManyWithoutArtisanNestedInput
 }
 
 export type ArtisanCreateManyInput = {
@@ -559,6 +625,10 @@ export type ArtisanCreateManyInput = {
   totalBookings?: number
   totalEarnings?: runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: boolean
+  desiredJobTypes?: Prisma.ArtisanCreatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanCreatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanCreateskillsInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -578,6 +648,10 @@ export type ArtisanUpdateManyMutationInput = {
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
   totalEarnings?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  desiredJobTypes?: Prisma.ArtisanUpdatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanUpdatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanUpdateskillsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -598,6 +672,10 @@ export type ArtisanUncheckedUpdateManyInput = {
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
   totalEarnings?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  desiredJobTypes?: Prisma.ArtisanUpdatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanUpdatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanUpdateskillsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -606,6 +684,30 @@ export type ArtisanUncheckedUpdateManyInput = {
 export type ArtisanNullableScalarRelationFilter = {
   is?: Prisma.ArtisanWhereInput | null
   isNot?: Prisma.ArtisanWhereInput | null
+}
+
+export type EnumJobTypeNullableListFilter<$PrismaModel = never> = {
+  equals?: $Enums.JobType[] | Prisma.ListEnumJobTypeFieldRefInput<$PrismaModel> | null
+  has?: $Enums.JobType | Prisma.EnumJobTypeFieldRefInput<$PrismaModel> | null
+  hasEvery?: $Enums.JobType[] | Prisma.ListEnumJobTypeFieldRefInput<$PrismaModel>
+  hasSome?: $Enums.JobType[] | Prisma.ListEnumJobTypeFieldRefInput<$PrismaModel>
+  isEmpty?: boolean
+}
+
+export type EnumWorkModelNullableListFilter<$PrismaModel = never> = {
+  equals?: $Enums.WorkModel[] | Prisma.ListEnumWorkModelFieldRefInput<$PrismaModel> | null
+  has?: $Enums.WorkModel | Prisma.EnumWorkModelFieldRefInput<$PrismaModel> | null
+  hasEvery?: $Enums.WorkModel[] | Prisma.ListEnumWorkModelFieldRefInput<$PrismaModel>
+  hasSome?: $Enums.WorkModel[] | Prisma.ListEnumWorkModelFieldRefInput<$PrismaModel>
+  isEmpty?: boolean
+}
+
+export type StringNullableListFilter<$PrismaModel = never> = {
+  equals?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel> | null
+  has?: string | Prisma.StringFieldRefInput<$PrismaModel> | null
+  hasEvery?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
+  hasSome?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
+  isEmpty?: boolean
 }
 
 export type ArtisanCountOrderByAggregateInput = {
@@ -623,6 +725,10 @@ export type ArtisanCountOrderByAggregateInput = {
   totalBookings?: Prisma.SortOrder
   totalEarnings?: Prisma.SortOrder
   workingHours?: Prisma.SortOrder
+  openToWork?: Prisma.SortOrder
+  desiredJobTypes?: Prisma.SortOrder
+  desiredWorkModels?: Prisma.SortOrder
+  skills?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -649,6 +755,7 @@ export type ArtisanMaxOrderByAggregateInput = {
   totalReviews?: Prisma.SortOrder
   totalBookings?: Prisma.SortOrder
   totalEarnings?: Prisma.SortOrder
+  openToWork?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -668,6 +775,7 @@ export type ArtisanMinOrderByAggregateInput = {
   totalReviews?: Prisma.SortOrder
   totalBookings?: Prisma.SortOrder
   totalEarnings?: Prisma.SortOrder
+  openToWork?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -717,6 +825,18 @@ export type ArtisanUncheckedUpdateOneWithoutProfileNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ArtisanUpdateToOneWithWhereWithoutProfileInput, Prisma.ArtisanUpdateWithoutProfileInput>, Prisma.ArtisanUncheckedUpdateWithoutProfileInput>
 }
 
+export type ArtisanCreatedesiredJobTypesInput = {
+  set: $Enums.JobType[]
+}
+
+export type ArtisanCreatedesiredWorkModelsInput = {
+  set: $Enums.WorkModel[]
+}
+
+export type ArtisanCreateskillsInput = {
+  set: string[]
+}
+
 export type EnumArtisanStatusFieldUpdateOperationsInput = {
   set?: $Enums.ArtisanStatus
 }
@@ -727,6 +847,21 @@ export type DecimalFieldUpdateOperationsInput = {
   decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
   multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
   divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
+}
+
+export type ArtisanUpdatedesiredJobTypesInput = {
+  set?: $Enums.JobType[]
+  push?: $Enums.JobType | $Enums.JobType[]
+}
+
+export type ArtisanUpdatedesiredWorkModelsInput = {
+  set?: $Enums.WorkModel[]
+  push?: $Enums.WorkModel | $Enums.WorkModel[]
+}
+
+export type ArtisanUpdateskillsInput = {
+  set?: string[]
+  push?: string | string[]
 }
 
 export type ArtisanCreateNestedOneWithoutCategoriesInput = {
@@ -827,6 +962,34 @@ export type ArtisanUpdateOneRequiredWithoutPromotionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ArtisanUpdateToOneWithWhereWithoutPromotionsInput, Prisma.ArtisanUpdateWithoutPromotionsInput>, Prisma.ArtisanUncheckedUpdateWithoutPromotionsInput>
 }
 
+export type ArtisanCreateNestedOneWithoutApplicationsInput = {
+  create?: Prisma.XOR<Prisma.ArtisanCreateWithoutApplicationsInput, Prisma.ArtisanUncheckedCreateWithoutApplicationsInput>
+  connectOrCreate?: Prisma.ArtisanCreateOrConnectWithoutApplicationsInput
+  connect?: Prisma.ArtisanWhereUniqueInput
+}
+
+export type ArtisanUpdateOneRequiredWithoutApplicationsNestedInput = {
+  create?: Prisma.XOR<Prisma.ArtisanCreateWithoutApplicationsInput, Prisma.ArtisanUncheckedCreateWithoutApplicationsInput>
+  connectOrCreate?: Prisma.ArtisanCreateOrConnectWithoutApplicationsInput
+  upsert?: Prisma.ArtisanUpsertWithoutApplicationsInput
+  connect?: Prisma.ArtisanWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ArtisanUpdateToOneWithWhereWithoutApplicationsInput, Prisma.ArtisanUpdateWithoutApplicationsInput>, Prisma.ArtisanUncheckedUpdateWithoutApplicationsInput>
+}
+
+export type ArtisanCreateNestedOneWithoutSavedByInput = {
+  create?: Prisma.XOR<Prisma.ArtisanCreateWithoutSavedByInput, Prisma.ArtisanUncheckedCreateWithoutSavedByInput>
+  connectOrCreate?: Prisma.ArtisanCreateOrConnectWithoutSavedByInput
+  connect?: Prisma.ArtisanWhereUniqueInput
+}
+
+export type ArtisanUpdateOneRequiredWithoutSavedByNestedInput = {
+  create?: Prisma.XOR<Prisma.ArtisanCreateWithoutSavedByInput, Prisma.ArtisanUncheckedCreateWithoutSavedByInput>
+  connectOrCreate?: Prisma.ArtisanCreateOrConnectWithoutSavedByInput
+  upsert?: Prisma.ArtisanUpsertWithoutSavedByInput
+  connect?: Prisma.ArtisanWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ArtisanUpdateToOneWithWhereWithoutSavedByInput, Prisma.ArtisanUpdateWithoutSavedByInput>, Prisma.ArtisanUncheckedUpdateWithoutSavedByInput>
+}
+
 export type ArtisanCreateWithoutProfileInput = {
   id?: string
   userId: string
@@ -841,6 +1004,10 @@ export type ArtisanCreateWithoutProfileInput = {
   totalBookings?: number
   totalEarnings?: runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: boolean
+  desiredJobTypes?: Prisma.ArtisanCreatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanCreatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanCreateskillsInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -851,6 +1018,8 @@ export type ArtisanCreateWithoutProfileInput = {
   reviews?: Prisma.ReviewCreateNestedManyWithoutArtisanInput
   promotions?: Prisma.PromotionCreateNestedManyWithoutArtisanInput
   threads?: Prisma.BookingThreadCreateNestedManyWithoutArtisanInput
+  applications?: Prisma.CpJobApplicationCreateNestedManyWithoutArtisanInput
+  savedBy?: Prisma.CpSavedTalentCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanUncheckedCreateWithoutProfileInput = {
@@ -867,6 +1036,10 @@ export type ArtisanUncheckedCreateWithoutProfileInput = {
   totalBookings?: number
   totalEarnings?: runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: boolean
+  desiredJobTypes?: Prisma.ArtisanCreatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanCreatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanCreateskillsInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -877,6 +1050,8 @@ export type ArtisanUncheckedCreateWithoutProfileInput = {
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutArtisanInput
   promotions?: Prisma.PromotionUncheckedCreateNestedManyWithoutArtisanInput
   threads?: Prisma.BookingThreadUncheckedCreateNestedManyWithoutArtisanInput
+  applications?: Prisma.CpJobApplicationUncheckedCreateNestedManyWithoutArtisanInput
+  savedBy?: Prisma.CpSavedTalentUncheckedCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanCreateOrConnectWithoutProfileInput = {
@@ -909,6 +1084,10 @@ export type ArtisanUpdateWithoutProfileInput = {
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
   totalEarnings?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  desiredJobTypes?: Prisma.ArtisanUpdatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanUpdatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanUpdateskillsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -919,6 +1098,8 @@ export type ArtisanUpdateWithoutProfileInput = {
   reviews?: Prisma.ReviewUpdateManyWithoutArtisanNestedInput
   promotions?: Prisma.PromotionUpdateManyWithoutArtisanNestedInput
   threads?: Prisma.BookingThreadUpdateManyWithoutArtisanNestedInput
+  applications?: Prisma.CpJobApplicationUpdateManyWithoutArtisanNestedInput
+  savedBy?: Prisma.CpSavedTalentUpdateManyWithoutArtisanNestedInput
 }
 
 export type ArtisanUncheckedUpdateWithoutProfileInput = {
@@ -935,6 +1116,10 @@ export type ArtisanUncheckedUpdateWithoutProfileInput = {
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
   totalEarnings?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  desiredJobTypes?: Prisma.ArtisanUpdatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanUpdatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanUpdateskillsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -945,6 +1130,8 @@ export type ArtisanUncheckedUpdateWithoutProfileInput = {
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutArtisanNestedInput
   promotions?: Prisma.PromotionUncheckedUpdateManyWithoutArtisanNestedInput
   threads?: Prisma.BookingThreadUncheckedUpdateManyWithoutArtisanNestedInput
+  applications?: Prisma.CpJobApplicationUncheckedUpdateManyWithoutArtisanNestedInput
+  savedBy?: Prisma.CpSavedTalentUncheckedUpdateManyWithoutArtisanNestedInput
 }
 
 export type ArtisanCreateWithoutCategoriesInput = {
@@ -961,6 +1148,10 @@ export type ArtisanCreateWithoutCategoriesInput = {
   totalBookings?: number
   totalEarnings?: runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: boolean
+  desiredJobTypes?: Prisma.ArtisanCreatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanCreatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanCreateskillsInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -971,6 +1162,8 @@ export type ArtisanCreateWithoutCategoriesInput = {
   reviews?: Prisma.ReviewCreateNestedManyWithoutArtisanInput
   promotions?: Prisma.PromotionCreateNestedManyWithoutArtisanInput
   threads?: Prisma.BookingThreadCreateNestedManyWithoutArtisanInput
+  applications?: Prisma.CpJobApplicationCreateNestedManyWithoutArtisanInput
+  savedBy?: Prisma.CpSavedTalentCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanUncheckedCreateWithoutCategoriesInput = {
@@ -988,6 +1181,10 @@ export type ArtisanUncheckedCreateWithoutCategoriesInput = {
   totalBookings?: number
   totalEarnings?: runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: boolean
+  desiredJobTypes?: Prisma.ArtisanCreatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanCreatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanCreateskillsInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -997,6 +1194,8 @@ export type ArtisanUncheckedCreateWithoutCategoriesInput = {
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutArtisanInput
   promotions?: Prisma.PromotionUncheckedCreateNestedManyWithoutArtisanInput
   threads?: Prisma.BookingThreadUncheckedCreateNestedManyWithoutArtisanInput
+  applications?: Prisma.CpJobApplicationUncheckedCreateNestedManyWithoutArtisanInput
+  savedBy?: Prisma.CpSavedTalentUncheckedCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanCreateOrConnectWithoutCategoriesInput = {
@@ -1029,6 +1228,10 @@ export type ArtisanUpdateWithoutCategoriesInput = {
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
   totalEarnings?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  desiredJobTypes?: Prisma.ArtisanUpdatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanUpdatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanUpdateskillsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1039,6 +1242,8 @@ export type ArtisanUpdateWithoutCategoriesInput = {
   reviews?: Prisma.ReviewUpdateManyWithoutArtisanNestedInput
   promotions?: Prisma.PromotionUpdateManyWithoutArtisanNestedInput
   threads?: Prisma.BookingThreadUpdateManyWithoutArtisanNestedInput
+  applications?: Prisma.CpJobApplicationUpdateManyWithoutArtisanNestedInput
+  savedBy?: Prisma.CpSavedTalentUpdateManyWithoutArtisanNestedInput
 }
 
 export type ArtisanUncheckedUpdateWithoutCategoriesInput = {
@@ -1056,6 +1261,10 @@ export type ArtisanUncheckedUpdateWithoutCategoriesInput = {
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
   totalEarnings?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  desiredJobTypes?: Prisma.ArtisanUpdatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanUpdatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanUpdateskillsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1065,6 +1274,8 @@ export type ArtisanUncheckedUpdateWithoutCategoriesInput = {
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutArtisanNestedInput
   promotions?: Prisma.PromotionUncheckedUpdateManyWithoutArtisanNestedInput
   threads?: Prisma.BookingThreadUncheckedUpdateManyWithoutArtisanNestedInput
+  applications?: Prisma.CpJobApplicationUncheckedUpdateManyWithoutArtisanNestedInput
+  savedBy?: Prisma.CpSavedTalentUncheckedUpdateManyWithoutArtisanNestedInput
 }
 
 export type ArtisanCreateWithoutServicesInput = {
@@ -1081,6 +1292,10 @@ export type ArtisanCreateWithoutServicesInput = {
   totalBookings?: number
   totalEarnings?: runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: boolean
+  desiredJobTypes?: Prisma.ArtisanCreatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanCreatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanCreateskillsInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1091,6 +1306,8 @@ export type ArtisanCreateWithoutServicesInput = {
   reviews?: Prisma.ReviewCreateNestedManyWithoutArtisanInput
   promotions?: Prisma.PromotionCreateNestedManyWithoutArtisanInput
   threads?: Prisma.BookingThreadCreateNestedManyWithoutArtisanInput
+  applications?: Prisma.CpJobApplicationCreateNestedManyWithoutArtisanInput
+  savedBy?: Prisma.CpSavedTalentCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanUncheckedCreateWithoutServicesInput = {
@@ -1108,6 +1325,10 @@ export type ArtisanUncheckedCreateWithoutServicesInput = {
   totalBookings?: number
   totalEarnings?: runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: boolean
+  desiredJobTypes?: Prisma.ArtisanCreatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanCreatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanCreateskillsInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1117,6 +1338,8 @@ export type ArtisanUncheckedCreateWithoutServicesInput = {
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutArtisanInput
   promotions?: Prisma.PromotionUncheckedCreateNestedManyWithoutArtisanInput
   threads?: Prisma.BookingThreadUncheckedCreateNestedManyWithoutArtisanInput
+  applications?: Prisma.CpJobApplicationUncheckedCreateNestedManyWithoutArtisanInput
+  savedBy?: Prisma.CpSavedTalentUncheckedCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanCreateOrConnectWithoutServicesInput = {
@@ -1149,6 +1372,10 @@ export type ArtisanUpdateWithoutServicesInput = {
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
   totalEarnings?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  desiredJobTypes?: Prisma.ArtisanUpdatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanUpdatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanUpdateskillsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1159,6 +1386,8 @@ export type ArtisanUpdateWithoutServicesInput = {
   reviews?: Prisma.ReviewUpdateManyWithoutArtisanNestedInput
   promotions?: Prisma.PromotionUpdateManyWithoutArtisanNestedInput
   threads?: Prisma.BookingThreadUpdateManyWithoutArtisanNestedInput
+  applications?: Prisma.CpJobApplicationUpdateManyWithoutArtisanNestedInput
+  savedBy?: Prisma.CpSavedTalentUpdateManyWithoutArtisanNestedInput
 }
 
 export type ArtisanUncheckedUpdateWithoutServicesInput = {
@@ -1176,6 +1405,10 @@ export type ArtisanUncheckedUpdateWithoutServicesInput = {
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
   totalEarnings?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  desiredJobTypes?: Prisma.ArtisanUpdatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanUpdatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanUpdateskillsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1185,6 +1418,8 @@ export type ArtisanUncheckedUpdateWithoutServicesInput = {
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutArtisanNestedInput
   promotions?: Prisma.PromotionUncheckedUpdateManyWithoutArtisanNestedInput
   threads?: Prisma.BookingThreadUncheckedUpdateManyWithoutArtisanNestedInput
+  applications?: Prisma.CpJobApplicationUncheckedUpdateManyWithoutArtisanNestedInput
+  savedBy?: Prisma.CpSavedTalentUncheckedUpdateManyWithoutArtisanNestedInput
 }
 
 export type ArtisanCreateWithoutPortfolioInput = {
@@ -1201,6 +1436,10 @@ export type ArtisanCreateWithoutPortfolioInput = {
   totalBookings?: number
   totalEarnings?: runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: boolean
+  desiredJobTypes?: Prisma.ArtisanCreatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanCreatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanCreateskillsInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1211,6 +1450,8 @@ export type ArtisanCreateWithoutPortfolioInput = {
   reviews?: Prisma.ReviewCreateNestedManyWithoutArtisanInput
   promotions?: Prisma.PromotionCreateNestedManyWithoutArtisanInput
   threads?: Prisma.BookingThreadCreateNestedManyWithoutArtisanInput
+  applications?: Prisma.CpJobApplicationCreateNestedManyWithoutArtisanInput
+  savedBy?: Prisma.CpSavedTalentCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanUncheckedCreateWithoutPortfolioInput = {
@@ -1228,6 +1469,10 @@ export type ArtisanUncheckedCreateWithoutPortfolioInput = {
   totalBookings?: number
   totalEarnings?: runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: boolean
+  desiredJobTypes?: Prisma.ArtisanCreatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanCreatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanCreateskillsInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1237,6 +1482,8 @@ export type ArtisanUncheckedCreateWithoutPortfolioInput = {
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutArtisanInput
   promotions?: Prisma.PromotionUncheckedCreateNestedManyWithoutArtisanInput
   threads?: Prisma.BookingThreadUncheckedCreateNestedManyWithoutArtisanInput
+  applications?: Prisma.CpJobApplicationUncheckedCreateNestedManyWithoutArtisanInput
+  savedBy?: Prisma.CpSavedTalentUncheckedCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanCreateOrConnectWithoutPortfolioInput = {
@@ -1269,6 +1516,10 @@ export type ArtisanUpdateWithoutPortfolioInput = {
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
   totalEarnings?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  desiredJobTypes?: Prisma.ArtisanUpdatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanUpdatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanUpdateskillsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1279,6 +1530,8 @@ export type ArtisanUpdateWithoutPortfolioInput = {
   reviews?: Prisma.ReviewUpdateManyWithoutArtisanNestedInput
   promotions?: Prisma.PromotionUpdateManyWithoutArtisanNestedInput
   threads?: Prisma.BookingThreadUpdateManyWithoutArtisanNestedInput
+  applications?: Prisma.CpJobApplicationUpdateManyWithoutArtisanNestedInput
+  savedBy?: Prisma.CpSavedTalentUpdateManyWithoutArtisanNestedInput
 }
 
 export type ArtisanUncheckedUpdateWithoutPortfolioInput = {
@@ -1296,6 +1549,10 @@ export type ArtisanUncheckedUpdateWithoutPortfolioInput = {
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
   totalEarnings?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  desiredJobTypes?: Prisma.ArtisanUpdatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanUpdatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanUpdateskillsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1305,6 +1562,8 @@ export type ArtisanUncheckedUpdateWithoutPortfolioInput = {
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutArtisanNestedInput
   promotions?: Prisma.PromotionUncheckedUpdateManyWithoutArtisanNestedInput
   threads?: Prisma.BookingThreadUncheckedUpdateManyWithoutArtisanNestedInput
+  applications?: Prisma.CpJobApplicationUncheckedUpdateManyWithoutArtisanNestedInput
+  savedBy?: Prisma.CpSavedTalentUncheckedUpdateManyWithoutArtisanNestedInput
 }
 
 export type ArtisanCreateWithoutThreadsInput = {
@@ -1321,6 +1580,10 @@ export type ArtisanCreateWithoutThreadsInput = {
   totalBookings?: number
   totalEarnings?: runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: boolean
+  desiredJobTypes?: Prisma.ArtisanCreatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanCreatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanCreateskillsInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1331,6 +1594,8 @@ export type ArtisanCreateWithoutThreadsInput = {
   bookings?: Prisma.BookingCreateNestedManyWithoutArtisanInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutArtisanInput
   promotions?: Prisma.PromotionCreateNestedManyWithoutArtisanInput
+  applications?: Prisma.CpJobApplicationCreateNestedManyWithoutArtisanInput
+  savedBy?: Prisma.CpSavedTalentCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanUncheckedCreateWithoutThreadsInput = {
@@ -1348,6 +1613,10 @@ export type ArtisanUncheckedCreateWithoutThreadsInput = {
   totalBookings?: number
   totalEarnings?: runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: boolean
+  desiredJobTypes?: Prisma.ArtisanCreatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanCreatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanCreateskillsInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1357,6 +1626,8 @@ export type ArtisanUncheckedCreateWithoutThreadsInput = {
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutArtisanInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutArtisanInput
   promotions?: Prisma.PromotionUncheckedCreateNestedManyWithoutArtisanInput
+  applications?: Prisma.CpJobApplicationUncheckedCreateNestedManyWithoutArtisanInput
+  savedBy?: Prisma.CpSavedTalentUncheckedCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanCreateOrConnectWithoutThreadsInput = {
@@ -1389,6 +1660,10 @@ export type ArtisanUpdateWithoutThreadsInput = {
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
   totalEarnings?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  desiredJobTypes?: Prisma.ArtisanUpdatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanUpdatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanUpdateskillsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1399,6 +1674,8 @@ export type ArtisanUpdateWithoutThreadsInput = {
   bookings?: Prisma.BookingUpdateManyWithoutArtisanNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutArtisanNestedInput
   promotions?: Prisma.PromotionUpdateManyWithoutArtisanNestedInput
+  applications?: Prisma.CpJobApplicationUpdateManyWithoutArtisanNestedInput
+  savedBy?: Prisma.CpSavedTalentUpdateManyWithoutArtisanNestedInput
 }
 
 export type ArtisanUncheckedUpdateWithoutThreadsInput = {
@@ -1416,6 +1693,10 @@ export type ArtisanUncheckedUpdateWithoutThreadsInput = {
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
   totalEarnings?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  desiredJobTypes?: Prisma.ArtisanUpdatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanUpdatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanUpdateskillsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1425,6 +1706,8 @@ export type ArtisanUncheckedUpdateWithoutThreadsInput = {
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutArtisanNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutArtisanNestedInput
   promotions?: Prisma.PromotionUncheckedUpdateManyWithoutArtisanNestedInput
+  applications?: Prisma.CpJobApplicationUncheckedUpdateManyWithoutArtisanNestedInput
+  savedBy?: Prisma.CpSavedTalentUncheckedUpdateManyWithoutArtisanNestedInput
 }
 
 export type ArtisanCreateWithoutBookingsInput = {
@@ -1441,6 +1724,10 @@ export type ArtisanCreateWithoutBookingsInput = {
   totalBookings?: number
   totalEarnings?: runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: boolean
+  desiredJobTypes?: Prisma.ArtisanCreatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanCreatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanCreateskillsInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1451,6 +1738,8 @@ export type ArtisanCreateWithoutBookingsInput = {
   reviews?: Prisma.ReviewCreateNestedManyWithoutArtisanInput
   promotions?: Prisma.PromotionCreateNestedManyWithoutArtisanInput
   threads?: Prisma.BookingThreadCreateNestedManyWithoutArtisanInput
+  applications?: Prisma.CpJobApplicationCreateNestedManyWithoutArtisanInput
+  savedBy?: Prisma.CpSavedTalentCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanUncheckedCreateWithoutBookingsInput = {
@@ -1468,6 +1757,10 @@ export type ArtisanUncheckedCreateWithoutBookingsInput = {
   totalBookings?: number
   totalEarnings?: runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: boolean
+  desiredJobTypes?: Prisma.ArtisanCreatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanCreatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanCreateskillsInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1477,6 +1770,8 @@ export type ArtisanUncheckedCreateWithoutBookingsInput = {
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutArtisanInput
   promotions?: Prisma.PromotionUncheckedCreateNestedManyWithoutArtisanInput
   threads?: Prisma.BookingThreadUncheckedCreateNestedManyWithoutArtisanInput
+  applications?: Prisma.CpJobApplicationUncheckedCreateNestedManyWithoutArtisanInput
+  savedBy?: Prisma.CpSavedTalentUncheckedCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanCreateOrConnectWithoutBookingsInput = {
@@ -1509,6 +1804,10 @@ export type ArtisanUpdateWithoutBookingsInput = {
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
   totalEarnings?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  desiredJobTypes?: Prisma.ArtisanUpdatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanUpdatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanUpdateskillsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1519,6 +1818,8 @@ export type ArtisanUpdateWithoutBookingsInput = {
   reviews?: Prisma.ReviewUpdateManyWithoutArtisanNestedInput
   promotions?: Prisma.PromotionUpdateManyWithoutArtisanNestedInput
   threads?: Prisma.BookingThreadUpdateManyWithoutArtisanNestedInput
+  applications?: Prisma.CpJobApplicationUpdateManyWithoutArtisanNestedInput
+  savedBy?: Prisma.CpSavedTalentUpdateManyWithoutArtisanNestedInput
 }
 
 export type ArtisanUncheckedUpdateWithoutBookingsInput = {
@@ -1536,6 +1837,10 @@ export type ArtisanUncheckedUpdateWithoutBookingsInput = {
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
   totalEarnings?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  desiredJobTypes?: Prisma.ArtisanUpdatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanUpdatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanUpdateskillsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1545,6 +1850,8 @@ export type ArtisanUncheckedUpdateWithoutBookingsInput = {
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutArtisanNestedInput
   promotions?: Prisma.PromotionUncheckedUpdateManyWithoutArtisanNestedInput
   threads?: Prisma.BookingThreadUncheckedUpdateManyWithoutArtisanNestedInput
+  applications?: Prisma.CpJobApplicationUncheckedUpdateManyWithoutArtisanNestedInput
+  savedBy?: Prisma.CpSavedTalentUncheckedUpdateManyWithoutArtisanNestedInput
 }
 
 export type ArtisanCreateWithoutReviewsInput = {
@@ -1561,6 +1868,10 @@ export type ArtisanCreateWithoutReviewsInput = {
   totalBookings?: number
   totalEarnings?: runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: boolean
+  desiredJobTypes?: Prisma.ArtisanCreatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanCreatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanCreateskillsInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1571,6 +1882,8 @@ export type ArtisanCreateWithoutReviewsInput = {
   bookings?: Prisma.BookingCreateNestedManyWithoutArtisanInput
   promotions?: Prisma.PromotionCreateNestedManyWithoutArtisanInput
   threads?: Prisma.BookingThreadCreateNestedManyWithoutArtisanInput
+  applications?: Prisma.CpJobApplicationCreateNestedManyWithoutArtisanInput
+  savedBy?: Prisma.CpSavedTalentCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanUncheckedCreateWithoutReviewsInput = {
@@ -1588,6 +1901,10 @@ export type ArtisanUncheckedCreateWithoutReviewsInput = {
   totalBookings?: number
   totalEarnings?: runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: boolean
+  desiredJobTypes?: Prisma.ArtisanCreatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanCreatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanCreateskillsInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1597,6 +1914,8 @@ export type ArtisanUncheckedCreateWithoutReviewsInput = {
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutArtisanInput
   promotions?: Prisma.PromotionUncheckedCreateNestedManyWithoutArtisanInput
   threads?: Prisma.BookingThreadUncheckedCreateNestedManyWithoutArtisanInput
+  applications?: Prisma.CpJobApplicationUncheckedCreateNestedManyWithoutArtisanInput
+  savedBy?: Prisma.CpSavedTalentUncheckedCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanCreateOrConnectWithoutReviewsInput = {
@@ -1629,6 +1948,10 @@ export type ArtisanUpdateWithoutReviewsInput = {
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
   totalEarnings?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  desiredJobTypes?: Prisma.ArtisanUpdatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanUpdatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanUpdateskillsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1639,6 +1962,8 @@ export type ArtisanUpdateWithoutReviewsInput = {
   bookings?: Prisma.BookingUpdateManyWithoutArtisanNestedInput
   promotions?: Prisma.PromotionUpdateManyWithoutArtisanNestedInput
   threads?: Prisma.BookingThreadUpdateManyWithoutArtisanNestedInput
+  applications?: Prisma.CpJobApplicationUpdateManyWithoutArtisanNestedInput
+  savedBy?: Prisma.CpSavedTalentUpdateManyWithoutArtisanNestedInput
 }
 
 export type ArtisanUncheckedUpdateWithoutReviewsInput = {
@@ -1656,6 +1981,10 @@ export type ArtisanUncheckedUpdateWithoutReviewsInput = {
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
   totalEarnings?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  desiredJobTypes?: Prisma.ArtisanUpdatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanUpdatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanUpdateskillsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1665,6 +1994,8 @@ export type ArtisanUncheckedUpdateWithoutReviewsInput = {
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutArtisanNestedInput
   promotions?: Prisma.PromotionUncheckedUpdateManyWithoutArtisanNestedInput
   threads?: Prisma.BookingThreadUncheckedUpdateManyWithoutArtisanNestedInput
+  applications?: Prisma.CpJobApplicationUncheckedUpdateManyWithoutArtisanNestedInput
+  savedBy?: Prisma.CpSavedTalentUncheckedUpdateManyWithoutArtisanNestedInput
 }
 
 export type ArtisanCreateWithoutPromotionsInput = {
@@ -1681,6 +2012,10 @@ export type ArtisanCreateWithoutPromotionsInput = {
   totalBookings?: number
   totalEarnings?: runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: boolean
+  desiredJobTypes?: Prisma.ArtisanCreatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanCreatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanCreateskillsInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1691,6 +2026,8 @@ export type ArtisanCreateWithoutPromotionsInput = {
   bookings?: Prisma.BookingCreateNestedManyWithoutArtisanInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutArtisanInput
   threads?: Prisma.BookingThreadCreateNestedManyWithoutArtisanInput
+  applications?: Prisma.CpJobApplicationCreateNestedManyWithoutArtisanInput
+  savedBy?: Prisma.CpSavedTalentCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanUncheckedCreateWithoutPromotionsInput = {
@@ -1708,6 +2045,10 @@ export type ArtisanUncheckedCreateWithoutPromotionsInput = {
   totalBookings?: number
   totalEarnings?: runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: boolean
+  desiredJobTypes?: Prisma.ArtisanCreatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanCreatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanCreateskillsInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1717,6 +2058,8 @@ export type ArtisanUncheckedCreateWithoutPromotionsInput = {
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutArtisanInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutArtisanInput
   threads?: Prisma.BookingThreadUncheckedCreateNestedManyWithoutArtisanInput
+  applications?: Prisma.CpJobApplicationUncheckedCreateNestedManyWithoutArtisanInput
+  savedBy?: Prisma.CpSavedTalentUncheckedCreateNestedManyWithoutArtisanInput
 }
 
 export type ArtisanCreateOrConnectWithoutPromotionsInput = {
@@ -1749,6 +2092,10 @@ export type ArtisanUpdateWithoutPromotionsInput = {
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
   totalEarnings?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  desiredJobTypes?: Prisma.ArtisanUpdatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanUpdatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanUpdateskillsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1759,6 +2106,8 @@ export type ArtisanUpdateWithoutPromotionsInput = {
   bookings?: Prisma.BookingUpdateManyWithoutArtisanNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutArtisanNestedInput
   threads?: Prisma.BookingThreadUpdateManyWithoutArtisanNestedInput
+  applications?: Prisma.CpJobApplicationUpdateManyWithoutArtisanNestedInput
+  savedBy?: Prisma.CpSavedTalentUpdateManyWithoutArtisanNestedInput
 }
 
 export type ArtisanUncheckedUpdateWithoutPromotionsInput = {
@@ -1776,6 +2125,10 @@ export type ArtisanUncheckedUpdateWithoutPromotionsInput = {
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
   totalEarnings?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  desiredJobTypes?: Prisma.ArtisanUpdatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanUpdatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanUpdateskillsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1785,6 +2138,296 @@ export type ArtisanUncheckedUpdateWithoutPromotionsInput = {
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutArtisanNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutArtisanNestedInput
   threads?: Prisma.BookingThreadUncheckedUpdateManyWithoutArtisanNestedInput
+  applications?: Prisma.CpJobApplicationUncheckedUpdateManyWithoutArtisanNestedInput
+  savedBy?: Prisma.CpSavedTalentUncheckedUpdateManyWithoutArtisanNestedInput
+}
+
+export type ArtisanCreateWithoutApplicationsInput = {
+  id?: string
+  userId: string
+  bio?: string | null
+  status?: $Enums.ArtisanStatus
+  customCategory?: string | null
+  termsAcceptedAt?: Date | string | null
+  activatedAt?: Date | string | null
+  suspendedReason?: string | null
+  averageRating?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReviews?: number
+  totalBookings?: number
+  totalEarnings?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: boolean
+  desiredJobTypes?: Prisma.ArtisanCreatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanCreatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanCreateskillsInput | string[]
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  profile: Prisma.ProfileCreateNestedOneWithoutArtisanInput
+  categories?: Prisma.ArtisanCategoryMapCreateNestedManyWithoutArtisanInput
+  services?: Prisma.ArtisanServiceCreateNestedManyWithoutArtisanInput
+  portfolio?: Prisma.PortfolioItemCreateNestedManyWithoutArtisanInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutArtisanInput
+  reviews?: Prisma.ReviewCreateNestedManyWithoutArtisanInput
+  promotions?: Prisma.PromotionCreateNestedManyWithoutArtisanInput
+  threads?: Prisma.BookingThreadCreateNestedManyWithoutArtisanInput
+  savedBy?: Prisma.CpSavedTalentCreateNestedManyWithoutArtisanInput
+}
+
+export type ArtisanUncheckedCreateWithoutApplicationsInput = {
+  id?: string
+  profileId: string
+  userId: string
+  bio?: string | null
+  status?: $Enums.ArtisanStatus
+  customCategory?: string | null
+  termsAcceptedAt?: Date | string | null
+  activatedAt?: Date | string | null
+  suspendedReason?: string | null
+  averageRating?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReviews?: number
+  totalBookings?: number
+  totalEarnings?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: boolean
+  desiredJobTypes?: Prisma.ArtisanCreatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanCreatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanCreateskillsInput | string[]
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  categories?: Prisma.ArtisanCategoryMapUncheckedCreateNestedManyWithoutArtisanInput
+  services?: Prisma.ArtisanServiceUncheckedCreateNestedManyWithoutArtisanInput
+  portfolio?: Prisma.PortfolioItemUncheckedCreateNestedManyWithoutArtisanInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutArtisanInput
+  reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutArtisanInput
+  promotions?: Prisma.PromotionUncheckedCreateNestedManyWithoutArtisanInput
+  threads?: Prisma.BookingThreadUncheckedCreateNestedManyWithoutArtisanInput
+  savedBy?: Prisma.CpSavedTalentUncheckedCreateNestedManyWithoutArtisanInput
+}
+
+export type ArtisanCreateOrConnectWithoutApplicationsInput = {
+  where: Prisma.ArtisanWhereUniqueInput
+  create: Prisma.XOR<Prisma.ArtisanCreateWithoutApplicationsInput, Prisma.ArtisanUncheckedCreateWithoutApplicationsInput>
+}
+
+export type ArtisanUpsertWithoutApplicationsInput = {
+  update: Prisma.XOR<Prisma.ArtisanUpdateWithoutApplicationsInput, Prisma.ArtisanUncheckedUpdateWithoutApplicationsInput>
+  create: Prisma.XOR<Prisma.ArtisanCreateWithoutApplicationsInput, Prisma.ArtisanUncheckedCreateWithoutApplicationsInput>
+  where?: Prisma.ArtisanWhereInput
+}
+
+export type ArtisanUpdateToOneWithWhereWithoutApplicationsInput = {
+  where?: Prisma.ArtisanWhereInput
+  data: Prisma.XOR<Prisma.ArtisanUpdateWithoutApplicationsInput, Prisma.ArtisanUncheckedUpdateWithoutApplicationsInput>
+}
+
+export type ArtisanUpdateWithoutApplicationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumArtisanStatusFieldUpdateOperationsInput | $Enums.ArtisanStatus
+  customCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  suspendedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  averageRating?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReviews?: Prisma.IntFieldUpdateOperationsInput | number
+  totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
+  totalEarnings?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  desiredJobTypes?: Prisma.ArtisanUpdatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanUpdatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanUpdateskillsInput | string[]
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profile?: Prisma.ProfileUpdateOneRequiredWithoutArtisanNestedInput
+  categories?: Prisma.ArtisanCategoryMapUpdateManyWithoutArtisanNestedInput
+  services?: Prisma.ArtisanServiceUpdateManyWithoutArtisanNestedInput
+  portfolio?: Prisma.PortfolioItemUpdateManyWithoutArtisanNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutArtisanNestedInput
+  reviews?: Prisma.ReviewUpdateManyWithoutArtisanNestedInput
+  promotions?: Prisma.PromotionUpdateManyWithoutArtisanNestedInput
+  threads?: Prisma.BookingThreadUpdateManyWithoutArtisanNestedInput
+  savedBy?: Prisma.CpSavedTalentUpdateManyWithoutArtisanNestedInput
+}
+
+export type ArtisanUncheckedUpdateWithoutApplicationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  profileId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumArtisanStatusFieldUpdateOperationsInput | $Enums.ArtisanStatus
+  customCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  suspendedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  averageRating?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReviews?: Prisma.IntFieldUpdateOperationsInput | number
+  totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
+  totalEarnings?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  desiredJobTypes?: Prisma.ArtisanUpdatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanUpdatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanUpdateskillsInput | string[]
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  categories?: Prisma.ArtisanCategoryMapUncheckedUpdateManyWithoutArtisanNestedInput
+  services?: Prisma.ArtisanServiceUncheckedUpdateManyWithoutArtisanNestedInput
+  portfolio?: Prisma.PortfolioItemUncheckedUpdateManyWithoutArtisanNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutArtisanNestedInput
+  reviews?: Prisma.ReviewUncheckedUpdateManyWithoutArtisanNestedInput
+  promotions?: Prisma.PromotionUncheckedUpdateManyWithoutArtisanNestedInput
+  threads?: Prisma.BookingThreadUncheckedUpdateManyWithoutArtisanNestedInput
+  savedBy?: Prisma.CpSavedTalentUncheckedUpdateManyWithoutArtisanNestedInput
+}
+
+export type ArtisanCreateWithoutSavedByInput = {
+  id?: string
+  userId: string
+  bio?: string | null
+  status?: $Enums.ArtisanStatus
+  customCategory?: string | null
+  termsAcceptedAt?: Date | string | null
+  activatedAt?: Date | string | null
+  suspendedReason?: string | null
+  averageRating?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReviews?: number
+  totalBookings?: number
+  totalEarnings?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: boolean
+  desiredJobTypes?: Prisma.ArtisanCreatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanCreatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanCreateskillsInput | string[]
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  profile: Prisma.ProfileCreateNestedOneWithoutArtisanInput
+  categories?: Prisma.ArtisanCategoryMapCreateNestedManyWithoutArtisanInput
+  services?: Prisma.ArtisanServiceCreateNestedManyWithoutArtisanInput
+  portfolio?: Prisma.PortfolioItemCreateNestedManyWithoutArtisanInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutArtisanInput
+  reviews?: Prisma.ReviewCreateNestedManyWithoutArtisanInput
+  promotions?: Prisma.PromotionCreateNestedManyWithoutArtisanInput
+  threads?: Prisma.BookingThreadCreateNestedManyWithoutArtisanInput
+  applications?: Prisma.CpJobApplicationCreateNestedManyWithoutArtisanInput
+}
+
+export type ArtisanUncheckedCreateWithoutSavedByInput = {
+  id?: string
+  profileId: string
+  userId: string
+  bio?: string | null
+  status?: $Enums.ArtisanStatus
+  customCategory?: string | null
+  termsAcceptedAt?: Date | string | null
+  activatedAt?: Date | string | null
+  suspendedReason?: string | null
+  averageRating?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReviews?: number
+  totalBookings?: number
+  totalEarnings?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: boolean
+  desiredJobTypes?: Prisma.ArtisanCreatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanCreatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanCreateskillsInput | string[]
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  categories?: Prisma.ArtisanCategoryMapUncheckedCreateNestedManyWithoutArtisanInput
+  services?: Prisma.ArtisanServiceUncheckedCreateNestedManyWithoutArtisanInput
+  portfolio?: Prisma.PortfolioItemUncheckedCreateNestedManyWithoutArtisanInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutArtisanInput
+  reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutArtisanInput
+  promotions?: Prisma.PromotionUncheckedCreateNestedManyWithoutArtisanInput
+  threads?: Prisma.BookingThreadUncheckedCreateNestedManyWithoutArtisanInput
+  applications?: Prisma.CpJobApplicationUncheckedCreateNestedManyWithoutArtisanInput
+}
+
+export type ArtisanCreateOrConnectWithoutSavedByInput = {
+  where: Prisma.ArtisanWhereUniqueInput
+  create: Prisma.XOR<Prisma.ArtisanCreateWithoutSavedByInput, Prisma.ArtisanUncheckedCreateWithoutSavedByInput>
+}
+
+export type ArtisanUpsertWithoutSavedByInput = {
+  update: Prisma.XOR<Prisma.ArtisanUpdateWithoutSavedByInput, Prisma.ArtisanUncheckedUpdateWithoutSavedByInput>
+  create: Prisma.XOR<Prisma.ArtisanCreateWithoutSavedByInput, Prisma.ArtisanUncheckedCreateWithoutSavedByInput>
+  where?: Prisma.ArtisanWhereInput
+}
+
+export type ArtisanUpdateToOneWithWhereWithoutSavedByInput = {
+  where?: Prisma.ArtisanWhereInput
+  data: Prisma.XOR<Prisma.ArtisanUpdateWithoutSavedByInput, Prisma.ArtisanUncheckedUpdateWithoutSavedByInput>
+}
+
+export type ArtisanUpdateWithoutSavedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumArtisanStatusFieldUpdateOperationsInput | $Enums.ArtisanStatus
+  customCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  suspendedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  averageRating?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReviews?: Prisma.IntFieldUpdateOperationsInput | number
+  totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
+  totalEarnings?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  desiredJobTypes?: Prisma.ArtisanUpdatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanUpdatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanUpdateskillsInput | string[]
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profile?: Prisma.ProfileUpdateOneRequiredWithoutArtisanNestedInput
+  categories?: Prisma.ArtisanCategoryMapUpdateManyWithoutArtisanNestedInput
+  services?: Prisma.ArtisanServiceUpdateManyWithoutArtisanNestedInput
+  portfolio?: Prisma.PortfolioItemUpdateManyWithoutArtisanNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutArtisanNestedInput
+  reviews?: Prisma.ReviewUpdateManyWithoutArtisanNestedInput
+  promotions?: Prisma.PromotionUpdateManyWithoutArtisanNestedInput
+  threads?: Prisma.BookingThreadUpdateManyWithoutArtisanNestedInput
+  applications?: Prisma.CpJobApplicationUpdateManyWithoutArtisanNestedInput
+}
+
+export type ArtisanUncheckedUpdateWithoutSavedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  profileId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumArtisanStatusFieldUpdateOperationsInput | $Enums.ArtisanStatus
+  customCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  suspendedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  averageRating?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReviews?: Prisma.IntFieldUpdateOperationsInput | number
+  totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
+  totalEarnings?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  workingHours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  openToWork?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  desiredJobTypes?: Prisma.ArtisanUpdatedesiredJobTypesInput | $Enums.JobType[]
+  desiredWorkModels?: Prisma.ArtisanUpdatedesiredWorkModelsInput | $Enums.WorkModel[]
+  skills?: Prisma.ArtisanUpdateskillsInput | string[]
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  categories?: Prisma.ArtisanCategoryMapUncheckedUpdateManyWithoutArtisanNestedInput
+  services?: Prisma.ArtisanServiceUncheckedUpdateManyWithoutArtisanNestedInput
+  portfolio?: Prisma.PortfolioItemUncheckedUpdateManyWithoutArtisanNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutArtisanNestedInput
+  reviews?: Prisma.ReviewUncheckedUpdateManyWithoutArtisanNestedInput
+  promotions?: Prisma.PromotionUncheckedUpdateManyWithoutArtisanNestedInput
+  threads?: Prisma.BookingThreadUncheckedUpdateManyWithoutArtisanNestedInput
+  applications?: Prisma.CpJobApplicationUncheckedUpdateManyWithoutArtisanNestedInput
 }
 
 
@@ -1800,6 +2443,8 @@ export type ArtisanCountOutputType = {
   reviews: number
   promotions: number
   threads: number
+  applications: number
+  savedBy: number
 }
 
 export type ArtisanCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1810,6 +2455,8 @@ export type ArtisanCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   reviews?: boolean | ArtisanCountOutputTypeCountReviewsArgs
   promotions?: boolean | ArtisanCountOutputTypeCountPromotionsArgs
   threads?: boolean | ArtisanCountOutputTypeCountThreadsArgs
+  applications?: boolean | ArtisanCountOutputTypeCountApplicationsArgs
+  savedBy?: boolean | ArtisanCountOutputTypeCountSavedByArgs
 }
 
 /**
@@ -1871,6 +2518,20 @@ export type ArtisanCountOutputTypeCountThreadsArgs<ExtArgs extends runtime.Types
   where?: Prisma.BookingThreadWhereInput
 }
 
+/**
+ * ArtisanCountOutputType without action
+ */
+export type ArtisanCountOutputTypeCountApplicationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CpJobApplicationWhereInput
+}
+
+/**
+ * ArtisanCountOutputType without action
+ */
+export type ArtisanCountOutputTypeCountSavedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CpSavedTalentWhereInput
+}
+
 
 export type ArtisanSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1887,6 +2548,10 @@ export type ArtisanSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   totalBookings?: boolean
   totalEarnings?: boolean
   workingHours?: boolean
+  openToWork?: boolean
+  desiredJobTypes?: boolean
+  desiredWorkModels?: boolean
+  skills?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -1898,6 +2563,8 @@ export type ArtisanSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   reviews?: boolean | Prisma.Artisan$reviewsArgs<ExtArgs>
   promotions?: boolean | Prisma.Artisan$promotionsArgs<ExtArgs>
   threads?: boolean | Prisma.Artisan$threadsArgs<ExtArgs>
+  applications?: boolean | Prisma.Artisan$applicationsArgs<ExtArgs>
+  savedBy?: boolean | Prisma.Artisan$savedByArgs<ExtArgs>
   _count?: boolean | Prisma.ArtisanCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["artisan"]>
 
@@ -1916,6 +2583,10 @@ export type ArtisanSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   totalBookings?: boolean
   totalEarnings?: boolean
   workingHours?: boolean
+  openToWork?: boolean
+  desiredJobTypes?: boolean
+  desiredWorkModels?: boolean
+  skills?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -1937,6 +2608,10 @@ export type ArtisanSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   totalBookings?: boolean
   totalEarnings?: boolean
   workingHours?: boolean
+  openToWork?: boolean
+  desiredJobTypes?: boolean
+  desiredWorkModels?: boolean
+  skills?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -1958,12 +2633,16 @@ export type ArtisanSelectScalar = {
   totalBookings?: boolean
   totalEarnings?: boolean
   workingHours?: boolean
+  openToWork?: boolean
+  desiredJobTypes?: boolean
+  desiredWorkModels?: boolean
+  skills?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
 }
 
-export type ArtisanOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "profileId" | "userId" | "bio" | "status" | "customCategory" | "termsAcceptedAt" | "activatedAt" | "suspendedReason" | "averageRating" | "totalReviews" | "totalBookings" | "totalEarnings" | "workingHours" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["artisan"]>
+export type ArtisanOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "profileId" | "userId" | "bio" | "status" | "customCategory" | "termsAcceptedAt" | "activatedAt" | "suspendedReason" | "averageRating" | "totalReviews" | "totalBookings" | "totalEarnings" | "workingHours" | "openToWork" | "desiredJobTypes" | "desiredWorkModels" | "skills" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["artisan"]>
 export type ArtisanInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   profile?: boolean | Prisma.ProfileDefaultArgs<ExtArgs>
   categories?: boolean | Prisma.Artisan$categoriesArgs<ExtArgs>
@@ -1973,6 +2652,8 @@ export type ArtisanInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   reviews?: boolean | Prisma.Artisan$reviewsArgs<ExtArgs>
   promotions?: boolean | Prisma.Artisan$promotionsArgs<ExtArgs>
   threads?: boolean | Prisma.Artisan$threadsArgs<ExtArgs>
+  applications?: boolean | Prisma.Artisan$applicationsArgs<ExtArgs>
+  savedBy?: boolean | Prisma.Artisan$savedByArgs<ExtArgs>
   _count?: boolean | Prisma.ArtisanCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ArtisanIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1993,6 +2674,8 @@ export type $ArtisanPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     reviews: Prisma.$ReviewPayload<ExtArgs>[]
     promotions: Prisma.$PromotionPayload<ExtArgs>[]
     threads: Prisma.$BookingThreadPayload<ExtArgs>[]
+    applications: Prisma.$CpJobApplicationPayload<ExtArgs>[]
+    savedBy: Prisma.$CpSavedTalentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2009,6 +2692,10 @@ export type $ArtisanPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     totalBookings: number
     totalEarnings: runtime.Decimal
     workingHours: runtime.JsonValue | null
+    openToWork: boolean
+    desiredJobTypes: $Enums.JobType[]
+    desiredWorkModels: $Enums.WorkModel[]
+    skills: string[]
     createdAt: Date
     updatedAt: Date
     deletedAt: Date | null
@@ -2414,6 +3101,8 @@ export interface Prisma__ArtisanClient<T, Null = never, ExtArgs extends runtime.
   reviews<T extends Prisma.Artisan$reviewsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Artisan$reviewsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   promotions<T extends Prisma.Artisan$promotionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Artisan$promotionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PromotionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   threads<T extends Prisma.Artisan$threadsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Artisan$threadsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingThreadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  applications<T extends Prisma.Artisan$applicationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Artisan$applicationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CpJobApplicationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  savedBy<T extends Prisma.Artisan$savedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Artisan$savedByArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CpSavedTalentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2457,6 +3146,10 @@ export interface ArtisanFieldRefs {
   readonly totalBookings: Prisma.FieldRef<"Artisan", 'Int'>
   readonly totalEarnings: Prisma.FieldRef<"Artisan", 'Decimal'>
   readonly workingHours: Prisma.FieldRef<"Artisan", 'Json'>
+  readonly openToWork: Prisma.FieldRef<"Artisan", 'Boolean'>
+  readonly desiredJobTypes: Prisma.FieldRef<"Artisan", 'JobType[]'>
+  readonly desiredWorkModels: Prisma.FieldRef<"Artisan", 'WorkModel[]'>
+  readonly skills: Prisma.FieldRef<"Artisan", 'String[]'>
   readonly createdAt: Prisma.FieldRef<"Artisan", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Artisan", 'DateTime'>
   readonly deletedAt: Prisma.FieldRef<"Artisan", 'DateTime'>
@@ -3026,6 +3719,54 @@ export type Artisan$threadsArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.BookingThreadScalarFieldEnum | Prisma.BookingThreadScalarFieldEnum[]
+}
+
+/**
+ * Artisan.applications
+ */
+export type Artisan$applicationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CpJobApplication
+   */
+  select?: Prisma.CpJobApplicationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CpJobApplication
+   */
+  omit?: Prisma.CpJobApplicationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CpJobApplicationInclude<ExtArgs> | null
+  where?: Prisma.CpJobApplicationWhereInput
+  orderBy?: Prisma.CpJobApplicationOrderByWithRelationInput | Prisma.CpJobApplicationOrderByWithRelationInput[]
+  cursor?: Prisma.CpJobApplicationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CpJobApplicationScalarFieldEnum | Prisma.CpJobApplicationScalarFieldEnum[]
+}
+
+/**
+ * Artisan.savedBy
+ */
+export type Artisan$savedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CpSavedTalent
+   */
+  select?: Prisma.CpSavedTalentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CpSavedTalent
+   */
+  omit?: Prisma.CpSavedTalentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CpSavedTalentInclude<ExtArgs> | null
+  where?: Prisma.CpSavedTalentWhereInput
+  orderBy?: Prisma.CpSavedTalentOrderByWithRelationInput | Prisma.CpSavedTalentOrderByWithRelationInput[]
+  cursor?: Prisma.CpSavedTalentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CpSavedTalentScalarFieldEnum | Prisma.CpSavedTalentScalarFieldEnum[]
 }
 
 /**

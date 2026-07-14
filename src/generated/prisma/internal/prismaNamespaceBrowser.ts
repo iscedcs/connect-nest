@@ -98,7 +98,10 @@ export const ModelName = {
   CpInvoice: 'CpInvoice',
   CpInvoiceItem: 'CpInvoiceItem',
   CpNotification: 'CpNotification',
-  CpAuditLog: 'CpAuditLog'
+  CpAuditLog: 'CpAuditLog',
+  CpJobPost: 'CpJobPost',
+  CpJobApplication: 'CpJobApplication',
+  CpSavedTalent: 'CpSavedTalent'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -432,6 +435,10 @@ export const ArtisanScalarFieldEnum = {
   totalBookings: 'totalBookings',
   totalEarnings: 'totalEarnings',
   workingHours: 'workingHours',
+  openToWork: 'openToWork',
+  desiredJobTypes: 'desiredJobTypes',
+  desiredWorkModels: 'desiredWorkModels',
+  skills: 'skills',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
@@ -974,6 +981,47 @@ export const CpAuditLogScalarFieldEnum = {
 } as const
 
 export type CpAuditLogScalarFieldEnum = (typeof CpAuditLogScalarFieldEnum)[keyof typeof CpAuditLogScalarFieldEnum]
+
+
+export const CpJobPostScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  title: 'title',
+  description: 'description',
+  jobType: 'jobType',
+  workModel: 'workModel',
+  requiredSkills: 'requiredSkills',
+  minBudget: 'minBudget',
+  maxBudget: 'maxBudget',
+  isActive: 'isActive',
+  createdAt: 'createdAt'
+} as const
+
+export type CpJobPostScalarFieldEnum = (typeof CpJobPostScalarFieldEnum)[keyof typeof CpJobPostScalarFieldEnum]
+
+
+export const CpJobApplicationScalarFieldEnum = {
+  id: 'id',
+  jobId: 'jobId',
+  artisanId: 'artisanId',
+  coverLetter: 'coverLetter',
+  resumeUrl: 'resumeUrl',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type CpJobApplicationScalarFieldEnum = (typeof CpJobApplicationScalarFieldEnum)[keyof typeof CpJobApplicationScalarFieldEnum]
+
+
+export const CpSavedTalentScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  artisanId: 'artisanId',
+  notes: 'notes',
+  createdAt: 'createdAt'
+} as const
+
+export type CpSavedTalentScalarFieldEnum = (typeof CpSavedTalentScalarFieldEnum)[keyof typeof CpSavedTalentScalarFieldEnum]
 
 
 export const SortOrder = {

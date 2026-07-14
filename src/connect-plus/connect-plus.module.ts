@@ -24,6 +24,8 @@ import { CpPublicModule } from './public/public.module';
 import { CpWebhooksModule } from './webhooks/webhooks.module';
 import { CpConnectCardsModule } from './connect-cards/connect-cards.module';
 import { CpSubscriptionsModule } from './subscriptions/subscriptions.module';
+import { JobsModule } from './jobs/jobs.module';
+import { TalentModule } from './talent/talent.module';
 
 @Module({
   imports: [
@@ -54,6 +56,8 @@ import { CpSubscriptionsModule } from './subscriptions/subscriptions.module';
     CpWebhooksModule,
     CpConnectCardsModule,
     CpSubscriptionsModule,
+    JobsModule,
+    TalentModule,
   ],
 })
 export class ConnectPlusModule {}

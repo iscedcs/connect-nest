@@ -346,3 +346,24 @@ export const CpSubscriptionStatus = {
 } as const
 
 export type CpSubscriptionStatus = (typeof CpSubscriptionStatus)[keyof typeof CpSubscriptionStatus]
+
+
+export const JobType = {
+  FULL_TIME: 'FULL_TIME',
+  PART_TIME: 'PART_TIME',
+  CONTRACT: 'CONTRACT',
+  FREELANCE: 'FREELANCE',
+  ONE_TIME_GIG: 'ONE_TIME_GIG',
+  FIXED_TERM: 'FIXED_TERM'
+} as const
+
+export type JobType = (typeof JobType)[keyof typeof JobType]
+
+
+export const WorkModel = {
+  REMOTE: 'REMOTE',
+  ON_SITE: 'ON_SITE',
+  HYBRID: 'HYBRID'
+} as const
+
+export type WorkModel = (typeof WorkModel)[keyof typeof WorkModel]

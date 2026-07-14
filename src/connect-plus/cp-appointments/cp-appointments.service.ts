@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
+  ConflictException,
 } from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service';
 import { CpRequestContext } from '../types/cp-request.types';
@@ -116,6 +117,40 @@ export class CpAppointmentsService {
     if (!workspaceId)
       throw new ForbiddenException('Workspace context required');
 
+    if (dto.staffId && dto.scheduledAt) {
+      const scheduledAt = new Date(dto.scheduledAt);
+      const endsAt = dto.endsAt
+        ? new Date(dto.endsAt)
+        : new Date(scheduledAt.getTime() + 60 * 60 * 1000);
+      const conflicting = await this.db.cpAppointment.findFirst({
+        where: {
+          workspaceId,
+          staffId: dto.staffId,
+          deletedAt: null,
+          status: { notIn: ['CANCELLED', 'NO_SHOW'] },
+          AND: [
+            { scheduledAt: { lt: endsAt } },
+            {
+              OR: [
+                { endsAt: { gt: scheduledAt } },
+                {
+                  endsAt: null,
+                  scheduledAt: {
+                    gte: new Date(scheduledAt.getTime() - 60 * 60 * 1000),
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      });
+      if (conflicting) {
+        throw new ConflictException(
+          'Staff member has a conflicting appointment at this time',
+        );
+      }
+    }
+
     const appt = await this.db.cpAppointment.create({
       data: {
         workspaceId,
@@ -188,14 +223,68 @@ export class CpAppointmentsService {
     }
 
     const updateData: Record<string, unknown> = {};
+    let newScheduledAt: Date | undefined = undefined;
+    let newEndsAt: Date | undefined = undefined;
+    let newStaffId: string | undefined = undefined;
+
     if (dto.title !== undefined) updateData.title = dto.title;
     if (dto.reason !== undefined) updateData.reason = dto.reason;
     if (dto.notes !== undefined) updateData.notes = dto.notes;
-    if (dto.scheduledAt !== undefined)
-      updateData.scheduledAt = new Date(dto.scheduledAt);
-    if (dto.endsAt !== undefined) updateData.endsAt = new Date(dto.endsAt);
-    if (dto.staffId !== undefined) updateData.staffId = dto.staffId;
+    if (dto.scheduledAt !== undefined) {
+      newScheduledAt = new Date(dto.scheduledAt);
+      updateData.scheduledAt = newScheduledAt;
+    }
+    if (dto.endsAt !== undefined) {
+      newEndsAt = new Date(dto.endsAt);
+      updateData.endsAt = newEndsAt;
+    }
+    if (dto.staffId !== undefined) {
+      newStaffId = dto.staffId;
+      updateData.staffId = newStaffId;
+    }
     if (dto.clientId !== undefined) updateData.clientId = dto.clientId;
+
+    const checkStaffId = newStaffId !== undefined ? newStaffId : appt.staffId;
+    const checkScheduledAt =
+      newScheduledAt !== undefined ? newScheduledAt : appt.scheduledAt;
+    const checkEndsAt = newEndsAt !== undefined ? newEndsAt : appt.endsAt;
+
+    if (
+      checkStaffId &&
+      (newScheduledAt || newEndsAt || newStaffId !== appt.staffId)
+    ) {
+      const endsAt = checkEndsAt
+        ? checkEndsAt
+        : new Date(checkScheduledAt.getTime() + 60 * 60 * 1000);
+      const conflicting = await this.db.cpAppointment.findFirst({
+        where: {
+          workspaceId,
+          id: { not: appointmentId },
+          staffId: checkStaffId,
+          deletedAt: null,
+          status: { notIn: ['CANCELLED', 'NO_SHOW'] },
+          AND: [
+            { scheduledAt: { lt: endsAt } },
+            {
+              OR: [
+                { endsAt: { gt: checkScheduledAt } },
+                {
+                  endsAt: null,
+                  scheduledAt: {
+                    gte: new Date(checkScheduledAt.getTime() - 60 * 60 * 1000),
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      });
+      if (conflicting) {
+        throw new ConflictException(
+          'Staff member has a conflicting appointment at this time',
+        );
+      }
+    }
 
     const updated = await this.db.cpAppointment.update({
       where: { id: appointmentId },
