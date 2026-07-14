@@ -76,12 +76,11 @@ export class AuthClientService {
   }
 
   /** Proxy for ISCE Auth GET /referral/me */
-  async getReferralSummary(userId: string): Promise<any> {
+  async getReferralSummary(authHeader: string): Promise<any> {
     try {
       const response = await axios.get(`${this.authUrl}/referral/me`, {
         headers: {
-          'x-internal-key': this.internalKey ?? '',
-          'x-user-id': userId,
+          Authorization: authHeader,
         },
       });
       return response.data;
@@ -99,15 +98,14 @@ export class AuthClientService {
   }
 
   /** Proxy for ISCE Auth POST /referral/business/apply */
-  async applyForBusinessReferrer(userId: string): Promise<any> {
+  async applyForBusinessReferrer(authHeader: string): Promise<any> {
     try {
       const response = await axios.post(
         `${this.authUrl}/referral/business/apply`,
         {},
         {
           headers: {
-            'x-internal-key': this.internalKey ?? '',
-            'x-user-id': userId,
+            Authorization: authHeader,
           },
         },
       );
@@ -126,15 +124,14 @@ export class AuthClientService {
   }
 
   /** Proxy for ISCE Auth POST /referral/cash-out */
-  async requestCashOut(userId: string): Promise<any> {
+  async requestCashOut(authHeader: string): Promise<any> {
     try {
       const response = await axios.post(
         `${this.authUrl}/referral/cash-out`,
         {},
         {
           headers: {
-            'x-internal-key': this.internalKey ?? '',
-            'x-user-id': userId,
+            Authorization: authHeader,
           },
         },
       );
