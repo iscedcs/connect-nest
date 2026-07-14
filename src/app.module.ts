@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
+import { ReferralModule } from './referral/referral.module';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth/auth.guard';
 import { ContactModule } from './contact/contact.module';
@@ -69,6 +70,7 @@ import { ConnectPlusModule } from './connect-plus/connect-plus.module';
     InternalModule,
     MailClientModule,
     ConnectPlusModule,
+    ReferralModule,
   ],
 })
 export class AppModule {}

@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  HttpException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import axios from 'axios';
 
 export interface DeviceResponse {
@@ -67,6 +72,83 @@ export class AuthClientService {
       return [];
     } catch {
       return [];
+    }
+  }
+
+  /** Proxy for ISCE Auth GET /referral/me */
+  async getReferralSummary(userId: string): Promise<any> {
+    try {
+      const response = await axios.get(`${this.authUrl}/referral/me`, {
+        headers: {
+          'x-internal-key': this.internalKey ?? '',
+          'x-user-id': userId,
+        },
+      });
+      return response.data;
+    } catch (error: any) {
+      if (error.response) {
+        throw new HttpException(
+          error.response.data,
+          error.response.status,
+        );
+      }
+      throw new InternalServerErrorException(
+        'Failed to fetch referral summary',
+      );
+    }
+  }
+
+  /** Proxy for ISCE Auth POST /referral/business/apply */
+  async applyForBusinessReferrer(userId: string): Promise<any> {
+    try {
+      const response = await axios.post(
+        `${this.authUrl}/referral/business/apply`,
+        {},
+        {
+          headers: {
+            'x-internal-key': this.internalKey ?? '',
+            'x-user-id': userId,
+          },
+        },
+      );
+      return response.data;
+    } catch (error: any) {
+      if (error.response) {
+        throw new HttpException(
+          error.response.data,
+          error.response.status,
+        );
+      }
+      throw new InternalServerErrorException(
+        'Failed to apply for business referrer',
+      );
+    }
+  }
+
+  /** Proxy for ISCE Auth POST /referral/cash-out */
+  async requestCashOut(userId: string): Promise<any> {
+    try {
+      const response = await axios.post(
+        `${this.authUrl}/referral/cash-out`,
+        {},
+        {
+          headers: {
+            'x-internal-key': this.internalKey ?? '',
+            'x-user-id': userId,
+          },
+        },
+      );
+      return response.data;
+    } catch (error: any) {
+      if (error.response) {
+        throw new HttpException(
+          error.response.data,
+          error.response.status,
+        );
+      }
+      throw new InternalServerErrorException(
+        'Failed to request cash out',
+      );
     }
   }
 }
