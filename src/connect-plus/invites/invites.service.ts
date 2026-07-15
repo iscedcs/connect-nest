@@ -10,8 +10,9 @@ import { DatabaseService } from '../../database/database.service';
 import { CpAuditLogService } from '../audit-logs/cp-audit-log.service';
 import { IsceAuthService } from '../isce-auth/isce-auth.service';
 import { CpSubscriptionsService } from '../subscriptions/subscriptions.service';
-import { CpRole } from '../../generated/prisma/client';
+import { CpRole, CpNotificationType } from '../../generated/prisma/client';
 import { CpRequestContext } from '../types/cp-request.types';
+import { CpNotificationsService } from '../notifications/notifications.service';
 import { SendInviteDto } from './dto/send-invite.dto';
 import { Request } from 'express';
 
@@ -22,6 +23,7 @@ export class CpInvitesService {
     private readonly auditLog: CpAuditLogService,
     private readonly isceAuth: IsceAuthService,
     private readonly subscriptions: CpSubscriptionsService,
+    private readonly notifications: CpNotificationsService,
   ) {}
 
   async sendInvite(ctx: CpRequestContext, dto: SendInviteDto, req: Request) {
@@ -95,6 +97,15 @@ export class CpInvitesService {
       targetEntityId: invite.id,
       action: 'SEND',
       after: { email: invite.email, role: invite.role } as Record<string, unknown>,
+    });
+
+    this.notifications.send({
+      recipientAuthId: ctx.authUserId,
+      type: CpNotificationType.WORKSPACE_INVITE_SENT,
+      title: 'Staff Invite Sent',
+      message: `You invited ${dto.email} as ${invite.role}.`,
+      workspaceId,
+      organizationId: ctx.organizationId,
     });
 
     return { message: 'Staff invitation sent', inviteId: invite.id };

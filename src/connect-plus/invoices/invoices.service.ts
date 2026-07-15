@@ -436,6 +436,19 @@ export class CpInvoicesService {
   async findById(ctx: CpRequestContext, invoiceId: string) {
     const invoice = await this.loadInvoiceForAccess(invoiceId);
     await this.assertCanAccessInvoice(ctx, invoice);
+
+    if (ctx.role === CpRole.CLIENT) {
+      this.auditLog.write({
+        ctx,
+        workspaceId: invoice.workspaceId,
+        organizationId: ctx.organizationId,
+        eventType: 'INVOICE_VIEWED',
+        targetEntity: 'CpInvoice',
+        targetEntityId: invoice.id,
+        action: 'READ',
+      });
+    }
+
     return invoice;
   }
 
@@ -652,6 +665,16 @@ export class CpInvoicesService {
       const client = await this.resolveClientByContext(ctx);
       if (invoice.clientId !== client.id)
         throw new ForbiddenException('Invoice is not yours');
+
+      this.auditLog.write({
+        ctx,
+        workspaceId: invoice.workspaceId,
+        organizationId: ctx.organizationId,
+        eventType: 'INVOICE_DOWNLOADED',
+        targetEntity: 'CpInvoice',
+        targetEntityId: invoice.id,
+        action: 'READ',
+      });
     } else if (ctx.role !== CpRole.WORKSPACE_ADMIN) {
       throw new ForbiddenException('Access denied');
     }
@@ -675,6 +698,18 @@ export class CpInvoicesService {
 
   async exportCsv(ctx: CpRequestContext) {
     const workspaceId = await this.requireWorkspaceContext(ctx);
+
+    this.auditLog.write({
+      ctx,
+      workspaceId,
+      organizationId: ctx.organizationId,
+      eventType: 'INVOICE_EXPORTED',
+      targetEntity: 'CpWorkspace',
+      targetEntityId: workspaceId,
+      action: 'READ',
+      metadata: { isCritical: true },
+    });
+
     const invoices = await this.db.cpInvoice.findMany({
       where: { workspaceId, deletedAt: null },
       include: {

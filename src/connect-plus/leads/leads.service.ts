@@ -3,6 +3,7 @@ import {
   NotFoundException,
   ForbiddenException,
   BadRequestException,
+  ConflictException,
 } from '@nestjs/common';
 import { randomBytes } from 'crypto';
 import { DatabaseService } from '../../database/database.service';
@@ -37,14 +38,16 @@ export class CpLeadsService {
     if (!workspaceId)
       throw new ForbiddenException('Workspace context required');
 
-    const page = parseInt(query.page ?? '1', 10) || 1;
-    const limit = Math.min(parseInt(query.limit ?? '20', 10) || 20, 100);
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 20;
     const skip = (page - 1) * limit;
 
     const where = {
       workspaceId,
       deletedAt: null as Date | null,
       ...(query.status ? { status: query.status } : {}),
+      ...(query.source ? { source: query.source } : {}),
+      ...(query.assignedStaffId ? { assignedStaffId: query.assignedStaffId } : {}),
     };
 
     const [data, total] = await this.db.$transaction([
@@ -282,6 +285,10 @@ export class CpLeadsService {
       where: { id: leadId, workspaceId, deletedAt: null },
     });
     if (!lead) throw new NotFoundException('Lead not found');
+
+    if (lead.status === 'CONVERTED') {
+      throw new ConflictException('Cannot reject a lead that is already converted');
+    }
 
     const updated = await this.db.cpLead.update({
       where: { id: leadId },

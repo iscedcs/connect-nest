@@ -4,6 +4,7 @@ import { CpGuardsModule } from '../guards/cp-guards.module';
 import { CpAuditLogModule } from '../audit-logs/cp-audit-log.module';
 import { IsceAuthModule } from '../isce-auth/isce-auth.module';
 import { CpSubscriptionsModule } from '../subscriptions/subscriptions.module';
+import { CpNotificationsModule } from '../notifications/notifications.module';
 import { CpInvitesController } from './invites.controller';
 import { CpInvitesService } from './invites.service';
 
@@ -14,6 +15,7 @@ import { CpInvitesService } from './invites.service';
     CpAuditLogModule,
     IsceAuthModule,
     CpSubscriptionsModule,
+    CpNotificationsModule,
   ],
   controllers: [CpInvitesController],
   providers: [CpInvitesService],

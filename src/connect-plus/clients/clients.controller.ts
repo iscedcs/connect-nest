@@ -6,6 +6,7 @@ import {
   Param,
   Query,
   Req,
+  Post,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -23,6 +24,7 @@ import { CpContext } from '../decorators/cp-context.decorator';
 import { CpRequestContext } from '../types/cp-request.types';
 import { CpRole } from '../../generated/prisma/client';
 import { AssignClientDto } from './dto/assign-client.dto';
+import { InviteClientDto } from './dto/invite-client.dto';
 import { PaginateQueryDto } from '../common/dto/paginate-query.dto';
 
 @ApiTags('Connect Plus - Clients')
@@ -88,5 +90,19 @@ export class CpClientsController {
     @Req() req: Request,
   ) {
     return this.service.assign(ctx, clientId, dto, req);
+  }
+
+  @Post(':clientId/invite')
+  @CpRoles(CpRole.WORKSPACE_ADMIN, CpRole.STAFF, CpRole.CREATOR)
+  @ApiOperation({ summary: 'Send invite to client' })
+  @ApiResponse({ status: 200, description: 'Client invite sent' })
+  invite(
+    @CpContext() ctx: CpRequestContext,
+    @Param('wsId') _wsId: string,
+    @Param('clientId') clientId: string,
+    @Body() dto: InviteClientDto,
+    @Req() req: Request,
+  ) {
+    return this.service.inviteClient(ctx, clientId, dto, req);
   }
 }

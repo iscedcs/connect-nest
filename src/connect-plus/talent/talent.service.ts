@@ -76,7 +76,7 @@ export class TalentService {
     // Send invitation notification
     this.notifications.send({
       recipientAuthId: artisan.profile.userId,
-      type: CpNotificationType.NEW_MESSAGE, // Fallback if no specific invite type
+      type: CpNotificationType.JOB_INVITATION,
       title: 'Job Invitation',
       message: `You have been invited by ${job.workspace.name} to apply for the position: ${job.title}`,
       metadata: { jobId, workspaceId },

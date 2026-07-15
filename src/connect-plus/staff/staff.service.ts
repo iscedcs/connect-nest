@@ -196,6 +196,10 @@ export class CpStaffService {
     if (!workspaceId)
       throw new ForbiddenException('Workspace context required');
 
+    if (dto.role === CpRole.CREATOR) {
+      throw new ForbiddenException('Cannot set role to CREATOR');
+    }
+
     const profile = await this.db.cpStaffProfile.findFirst({
       where: { id: staffId, workspaceId, deletedAt: null },
       include: { member: true },

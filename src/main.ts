@@ -7,6 +7,10 @@ import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
 
 async function bootstrap() {
+  if (!process.env.AUTH_INVITE_WEBHOOK_SECRET) {
+    throw new Error('AUTH_INVITE_WEBHOOK_SECRET is required');
+  }
+  
   const app = await NestFactory.create(AppModule, { rawBody: true });
 
   app.use(helmet());

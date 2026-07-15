@@ -12,6 +12,7 @@ import {
   CpRole,
   CpAppointmentType,
   CpNotificationType,
+  CpAppointmentStatus,
 } from '../../generated/prisma/client';
 import { CreateAppointmentDto } from './dto/create-cp-appointment.dto';
 import { UpdateCpAppointmentDto } from './dto/update-cp-appointment.dto';
@@ -19,6 +20,30 @@ import { UpdateCpAppointmentStatusDto } from './dto/update-cp-appointment-status
 import { PaginateQueryDto } from '../common/dto/paginate-query.dto';
 import { paginateResult } from '../utils/paginate';
 import { Request } from 'express';
+
+const ALLOWED_TRANSITIONS: Record<CpAppointmentStatus, CpAppointmentStatus[]> = {
+  [CpAppointmentStatus.PENDING]: [
+    CpAppointmentStatus.CONFIRMED,
+    CpAppointmentStatus.CANCELLED,
+    CpAppointmentStatus.RESCHEDULED,
+  ],
+  [CpAppointmentStatus.CONFIRMED]: [
+    CpAppointmentStatus.COMPLETED,
+    CpAppointmentStatus.CANCELLED,
+    CpAppointmentStatus.NO_SHOW,
+    CpAppointmentStatus.RESCHEDULED,
+  ],
+  [CpAppointmentStatus.RESCHEDULED]: [
+    CpAppointmentStatus.CONFIRMED,
+    CpAppointmentStatus.COMPLETED,
+    CpAppointmentStatus.CANCELLED,
+    CpAppointmentStatus.NO_SHOW,
+    CpAppointmentStatus.RESCHEDULED,
+  ],
+  [CpAppointmentStatus.COMPLETED]: [],
+  [CpAppointmentStatus.CANCELLED]: [],
+  [CpAppointmentStatus.NO_SHOW]: [],
+};
 
 @Injectable()
 export class CpAppointmentsService {
@@ -119,9 +144,10 @@ export class CpAppointmentsService {
 
     if (dto.staffId && dto.scheduledAt) {
       const scheduledAt = new Date(dto.scheduledAt);
+      const durationMs = await this.getDefaultDurationMs(workspaceId);
       const endsAt = dto.endsAt
         ? new Date(dto.endsAt)
-        : new Date(scheduledAt.getTime() + 60 * 60 * 1000);
+        : new Date(scheduledAt.getTime() + durationMs);
       const conflicting = await this.db.cpAppointment.findFirst({
         where: {
           workspaceId,
@@ -136,7 +162,7 @@ export class CpAppointmentsService {
                 {
                   endsAt: null,
                   scheduledAt: {
-                    gte: new Date(scheduledAt.getTime() - 60 * 60 * 1000),
+                    gte: new Date(scheduledAt.getTime() - durationMs),
                   },
                 },
               ],
@@ -226,6 +252,7 @@ export class CpAppointmentsService {
     let newScheduledAt: Date | undefined = undefined;
     let newEndsAt: Date | undefined = undefined;
     let newStaffId: string | undefined = undefined;
+    let isRescheduled = false;
 
     if (dto.title !== undefined) updateData.title = dto.title;
     if (dto.reason !== undefined) updateData.reason = dto.reason;
@@ -233,6 +260,19 @@ export class CpAppointmentsService {
     if (dto.scheduledAt !== undefined) {
       newScheduledAt = new Date(dto.scheduledAt);
       updateData.scheduledAt = newScheduledAt;
+      
+      if (newScheduledAt.getTime() !== appt.scheduledAt.getTime()) {
+        if (
+          ([
+            CpAppointmentStatus.PENDING,
+            CpAppointmentStatus.CONFIRMED,
+            CpAppointmentStatus.RESCHEDULED,
+          ] as CpAppointmentStatus[]).includes(appt.status)
+        ) {
+          isRescheduled = true;
+          updateData.status = CpAppointmentStatus.RESCHEDULED;
+        }
+      }
     }
     if (dto.endsAt !== undefined) {
       newEndsAt = new Date(dto.endsAt);
@@ -253,9 +293,10 @@ export class CpAppointmentsService {
       checkStaffId &&
       (newScheduledAt || newEndsAt || newStaffId !== appt.staffId)
     ) {
+      const durationMs = await this.getDefaultDurationMs(workspaceId);
       const endsAt = checkEndsAt
         ? checkEndsAt
-        : new Date(checkScheduledAt.getTime() + 60 * 60 * 1000);
+        : new Date(checkScheduledAt.getTime() + durationMs);
       const conflicting = await this.db.cpAppointment.findFirst({
         where: {
           workspaceId,
@@ -271,7 +312,7 @@ export class CpAppointmentsService {
                 {
                   endsAt: null,
                   scheduledAt: {
-                    gte: new Date(checkScheduledAt.getTime() - 60 * 60 * 1000),
+                    gte: new Date(checkScheduledAt.getTime() - durationMs),
                   },
                 },
               ],
@@ -290,6 +331,16 @@ export class CpAppointmentsService {
       where: { id: appointmentId },
       data: updateData,
     });
+
+    if (isRescheduled) {
+      await this.notifyParticipants(
+        ctx,
+        updated,
+        CpNotificationType.APPOINTMENT_RESCHEDULED,
+        'Appointment Rescheduled',
+        `Appointment "${updated.title}" has been rescheduled to ${newScheduledAt?.toLocaleString()}`
+      );
+    }
 
     this.auditLog.write({
       ctx,
@@ -322,10 +373,39 @@ export class CpAppointmentsService {
     });
     if (!appt) throw new NotFoundException('Appointment not found');
 
+    if (appt.status !== dto.status) {
+      const allowed = ALLOWED_TRANSITIONS[appt.status] || [];
+      if (!allowed.includes(dto.status)) {
+        throw new ConflictException(
+          `Invalid status transition from ${appt.status} to ${dto.status}`,
+        );
+      }
+    }
+
     const updated = await this.db.cpAppointment.update({
       where: { id: appointmentId },
       data: { status: dto.status },
     });
+
+    if (appt.status !== updated.status) {
+      if (updated.status === 'CONFIRMED') {
+        await this.notifyParticipants(
+          ctx,
+          updated,
+          CpNotificationType.APPOINTMENT_CONFIRMED,
+          'Appointment Confirmed',
+          `Appointment "${updated.title}" has been confirmed`
+        );
+      } else if (updated.status === 'CANCELLED') {
+        await this.notifyParticipants(
+          ctx,
+          updated,
+          CpNotificationType.APPOINTMENT_CANCELLED,
+          'Appointment Cancelled',
+          `Appointment "${updated.title}" has been cancelled`
+        );
+      }
+    }
 
     this.auditLog.write({
       ctx,
@@ -353,10 +433,18 @@ export class CpAppointmentsService {
     });
     if (!appt) throw new NotFoundException('Appointment not found');
 
-    await this.db.cpAppointment.update({
+    const updated = await this.db.cpAppointment.update({
       where: { id: appointmentId },
       data: { deletedAt: new Date(), status: 'CANCELLED' },
     });
+
+    await this.notifyParticipants(
+      ctx,
+      updated,
+      CpNotificationType.APPOINTMENT_CANCELLED,
+      'Appointment Cancelled',
+      `Appointment "${updated.title}" has been cancelled`
+    );
 
     this.auditLog.write({
       ctx,
@@ -371,5 +459,62 @@ export class CpAppointmentsService {
     });
 
     return { message: 'Appointment cancelled' };
+  }
+
+  private async getDefaultDurationMs(workspaceId: string): Promise<number> {
+    const profile = await this.db.cpCompanyProfile.findUnique({
+      where: { workspaceId },
+      select: { appointmentDefaults: true },
+    });
+    const defaults = profile?.appointmentDefaults as
+      | Record<string, unknown>
+      | undefined;
+    const durationMins =
+      typeof defaults?.duration === 'number' ? defaults.duration : 60;
+    return durationMins * 60 * 1000;
+  }
+
+  private async notifyParticipants(
+    ctx: CpRequestContext,
+    appointment: { id: string; title: string; clientId?: string | null; staffId?: string | null },
+    type: CpNotificationType,
+    title: string,
+    message: string,
+  ) {
+    if (!ctx.workspaceId) return;
+
+    if (appointment.clientId) {
+      const client = await this.db.cpClient.findUnique({
+        where: { id: appointment.clientId },
+      });
+      if (client?.authUserId) {
+        void this.notifications.send({
+          recipientAuthId: client.authUserId,
+          type,
+          title,
+          message,
+          workspaceId: ctx.workspaceId,
+          organizationId: ctx.organizationId,
+          metadata: { appointmentId: appointment.id },
+        });
+      }
+    }
+
+    if (appointment.staffId) {
+      const staff = await this.db.cpStaffProfile.findUnique({
+        where: { id: appointment.staffId },
+      });
+      if (staff?.authUserId) {
+        void this.notifications.send({
+          recipientAuthId: staff.authUserId,
+          type,
+          title,
+          message,
+          workspaceId: ctx.workspaceId,
+          organizationId: ctx.organizationId,
+          metadata: { appointmentId: appointment.id },
+        });
+      }
+    }
   }
 }

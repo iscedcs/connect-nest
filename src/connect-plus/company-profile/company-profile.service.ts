@@ -52,7 +52,7 @@ export class CpCompanyProfileService {
         contactEmail: dto.contactEmail,
         contactPhone: dto.contactPhone,
         address: dto.address as Prisma.InputJsonValue | undefined,
-        businessHours: dto.businessHours as Prisma.InputJsonValue | undefined,
+        businessHours: dto.businessHours as unknown as Prisma.InputJsonValue | undefined,
         branding: dto.branding as Prisma.InputJsonValue | undefined,
         appointmentDefaults: dto.appointmentDefaults as
           Prisma.InputJsonValue | undefined,
@@ -68,7 +68,7 @@ export class CpCompanyProfileService {
         contactEmail: dto.contactEmail,
         contactPhone: dto.contactPhone,
         address: dto.address as Prisma.InputJsonValue | undefined,
-        businessHours: dto.businessHours as Prisma.InputJsonValue | undefined,
+        businessHours: dto.businessHours as unknown as Prisma.InputJsonValue | undefined,
         branding: dto.branding as Prisma.InputJsonValue | undefined,
         appointmentDefaults: dto.appointmentDefaults as
           Prisma.InputJsonValue | undefined,
