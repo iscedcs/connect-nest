@@ -33,7 +33,7 @@ export class CpWorkspacesService {
     private readonly subscriptions: CpSubscriptionsService,
   ) {}
 
-  async create(ctx: CpRequestContext, dto: CreateWorkspaceDto, req: Request) {
+  async create(ctx: CpRequestContext, dto: CreateWorkspaceDto, req?: Request) {
     const limitCheck = await this.subscriptions.checkLimit(
       ctx.organizationId,
       'workspace',

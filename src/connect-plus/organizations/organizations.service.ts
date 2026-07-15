@@ -7,6 +7,7 @@ import { randomBytes } from 'crypto';
 import { DatabaseService } from '../../database/database.service';
 import { CpRequestContext } from '../types/cp-request.types';
 import { CpAuditLogService } from '../audit-logs/cp-audit-log.service';
+import { CpSubscriptionsService } from '../subscriptions/subscriptions.service';
 import { toSlug, toSlugWithSuffix } from '../utils/slug';
 import { Prisma } from '../../generated/prisma/client';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
@@ -18,12 +19,13 @@ export class CpOrganizationsService {
   constructor(
     private readonly db: DatabaseService,
     private readonly auditLog: CpAuditLogService,
+    private readonly subscriptions: CpSubscriptionsService,
   ) {}
 
   async create(
     ctx: CpRequestContext,
     dto: CreateOrganizationDto,
-    req: Request,
+    req?: Request,
   ) {
     // Check if creator already has an org
     const existing = await this.db.cpOrganization.findFirst({
@@ -42,6 +44,13 @@ export class CpOrganizationsService {
         slug,
         settings: dto.settings as Prisma.InputJsonValue | undefined,
       },
+    });
+
+    // Every org needs a subscription row to exist from creation — plan
+    // limit checks and the /me/subscription read path both assume one.
+    await this.subscriptions.getOrCreate({
+      ...ctx,
+      organizationId: org.id,
     });
 
     this.auditLog.write({
