@@ -18,7 +18,7 @@ import { AnalyticsQueryDto } from './dto/analytics-query.dto';
 @ApiTags('Connect Plus - Analytics')
 @ApiBearerAuth('access-token')
 @UseGuards(CpContextGuard, CpRolesGuard)
-@Controller('cp/workspaces/:wsId/analytics')
+@Controller('cp/analytics')
 export class CpAnalyticsController {
   constructor(private readonly service: CpAnalyticsService) {}
 
@@ -26,7 +26,6 @@ export class CpAnalyticsController {
   @CpRoles(CpRole.WORKSPACE_ADMIN)
   @ApiOperation({ summary: 'Attendance summary for workspace' })
   @ApiResponse({ status: 200, description: 'Attendance analytics' })
-  @ApiParam({ name: 'wsId', description: 'Workspace ID' })
   getAttendance(
     @CpContext() ctx: CpRequestContext,
     @Query() query: AnalyticsQueryDto,
@@ -38,7 +37,6 @@ export class CpAnalyticsController {
   @CpRoles(CpRole.WORKSPACE_ADMIN)
   @ApiOperation({ summary: 'Client engagement metrics for workspace' })
   @ApiResponse({ status: 200, description: 'Client analytics' })
-  @ApiParam({ name: 'wsId', description: 'Workspace ID' })
   getClients(
     @CpContext() ctx: CpRequestContext,
     @Query() query: AnalyticsQueryDto,
@@ -50,7 +48,6 @@ export class CpAnalyticsController {
   @CpRoles(CpRole.WORKSPACE_ADMIN)
   @ApiOperation({ summary: 'Revenue and invoice stats for workspace' })
   @ApiResponse({ status: 200, description: 'Invoice analytics' })
-  @ApiParam({ name: 'wsId', description: 'Workspace ID' })
   getInvoices(
     @CpContext() ctx: CpRequestContext,
     @Query() query: AnalyticsQueryDto,
@@ -64,7 +61,6 @@ export class CpAnalyticsController {
     summary: 'Individual staff metrics (STAFF can only view self)',
   })
   @ApiResponse({ status: 200, description: 'Staff analytics' })
-  @ApiParam({ name: 'wsId', description: 'Workspace ID' })
   @ApiParam({ name: 'staffId', description: 'Staff Profile ID' })
   getStaff(
     @CpContext() ctx: CpRequestContext,

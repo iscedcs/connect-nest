@@ -32,7 +32,7 @@ import { PaginateQueryDto } from '../common/dto/paginate-query.dto';
 @ApiTags('Connect Plus - Staff')
 @ApiBearerAuth('access-token')
 @UseGuards(CpContextGuard, CpRolesGuard)
-@Controller('cp/workspaces/:wsId/staff')
+@Controller('cp/staff')
 export class CpStaffController {
   constructor(private readonly service: CpStaffService) {}
 
@@ -42,10 +42,9 @@ export class CpStaffController {
   @ApiResponse({ status: 201, description: 'Staff invitation sent' })
   inviteStaff(
     @CpContext() ctx: CpRequestContext,
-    @Param('wsId') _wsId: string,
+    
     @Body() dto: InviteStaffDto,
-    @Req() req: Request,
-  ) {
+    @Req() req: Request) {
     return this.service.inviteStaff(ctx, dto, req);
   }
 
@@ -54,9 +53,7 @@ export class CpStaffController {
   @ApiOperation({ summary: 'List workspace invites' })
   @ApiResponse({ status: 200, description: 'Invite list' })
   listInvites(
-    @CpContext() ctx: CpRequestContext,
-    @Param('wsId') _wsId: string,
-  ) {
+    @CpContext() ctx: CpRequestContext) {
     return this.service.listInvites(ctx);
   }
 
@@ -66,9 +63,8 @@ export class CpStaffController {
   @ApiResponse({ status: 200, description: 'Staff list' })
   listStaff(
     @CpContext() ctx: CpRequestContext,
-    @Param('wsId') _wsId: string,
-    @Query() query: PaginateQueryDto,
-  ) {
+    
+    @Query() query: PaginateQueryDto) {
     return this.service.listStaff(ctx, query);
   }
 
@@ -78,9 +74,8 @@ export class CpStaffController {
   @ApiResponse({ status: 200, description: 'Staff profile' })
   getStaff(
     @CpContext() ctx: CpRequestContext,
-    @Param('wsId') _wsId: string,
-    @Param('staffId') staffId: string,
-  ) {
+    
+    @Param('staffId') staffId: string) {
     return this.service.getStaff(ctx, staffId);
   }
 
@@ -90,11 +85,10 @@ export class CpStaffController {
   @ApiResponse({ status: 200, description: 'Staff profile updated' })
   updateStaff(
     @CpContext() ctx: CpRequestContext,
-    @Param('wsId') _wsId: string,
+    
     @Param('staffId') staffId: string,
     @Body() dto: UpdateStaffProfileDto,
-    @Req() req: Request,
-  ) {
+    @Req() req: Request) {
     return this.service.updateStaff(ctx, staffId, dto, req);
   }
 
@@ -104,11 +98,10 @@ export class CpStaffController {
   @ApiResponse({ status: 200, description: 'Staff status updated' })
   updateStaffStatus(
     @CpContext() ctx: CpRequestContext,
-    @Param('wsId') _wsId: string,
+    
     @Param('staffId') staffId: string,
     @Body() dto: UpdateStaffStatusDto,
-    @Req() req: Request,
-  ) {
+    @Req() req: Request) {
     return this.service.updateStaffStatus(ctx, staffId, dto, req);
   }
 
@@ -118,11 +111,10 @@ export class CpStaffController {
   @ApiResponse({ status: 200, description: 'Staff role updated' })
   updateStaffRole(
     @CpContext() ctx: CpRequestContext,
-    @Param('wsId') _wsId: string,
+    
     @Param('staffId') staffId: string,
     @Body() dto: UpdateStaffRoleDto,
-    @Req() req: Request,
-  ) {
+    @Req() req: Request) {
     return this.service.updateStaffRole(ctx, staffId, dto, req);
   }
 }

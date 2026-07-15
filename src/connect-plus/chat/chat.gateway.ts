@@ -35,8 +35,8 @@ export class CpChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   private readonly logger = new Logger(CpChatGateway.name);
 
-  /** authUserId → socketId */
-  private readonly connectedUsers = new Map<string, string>();
+  /** authUserId → Set of socketIds */
+  private readonly connectedUsers = new Map<string, Set<string>>();
 
   constructor(
     private readonly jwtService: JwtService,
@@ -52,7 +52,14 @@ export class CpChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         secret: process.env.JWT_SECRET,
       });
       client.data.authUserId = payload.id;
-      this.connectedUsers.set(payload.id, client.id);
+      
+      let sockets = this.connectedUsers.get(payload.id);
+      if (!sockets) {
+        sockets = new Set<string>();
+        this.connectedUsers.set(payload.id, sockets);
+      }
+      sockets.add(client.id);
+
       this.logger.debug(
         `CP socket connected: ${client.id} (user: ${payload.id})`,
       );
@@ -64,7 +71,15 @@ export class CpChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   handleDisconnect(client: Socket): void {
     const authUserId = client.data.authUserId as string | undefined;
-    if (authUserId) this.connectedUsers.delete(authUserId);
+    if (authUserId) {
+      const sockets = this.connectedUsers.get(authUserId);
+      if (sockets) {
+        sockets.delete(client.id);
+        if (sockets.size === 0) {
+          this.connectedUsers.delete(authUserId);
+        }
+      }
+    }
     this.logger.debug(`CP socket disconnected: ${client.id}`);
   }
 
@@ -244,8 +259,16 @@ export class CpChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.to(`workspace:${workspaceId}`).emit(event, data);
   }
 
+  isUserOnline(authUserId: string): boolean {
+    return this.connectedUsers.has(authUserId);
+  }
+
   emitToUser(authUserId: string, event: string, data: unknown): void {
-    const socketId = this.connectedUsers.get(authUserId);
-    if (socketId) this.server.to(socketId).emit(event, data);
+    const sockets = this.connectedUsers.get(authUserId);
+    if (sockets) {
+      for (const socketId of sockets) {
+        this.server.to(socketId).emit(event, data);
+      }
+    }
   }
 }

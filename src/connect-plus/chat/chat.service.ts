@@ -3,8 +3,11 @@ import {
   NotFoundException,
   ForbiddenException,
   Optional,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service';
+import { CpNotificationsService } from '../notifications/notifications.service';
 import { CpRequestContext } from '../types/cp-request.types';
 import {
   CpConversationType,
@@ -12,6 +15,7 @@ import {
   CpRole,
   CpSenderRole,
   Prisma,
+  CpNotificationType,
 } from '../../generated/prisma/client';
 import { CreateDirectConversationDto } from './dto/create-direct-conversation.dto';
 import { GetMessagesQueryDto } from './dto/get-messages-query.dto';
@@ -23,6 +27,8 @@ export class CpChatService {
   constructor(
     private readonly db: DatabaseService,
     @Optional() private readonly gateway: CpChatGateway | null,
+    @Inject(forwardRef(() => CpNotificationsService))
+    private readonly notifications: CpNotificationsService,
   ) {}
 
   // ─── List my conversations ─────────────────────────────────────
@@ -193,6 +199,7 @@ export class CpChatService {
 
     const conversation = await this.db.cpConversation.findFirst({
       where: { id: convId, workspaceId, deletedAt: null },
+      include: { participants: true },
     });
     if (!conversation) throw new NotFoundException('Conversation not found');
 
@@ -207,9 +214,14 @@ export class CpChatService {
 
     const member = await this.db.cpWorkspaceMember.findUnique({
       where: { workspaceId_authUserId: { workspaceId, authUserId } },
+      include: {
+        staffProfile: { select: { name: true } },
+        clientRecord: { select: { name: true } },
+      },
     });
     const senderRole =
       member?.role === CpRole.CLIENT ? CpSenderRole.CLIENT : CpSenderRole.STAFF;
+    const senderName = member?.staffProfile?.name ?? member?.clientRecord?.name ?? 'Someone';
 
     const message = await this.db.cpMessage.create({
       data: {
@@ -243,6 +255,26 @@ export class CpChatService {
             createdAt: message.createdAt,
           },
         });
+    }
+
+    const offlineParticipants = conversation.participants.filter((p) => {
+      if (p.authUserId === authUserId) return false;
+      if (this.gateway && this.gateway.isUserOnline(p.authUserId)) return false;
+      return true;
+    });
+
+    const notifType = senderRole === CpSenderRole.CLIENT ? CpNotificationType.CLIENT_MESSAGE : CpNotificationType.NEW_MESSAGE;
+    
+    for (const p of offlineParticipants) {
+      void this.notifications.send({
+        recipientAuthId: p.authUserId,
+        type: notifType,
+        title: `New Message from ${senderName}`,
+        message: dto.content,
+        workspaceId,
+        organizationId: ctx.organizationId,
+        metadata: { conversationId: convId, messageId: message.id },
+      });
     }
 
     return message;

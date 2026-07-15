@@ -39,10 +39,10 @@ export class BusinessHourEntryDto {
 }
 
 export class UpsertCompanyProfileDto {
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsString()
-  @IsNotEmpty()
-  name: string;
+  @IsOptional()
+  name?: string;
 
   @ApiPropertyOptional()
   @IsString()

@@ -3,6 +3,7 @@ import {
   NotFoundException,
   ForbiddenException,
   ConflictException,
+  BadRequestException,
 } from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service';
 import { CpRequestContext } from '../types/cp-request.types';
@@ -71,6 +72,226 @@ export class CpAppointmentsService {
       where: { workspaceId, clientId: client.id, deletedAt: null },
       orderBy: { scheduledAt: 'desc' },
     });
+  }
+
+  async createForClient(ctx: CpRequestContext, dto: CreateAppointmentDto, req: Request) {
+    const workspaceId = ctx.workspaceId;
+    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+
+    const client = await this.db.cpClient.findFirst({
+      where: { workspaceId, member: { authUserId: ctx.authUserId }, deletedAt: null },
+    });
+    if (!client) throw new NotFoundException('Client profile not found');
+
+    if (!dto.staffId) {
+      throw new BadRequestException('A staff member must be selected');
+    }
+
+    const staff = await this.db.cpStaffProfile.findFirst({
+      where: { id: dto.staffId, workspaceId, deletedAt: null },
+    });
+    if (!staff) throw new NotFoundException('Staff member not found');
+
+    const scheduledAt = new Date(dto.scheduledAt);
+    const durationMs = await this.getDefaultDurationMs(workspaceId);
+    const endsAt = dto.endsAt
+      ? new Date(dto.endsAt)
+      : new Date(scheduledAt.getTime() + durationMs);
+
+    const conflicting = await this.db.cpAppointment.findFirst({
+      where: {
+        workspaceId,
+        staffId: dto.staffId,
+        deletedAt: null,
+        status: { notIn: ['CANCELLED', 'NO_SHOW'] },
+        AND: [
+          { scheduledAt: { lt: endsAt } },
+          {
+            OR: [
+              { endsAt: { gt: scheduledAt } },
+              {
+                endsAt: null,
+                scheduledAt: {
+                  gte: new Date(scheduledAt.getTime() - durationMs),
+                },
+              },
+            ],
+          },
+        ],
+      },
+    });
+    if (conflicting) {
+      throw new ConflictException('Staff member has a conflicting appointment at this time');
+    }
+
+    const appt = await this.db.cpAppointment.create({
+      data: {
+        workspaceId,
+        type: CpAppointmentType.CLIENT,
+        title: dto.title,
+        reason: dto.reason,
+        scheduledAt,
+        endsAt,
+        clientId: client.id,
+        staffId: dto.staffId,
+        notes: dto.notes ?? undefined,
+        status: CpAppointmentStatus.PENDING,
+      },
+    });
+
+    this.auditLog.write({
+      ctx,
+      req,
+      workspaceId,
+      organizationId: ctx.organizationId,
+      eventType: 'APPOINTMENT_CREATED',
+      targetEntity: 'CpAppointment',
+      targetEntityId: appt.id,
+      action: 'CREATE',
+      after: appt as Record<string, unknown>,
+    });
+
+    await this.notifyParticipants(
+      ctx,
+      { id: appt.id, title: appt.title, staffId: appt.staffId, clientId: appt.clientId },
+      CpNotificationType.APPOINTMENT_BOOKED,
+      'New Appointment Request',
+      `${client.name} requested an appointment for ${scheduledAt.toLocaleString()}`
+    );
+
+    return appt;
+  }
+
+  async updateForClient(ctx: CpRequestContext, appointmentId: string, dto: UpdateCpAppointmentDto, req: Request) {
+    const workspaceId = ctx.workspaceId;
+    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+
+    const client = await this.db.cpClient.findFirst({
+      where: { workspaceId, member: { authUserId: ctx.authUserId }, deletedAt: null },
+    });
+    if (!client) throw new NotFoundException('Client profile not found');
+
+    const appt = await this.db.cpAppointment.findFirst({
+      where: { id: appointmentId, workspaceId, clientId: client.id, deletedAt: null },
+    });
+    if (!appt) throw new NotFoundException('Appointment not found');
+
+    if (appt.status === CpAppointmentStatus.CANCELLED || appt.status === CpAppointmentStatus.COMPLETED || appt.status === CpAppointmentStatus.NO_SHOW) {
+      throw new ConflictException('Cannot reschedule a cancelled or completed appointment');
+    }
+
+    if (dto.scheduledAt) {
+      const scheduledAt = new Date(dto.scheduledAt);
+      const durationMs = await this.getDefaultDurationMs(workspaceId);
+      const endsAt = dto.endsAt ? new Date(dto.endsAt) : new Date(scheduledAt.getTime() + durationMs);
+      const staffId = dto.staffId ?? appt.staffId;
+
+      if (staffId) {
+        const conflicting = await this.db.cpAppointment.findFirst({
+          where: {
+            workspaceId,
+            staffId,
+            deletedAt: null,
+            id: { not: appt.id },
+            status: { notIn: ['CANCELLED', 'NO_SHOW'] },
+            AND: [
+              { scheduledAt: { lt: endsAt } },
+              {
+                OR: [
+                  { endsAt: { gt: scheduledAt } },
+                  {
+                    endsAt: null,
+                    scheduledAt: { gte: new Date(scheduledAt.getTime() - durationMs) },
+                  },
+                ],
+              },
+            ],
+          },
+        });
+        if (conflicting) throw new ConflictException('Staff member has a conflicting appointment at this time');
+      }
+    }
+
+    const updated = await this.db.cpAppointment.update({
+      where: { id: appt.id },
+      data: {
+        title: dto.title,
+        reason: dto.reason,
+        scheduledAt: dto.scheduledAt ? new Date(dto.scheduledAt) : undefined,
+        endsAt: dto.endsAt ? new Date(dto.endsAt) : undefined,
+        staffId: dto.staffId ?? undefined,
+        status: dto.scheduledAt ? CpAppointmentStatus.RESCHEDULED : undefined,
+      },
+    });
+
+    this.auditLog.write({
+      ctx,
+      req,
+      workspaceId,
+      organizationId: ctx.organizationId,
+      eventType: 'APPOINTMENT_UPDATED',
+      targetEntity: 'CpAppointment',
+      targetEntityId: appt.id,
+      action: 'UPDATE',
+      before: appt as Record<string, unknown>,
+      after: updated as Record<string, unknown>,
+    });
+
+    await this.notifyParticipants(
+      ctx,
+      { id: updated.id, title: updated.title, staffId: updated.staffId, clientId: updated.clientId },
+      CpNotificationType.APPOINTMENT_RESCHEDULED,
+      'Appointment Rescheduled',
+      `${client.name} updated their appointment to ${updated.scheduledAt.toLocaleString()}`
+    );
+
+    return updated;
+  }
+
+  async cancelForClient(ctx: CpRequestContext, appointmentId: string, req: Request) {
+    const workspaceId = ctx.workspaceId;
+    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+
+    const client = await this.db.cpClient.findFirst({
+      where: { workspaceId, member: { authUserId: ctx.authUserId }, deletedAt: null },
+    });
+    if (!client) throw new NotFoundException('Client profile not found');
+
+    const appt = await this.db.cpAppointment.findFirst({
+      where: { id: appointmentId, workspaceId, clientId: client.id, deletedAt: null },
+    });
+    if (!appt) throw new NotFoundException('Appointment not found');
+
+    if (appt.status === CpAppointmentStatus.COMPLETED || appt.status === CpAppointmentStatus.NO_SHOW || appt.status === CpAppointmentStatus.CANCELLED) {
+      throw new ConflictException('Cannot cancel this appointment');
+    }
+
+    const updated = await this.db.cpAppointment.update({
+      where: { id: appt.id },
+      data: { status: CpAppointmentStatus.CANCELLED },
+    });
+
+    this.auditLog.write({
+      ctx,
+      req,
+      workspaceId,
+      organizationId: ctx.organizationId,
+      eventType: 'APPOINTMENT_CANCELLED',
+      targetEntity: 'CpAppointment',
+      targetEntityId: appt.id,
+      action: 'DELETE',
+      before: appt as Record<string, unknown>,
+    });
+
+    await this.notifyParticipants(
+      ctx,
+      { id: appt.id, title: appt.title, staffId: appt.staffId, clientId: appt.clientId },
+      CpNotificationType.APPOINTMENT_CANCELLED,
+      'Appointment Cancelled',
+      `${client.name} cancelled their appointment`
+    );
+
+    return { message: 'Appointment cancelled' };
   }
 
   async list(ctx: CpRequestContext, query: PaginateQueryDto) {

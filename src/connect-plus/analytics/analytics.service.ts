@@ -95,7 +95,7 @@ export class CpAnalyticsService {
 
     const dateFilter = this.buildDateFilter(query, 'createdAt');
 
-    const [totalClients, activeClients, clientsWithInvoices, appointmentStats] =
+    const [totalClients, activeClients, clientsWithInvoices, appointmentStats, totalLeads, convertedLeads] =
       await Promise.all([
         this.db.cpClient.count({
           where: {
@@ -123,6 +123,12 @@ export class CpAnalyticsService {
           where: { workspaceId: ctx.workspaceId, ...dateFilter },
           _count: { id: true },
         }),
+        this.db.cpLead.count({
+          where: { workspaceId: ctx.workspaceId, ...dateFilter },
+        }),
+        this.db.cpLead.count({
+          where: { workspaceId: ctx.workspaceId, status: 'CONVERTED', ...dateFilter },
+        }),
       ]);
 
     const apptByStatus = Object.fromEntries(
@@ -139,6 +145,11 @@ export class CpAnalyticsService {
       appointments: {
         byStatus: apptByStatus,
         total: appointmentStats.reduce((sum, s) => sum + s._count.id, 0),
+      },
+      leads: {
+        created: totalLeads,
+        converted: convertedLeads,
+        conversionRate: totalLeads > 0 ? (convertedLeads / totalLeads) * 100 : 0,
       },
       dateRange: { from: query.from ?? null, to: query.to ?? null },
     };
@@ -388,13 +399,15 @@ export class CpAnalyticsService {
           invoices: 0,
           totalBilled: 0,
           totalPaid: 0,
+          leadsCreated: 0,
+          leadsConverted: 0,
         },
         perWorkspace: [],
         dateRange: { from: query.from ?? null, to: query.to ?? null },
       };
     }
 
-    const [staffAgg, clientAgg, invoiceAgg] = await Promise.all([
+    const [staffAgg, clientAgg, invoiceAgg, leadsCreatedAgg, leadsConvertedAgg] = await Promise.all([
       this.db.cpStaffProfile.groupBy({
         by: ['workspaceId'],
         where: { workspaceId: { in: wsIds }, deletedAt: null },
@@ -410,6 +423,16 @@ export class CpAnalyticsService {
         where: { workspaceId: { in: wsIds }, deletedAt: null, ...dateFilter },
         _count: { id: true },
         _sum: { totalAmount: true },
+      }),
+      this.db.cpLead.groupBy({
+        by: ['workspaceId'],
+        where: { workspaceId: { in: wsIds }, ...dateFilter },
+        _count: { id: true },
+      }),
+      this.db.cpLead.groupBy({
+        by: ['workspaceId'],
+        where: { workspaceId: { in: wsIds }, status: 'CONVERTED', ...dateFilter },
+        _count: { id: true },
       }),
     ]);
 
@@ -444,11 +467,20 @@ export class CpAnalyticsService {
       }
     }
 
+    const leadsCreatedByWs = Object.fromEntries(
+      leadsCreatedAgg.map((l) => [l.workspaceId, l._count.id]),
+    );
+    const leadsConvertedByWs = Object.fromEntries(
+      leadsConvertedAgg.map((l) => [l.workspaceId, l._count.id]),
+    );
+
     const perWorkspace = workspaces.map((ws) => ({
       workspaceId: ws.id,
       name: ws.name,
       staffCount: staffByWs[ws.id] ?? 0,
       clientCount: clientByWs[ws.id] ?? 0,
+      leadsCreated: leadsCreatedByWs[ws.id] ?? 0,
+      leadsConverted: leadsConvertedByWs[ws.id] ?? 0,
       invoices: invoiceByWs[ws.id] ?? {
         count: 0,
         totalBilled: 0,
@@ -460,11 +492,13 @@ export class CpAnalyticsService {
       (acc, ws) => ({
         staff: acc.staff + ws.staffCount,
         clients: acc.clients + ws.clientCount,
+        leadsCreated: acc.leadsCreated + ws.leadsCreated,
+        leadsConverted: acc.leadsConverted + ws.leadsConverted,
         invoices: acc.invoices + ws.invoices.count,
         totalBilled: acc.totalBilled + ws.invoices.totalBilled,
         totalPaid: acc.totalPaid + ws.invoices.totalPaid,
       }),
-      { staff: 0, clients: 0, invoices: 0, totalBilled: 0, totalPaid: 0 },
+      { staff: 0, clients: 0, leadsCreated: 0, leadsConverted: 0, invoices: 0, totalBilled: 0, totalPaid: 0 },
     );
 
     const result = {

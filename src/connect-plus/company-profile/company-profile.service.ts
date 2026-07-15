@@ -42,11 +42,20 @@ export class CpCompanyProfileService {
       where: { workspaceId },
     });
 
+    let fallbackName = dto.name;
+    if (!existing && !dto.name) {
+      const workspace = await this.db.cpWorkspace.findUnique({
+        where: { id: workspaceId },
+        select: { name: true },
+      });
+      fallbackName = workspace?.name ?? 'Workspace';
+    }
+
     const profile = await this.db.cpCompanyProfile.upsert({
       where: { workspaceId },
       create: {
         workspaceId,
-        name: dto.name,
+        name: fallbackName as string,
         logo: dto.logo,
         description: dto.description,
         contactEmail: dto.contactEmail,
