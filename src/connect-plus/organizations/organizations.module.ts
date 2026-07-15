@@ -3,6 +3,7 @@ import { DatabaseModule } from '../../database/database.module';
 import { CpGuardsModule } from '../guards/cp-guards.module';
 import { CpAuditLogModule } from '../audit-logs/cp-audit-log.module';
 import { CpAnalyticsModule } from '../analytics/analytics.module';
+import { CpSubscriptionsModule } from '../subscriptions/subscriptions.module';
 import { CpOrganizationsController } from './organizations.controller';
 import { CpOrganizationsService } from './organizations.service';
 
@@ -12,6 +13,7 @@ import { CpOrganizationsService } from './organizations.service';
     CpGuardsModule,
     CpAuditLogModule,
     CpAnalyticsModule,
+    CpSubscriptionsModule,
   ],
   controllers: [CpOrganizationsController],
   providers: [CpOrganizationsService],
