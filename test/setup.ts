@@ -24,7 +24,7 @@ export const setupE2eApp = async (mockUserId: string = 'test-creator-id') => {
     .useValue(mockPushService)
     .compile();
 
-  const app: INestApplication = moduleFixture.createNestApplication();
+  const app: INestApplication = moduleFixture.createNestApplication({ rawBody: true });
   
   app.setGlobalPrefix('api');
   app.useGlobalPipes(

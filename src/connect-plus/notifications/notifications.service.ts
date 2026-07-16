@@ -8,6 +8,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service';
+import { CpAuditLogService } from '../audit-logs/cp-audit-log.service';
 import {
   CpNotificationType,
   CpRole,
@@ -54,6 +55,7 @@ export class CpNotificationsService {
     private readonly chatGateway: CpChatGateway | null,
     @Optional() private readonly mailClient: MailClientService | null,
     @Optional() private readonly pushService: PushService | null,
+    private readonly auditLog: CpAuditLogService,
   ) {}
 
   send(params: SendNotificationParams): void {
@@ -88,6 +90,18 @@ export class CpNotificationsService {
         this.deliver(params).catch((err: unknown) =>
           this.logger.error('notification delivery failed', err),
         );
+
+        // 4. Audit Log
+        this.auditLog.write({
+          ctx: null,
+          workspaceId: params.workspaceId,
+          organizationId: params.organizationId,
+          eventType: 'NOTIFICATION_SEND',
+          targetEntity: 'CpNotification',
+          targetEntityId: notification.id,
+          action: 'CREATE',
+          success: true,
+        });
       })
       .catch((err: unknown) => {
         this.logger.error(

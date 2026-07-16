@@ -72,12 +72,6 @@ export class CpContextGuard implements CanActivate {
       return true;
     }
 
-    if (req.params?.wsId && req.params.wsId !== workspaceId) {
-      throw new BadRequestException(
-        'Workspace ID in URL does not match x-workspace-id header',
-      );
-    }
-
     const member = await this.db.cpWorkspaceMember.findUnique({
       where: { workspaceId_authUserId: { workspaceId, authUserId } },
       include: { 

@@ -2,6 +2,7 @@ import { Injectable, ForbiddenException, NotFoundException } from '@nestjs/commo
 import { DatabaseService } from '../../database/database.service';
 import { CpRequestContext } from '../types/cp-request.types';
 import { CpNotificationsService } from '../notifications/notifications.service';
+import { CpAuditLogService } from '../audit-logs/cp-audit-log.service';
 import { JobType, WorkModel, CpNotificationType } from '../../generated/prisma/client';
 
 @Injectable()
@@ -9,6 +10,7 @@ export class TalentService {
   constructor(
     private readonly db: DatabaseService,
     private readonly notifications: CpNotificationsService,
+    private readonly auditLog: CpAuditLogService,
   ) {}
 
   async searchTalent(query: { keyword?: string, skills?: string, jobTypes?: string, workModels?: string }) {
@@ -82,6 +84,15 @@ export class TalentService {
       metadata: { jobId, workspaceId },
     });
 
+    this.auditLog.write({
+      ctx,
+      eventType: 'TALENT_JOB_INVITE',
+      targetEntity: 'CpJobPost',
+      targetEntityId: jobId,
+      action: 'PROCESS',
+      success: true,
+    });
+
     return { success: true, message: 'Invitation sent' };
   }
 
@@ -105,7 +116,7 @@ export class TalentService {
     const artisan = await this.db.artisan.findUnique({ where: { id: artisanId } });
     if (!artisan) throw new NotFoundException('Artisan not found');
 
-    return this.db.cpSavedTalent.upsert({
+    const saved = await this.db.cpSavedTalent.upsert({
       where: {
         workspaceId_artisanId: { workspaceId: ctx.workspaceId, artisanId }
       },
@@ -116,6 +127,17 @@ export class TalentService {
         notes,
       }
     });
+
+    this.auditLog.write({
+      ctx,
+      eventType: 'TALENT_SAVE',
+      targetEntity: 'CpSavedTalent',
+      targetEntityId: saved.id,
+      action: 'CREATE',
+      success: true,
+    });
+
+    return saved;
   }
 
   async removeSavedTalent(ctx: CpRequestContext, artisanId: string) {
@@ -123,6 +145,15 @@ export class TalentService {
 
     await this.db.cpSavedTalent.deleteMany({
       where: { workspaceId: ctx.workspaceId, artisanId }
+    });
+
+    this.auditLog.write({
+      ctx,
+      eventType: 'TALENT_UNSAVE',
+      targetEntity: 'CpSavedTalent',
+      targetEntityId: artisanId,
+      action: 'DELETE',
+      success: true,
     });
 
     return { success: true };

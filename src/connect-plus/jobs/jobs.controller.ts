@@ -30,7 +30,7 @@ export class JobsController {
 
   @ApiBearerAuth('access-token')
   @UseGuards(CpContextGuard, CpRolesGuard)
-  @Post('workspaces/:wsId/jobs')
+  @Post('jobs')
   @CpRoles(CpRole.WORKSPACE_ADMIN)
   @ApiOperation({ summary: 'Create a new job post' })
   createJob(
@@ -43,7 +43,7 @@ export class JobsController {
 
   @ApiBearerAuth('access-token')
   @UseGuards(CpContextGuard, CpRolesGuard)
-  @Get('workspaces/:wsId/jobs')
+  @Get('jobs')
   @CpRoles(CpRole.WORKSPACE_ADMIN)
   @ApiOperation({ summary: 'List all job posts for the workspace' })
   listWorkspaceJobs(@CpContext() ctx: CpRequestContext) {
@@ -52,7 +52,7 @@ export class JobsController {
 
   @ApiBearerAuth('access-token')
   @UseGuards(CpContextGuard, CpRolesGuard)
-  @Get('workspaces/:wsId/jobs/:jobId/applications')
+  @Get('jobs/:jobId/applications')
   @CpRoles(CpRole.WORKSPACE_ADMIN)
   @ApiOperation({ summary: 'List all applications for a specific job' })
   listApplications(

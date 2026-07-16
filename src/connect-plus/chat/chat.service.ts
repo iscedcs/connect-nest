@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service';
 import { CpNotificationsService } from '../notifications/notifications.service';
+import { CpAuditLogService } from '../audit-logs/cp-audit-log.service';
 import { CpRequestContext } from '../types/cp-request.types';
 import {
   CpConversationType,
@@ -29,6 +30,7 @@ export class CpChatService {
     @Optional() private readonly gateway: CpChatGateway | null,
     @Inject(forwardRef(() => CpNotificationsService))
     private readonly notifications: CpNotificationsService,
+    private readonly auditLog: CpAuditLogService,
   ) {}
 
   // ─── List my conversations ─────────────────────────────────────
@@ -151,6 +153,15 @@ export class CpChatService {
       include: { participants: true },
     });
 
+    this.auditLog.write({
+      ctx,
+      eventType: 'CHAT_CONVERSATION_CREATE',
+      targetEntity: 'CpConversation',
+      targetEntityId: conversation.id,
+      action: 'CREATE',
+      success: true,
+    });
+
     return conversation;
   }
 
@@ -160,16 +171,23 @@ export class CpChatService {
     convId: string,
     query: GetMessagesQueryDto,
   ) {
+    const workspaceId = ctx.workspaceId!;
     const authUserId = ctx.authUserId;
 
-    // Validate user is a participant
+    const conversation = await this.db.cpConversation.findFirst({
+      where: { id: convId, workspaceId, deletedAt: null },
+    });
+    if (!conversation) throw new NotFoundException('Conversation not found');
+
+    // Validate user is an active participant
     const participant = await this.db.cpConversationParticipant.findUnique({
       where: {
         conversationId_authUserId: { conversationId: convId, authUserId },
       },
     });
-    if (!participant)
+    if (!participant || participant.leftAt) {
       throw new ForbiddenException('Not a participant in this conversation');
+    }
 
     const limit = Math.min(50, Math.max(1, parseInt(query.limit ?? '30', 10)));
     const before = query.before ? new Date(query.before) : undefined;
@@ -277,25 +295,50 @@ export class CpChatService {
       });
     }
 
+    this.auditLog.write({
+      ctx,
+      eventType: 'CHAT_MESSAGE_SEND',
+      targetEntity: 'CpMessage',
+      targetEntityId: message.id,
+      action: 'CREATE',
+      success: true,
+    });
+
     return message;
   }
   // ─── Mark conversation as read ─────────────────────────────────
   async markRead(ctx: CpRequestContext, convId: string) {
+    const workspaceId = ctx.workspaceId!;
     const authUserId = ctx.authUserId;
+
+    const conversation = await this.db.cpConversation.findFirst({
+      where: { id: convId, workspaceId, deletedAt: null },
+    });
+    if (!conversation) throw new NotFoundException('Conversation not found');
 
     const participant = await this.db.cpConversationParticipant.findUnique({
       where: {
         conversationId_authUserId: { conversationId: convId, authUserId },
       },
     });
-    if (!participant)
+    if (!participant || participant.leftAt) {
       throw new ForbiddenException('Not a participant in this conversation');
+    }
 
     await this.db.cpConversationParticipant.update({
       where: {
         conversationId_authUserId: { conversationId: convId, authUserId },
       },
       data: { lastReadAt: new Date() },
+    });
+
+    this.auditLog.write({
+      ctx,
+      eventType: 'CHAT_CONVERSATION_READ',
+      targetEntity: 'CpConversationParticipant',
+      targetEntityId: participant.id,
+      action: 'UPDATE',
+      success: true,
     });
 
     return { ok: true };

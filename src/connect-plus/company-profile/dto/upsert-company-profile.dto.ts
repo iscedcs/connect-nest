@@ -38,6 +38,119 @@ export class BusinessHourEntryDto {
   isOpen: boolean;
 }
 
+export class AddressDto {
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  street?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  city?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  state?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  zip?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  country?: string;
+}
+
+export class BrandingDto {
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  @Matches(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/, { message: 'Must be a valid hex color' })
+  primaryColor?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  @Matches(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/, { message: 'Must be a valid hex color' })
+  secondaryColor?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  fontFamily?: string;
+}
+
+export class AppointmentDefaultsDto {
+  @ApiPropertyOptional()
+  @IsNumber()
+  @IsOptional()
+  @Min(1)
+  duration?: number; // minutes
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  @IsOptional()
+  @Min(0)
+  gracePeriod?: number; // minutes
+}
+
+export class BankDetailsDto {
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  bankName?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  accountName?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  accountNumber?: string;
+}
+
+export class InvoiceDefaultsDto {
+  @ApiPropertyOptional()
+  @IsNumber()
+  @IsOptional()
+  @Min(0)
+  dueDays?: number;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  currency?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  notes?: string;
+
+  @ApiPropertyOptional({ type: () => BankDetailsDto })
+  @ValidateNested()
+  @Type(() => BankDetailsDto)
+  @IsOptional()
+  bankDetails?: BankDetailsDto;
+}
+
+export class NotificationPrefsDto {
+  @ApiPropertyOptional()
+  @IsBoolean()
+  @IsOptional()
+  emailEnabled?: boolean;
+
+  @ApiPropertyOptional()
+  @IsBoolean()
+  @IsOptional()
+  smsEnabled?: boolean;
+}
+
 export class UpsertCompanyProfileDto {
   @ApiPropertyOptional()
   @IsString()
@@ -64,10 +177,11 @@ export class UpsertCompanyProfileDto {
   @IsOptional()
   contactPhone?: string;
 
-  @ApiPropertyOptional()
-  @IsObject()
+  @ApiPropertyOptional({ type: () => AddressDto })
+  @ValidateNested()
+  @Type(() => AddressDto)
   @IsOptional()
-  address?: Record<string, unknown>;
+  address?: AddressDto;
 
   @ApiPropertyOptional({ type: () => [BusinessHourEntryDto] })
   @IsArray()
@@ -76,23 +190,27 @@ export class UpsertCompanyProfileDto {
   @IsOptional()
   businessHours?: BusinessHourEntryDto[];
 
-  @ApiPropertyOptional()
-  @IsObject()
+  @ApiPropertyOptional({ type: () => BrandingDto })
+  @ValidateNested()
+  @Type(() => BrandingDto)
   @IsOptional()
-  branding?: Record<string, unknown>;
+  branding?: BrandingDto;
 
-  @ApiPropertyOptional()
-  @IsObject()
+  @ApiPropertyOptional({ type: () => AppointmentDefaultsDto })
+  @ValidateNested()
+  @Type(() => AppointmentDefaultsDto)
   @IsOptional()
-  appointmentDefaults?: Record<string, unknown>;
+  appointmentDefaults?: AppointmentDefaultsDto;
 
-  @ApiPropertyOptional()
-  @IsObject()
+  @ApiPropertyOptional({ type: () => InvoiceDefaultsDto })
+  @ValidateNested()
+  @Type(() => InvoiceDefaultsDto)
   @IsOptional()
-  invoiceDefaults?: Record<string, unknown>;
+  invoiceDefaults?: InvoiceDefaultsDto;
 
-  @ApiPropertyOptional()
-  @IsObject()
+  @ApiPropertyOptional({ type: () => NotificationPrefsDto })
+  @ValidateNested()
+  @Type(() => NotificationPrefsDto)
   @IsOptional()
-  notificationPrefs?: Record<string, unknown>;
+  notificationPrefs?: NotificationPrefsDto;
 }

@@ -5,7 +5,6 @@ import { JwtService } from './jwt.service';
 import { JwtStrategy } from './jwt.strategy';
 import { AuthClientService } from './auth-client.service';
 import { WalletClientService } from './wallet-client.service';
-import { ConnectPlusGuard } from './guards/connect-plus.guard';
 import { jwtSecret } from 'utils/constants';
 
 @Module({
@@ -22,13 +21,11 @@ import { jwtSecret } from 'utils/constants';
     JwtStrategy,
     AuthClientService,
     WalletClientService,
-    ConnectPlusGuard,
   ],
   exports: [
     JwtService,
     AuthClientService,
     WalletClientService,
-    ConnectPlusGuard,
   ],
 })
 export class AuthModule {}

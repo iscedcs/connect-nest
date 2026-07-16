@@ -13,7 +13,6 @@ import { Request } from 'express';
 import { CpWebhooksService } from './webhooks.service';
 import { InviteAcceptedWebhookDto } from './dto/invite-accepted-webhook.dto';
 import { PublicRoute } from '../../auth/decorators/public-route.decorator';
-import { verifyWebhookSignature } from '../utils/hmac';
 
 @ApiTags('Connect Plus - Webhooks')
 @Controller('cp/webhooks')
@@ -32,17 +31,7 @@ export class CpWebhooksController {
     const signature = req.headers['x-webhook-signature'] as string | undefined;
     const rawBody = (req as Request & { rawBody?: Buffer }).rawBody;
 
-    if (!signature || !rawBody) {
-      throw new UnauthorizedException('Missing signature or raw body');
-    }
-
-    verifyWebhookSignature(
-      rawBody,
-      signature,
-      process.env.AUTH_INVITE_WEBHOOK_SECRET!,
-    );
-
-    await this.service.handleInviteAccepted(dto);
+    await this.service.handleInviteAccepted(dto, signature, rawBody);
     return { ok: true };
   }
 

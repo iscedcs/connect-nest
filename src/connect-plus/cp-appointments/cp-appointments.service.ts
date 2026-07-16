@@ -644,6 +644,51 @@ export class CpAppointmentsService {
     return updated;
   }
 
+  async markAsNoShowSystem(appointmentId: string) {
+    const appt = await this.db.cpAppointment.findUnique({
+      where: { id: appointmentId },
+      include: { workspace: true },
+    });
+    if (!appt || appt.deletedAt) return;
+
+    if (appt.status === CpAppointmentStatus.NO_SHOW) return;
+    
+    const allowed = ALLOWED_TRANSITIONS[appt.status] || [];
+    if (!allowed.includes(CpAppointmentStatus.NO_SHOW)) return;
+
+    const updated = await this.db.cpAppointment.update({
+      where: { id: appointmentId },
+      data: { status: CpAppointmentStatus.NO_SHOW },
+    });
+
+    const mockCtx = {
+      workspaceId: appt.workspaceId,
+      organizationId: appt.workspace.organizationId,
+      authUserId: 'SYSTEM',
+      role: CpRole.WORKSPACE_ADMIN,
+    } as CpRequestContext;
+
+    await this.notifyParticipants(
+      mockCtx,
+      updated,
+      CpNotificationType.APPOINTMENT_CANCELLED,
+      'Appointment No-Show',
+      `Appointment "${updated.title}" was marked as no-show due to no status update after scheduled time.`
+    );
+
+    this.auditLog.write({
+      ctx: null, // System event
+      workspaceId: appt.workspaceId,
+      organizationId: appt.workspace.organizationId,
+      eventType: 'APPOINTMENT_STATUS_CHANGED',
+      targetEntity: 'CpAppointment',
+      targetEntityId: appointmentId,
+      action: 'UPDATE',
+      before: { status: appt.status } as Record<string, unknown>,
+      after: { status: CpAppointmentStatus.NO_SHOW } as Record<string, unknown>,
+    });
+  }
+
   async cancel(ctx: CpRequestContext, appointmentId: string, req: Request) {
     const workspaceId = ctx.workspaceId;
     if (!workspaceId)
