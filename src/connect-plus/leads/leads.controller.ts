@@ -32,7 +32,7 @@ import { RejectLeadDto } from './dto/reject-lead.dto';
 @ApiTags('Connect Plus - Leads')
 @ApiBearerAuth('access-token')
 @UseGuards(CpContextGuard, CpRolesGuard)
-@Controller('cp/workspaces/:wsId/leads')
+@Controller('cp/leads')
 export class CpLeadsController {
   constructor(private readonly service: CpLeadsService) {}
 
@@ -42,9 +42,8 @@ export class CpLeadsController {
   @ApiResponse({ status: 200, description: 'Lead list' })
   list(
     @CpContext() ctx: CpRequestContext,
-    @Param('wsId') _wsId: string,
-    @Query() query: ListLeadsQueryDto,
-  ) {
+    
+    @Query() query: ListLeadsQueryDto) {
     return this.service.list(ctx, query);
   }
 
@@ -54,9 +53,8 @@ export class CpLeadsController {
   @ApiResponse({ status: 200, description: 'Lead detail' })
   findById(
     @CpContext() ctx: CpRequestContext,
-    @Param('wsId') _wsId: string,
-    @Param('leadId') leadId: string,
-  ) {
+    
+    @Param('leadId') leadId: string) {
     return this.service.findById(ctx, leadId);
   }
 
@@ -66,11 +64,10 @@ export class CpLeadsController {
   @ApiResponse({ status: 200, description: 'Lead assigned' })
   assign(
     @CpContext() ctx: CpRequestContext,
-    @Param('wsId') _wsId: string,
+    
     @Param('leadId') leadId: string,
     @Body() dto: AssignLeadDto,
-    @Req() req: Request,
-  ) {
+    @Req() req: Request) {
     return this.service.assign(ctx, leadId, dto, req);
   }
 
@@ -80,10 +77,9 @@ export class CpLeadsController {
   @ApiResponse({ status: 200, description: 'Lead converted to client' })
   validate(
     @CpContext() ctx: CpRequestContext,
-    @Param('wsId') _wsId: string,
+    
     @Param('leadId') leadId: string,
-    @Req() req: Request,
-  ) {
+    @Req() req: Request) {
     return this.service.validate(ctx, leadId, req);
   }
 
@@ -93,11 +89,10 @@ export class CpLeadsController {
   @ApiResponse({ status: 200, description: 'Lead rejected' })
   reject(
     @CpContext() ctx: CpRequestContext,
-    @Param('wsId') _wsId: string,
+    
     @Param('leadId') leadId: string,
     @Body() dto: RejectLeadDto,
-    @Req() req: Request,
-  ) {
+    @Req() req: Request) {
     return this.service.reject(ctx, leadId, dto, req);
   }
 
@@ -108,10 +103,9 @@ export class CpLeadsController {
   @ApiResponse({ status: 200, description: 'Lead deleted' })
   remove(
     @CpContext() ctx: CpRequestContext,
-    @Param('wsId') _wsId: string,
+    
     @Param('leadId') leadId: string,
-    @Req() req: Request,
-  ) {
+    @Req() req: Request) {
     return this.service.remove(ctx, leadId, req);
   }
 }

@@ -31,7 +31,7 @@ import { PublicRoute } from '../../auth/decorators/public-route.decorator';
 @ApiTags('Connect Cards')
 @ApiBearerAuth()
 @UseGuards(CpContextGuard, CpRolesGuard)
-@Controller('cp/workspaces/:wsId/staff/cards')
+@Controller('cp/staff/cards')
 export class CpConnectCardsController {
   constructor(private readonly service: CpConnectCardsService) {}
 
@@ -41,8 +41,7 @@ export class CpConnectCardsController {
   create(
     @CpContext() ctx: CpRequestContext,
     @Body() dto: CreateCardDto,
-    @Req() req: Request,
-  ) {
+    @Req() req: Request) {
     return this.service.create(ctx, dto, req);
   }
 
@@ -53,8 +52,7 @@ export class CpConnectCardsController {
     @CpContext() ctx: CpRequestContext,
     @Param('cardId') cardId: string,
     @Body() dto: PairCardDto,
-    @Req() req: Request,
-  ) {
+    @Req() req: Request) {
     return this.service.pair(ctx, cardId, dto, req);
   }
 
@@ -64,8 +62,7 @@ export class CpConnectCardsController {
   unpair(
     @CpContext() ctx: CpRequestContext,
     @Param('cardId') cardId: string,
-    @Req() req: Request,
-  ) {
+    @Req() req: Request) {
     return this.service.unpair(ctx, cardId, req);
   }
 
@@ -76,8 +73,7 @@ export class CpConnectCardsController {
     @CpContext() ctx: CpRequestContext,
     @Param('cardId') cardId: string,
     @Body() dto: UpdateCardConfigDto,
-    @Req() req: Request,
-  ) {
+    @Req() req: Request) {
     return this.service.updateConfig(ctx, cardId, dto, req);
   }
 
@@ -88,8 +84,7 @@ export class CpConnectCardsController {
     @CpContext() ctx: CpRequestContext,
     @Param('cardId') cardId: string,
     @Body() dto: UpdateCardStatusDto,
-    @Req() req: Request,
-  ) {
+    @Req() req: Request) {
     return this.service.updateStatus(ctx, cardId, dto, req);
   }
 
@@ -105,8 +100,7 @@ export class CpConnectCardsController {
   @ApiOperation({ summary: 'Advanced card tap analytics for workspace' })
   getAnalytics(
     @CpContext() ctx: CpRequestContext,
-    @Query() query: AnalyticsQueryDto,
-  ) {
+    @Query() query: AnalyticsQueryDto) {
     return this.service.getAnalytics(ctx, query);
   }
 }
@@ -124,8 +118,7 @@ export class CpPublicCardTapController {
   tap(
     @Param('cardCode') cardCode: string,
     @Body() dto: TapCardDto,
-    @Req() req: Request,
-  ) {
+    @Req() req: Request) {
     return this.service.tap(cardCode, dto, req);
   }
 }

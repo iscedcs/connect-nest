@@ -72,9 +72,22 @@ export class CpContextGuard implements CanActivate {
       return true;
     }
 
+    if (req.params?.wsId && req.params.wsId !== workspaceId) {
+      throw new BadRequestException(
+        'Workspace ID in URL does not match x-workspace-id header',
+      );
+    }
+
     const member = await this.db.cpWorkspaceMember.findUnique({
       where: { workspaceId_authUserId: { workspaceId, authUserId } },
-      include: { workspace: { select: { organizationId: true } } },
+      include: { 
+        workspace: { 
+          select: { 
+            organizationId: true,
+            organization: { select: { creatorAuthId: true } }
+          } 
+        } 
+      },
     });
 
     if (!member) {
@@ -87,11 +100,18 @@ export class CpContextGuard implements CanActivate {
       throw new ForbiddenException('Access revoked');
     }
 
+    let effectiveRole = member.role as CpRole;
+    if (member.workspace.organization.creatorAuthId === authUserId) {
+      effectiveRole = CpRole.CREATOR;
+    } else if (effectiveRole === CpRole.CREATOR) {
+      effectiveRole = CpRole.WORKSPACE_ADMIN;
+    }
+
     req.cp = {
       authUserId,
       workspaceId,
       organizationId: member.workspace.organizationId,
-      role: member.role as CpRole,
+      role: effectiveRole,
       memberId: member.id,
     };
     return true;

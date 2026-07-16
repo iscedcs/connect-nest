@@ -26,7 +26,7 @@ import { UpsertCompanyProfileDto } from './dto/upsert-company-profile.dto';
 @ApiTags('Connect Plus - Company Profile')
 @ApiBearerAuth('access-token')
 @UseGuards(CpContextGuard, CpRolesGuard)
-@Controller('cp/workspaces/:wsId/company-profile')
+@Controller('cp/company-profile')
 export class CpCompanyProfileController {
   constructor(private readonly service: CpCompanyProfileService) {}
 
@@ -34,7 +34,7 @@ export class CpCompanyProfileController {
   @CpRoles(CpRole.WORKSPACE_ADMIN, CpRole.STAFF, CpRole.CREATOR)
   @ApiOperation({ summary: 'Get company profile' })
   @ApiResponse({ status: 200, description: 'Company profile' })
-  get(@CpContext() ctx: CpRequestContext, @Param('wsId') _wsId: string) {
+  get(@CpContext() ctx: CpRequestContext) {
     return this.service.get(ctx);
   }
 
@@ -44,10 +44,9 @@ export class CpCompanyProfileController {
   @ApiResponse({ status: 200, description: 'Company profile saved' })
   upsert(
     @CpContext() ctx: CpRequestContext,
-    @Param('wsId') _wsId: string,
+    
     @Body() dto: UpsertCompanyProfileDto,
-    @Req() req: Request,
-  ) {
+    @Req() req: Request) {
     return this.service.upsert(ctx, dto, req);
   }
 }

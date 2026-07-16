@@ -79,7 +79,7 @@ export class AppointmentsScheduler {
           if (recipientAuthId) {
             this.notifications.send({
               recipientAuthId,
-              type: CpNotificationType.APPOINTMENT_CONFIRMED,
+              type: CpNotificationType.APPOINTMENT_REMINDER,
               title: `Reminder: ${appt.title}`,
               message: `Your appointment "${appt.title}" is scheduled tomorrow.`,
               workspaceId: appt.workspaceId,

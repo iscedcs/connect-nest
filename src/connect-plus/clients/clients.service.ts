@@ -9,9 +9,13 @@ import { CpAuditLogService } from '../audit-logs/cp-audit-log.service';
 import { CpNotificationsService } from '../notifications/notifications.service';
 import { CpRole } from '../../generated/prisma/client';
 import { AssignClientDto } from './dto/assign-client.dto';
+import { InviteClientDto } from './dto/invite-client.dto';
 import { PaginateQueryDto } from '../common/dto/paginate-query.dto';
 import { paginateResult } from '../utils/paginate';
 import { Request } from 'express';
+import { randomBytes, createHash } from 'crypto';
+import { IsceAuthService } from '../isce-auth/isce-auth.service';
+import { CpNotificationType } from '../../generated/prisma/client';
 
 @Injectable()
 export class CpClientsService {
@@ -19,6 +23,7 @@ export class CpClientsService {
     private readonly db: DatabaseService,
     private readonly auditLog: CpAuditLogService,
     private readonly notifications: CpNotificationsService,
+    private readonly isceAuth: IsceAuthService,
   ) {}
 
   async getMe(ctx: CpRequestContext) {
@@ -137,17 +142,50 @@ export class CpClientsService {
     });
     if (!client) throw new NotFoundException('Client not found');
 
+    let assignedStaffAuthId: string | null = null;
     if (dto.assignedStaffId) {
       const staffProfile = await this.db.cpStaffProfile.findFirst({
         where: { id: dto.assignedStaffId, workspaceId, deletedAt: null },
       });
       if (!staffProfile) throw new NotFoundException('Staff profile not found');
+      assignedStaffAuthId = staffProfile.authUserId;
     }
 
     const updated = await this.db.cpClient.update({
       where: { id: clientId },
       data: { assignedStaffId: dto.assignedStaffId ?? null },
     });
+
+    if (assignedStaffAuthId) {
+      const conversation = await this.db.cpConversation.findFirst({
+        where: { clientId, type: 'CLIENT_STAFF' },
+      });
+
+      if (conversation) {
+        const existingParticipant = await this.db.cpConversationParticipant.findFirst({
+          where: { conversationId: conversation.id, authUserId: assignedStaffAuthId },
+        });
+
+        if (!existingParticipant) {
+          await this.db.cpConversationParticipant.create({
+            data: {
+              conversationId: conversation.id,
+              authUserId: assignedStaffAuthId,
+              role: 'MEMBER',
+            },
+          });
+        }
+      }
+
+      this.notifications.send({
+        recipientAuthId: assignedStaffAuthId,
+        type: CpNotificationType.LEAD_ASSIGNED,
+        title: 'Client Assigned',
+        message: `You have been assigned to client: ${client.name}`,
+        workspaceId,
+        organizationId: ctx.organizationId,
+      });
+    }
 
     this.auditLog.write({
       ctx,
@@ -169,5 +207,82 @@ export class CpClientsService {
     });
 
     return updated;
+  }
+
+  async inviteClient(
+    ctx: CpRequestContext,
+    clientId: string,
+    dto: InviteClientDto,
+    req: Request,
+  ) {
+    const workspaceId = ctx.workspaceId;
+    if (!workspaceId) throw new ForbiddenException('Workspace context required');
+
+    const client = await this.db.cpClient.findFirst({
+      where: { id: clientId, workspaceId, deletedAt: null },
+    });
+    if (!client) throw new NotFoundException('Client not found');
+
+    if (client.authUserId) {
+      // Already registered, but we could allow resending, though usually they'd just login.
+    }
+
+    // Update client email if not present or different
+    if (client.email !== dto.email) {
+      await this.db.cpClient.update({
+        where: { id: clientId },
+        data: { email: dto.email },
+      });
+    }
+
+    const inviterMember = await this.db.cpWorkspaceMember.findFirst({
+      where: { workspaceId, authUserId: ctx.authUserId },
+    });
+    if (!inviterMember) throw new ForbiddenException('Inviter is not a workspace member');
+
+    const rawToken = randomBytes(32).toString('hex');
+    const hashedToken = createHash('sha256').update(rawToken).digest('hex');
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+    const invite = await this.db.cpWorkspaceInvite.create({
+      data: {
+        workspaceId,
+        email: dto.email,
+        role: CpRole.CLIENT,
+        token: hashedToken,
+        status: 'PENDING',
+        invitedById: inviterMember.id,
+        expiresAt,
+      },
+    });
+
+    void this.isceAuth.sendClientInvite({
+      email: dto.email,
+      token: rawToken,
+      clientId: client.id,
+    });
+
+    this.auditLog.write({
+      ctx,
+      req,
+      workspaceId,
+      organizationId: ctx.organizationId,
+      eventType: 'CLIENT_INVITED',
+      targetEntity: 'CpClient',
+      targetEntityId: client.id,
+      action: 'SEND',
+      after: { email: dto.email, inviteId: invite.id } as Record<string, unknown>,
+    });
+
+    this.notifications.send({
+      recipientAuthId: ctx.authUserId,
+      type: CpNotificationType.CLIENT_INVITED,
+      title: 'Client Invite Sent',
+      message: `You invited ${dto.email} to join as a client.`,
+      workspaceId,
+      organizationId: ctx.organizationId,
+    });
+
+    return { message: 'Client invitation sent', inviteId: invite.id };
   }
 }

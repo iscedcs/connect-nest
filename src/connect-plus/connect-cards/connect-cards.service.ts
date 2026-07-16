@@ -220,6 +220,7 @@ export class CpConnectCardsService {
     const updateData: Prisma.CpConnectCardUpdateInput = { status: dto.status };
     if (dto.status === CpCardStatus.LOST) {
       updateData.deviceId = null;
+      updateData.staff = { disconnect: true };
     }
 
     const updated = await this.db.cpConnectCard.update({

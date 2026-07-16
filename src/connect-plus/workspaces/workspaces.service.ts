@@ -3,6 +3,7 @@ import {
   ConflictException,
   NotFoundException,
   ForbiddenException,
+  BadRequestException,
 } from '@nestjs/common';
 import { randomBytes, createHash } from 'crypto';
 import { DatabaseService } from '../../database/database.service';
@@ -89,7 +90,7 @@ export class CpWorkspacesService {
 
   async list(ctx: CpRequestContext) {
     return this.db.cpWorkspace.findMany({
-      where: { organizationId: ctx.organizationId, deletedAt: null },
+      where: { organizationId: ctx.organizationId },
       orderBy: { createdAt: 'desc' },
     });
   }
@@ -99,7 +100,6 @@ export class CpWorkspacesService {
       where: {
         id: workspaceId,
         organizationId: ctx.organizationId,
-        deletedAt: null,
       },
       include: {
         companyProfile: true,
@@ -156,16 +156,42 @@ export class CpWorkspacesService {
   ) {
     const workspace = await this.resolveWorkspace(ctx, workspaceId);
 
+    const currentStatus = workspace.status;
+    const newStatus = dto.status;
+
+    if (currentStatus === newStatus) {
+      return workspace;
+    }
+
+    let isValid = false;
+    if (currentStatus === CpWorkspaceStatus.ACTIVE) {
+      if (newStatus === CpWorkspaceStatus.SUSPENDED || newStatus === CpWorkspaceStatus.ARCHIVED) isValid = true;
+    } else if (currentStatus === CpWorkspaceStatus.SUSPENDED) {
+      if (newStatus === CpWorkspaceStatus.ACTIVE) isValid = true;
+    } else if (currentStatus === CpWorkspaceStatus.ARCHIVED) {
+      if (newStatus === CpWorkspaceStatus.ACTIVE) isValid = true;
+    }
+
+    if (!isValid) {
+      throw new BadRequestException(`Invalid transition from ${currentStatus} to ${newStatus}`);
+    }
+
     const now = new Date();
-    const updateData: Record<string, unknown> = { status: dto.status };
-    if (dto.status === CpWorkspaceStatus.SUSPENDED)
+    const updateData: Record<string, unknown> = { status: newStatus };
+    
+    if (newStatus === CpWorkspaceStatus.SUSPENDED) {
       updateData.suspendedAt = now;
-    if (dto.status === CpWorkspaceStatus.ARCHIVED) {
+    } else if (newStatus === CpWorkspaceStatus.ARCHIVED) {
       updateData.archivedAt = now;
       updateData.deletedAt = now;
-    }
-    if (dto.status === CpWorkspaceStatus.ACTIVE) {
-      updateData.suspendedAt = null;
+    } else if (newStatus === CpWorkspaceStatus.ACTIVE) {
+      if (currentStatus === CpWorkspaceStatus.SUSPENDED) {
+        updateData.suspendedAt = null;
+      }
+      if (currentStatus === CpWorkspaceStatus.ARCHIVED) {
+        updateData.archivedAt = null;
+        updateData.deletedAt = null;
+      }
     }
 
     const updated = await this.db.cpWorkspace.update({
@@ -181,6 +207,22 @@ export class CpWorkspacesService {
       workspaceId: workspace.id,
       organizationId: ctx.organizationId,
     });
+
+    if (dto.status === CpWorkspaceStatus.SUSPENDED) {
+      const org = await this.db.cpOrganization.findUnique({
+        where: { id: workspace.organizationId },
+        select: { creatorAuthId: true },
+      });
+      if (org) {
+        this.notifications.send({
+          recipientAuthId: org.creatorAuthId,
+          type: CpNotificationType.ORG_ALERT,
+          title: 'Action Required: Workspace Suspended',
+          message: `Workspace "${workspace.name}" has been suspended in your organization.`,
+          organizationId: ctx.organizationId,
+        });
+      }
+    }
 
     this.auditLog.write({
       ctx,
@@ -295,9 +337,8 @@ export class CpWorkspacesService {
         ? {
             id: workspaceId,
             organizationId: ctx.organizationId,
-            deletedAt: null as Date | null,
           }
-        : { id: workspaceId, deletedAt: null as Date | null };
+        : { id: workspaceId };
 
     const workspace = await this.db.cpWorkspace.findFirst({ where });
     if (!workspace) throw new NotFoundException('Workspace not found');

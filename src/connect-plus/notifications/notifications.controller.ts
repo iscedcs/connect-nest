@@ -16,7 +16,7 @@ import { CpRole } from '../../generated/prisma/client';
 @ApiTags('Connect Plus - Notifications')
 @ApiBearerAuth('access-token')
 @UseGuards(CpContextGuard, CpRolesGuard)
-@Controller('cp/workspaces/:wsId/notifications')
+@Controller('cp/notifications')
 export class CpNotificationsController {
   constructor(private readonly service: CpNotificationsService) {}
 
@@ -24,7 +24,7 @@ export class CpNotificationsController {
   @CpRoles(CpRole.WORKSPACE_ADMIN, CpRole.STAFF, CpRole.CLIENT, CpRole.CREATOR)
   @ApiOperation({ summary: 'List my notifications' })
   @ApiResponse({ status: 200, description: 'Notification list' })
-  list(@CpContext() ctx: CpRequestContext, @Param('wsId') _wsId: string) {
+  list(@CpContext() ctx: CpRequestContext) {
     return this.service.list(ctx);
   }
 
@@ -33,9 +33,7 @@ export class CpNotificationsController {
   @ApiOperation({ summary: 'Mark all notifications as read' })
   @ApiResponse({ status: 200, description: 'All marked read' })
   markAllRead(
-    @CpContext() ctx: CpRequestContext,
-    @Param('wsId') _wsId: string,
-  ) {
+    @CpContext() ctx: CpRequestContext) {
     return this.service.markAllRead(ctx);
   }
 
@@ -45,9 +43,8 @@ export class CpNotificationsController {
   @ApiResponse({ status: 200, description: 'Marked read' })
   markRead(
     @CpContext() ctx: CpRequestContext,
-    @Param('wsId') _wsId: string,
-    @Param('id') id: string,
-  ) {
+    
+    @Param('id') id: string) {
     return this.service.markRead(ctx, id);
   }
 }

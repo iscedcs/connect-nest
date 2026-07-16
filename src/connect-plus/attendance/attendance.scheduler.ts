@@ -59,19 +59,19 @@ export class AttendanceScheduler {
 
           // Determine standard hours from workspace business hours (fallback: 9)
           const bhJson = record.workspace.companyProfile?.businessHours as
-            | Array<{ day?: number; endTime?: string; startTime?: string }>
+            | Array<{ day?: number; open?: string; close?: string; isOpen?: boolean }>
             | null
             | undefined;
+          
+          const dayOfWeek = record.checkIn.getUTCDay();
+          const entry = bhJson?.find(e => e.day === dayOfWeek);
+
           // Estimate standard hours from business hours entry; fallback to 9
           const standardHours =
-            bhJson?.[0]?.startTime && bhJson?.[0]?.endTime
+            entry?.isOpen && entry?.open && entry?.close
               ? (() => {
-                  const [sh, sm] = (bhJson[0].startTime as string)
-                    .split(':')
-                    .map(Number);
-                  const [eh, em] = (bhJson[0].endTime as string)
-                    .split(':')
-                    .map(Number);
+                  const [sh, sm] = entry.open.split(':').map(Number);
+                  const [eh, em] = entry.close.split(':').map(Number);
                   return (eh * 60 + em - sh * 60 - sm) / 60;
                 })()
               : 9;

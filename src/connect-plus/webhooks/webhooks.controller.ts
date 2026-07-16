@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Headers,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Request } from 'express';
@@ -31,13 +32,15 @@ export class CpWebhooksController {
     const signature = req.headers['x-webhook-signature'] as string | undefined;
     const rawBody = (req as Request & { rawBody?: Buffer }).rawBody;
 
-    if (rawBody && signature) {
-      verifyWebhookSignature(
-        rawBody,
-        signature,
-        process.env.AUTH_INVITE_WEBHOOK_SECRET ?? '',
-      );
+    if (!signature || !rawBody) {
+      throw new UnauthorizedException('Missing signature or raw body');
     }
+
+    verifyWebhookSignature(
+      rawBody,
+      signature,
+      process.env.AUTH_INVITE_WEBHOOK_SECRET!,
+    );
 
     await this.service.handleInviteAccepted(dto);
     return { ok: true };

@@ -34,7 +34,7 @@ import { PaginateQueryDto } from '../common/dto/paginate-query.dto';
 @ApiTags('Connect Plus - Appointments')
 @ApiBearerAuth('access-token')
 @UseGuards(CpContextGuard, CpRolesGuard)
-@Controller('cp/workspaces/:wsId/appointments')
+@Controller('cp/appointments')
 export class CpAppointmentsController {
   constructor(private readonly service: CpAppointmentsService) {}
 
@@ -42,8 +42,46 @@ export class CpAppointmentsController {
   @CpRoles(CpRole.CLIENT)
   @ApiOperation({ summary: 'Get my appointments (client)' })
   @ApiResponse({ status: 200, description: 'My appointments' })
-  getMe(@CpContext() ctx: CpRequestContext, @Param('wsId') _wsId: string) {
+  getMe(@CpContext() ctx: CpRequestContext) {
     return this.service.getMe(ctx);
+  }
+
+  @Post('me')
+  @CpRoles(CpRole.CLIENT)
+  @ApiOperation({ summary: 'Create appointment for myself (client)' })
+  @ApiResponse({ status: 201, description: 'Appointment requested' })
+  createForClient(
+    @CpContext() ctx: CpRequestContext,
+    @Body() dto: CreateAppointmentDto,
+    @Req() req: Request,
+  ) {
+    return this.service.createForClient(ctx, dto, req);
+  }
+
+  @Patch('me/:id')
+  @CpRoles(CpRole.CLIENT)
+  @ApiOperation({ summary: 'Reschedule my appointment (client)' })
+  @ApiResponse({ status: 200, description: 'Appointment rescheduled' })
+  updateForClient(
+    @CpContext() ctx: CpRequestContext,
+    @Param('id') id: string,
+    @Body() dto: UpdateCpAppointmentDto,
+    @Req() req: Request,
+  ) {
+    return this.service.updateForClient(ctx, id, dto, req);
+  }
+
+  @Delete('me/:id')
+  @CpRoles(CpRole.CLIENT)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Cancel my appointment (client)' })
+  @ApiResponse({ status: 200, description: 'Appointment cancelled' })
+  cancelForClient(
+    @CpContext() ctx: CpRequestContext,
+    @Param('id') id: string,
+    @Req() req: Request,
+  ) {
+    return this.service.cancelForClient(ctx, id, req);
   }
 
   @Get('assigned')
@@ -52,9 +90,8 @@ export class CpAppointmentsController {
   @ApiResponse({ status: 200, description: 'Assigned appointments' })
   listAssigned(
     @CpContext() ctx: CpRequestContext,
-    @Param('wsId') _wsId: string,
-    @Query() query: PaginateQueryDto,
-  ) {
+    
+    @Query() query: PaginateQueryDto) {
     return this.service.listAssigned(ctx, query);
   }
 
@@ -64,9 +101,8 @@ export class CpAppointmentsController {
   @ApiResponse({ status: 200, description: 'Appointment list' })
   list(
     @CpContext() ctx: CpRequestContext,
-    @Param('wsId') _wsId: string,
-    @Query() query: PaginateQueryDto,
-  ) {
+    
+    @Query() query: PaginateQueryDto) {
     return this.service.list(ctx, query);
   }
 
@@ -76,9 +112,8 @@ export class CpAppointmentsController {
   @ApiResponse({ status: 200, description: 'Appointment detail' })
   findById(
     @CpContext() ctx: CpRequestContext,
-    @Param('wsId') _wsId: string,
-    @Param('id') id: string,
-  ) {
+    
+    @Param('id') id: string) {
     return this.service.findById(ctx, id);
   }
 
@@ -88,10 +123,9 @@ export class CpAppointmentsController {
   @ApiResponse({ status: 201, description: 'Appointment created' })
   create(
     @CpContext() ctx: CpRequestContext,
-    @Param('wsId') _wsId: string,
+    
     @Body() dto: CreateAppointmentDto,
-    @Req() req: Request,
-  ) {
+    @Req() req: Request) {
     return this.service.create(ctx, dto, req);
   }
 
@@ -101,11 +135,10 @@ export class CpAppointmentsController {
   @ApiResponse({ status: 200, description: 'Status updated' })
   updateStatus(
     @CpContext() ctx: CpRequestContext,
-    @Param('wsId') _wsId: string,
+    
     @Param('id') id: string,
     @Body() dto: UpdateCpAppointmentStatusDto,
-    @Req() req: Request,
-  ) {
+    @Req() req: Request) {
     return this.service.updateStatus(ctx, id, dto, req);
   }
 
@@ -115,11 +148,10 @@ export class CpAppointmentsController {
   @ApiResponse({ status: 200, description: 'Appointment updated' })
   update(
     @CpContext() ctx: CpRequestContext,
-    @Param('wsId') _wsId: string,
+    
     @Param('id') id: string,
     @Body() dto: UpdateCpAppointmentDto,
-    @Req() req: Request,
-  ) {
+    @Req() req: Request) {
     return this.service.update(ctx, id, dto, req);
   }
 
@@ -130,10 +162,9 @@ export class CpAppointmentsController {
   @ApiResponse({ status: 200, description: 'Appointment cancelled' })
   cancel(
     @CpContext() ctx: CpRequestContext,
-    @Param('wsId') _wsId: string,
+    
     @Param('id') id: string,
-    @Req() req: Request,
-  ) {
+    @Req() req: Request) {
     return this.service.cancel(ctx, id, req);
   }
 }
