@@ -26,7 +26,7 @@ import { Request } from 'express';
 @ApiTags('Attendance')
 @ApiBearerAuth()
 @UseGuards(CpContextGuard, CpRolesGuard)
-@Controller('cp/workspaces/:wsId/attendance')
+@Controller('cp/attendance')
 export class CpAttendanceController {
   constructor(private readonly service: CpAttendanceService) {}
 

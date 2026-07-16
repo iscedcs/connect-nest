@@ -20,7 +20,7 @@ import { CpRole } from '../../generated/prisma/client';
 @ApiTags('Connect Plus - Talent')
 @ApiBearerAuth('access-token')
 @UseGuards(CpContextGuard, CpRolesGuard)
-@Controller('cp/workspaces/:wsId/talent')
+@Controller('cp/talent')
 export class TalentController {
   constructor(private readonly talentService: TalentService) {}
 

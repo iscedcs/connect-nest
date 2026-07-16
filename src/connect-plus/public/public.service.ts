@@ -3,9 +3,9 @@ import { DatabaseService } from '../../database/database.service';
 import { CpLeadSource, CpAppointmentType, CpNotificationType } from '../../generated/prisma/client';
 import { BookAppointmentDto } from './dto/book-appointment.dto';
 import { SaveContactDto } from './dto/save-contact.dto';
-import { RecordInteractionDto } from './dto/record-interaction.dto';
 import { CpNotificationsService } from '../notifications/notifications.service';
 import { MailClientService } from '../../mail/mail-client.service';
+import { CpAuditLogService } from '../audit-logs/cp-audit-log.service';
 
 @Injectable()
 export class CpPublicService {
@@ -13,6 +13,7 @@ export class CpPublicService {
     private readonly db: DatabaseService,
     private readonly notifications: CpNotificationsService,
     private readonly mailClient: MailClientService,
+    private readonly auditLog: CpAuditLogService,
   ) {}
 
   async getPublicProfile(workspaceSlug: string) {
@@ -105,7 +106,7 @@ export class CpPublicService {
         name: dto.name,
         email: dto.email,
         phone: dto.phone ?? undefined,
-        source: CpLeadSource.FORM_SUBMIT,
+        source: dto.source ?? CpLeadSource.FORM_SUBMIT,
         assignedStaffId: dto.staffId ?? undefined,
       },
     });
@@ -139,6 +140,16 @@ export class CpPublicService {
       dto.staffId ?? undefined,
     );
 
+    this.auditLog.write({
+      ctx: null,
+      workspaceId: workspace.id,
+      eventType: 'PUBLIC_APPOINTMENT_BOOK',
+      targetEntity: 'CpAppointment',
+      targetEntityId: appointment.id,
+      action: 'CREATE',
+      success: true,
+    });
+
     return { leadId: lead.id, appointmentId: appointment.id };
   }
 
@@ -157,7 +168,7 @@ export class CpPublicService {
         email: dto.email ?? undefined,
         phone: dto.phone ?? undefined,
         notes: dto.notes ?? undefined,
-        source: CpLeadSource.FORM_SUBMIT,
+        source: dto.source ?? CpLeadSource.FORM_SUBMIT,
       },
     });
 
@@ -168,38 +179,17 @@ export class CpPublicService {
       `${dto.name ?? dto.email ?? dto.phone ?? 'Someone'} submitted their contact info.`,
     );
 
-    return { leadId: lead.id };
-  }
-
-  async recordInteraction(
-    workspaceSlug: string,
-    dto: RecordInteractionDto,
-    ip?: string,
-  ) {
-    const workspace = await this.db.cpWorkspace.findUnique({
-      where: { slug: workspaceSlug },
+    this.auditLog.write({
+      ctx: null,
+      workspaceId: workspace.id,
+      eventType: 'PUBLIC_CONTACT_SAVE',
+      targetEntity: 'CpLead',
+      targetEntityId: lead.id,
+      action: 'CREATE',
+      success: true,
     });
-    if (!workspace || workspace.deletedAt || workspace.status !== 'ACTIVE') {
-      throw new NotFoundException('Workspace not found or inactive');
-    }
 
-    // Best-effort: log interaction if entity profile id is provided
-    if (dto.entityId) {
-      try {
-        await this.db.cardInteraction.create({
-          data: {
-            userId: dto.entityId,
-            deviceId: ip ?? 'public',
-            method: dto.type === 'CARD_TAP' ? 'TAP' : 'SCAN',
-            workspaceId: workspace.id,
-          },
-        });
-      } catch {
-        // Non-critical — ignore DB error for interaction logging
-      }
-    }
-
-    return { ok: true };
+    return { leadId: lead.id };
   }
 
   private async notifyStaffAndAdmins(

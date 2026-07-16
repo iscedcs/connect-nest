@@ -3,6 +3,7 @@ import { DatabaseModule } from '../../database/database.module';
 import { CpAuditLogModule } from '../audit-logs/cp-audit-log.module';
 import { CpNotificationsModule } from '../notifications/notifications.module';
 import { CpSubscriptionsModule } from '../subscriptions/subscriptions.module';
+import { CpInvoicesModule } from '../invoices/invoices.module';
 import { CpWebhooksController } from './webhooks.controller';
 import { CpWebhooksService } from './webhooks.service';
 
@@ -12,6 +13,7 @@ import { CpWebhooksService } from './webhooks.service';
     CpAuditLogModule,
     CpNotificationsModule,
     CpSubscriptionsModule,
+    CpInvoicesModule,
   ],
   controllers: [CpWebhooksController],
   providers: [CpWebhooksService],

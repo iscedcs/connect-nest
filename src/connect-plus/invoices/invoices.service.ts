@@ -621,6 +621,67 @@ export class CpInvoicesService {
     return updated;
   }
 
+  async markPaidSystem(
+    invoiceId: string,
+    paidVia: string,
+    externalRef?: string,
+  ) {
+    const invoice = await this.db.cpInvoice.findUnique({
+      where: { id: invoiceId },
+      include: invoiceInclude,
+    });
+    
+    if (!invoice) throw new NotFoundException('Invoice not found');
+    
+    // Idempotency: Silently return if already paid
+    if (invoice.status === CpInvoiceStatus.PAID) {
+      this.auditLog.write({
+        ctx: null,
+        workspaceId: invoice.workspaceId,
+        eventType: 'INVOICE_ALREADY_PAID_WEBHOOK',
+        targetEntity: 'CpInvoice',
+        targetEntityId: invoice.id,
+        action: 'PROCESS',
+        success: true,
+      });
+      return invoice;
+    }
+
+    const updated = await this.db.cpInvoice.update({
+      where: { id: invoice.id },
+      data: {
+        status: CpInvoiceStatus.PAID,
+        paidAt: new Date(),
+        paidVia,
+        externalRef: externalRef ?? null,
+      },
+      include: invoiceInclude,
+    });
+
+    this.auditLog.write({
+      ctx: null,
+      workspaceId: invoice.workspaceId,
+      eventType: 'INVOICE_PAID',
+      targetEntity: 'CpInvoice',
+      targetEntityId: invoice.id,
+      action: 'UPDATE',
+      before: invoice,
+      after: updated,
+    });
+
+    if (updated.client.member?.authUserId) {
+      this.notifications.send({
+        recipientAuthId: updated.client.member.authUserId,
+        type: CpNotificationType.INVOICE_PAID,
+        title: `Invoice ${updated.invoiceNumber} paid`,
+        message: `We received payment for invoice ${updated.invoiceNumber}.`,
+        workspaceId: updated.workspaceId,
+      });
+    }
+
+    return updated;
+  }
+
   async cancel(ctx: CpRequestContext, invoiceId: string, req: Request) {
     const invoice = await this.loadInvoiceForAccess(invoiceId);
     if (ctx.role !== CpRole.WORKSPACE_ADMIN)

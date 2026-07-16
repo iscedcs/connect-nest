@@ -161,6 +161,111 @@ export class CpAuditLogService {
   }
 
   // ---------------------------------------------------------------------------
+  // Read — paginated list of own actions (STAFF, CLIENT)
+  // ---------------------------------------------------------------------------
+  async listMine(ctx: CpRequestContext, query: ListAuditLogsQueryDto) {
+    const {
+      page = 1,
+      limit = 20,
+      entity,
+      entityId,
+      eventType,
+      from,
+      to,
+    } = query;
+
+    const where: Prisma.CpAuditLogWhereInput = {
+      workspaceId: ctx.workspaceId,
+      actorId: ctx.authUserId,
+    };
+
+    if (entity) where.targetEntity = entity;
+    if (entityId) where.targetEntityId = entityId;
+    if (eventType) where.eventType = eventType;
+    if (from || to) {
+      where.createdAt = {};
+      if (from) where.createdAt.gte = new Date(from);
+      if (to) where.createdAt.lte = new Date(to + 'T23:59:59.999Z');
+    }
+
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.db.cpAuditLog.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      this.db.cpAuditLog.count({ where }),
+    ]);
+
+    return paginateResult(data, total, page, limit);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Read — paginated list with PII scrubbed (CREATOR)
+  // ---------------------------------------------------------------------------
+  async listOrg(ctx: CpRequestContext, query: ListAuditLogsQueryDto) {
+    const {
+      page = 1,
+      limit = 20,
+      entity,
+      entityId,
+      eventType,
+      actorId,
+      from,
+      to,
+    } = query;
+
+    const where: Prisma.CpAuditLogWhereInput = {
+      organizationId: ctx.organizationId,
+    };
+
+    if (entity) where.targetEntity = entity;
+    if (entityId) where.targetEntityId = entityId;
+    if (eventType) where.eventType = eventType;
+    if (actorId) where.actorId = actorId;
+    if (from || to) {
+      where.createdAt = {};
+      if (from) where.createdAt.gte = new Date(from);
+      if (to) where.createdAt.lte = new Date(to + 'T23:59:59.999Z');
+    }
+
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.db.cpAuditLog.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+        select: {
+          id: true,
+          createdAt: true,
+          organizationId: true,
+          workspaceId: true,
+          actorId: true,
+          actorRole: true,
+          isSystemEvent: true,
+          eventType: true,
+          targetEntity: true,
+          targetEntityId: true,
+          action: true,
+          success: true,
+          errorMessage: true,
+          source: true,
+          hash: true,
+          previousHash: true,
+        },
+      }),
+      this.db.cpAuditLog.count({ where }),
+    ]);
+
+    return paginateResult(data, total, page, limit);
+  }
+
+  // ---------------------------------------------------------------------------
   // Export audit logs as CSV (WORKSPACE_ADMIN)
   // ---------------------------------------------------------------------------
   async exportCsv(

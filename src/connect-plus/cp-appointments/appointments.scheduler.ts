@@ -3,6 +3,7 @@ import { Cron } from '@nestjs/schedule';
 import { DatabaseService } from '../../database/database.service';
 import { CpNotificationsService } from '../notifications/notifications.service';
 import { MailClientService } from '../../mail/mail-client.service';
+import { CpAppointmentsService } from './cp-appointments.service';
 import {
   CpAppointmentStatus,
   CpNotificationType,
@@ -16,6 +17,7 @@ export class AppointmentsScheduler {
     private readonly db: DatabaseService,
     private readonly notifications: CpNotificationsService,
     private readonly mailClient: MailClientService,
+    private readonly appointmentsService: CpAppointmentsService,
   ) {}
 
   @Cron('0 8 * * *', { name: 'appointment-reminders', timeZone: 'UTC' })
@@ -100,5 +102,50 @@ export class AppointmentsScheduler {
     this.logger.log(
       `Appointment reminders: sent for ${appointments.length} appointment(s)`,
     );
+  }
+
+  @Cron('0 * * * *', { name: 'appointment-no-show', timeZone: 'UTC' })
+  async autoNoShowPastDue(): Promise<void> {
+    this.logger.log('Running auto NO_SHOW transition CRON');
+
+    const now = new Date();
+    const profiles = await this.db.cpCompanyProfile.findMany({
+      select: { workspaceId: true, appointmentDefaults: true },
+    });
+
+    let processedCount = 0;
+
+    await Promise.all(
+      profiles.map(async (profile) => {
+        try {
+          const defaults = profile.appointmentDefaults as Record<string, unknown> | undefined;
+          const gracePeriodMins = typeof defaults?.gracePeriod === 'number' ? defaults.gracePeriod : 24 * 60; // 24 hours default
+          const gracePeriodMs = gracePeriodMins * 60 * 1000;
+          const cutoffTime = new Date(now.getTime() - gracePeriodMs);
+
+          const pastDueAppointments = await this.db.cpAppointment.findMany({
+            where: {
+              workspaceId: profile.workspaceId,
+              deletedAt: null,
+              status: { in: [CpAppointmentStatus.PENDING, CpAppointmentStatus.CONFIRMED] },
+              OR: [
+                { endsAt: { lt: cutoffTime } },
+                { endsAt: null, scheduledAt: { lt: cutoffTime } }
+              ]
+            },
+            select: { id: true }
+          });
+
+          for (const appt of pastDueAppointments) {
+            await this.appointmentsService.markAsNoShowSystem(appt.id);
+            processedCount++;
+          }
+        } catch (err) {
+          this.logger.error(`Error processing NO_SHOW for workspace ${profile.workspaceId}`, err);
+        }
+      })
+    );
+
+    this.logger.log(`Finished auto NO_SHOW transition CRON. Processed ${processedCount} appointments.`);
   }
 }

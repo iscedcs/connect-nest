@@ -17,7 +17,7 @@ import { ListAuditLogsQueryDto } from './dto/list-audit-logs-query.dto';
 @ApiTags('Connect Plus - Audit Logs')
 @ApiBearerAuth('access-token')
 @UseGuards(CpContextGuard, CpRolesGuard)
-@Controller('cp/workspaces/:wsId/audit-logs')
+@Controller('cp/audit-logs')
 export class CpAuditLogController {
   constructor(private readonly service: CpAuditLogService) {}
 
@@ -32,6 +32,32 @@ export class CpAuditLogController {
     @Query() query: ListAuditLogsQueryDto,
   ) {
     return this.service.list(ctx, query);
+  }
+
+  @Get('me')
+  @CpRoles(CpRole.STAFF, CpRole.CLIENT)
+  @ApiOperation({
+    summary: 'List my own audit logs (paginated, filterable)',
+  })
+  @ApiResponse({ status: 200, description: 'Paginated audit log entries' })
+  listMine(
+    @CpContext() ctx: CpRequestContext,
+    @Query() query: ListAuditLogsQueryDto,
+  ) {
+    return this.service.listMine(ctx, query);
+  }
+
+  @Get('org')
+  @CpRoles(CpRole.CREATOR)
+  @ApiOperation({
+    summary: 'List organization-wide audit logs, PII scrubbed',
+  })
+  @ApiResponse({ status: 200, description: 'Paginated and scrubbed audit log entries' })
+  listOrg(
+    @CpContext() ctx: CpRequestContext,
+    @Query() query: ListAuditLogsQueryDto,
+  ) {
+    return this.service.listOrg(ctx, query);
   }
 
   @Get('export')

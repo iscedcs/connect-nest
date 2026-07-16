@@ -33,7 +33,7 @@ import { MarkInvoicePaidDto } from './dto/mark-paid.dto';
 @ApiTags('Invoices')
 @ApiBearerAuth()
 @UseGuards(CpContextGuard, CpRolesGuard)
-@Controller('cp/workspaces/:wsId/invoices')
+@Controller('cp/invoices')
 export class CpInvoicesController {
   constructor(private readonly service: CpInvoicesService) {}
 

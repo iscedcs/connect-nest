@@ -1,5 +1,6 @@
 import { Injectable, ForbiddenException } from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service';
+import { CpAuditLogService } from '../audit-logs/cp-audit-log.service';
 import { CpRequestContext } from '../types/cp-request.types';
 import {
   CpSubscriptionPlan,
@@ -38,7 +39,10 @@ const PLAN_LIMITS: Record<CpSubscriptionPlan, PlanLimits> = {
 
 @Injectable()
 export class CpSubscriptionsService {
-  constructor(private readonly db: DatabaseService) {}
+  constructor(
+    private readonly db: DatabaseService,
+    private readonly auditLog: CpAuditLogService,
+  ) {}
 
   async getOrCreate(ctx: CpRequestContext) {
     const existing = await this.db.cpSubscription.findUnique({
@@ -46,19 +50,30 @@ export class CpSubscriptionsService {
     });
     if (existing) return existing;
 
-    return this.db.cpSubscription.create({
+    const sub = await this.db.cpSubscription.create({
       data: {
         organizationId: ctx.organizationId,
         plan: CpSubscriptionPlan.FREE,
         status: CpSubscriptionStatus.ACTIVE,
       },
     });
+
+    this.auditLog.write({
+      ctx,
+      eventType: 'SUBSCRIPTION_CREATE',
+      targetEntity: 'CpSubscription',
+      targetEntityId: sub.id,
+      action: 'CREATE',
+      success: true,
+    });
+
+    return sub;
   }
 
   async upgrade(ctx: CpRequestContext, dto: UpgradePlanDto) {
     const sub = await this.getOrCreate(ctx);
 
-    return this.db.cpSubscription.update({
+    const updated = await this.db.cpSubscription.update({
       where: { id: sub.id },
       data: {
         plan: dto.plan,
@@ -68,6 +83,17 @@ export class CpSubscriptionsService {
         status: CpSubscriptionStatus.ACTIVE,
       },
     });
+
+    this.auditLog.write({
+      ctx,
+      eventType: 'SUBSCRIPTION_UPGRADE',
+      targetEntity: 'CpSubscription',
+      targetEntityId: updated.id,
+      action: 'UPDATE',
+      success: true,
+    });
+
+    return updated;
   }
 
   async checkLimit(

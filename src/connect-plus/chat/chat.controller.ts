@@ -23,7 +23,7 @@ import { SendMessageDto } from './dto/send-message.dto';
 @ApiTags('Chat')
 @ApiBearerAuth()
 @UseGuards(CpContextGuard, CpRolesGuard)
-@Controller('cp/workspaces/:wsId/conversations')
+@Controller('cp/conversations')
 export class CpChatController {
   constructor(private readonly service: CpChatService) {}
 

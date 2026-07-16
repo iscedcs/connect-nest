@@ -14,7 +14,6 @@ import { CpPublicService } from './public.service';
 import { PublicRoute } from '../../auth/decorators/public-route.decorator';
 import { BookAppointmentDto } from './dto/book-appointment.dto';
 import { SaveContactDto } from './dto/save-contact.dto';
-import { RecordInteractionDto } from './dto/record-interaction.dto';
 import { Throttle } from '@nestjs/throttler';
 
 @ApiTags('Connect Plus - Public')
@@ -52,19 +51,5 @@ export class CpPublicController {
     @Body() dto: SaveContactDto,
   ) {
     return this.service.saveContact(workspaceSlug, dto);
-  }
-
-  @Post('interactions')
-  @Throttle({ default: { limit: 30, ttl: 60000 } })
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Record card interaction' })
-  @ApiResponse({ status: 200, description: 'Interaction recorded' })
-  recordInteraction(
-    @Param('workspaceSlug') workspaceSlug: string,
-    @Body() dto: RecordInteractionDto,
-    @Req() req: Request,
-  ) {
-    const ip = req.ip;
-    return this.service.recordInteraction(workspaceSlug, dto, ip);
   }
 }

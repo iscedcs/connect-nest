@@ -9,6 +9,7 @@ import { DatabaseService } from '../../database/database.service';
 import { CpAuditLogService } from '../audit-logs/cp-audit-log.service';
 import { CpNotificationsService } from '../notifications/notifications.service';
 import { CpSubscriptionsService } from '../subscriptions/subscriptions.service';
+import { CpInvoicesService } from '../invoices/invoices.service';
 import {
   CpRole,
   CpMemberStatus,
@@ -17,6 +18,7 @@ import {
   CpSubscriptionStatus,
 } from '../../generated/prisma/client';
 import { InviteAcceptedWebhookDto } from './dto/invite-accepted-webhook.dto';
+import { verifyWebhookSignature } from '../utils/hmac';
 
 @Injectable()
 export class CpWebhooksService {
@@ -25,10 +27,20 @@ export class CpWebhooksService {
     private readonly auditLog: CpAuditLogService,
     private readonly notifications: CpNotificationsService,
     private readonly subscriptions: CpSubscriptionsService,
+    private readonly invoices: CpInvoicesService,
   ) {}
 
-  async handleInviteAccepted(dto: InviteAcceptedWebhookDto): Promise<void> {
+  async handleInviteAccepted(dto: InviteAcceptedWebhookDto, signature?: string, rawBody?: Buffer): Promise<void> {
     try {
+      if (!signature || !rawBody) {
+        throw new UnauthorizedException('Missing signature or raw body');
+      }
+      verifyWebhookSignature(
+        rawBody,
+        signature,
+        process.env.AUTH_INVITE_WEBHOOK_SECRET ?? '',
+      );
+
       // Hash incoming token to compare with stored hash
       const hashedToken = createHash('sha256').update(dto.token).digest('hex');
 
@@ -137,18 +149,40 @@ export class CpWebhooksService {
   // ---------------------------------------------------------------------------
 
   async handlePaystackEvent(signature: string, rawBody: Buffer): Promise<void> {
-    const secret = process.env.PAYSTACK_SECRET_KEY ?? '';
-    const expected = createHmac('sha512', secret).update(rawBody).digest('hex');
-    const sigBuf = Buffer.from(signature);
-    const expBuf = Buffer.from(expected);
-    if (sigBuf.length !== expBuf.length || !timingSafeEqual(sigBuf, expBuf)) {
-      throw new UnauthorizedException('Invalid Paystack webhook signature');
+    try {
+      const secret = process.env.PAYSTACK_SECRET_KEY ?? '';
+      const expected = createHmac('sha512', secret).update(rawBody).digest('hex');
+      const sigBuf = Buffer.from(signature);
+      const expBuf = Buffer.from(expected);
+      if (sigBuf.length !== expBuf.length || !timingSafeEqual(sigBuf, expBuf)) {
+        throw new UnauthorizedException('Invalid Paystack webhook signature');
+      }
+    } catch (error) {
+      this.auditLog.write({
+        ctx: null,
+        eventType: 'PAYSTACK_WEBHOOK_VALIDATION',
+        targetEntity: 'System',
+        targetEntityId: 'paystack',
+        action: 'VERIFY',
+        success: false,
+        errorMessage: error instanceof Error ? error.message : String(error),
+      });
+      throw error;
     }
 
     let event: { event: string; data: Record<string, unknown> };
     try {
       event = JSON.parse(rawBody.toString('utf8')) as typeof event;
-    } catch {
+    } catch (error) {
+      this.auditLog.write({
+        ctx: null,
+        eventType: 'PAYSTACK_WEBHOOK_VALIDATION',
+        targetEntity: 'System',
+        targetEntityId: 'paystack',
+        action: 'PARSE',
+        success: false,
+        errorMessage: 'Invalid JSON body',
+      });
       throw new BadRequestException('Invalid JSON body');
     }
 
@@ -166,7 +200,15 @@ export class CpWebhooksService {
         await this.handlePaystackInvoicePaymentFailed(event.data);
         break;
       default:
-        // Unknown event — ignore
+        this.auditLog.write({
+          ctx: null,
+          eventType: 'PAYSTACK_WEBHOOK_UNKNOWN',
+          targetEntity: 'System',
+          targetEntityId: event.event,
+          action: 'PROCESS',
+          success: true,
+          metadata: { status: 'ignored' },
+        });
         break;
     }
   }
@@ -174,11 +216,30 @@ export class CpWebhooksService {
   private async handlePaystackChargeSuccess(
     data: Record<string, unknown>,
   ): Promise<void> {
+    let targetEntity = 'CpSubscription';
     let targetEntityId = 'unknown';
     let errorMessage: string | undefined;
     let success = false;
+    let organizationIdForAudit: string | undefined;
     try {
       const metadata = data['metadata'] as Record<string, unknown> | null;
+      const invoiceId = metadata?.['invoiceId'] as string | undefined;
+
+      if (invoiceId) {
+        // Handle Invoice Payment
+        targetEntity = 'CpInvoice';
+        targetEntityId = invoiceId;
+        await this.invoices.markPaidSystem(
+          invoiceId,
+          'paystack',
+          data['reference'] as string | undefined,
+        );
+        success = true;
+        // Skip subscription logic since this is an invoice payment
+        return;
+      }
+
+      // Handle Subscription Payment
       const organizationId = metadata?.['organizationId'] as string | undefined;
       const plan = metadata?.['plan'] as CpSubscriptionPlan | undefined;
 
@@ -186,6 +247,8 @@ export class CpWebhooksService {
         errorMessage = 'Missing organizationId or plan';
         return;
       }
+
+      organizationIdForAudit = organizationId;
 
       const sub = await this.db.cpSubscription.findUnique({
         where: { organizationId },
@@ -210,8 +273,9 @@ export class CpWebhooksService {
     } finally {
       this.auditLog.write({
         ctx: null,
+        organizationId: organizationIdForAudit,
         eventType: 'PAYSTACK_CHARGE_SUCCESS',
-        targetEntity: 'CpSubscription',
+        targetEntity,
         targetEntityId,
         action: 'PROCESS',
         success,
@@ -226,6 +290,7 @@ export class CpWebhooksService {
     let targetEntityId = 'unknown';
     let errorMessage: string | undefined;
     let success = false;
+    let organizationIdForAudit: string | undefined;
     try {
       const customerCode = (data['customer'] as Record<string, unknown> | null)?.[
         'customer_code'
@@ -248,6 +313,7 @@ export class CpWebhooksService {
         return;
       }
       targetEntityId = sub.id;
+      organizationIdForAudit = sub.organizationId;
 
       const resolvedPlan = this.resolvePaystackPlan(planName);
 
@@ -269,6 +335,7 @@ export class CpWebhooksService {
     } finally {
       this.auditLog.write({
         ctx: null,
+        organizationId: organizationIdForAudit,
         eventType: 'PAYSTACK_SUBSCRIPTION_CREATE',
         targetEntity: 'CpSubscription',
         targetEntityId,
@@ -285,6 +352,7 @@ export class CpWebhooksService {
     let targetEntityId = 'unknown';
     let errorMessage: string | undefined;
     let success = false;
+    let organizationIdForAudit: string | undefined;
     try {
       const subCode = data['subscription_code'] as string | undefined;
       if (!subCode) {
@@ -314,6 +382,7 @@ export class CpWebhooksService {
     } finally {
       this.auditLog.write({
         ctx: null,
+        organizationId: organizationIdForAudit,
         eventType: 'PAYSTACK_SUBSCRIPTION_DISABLE',
         targetEntity: 'CpSubscription',
         targetEntityId,
@@ -330,6 +399,7 @@ export class CpWebhooksService {
     let targetEntityId = 'unknown';
     let errorMessage: string | undefined;
     let success = false;
+    let organizationIdForAudit: string | undefined;
     try {
       const subCode = (data['subscription'] as Record<string, unknown> | null)?.[
         'subscription_code'
@@ -358,6 +428,7 @@ export class CpWebhooksService {
     } finally {
       this.auditLog.write({
         ctx: null,
+        organizationId: organizationIdForAudit,
         eventType: 'PAYSTACK_INVOICE_PAYMENT_FAILED',
         targetEntity: 'CpSubscription',
         targetEntityId,

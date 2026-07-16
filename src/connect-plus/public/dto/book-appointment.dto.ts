@@ -4,8 +4,10 @@ import {
   IsOptional,
   IsEmail,
   IsDateString,
+  IsEnum,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { CpLeadSource } from '../../../generated/prisma/client';
 
 export class BookAppointmentDto {
   @ApiProperty()
@@ -32,6 +34,11 @@ export class BookAppointmentDto {
   @IsString()
   @IsOptional()
   reason?: string;
+
+  @ApiPropertyOptional({ enum: CpLeadSource })
+  @IsEnum(CpLeadSource)
+  @IsOptional()
+  source?: CpLeadSource;
 
   @ApiProperty()
   @IsDateString()
