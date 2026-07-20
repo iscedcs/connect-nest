@@ -27,7 +27,8 @@ export class AuthClientService {
     try {
       console.log('DEVICE ID', deviceId);
       const response = await axios.get(
-        `${this.authUrl}/device/product/${deviceId}`,
+        `${this.authUrl}/internal/device/product/${deviceId}`,
+        { headers: { 'x-internal-key': this.internalKey ?? '' } },
       );
 
       console.log('DEVICE RESPONSE', response.data);
