@@ -26,6 +26,8 @@ export class AuthClientService {
   async getDeviceByDeviceId(deviceId: string): Promise<DeviceResponse> {
     try {
       console.log('DEVICE ID', deviceId);
+      // isce-auth's /device/product/:productId is JWT+ADMIN-only (II-72) —
+      // this internal-key-gated twin is what the public NFC tap flow uses.
       const response = await axios.get(
         `${this.authUrl}/internal/device/product/${deviceId}`,
         { headers: { 'x-internal-key': this.internalKey ?? '' } },
