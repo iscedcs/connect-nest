@@ -54,6 +54,31 @@ describe('CpWorkspaces (e2e)', () => {
 
     expect(res.body.name).toBe('My New Workspace');
     workspaceId = res.body.id;
+
+    // Verify creator workspace membership was created
+    const member = await db.cpWorkspaceMember.findUnique({
+      where: {
+        workspaceId_authUserId: {
+          workspaceId,
+          authUserId: mockUserId,
+        },
+      },
+    });
+    expect(member).not.toBeNull();
+    expect(member?.role).toBe('CREATOR');
+    expect(member?.status).toBe('ACTIVE');
+  });
+
+  it('/api/cp/my-workspaces (GET) - list user workspace memberships', async () => {
+    const res = await request(app.getHttpServer())
+      .get('/api/cp/my-workspaces')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200);
+
+    expect(res.body).toBeInstanceOf(Array);
+    const myWs = res.body.find((item: { workspace: { id: string } }) => item.workspace.id === workspaceId);
+    expect(myWs).toBeDefined();
+    expect(myWs.role).toBe('CREATOR');
   });
 
   it('/api/cp/workspaces (GET) - get all workspaces', async () => {
@@ -66,10 +91,11 @@ describe('CpWorkspaces (e2e)', () => {
     expect(res.body.length).toBeGreaterThan(0);
   });
 
-  it('/api/cp/workspaces/:id (GET) - get single workspace', async () => {
+  it('/api/cp/workspaces/:id (GET) - get single workspace with x-workspace-id header', async () => {
     const res = await request(app.getHttpServer())
       .get(`/api/cp/workspaces/${workspaceId}`)
       .set('Authorization', `Bearer ${token}`)
+      .set('x-workspace-id', workspaceId)
       .expect(200);
 
     expect(res.body.id).toBe(workspaceId);
@@ -80,6 +106,7 @@ describe('CpWorkspaces (e2e)', () => {
     const res = await request(app.getHttpServer())
       .patch(`/api/cp/workspaces/${workspaceId}/status`)
       .set('Authorization', `Bearer ${token}`)
+      .set('x-workspace-id', workspaceId)
       .send({ status: 'SUSPENDED' })
       .expect(200);
 

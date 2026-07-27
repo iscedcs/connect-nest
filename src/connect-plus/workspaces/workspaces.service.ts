@@ -73,6 +73,16 @@ export class CpWorkspacesService {
       },
     });
 
+    // Auto-create workspace member for creator
+    await this.db.cpWorkspaceMember.create({
+      data: {
+        workspaceId: workspace.id,
+        authUserId: ctx.authUserId,
+        role: CpRole.CREATOR,
+        status: 'ACTIVE',
+      },
+    });
+
     this.auditLog.write({
       ctx,
       req,
