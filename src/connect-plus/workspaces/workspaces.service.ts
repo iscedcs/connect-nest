@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { randomBytes, createHash } from 'crypto';
 import { DatabaseService } from '../../database/database.service';
-import { CpRequestContext } from '../types/cp-request.types';
+import { CpRequestContext, IsceAuthPayload } from '../types/cp-request.types';
 import { CpAuditLogService } from '../audit-logs/cp-audit-log.service';
 import { CpNotificationsService } from '../notifications/notifications.service';
 import { IsceAuthService } from '../isce-auth/isce-auth.service';
@@ -34,7 +34,11 @@ export class CpWorkspacesService {
     private readonly subscriptions: CpSubscriptionsService,
   ) {}
 
-  async create(ctx: CpRequestContext, dto: CreateWorkspaceDto, req: Request) {
+  async create(
+    ctx: CpRequestContext,
+    dto: CreateWorkspaceDto,
+    req: Request & { isce_auth?: IsceAuthPayload },
+  ) {
     const limitCheck = await this.subscriptions.checkLimit(
       ctx.organizationId,
       'workspace',
@@ -73,13 +77,31 @@ export class CpWorkspacesService {
       },
     });
 
-    // Auto-create workspace member for creator
-    await this.db.cpWorkspaceMember.create({
+    // Auto-create workspace member + staff profile for creator
+    const creatorAuth = req.isce_auth;
+    const creatorName = creatorAuth
+      ? [creatorAuth.firstName, creatorAuth.lastName].filter(Boolean).join(' ') ||
+        creatorAuth.email.split('@')[0]
+      : ctx.authUserId;
+
+    const creatorMember = await this.db.cpWorkspaceMember.create({
       data: {
         workspaceId: workspace.id,
         authUserId: ctx.authUserId,
         role: CpRole.CREATOR,
         status: 'ACTIVE',
+        joinedAt: new Date(),
+      },
+    });
+
+    await this.db.cpStaffProfile.create({
+      data: {
+        workspaceId: workspace.id,
+        memberId: creatorMember.id,
+        authUserId: ctx.authUserId,
+        name: creatorName,
+        email: creatorAuth?.email ?? undefined,
+        photo: creatorAuth?.displayPicture ?? undefined,
       },
     });
 

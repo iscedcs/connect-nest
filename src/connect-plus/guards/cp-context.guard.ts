@@ -85,6 +85,38 @@ export class CpContextGuard implements CanActivate {
     });
 
     if (!member) {
+      // Fallback: check if the user is the org creator and this workspace
+      // belongs to their org. This covers cases where the membership row
+      // wasn't created (e.g., pre-existing workspaces or a failed tx).
+      const workspace = await this.db.cpWorkspace.findUnique({
+        where: { id: workspaceId },
+        include: { organization: { select: { id: true, creatorAuthId: true } } },
+      });
+
+      if (workspace && workspace.organization.creatorAuthId === authUserId) {
+        // Ensure a membership row exists going forward (auto-repair)
+        const repairedMember = await this.db.cpWorkspaceMember.upsert({
+          where: { workspaceId_authUserId: { workspaceId, authUserId } },
+          create: {
+            workspaceId,
+            authUserId,
+            role: CpRole.CREATOR,
+            status: 'ACTIVE',
+            joinedAt: new Date(),
+          },
+          update: {},
+        });
+
+        req.cp = {
+          authUserId,
+          workspaceId,
+          organizationId: workspace.organization.id,
+          role: CpRole.CREATOR,
+          memberId: repairedMember.id,
+        };
+        return true;
+      }
+
       throw new ForbiddenException('Not a member of this workspace');
     }
     if (member.status === CpMemberStatus.SUSPENDED) {
