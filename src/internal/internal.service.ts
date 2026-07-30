@@ -1,9 +1,80 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
+import { CpOrganizationsService } from '../connect-plus/organizations/organizations.service';
+import { CpWorkspacesService } from '../connect-plus/workspaces/workspaces.service';
+import { CpRequestContext } from '../connect-plus/types/cp-request.types';
+import {
+  CpRole,
+  CpMemberStatus,
+} from '../generated/prisma/client';
 
 @Injectable()
 export class InternalService {
-  constructor(private readonly db: DatabaseService) {}
+  constructor(
+    private readonly db: DatabaseService,
+    private readonly organizations: CpOrganizationsService,
+    private readonly workspaces: CpWorkspacesService,
+  ) {}
+
+  /**
+   * Provisions a CpOrganization + CpWorkspace (+ CREATOR membership) for a
+   * freshly created isce-auth BUSINESS_USER, so they land directly in a
+   * working Connect Plus workspace instead of the manual onboarding wizard.
+   * Idempotent — returns the existing org/workspace if one already exists
+   * for this authUserId.
+   */
+  async provisionBusinessOrg(authUserId: string, businessName: string) {
+    const existingOrg = await this.db.cpOrganization.findFirst({
+      where: { creatorAuthId: authUserId },
+    });
+
+    if (existingOrg) {
+      const existingWorkspace = await this.db.cpWorkspace.findFirst({
+        where: { organizationId: existingOrg.id, deletedAt: null },
+        orderBy: { createdAt: 'asc' },
+      });
+      return {
+        organizationId: existingOrg.id,
+        workspaceId: existingWorkspace?.id ?? null,
+        workspaceSlug: existingWorkspace?.slug ?? null,
+      };
+    }
+
+    const orgCtx: CpRequestContext = {
+      authUserId,
+      organizationId: '',
+      role: CpRole.CREATOR,
+    };
+    const org = await this.organizations.create(orgCtx, { name: businessName });
+
+    const workspaceCtx: CpRequestContext = {
+      authUserId,
+      organizationId: org.id,
+      role: CpRole.CREATOR,
+    };
+    const workspace = await this.workspaces.create(workspaceCtx, {
+      name: businessName,
+    });
+
+    // The creator isn't auto-added as a CpWorkspaceMember by workspace
+    // creation — without this, CpContextGuard would lock them out of every
+    // workspace-scoped CP route the moment the frontend sends x-workspace-id.
+    await this.db.cpWorkspaceMember.create({
+      data: {
+        workspaceId: workspace.id,
+        authUserId,
+        role: CpRole.CREATOR,
+        status: CpMemberStatus.ACTIVE,
+        joinedAt: new Date(),
+      },
+    });
+
+    return {
+      organizationId: org.id,
+      workspaceId: workspace.id,
+      workspaceSlug: workspace.slug,
+    };
+  }
 
   /**
    * Soft-deletes all data owned by `userId` across every connect-nest table.

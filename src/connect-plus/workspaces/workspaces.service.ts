@@ -37,7 +37,7 @@ export class CpWorkspacesService {
   async create(
     ctx: CpRequestContext,
     dto: CreateWorkspaceDto,
-    req: Request & { isce_auth?: IsceAuthPayload },
+    req?: Request & { isce_auth?: IsceAuthPayload },
   ) {
     const limitCheck = await this.subscriptions.checkLimit(
       ctx.organizationId,
@@ -78,7 +78,7 @@ export class CpWorkspacesService {
     });
 
     // Auto-create workspace member + staff profile for creator
-    const creatorAuth = req.isce_auth;
+    const creatorAuth = req?.isce_auth;
     const creatorName = creatorAuth
       ? [creatorAuth.firstName, creatorAuth.lastName].filter(Boolean).join(' ') ||
         creatorAuth.email.split('@')[0]
