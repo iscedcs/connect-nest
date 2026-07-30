@@ -29,6 +29,7 @@ export type CpCompanyProfileMinAggregateOutputType = {
   workspaceId: string | null
   name: string | null
   logo: string | null
+  coverImage: string | null
   description: string | null
   contactEmail: string | null
   contactPhone: string | null
@@ -41,6 +42,7 @@ export type CpCompanyProfileMaxAggregateOutputType = {
   workspaceId: string | null
   name: string | null
   logo: string | null
+  coverImage: string | null
   description: string | null
   contactEmail: string | null
   contactPhone: string | null
@@ -53,6 +55,7 @@ export type CpCompanyProfileCountAggregateOutputType = {
   workspaceId: number
   name: number
   logo: number
+  coverImage: number
   description: number
   contactEmail: number
   contactPhone: number
@@ -73,6 +76,7 @@ export type CpCompanyProfileMinAggregateInputType = {
   workspaceId?: true
   name?: true
   logo?: true
+  coverImage?: true
   description?: true
   contactEmail?: true
   contactPhone?: true
@@ -85,6 +89,7 @@ export type CpCompanyProfileMaxAggregateInputType = {
   workspaceId?: true
   name?: true
   logo?: true
+  coverImage?: true
   description?: true
   contactEmail?: true
   contactPhone?: true
@@ -97,6 +102,7 @@ export type CpCompanyProfileCountAggregateInputType = {
   workspaceId?: true
   name?: true
   logo?: true
+  coverImage?: true
   description?: true
   contactEmail?: true
   contactPhone?: true
@@ -188,6 +194,7 @@ export type CpCompanyProfileGroupByOutputType = {
   workspaceId: string
   name: string
   logo: string | null
+  coverImage: string | null
   description: string | null
   contactEmail: string | null
   contactPhone: string | null
@@ -227,6 +234,7 @@ export type CpCompanyProfileWhereInput = {
   workspaceId?: Prisma.StringFilter<"CpCompanyProfile"> | string
   name?: Prisma.StringFilter<"CpCompanyProfile"> | string
   logo?: Prisma.StringNullableFilter<"CpCompanyProfile"> | string | null
+  coverImage?: Prisma.StringNullableFilter<"CpCompanyProfile"> | string | null
   description?: Prisma.StringNullableFilter<"CpCompanyProfile"> | string | null
   contactEmail?: Prisma.StringNullableFilter<"CpCompanyProfile"> | string | null
   contactPhone?: Prisma.StringNullableFilter<"CpCompanyProfile"> | string | null
@@ -246,6 +254,7 @@ export type CpCompanyProfileOrderByWithRelationInput = {
   workspaceId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   logo?: Prisma.SortOrderInput | Prisma.SortOrder
+  coverImage?: Prisma.SortOrderInput | Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   contactEmail?: Prisma.SortOrderInput | Prisma.SortOrder
   contactPhone?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -268,6 +277,7 @@ export type CpCompanyProfileWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.CpCompanyProfileWhereInput | Prisma.CpCompanyProfileWhereInput[]
   name?: Prisma.StringFilter<"CpCompanyProfile"> | string
   logo?: Prisma.StringNullableFilter<"CpCompanyProfile"> | string | null
+  coverImage?: Prisma.StringNullableFilter<"CpCompanyProfile"> | string | null
   description?: Prisma.StringNullableFilter<"CpCompanyProfile"> | string | null
   contactEmail?: Prisma.StringNullableFilter<"CpCompanyProfile"> | string | null
   contactPhone?: Prisma.StringNullableFilter<"CpCompanyProfile"> | string | null
@@ -287,6 +297,7 @@ export type CpCompanyProfileOrderByWithAggregationInput = {
   workspaceId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   logo?: Prisma.SortOrderInput | Prisma.SortOrder
+  coverImage?: Prisma.SortOrderInput | Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   contactEmail?: Prisma.SortOrderInput | Prisma.SortOrder
   contactPhone?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -311,6 +322,7 @@ export type CpCompanyProfileScalarWhereWithAggregatesInput = {
   workspaceId?: Prisma.StringWithAggregatesFilter<"CpCompanyProfile"> | string
   name?: Prisma.StringWithAggregatesFilter<"CpCompanyProfile"> | string
   logo?: Prisma.StringNullableWithAggregatesFilter<"CpCompanyProfile"> | string | null
+  coverImage?: Prisma.StringNullableWithAggregatesFilter<"CpCompanyProfile"> | string | null
   description?: Prisma.StringNullableWithAggregatesFilter<"CpCompanyProfile"> | string | null
   contactEmail?: Prisma.StringNullableWithAggregatesFilter<"CpCompanyProfile"> | string | null
   contactPhone?: Prisma.StringNullableWithAggregatesFilter<"CpCompanyProfile"> | string | null
@@ -328,6 +340,7 @@ export type CpCompanyProfileCreateInput = {
   id?: string
   name: string
   logo?: string | null
+  coverImage?: string | null
   description?: string | null
   contactEmail?: string | null
   contactPhone?: string | null
@@ -347,6 +360,7 @@ export type CpCompanyProfileUncheckedCreateInput = {
   workspaceId: string
   name: string
   logo?: string | null
+  coverImage?: string | null
   description?: string | null
   contactEmail?: string | null
   contactPhone?: string | null
@@ -364,6 +378,7 @@ export type CpCompanyProfileUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -383,6 +398,7 @@ export type CpCompanyProfileUncheckedUpdateInput = {
   workspaceId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -401,6 +417,7 @@ export type CpCompanyProfileCreateManyInput = {
   workspaceId: string
   name: string
   logo?: string | null
+  coverImage?: string | null
   description?: string | null
   contactEmail?: string | null
   contactPhone?: string | null
@@ -418,6 +435,7 @@ export type CpCompanyProfileUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -436,6 +454,7 @@ export type CpCompanyProfileUncheckedUpdateManyInput = {
   workspaceId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -459,6 +478,7 @@ export type CpCompanyProfileCountOrderByAggregateInput = {
   workspaceId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   logo?: Prisma.SortOrder
+  coverImage?: Prisma.SortOrder
   description?: Prisma.SortOrder
   contactEmail?: Prisma.SortOrder
   contactPhone?: Prisma.SortOrder
@@ -477,6 +497,7 @@ export type CpCompanyProfileMaxOrderByAggregateInput = {
   workspaceId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   logo?: Prisma.SortOrder
+  coverImage?: Prisma.SortOrder
   description?: Prisma.SortOrder
   contactEmail?: Prisma.SortOrder
   contactPhone?: Prisma.SortOrder
@@ -489,6 +510,7 @@ export type CpCompanyProfileMinOrderByAggregateInput = {
   workspaceId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   logo?: Prisma.SortOrder
+  coverImage?: Prisma.SortOrder
   description?: Prisma.SortOrder
   contactEmail?: Prisma.SortOrder
   contactPhone?: Prisma.SortOrder
@@ -532,6 +554,7 @@ export type CpCompanyProfileCreateWithoutWorkspaceInput = {
   id?: string
   name: string
   logo?: string | null
+  coverImage?: string | null
   description?: string | null
   contactEmail?: string | null
   contactPhone?: string | null
@@ -549,6 +572,7 @@ export type CpCompanyProfileUncheckedCreateWithoutWorkspaceInput = {
   id?: string
   name: string
   logo?: string | null
+  coverImage?: string | null
   description?: string | null
   contactEmail?: string | null
   contactPhone?: string | null
@@ -582,6 +606,7 @@ export type CpCompanyProfileUpdateWithoutWorkspaceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -599,6 +624,7 @@ export type CpCompanyProfileUncheckedUpdateWithoutWorkspaceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -619,6 +645,7 @@ export type CpCompanyProfileSelect<ExtArgs extends runtime.Types.Extensions.Inte
   workspaceId?: boolean
   name?: boolean
   logo?: boolean
+  coverImage?: boolean
   description?: boolean
   contactEmail?: boolean
   contactPhone?: boolean
@@ -638,6 +665,7 @@ export type CpCompanyProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   workspaceId?: boolean
   name?: boolean
   logo?: boolean
+  coverImage?: boolean
   description?: boolean
   contactEmail?: boolean
   contactPhone?: boolean
@@ -657,6 +685,7 @@ export type CpCompanyProfileSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   workspaceId?: boolean
   name?: boolean
   logo?: boolean
+  coverImage?: boolean
   description?: boolean
   contactEmail?: boolean
   contactPhone?: boolean
@@ -676,6 +705,7 @@ export type CpCompanyProfileSelectScalar = {
   workspaceId?: boolean
   name?: boolean
   logo?: boolean
+  coverImage?: boolean
   description?: boolean
   contactEmail?: boolean
   contactPhone?: boolean
@@ -689,7 +719,7 @@ export type CpCompanyProfileSelectScalar = {
   updatedAt?: boolean
 }
 
-export type CpCompanyProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "name" | "logo" | "description" | "contactEmail" | "contactPhone" | "address" | "businessHours" | "branding" | "appointmentDefaults" | "invoiceDefaults" | "notificationPrefs" | "createdAt" | "updatedAt", ExtArgs["result"]["cpCompanyProfile"]>
+export type CpCompanyProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "name" | "logo" | "coverImage" | "description" | "contactEmail" | "contactPhone" | "address" | "businessHours" | "branding" | "appointmentDefaults" | "invoiceDefaults" | "notificationPrefs" | "createdAt" | "updatedAt", ExtArgs["result"]["cpCompanyProfile"]>
 export type CpCompanyProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   workspace?: boolean | Prisma.CpWorkspaceDefaultArgs<ExtArgs>
 }
@@ -710,6 +740,7 @@ export type $CpCompanyProfilePayload<ExtArgs extends runtime.Types.Extensions.In
     workspaceId: string
     name: string
     logo: string | null
+    coverImage: string | null
     description: string | null
     contactEmail: string | null
     contactPhone: string | null
@@ -1149,6 +1180,7 @@ export interface CpCompanyProfileFieldRefs {
   readonly workspaceId: Prisma.FieldRef<"CpCompanyProfile", 'String'>
   readonly name: Prisma.FieldRef<"CpCompanyProfile", 'String'>
   readonly logo: Prisma.FieldRef<"CpCompanyProfile", 'String'>
+  readonly coverImage: Prisma.FieldRef<"CpCompanyProfile", 'String'>
   readonly description: Prisma.FieldRef<"CpCompanyProfile", 'String'>
   readonly contactEmail: Prisma.FieldRef<"CpCompanyProfile", 'String'>
   readonly contactPhone: Prisma.FieldRef<"CpCompanyProfile", 'String'>

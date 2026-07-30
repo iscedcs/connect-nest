@@ -1000,6 +1000,7 @@ model CpCompanyProfile {
   workspace           CpWorkspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   name                String
   logo                String?
+  coverImage          String?
   description         String?
   contactEmail        String?
   contactPhone        String?

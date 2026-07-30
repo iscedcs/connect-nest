@@ -165,7 +165,7 @@ export class CpNotificationsService {
       const fcmToken = await this.resolveFcmToken(authUserId);
       return {
         email: staff.email ?? null,
-        role: staff.member.role as CpRole,
+        role: (staff.member?.role ?? CpRole.CREATOR) as CpRole,
         fcmToken,
       };
     }

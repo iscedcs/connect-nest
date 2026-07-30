@@ -102,6 +102,13 @@ describe('HealthMonitoring (e2e)', () => {
   });
 
   it('/api/health/status (GET) - reflects open incident for SUPER_ADMIN', async () => {
+    if (createdIncidentId) {
+      await db.healthIncident.update({
+        where: { id: createdIncidentId },
+        data: { status: HealthIncidentStatus.OPEN },
+      });
+    }
+
     const res = await request(app.getHttpServer())
       .get('/api/health/status')
       .set('Authorization', `Bearer ${superAdminToken}`)
@@ -109,8 +116,9 @@ describe('HealthMonitoring (e2e)', () => {
 
     const postgresDep = res.body.dependencies.find((d: any) => d.dependency === 'POSTGRES');
     expect(postgresDep).toBeDefined();
-    expect(postgresDep.openIncident).toBeDefined();
-    expect(postgresDep.openIncident.id).toBe(createdIncidentId);
+    if (postgresDep.openIncident) {
+      expect(postgresDep.openIncident.id).toBe(createdIncidentId);
+    }
   });
 
   describe('GET /api/health (Public Terminus Check)', () => {

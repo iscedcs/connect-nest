@@ -75,6 +75,7 @@ export class CpCompanyProfileService {
         workspaceId,
         name: fallbackName as string,
         logo: dto.logo,
+        coverImage: dto.coverImage,
         description: dto.description,
         contactEmail: dto.contactEmail,
         contactPhone: dto.contactPhone,
@@ -91,6 +92,7 @@ export class CpCompanyProfileService {
       update: {
         name: dto.name,
         logo: dto.logo,
+        coverImage: dto.coverImage,
         description: dto.description,
         contactEmail: dto.contactEmail,
         contactPhone: dto.contactPhone,

@@ -7,11 +7,13 @@ import { HealthAdminController } from './health-admin.controller';
 import { HealthController } from './health.controller';
 import { PrismaHealthIndicator } from './indicators/prisma-health.indicator';
 
+import { MailClientModule } from '../mail/mail-client.module';
+
 @Module({
   imports: [
     TerminusModule,
     DatabaseModule,
-    CpChatModule, // provides CpChatGateway for WebSocket broadcast
+    MailClientModule,
   ],
   providers: [HealthMonitorService, PrismaHealthIndicator],
   controllers: [HealthController, HealthAdminController],

@@ -4998,6 +4998,7 @@ export const CpCompanyProfileScalarFieldEnum = {
   workspaceId: 'workspaceId',
   name: 'name',
   logo: 'logo',
+  coverImage: 'coverImage',
   description: 'description',
   contactEmail: 'contactEmail',
   contactPhone: 'contactPhone',
