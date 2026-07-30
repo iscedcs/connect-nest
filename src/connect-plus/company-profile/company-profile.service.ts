@@ -18,7 +18,16 @@ export class CpCompanyProfileService {
   ) {}
 
   async get(ctx: CpRequestContext) {
-    const workspaceId = ctx.workspaceId;
+    let workspaceId = ctx.workspaceId;
+
+    if (!workspaceId && ctx.organizationId) {
+      const defaultWorkspace = await this.db.cpWorkspace.findFirst({
+        where: { organizationId: ctx.organizationId },
+        orderBy: { createdAt: 'asc' },
+      });
+      workspaceId = defaultWorkspace?.id;
+    }
+
     if (!workspaceId)
       throw new ForbiddenException('Workspace context required');
 
@@ -34,7 +43,16 @@ export class CpCompanyProfileService {
     dto: UpsertCompanyProfileDto,
     req: Request,
   ) {
-    const workspaceId = ctx.workspaceId;
+    let workspaceId = ctx.workspaceId;
+
+    if (!workspaceId && ctx.organizationId) {
+      const defaultWorkspace = await this.db.cpWorkspace.findFirst({
+        where: { organizationId: ctx.organizationId },
+        orderBy: { createdAt: 'asc' },
+      });
+      workspaceId = defaultWorkspace?.id;
+    }
+
     if (!workspaceId)
       throw new ForbiddenException('Workspace context required');
 

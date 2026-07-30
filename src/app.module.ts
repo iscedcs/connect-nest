@@ -27,6 +27,7 @@ import { ArtisanModule } from './artisan/artisan.module';
 import { InternalModule } from './internal/internal.module';
 import { MailClientModule } from './mail/mail-client.module';
 import { ConnectPlusModule } from './connect-plus/connect-plus.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   providers: [
@@ -71,6 +72,7 @@ import { ConnectPlusModule } from './connect-plus/connect-plus.module';
     MailClientModule,
     ConnectPlusModule,
     ReferralModule,
+    HealthModule,
   ],
 })
 export class AppModule {}

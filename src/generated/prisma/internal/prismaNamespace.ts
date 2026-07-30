@@ -435,7 +435,8 @@ export const ModelName = {
   CpAuditLog: 'CpAuditLog',
   CpJobPost: 'CpJobPost',
   CpJobApplication: 'CpJobApplication',
-  CpSavedTalent: 'CpSavedTalent'
+  CpSavedTalent: 'CpSavedTalent',
+  HealthIncident: 'HealthIncident'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -451,7 +452,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "profile" | "social" | "contact" | "notification" | "supportRequest" | "cardInteraction" | "profileContact" | "link" | "video" | "meetingLink" | "appointmentLink" | "spotifyItem" | "fileItem" | "form" | "formTemplate" | "submission" | "wallet" | "connectConfig" | "deviceProfile" | "artisan" | "artisanCategory" | "artisanCategoryMap" | "artisanService" | "portfolioItem" | "bookingThread" | "threadMessage" | "booking" | "review" | "promotion" | "platformSetting" | "cpOrganization" | "cpSubscription" | "cpWorkspace" | "cpWorkspaceMember" | "cpCompanyProfile" | "cpWorkspaceInvite" | "cpStaffProfile" | "cpConnectCard" | "cpLead" | "cpClient" | "cpAppointment" | "cpAttendance" | "cpConversation" | "cpConversationParticipant" | "cpMessage" | "cpInvoice" | "cpInvoiceItem" | "cpNotification" | "cpAuditLog" | "cpJobPost" | "cpJobApplication" | "cpSavedTalent"
+    modelProps: "profile" | "social" | "contact" | "notification" | "supportRequest" | "cardInteraction" | "profileContact" | "link" | "video" | "meetingLink" | "appointmentLink" | "spotifyItem" | "fileItem" | "form" | "formTemplate" | "submission" | "wallet" | "connectConfig" | "deviceProfile" | "artisan" | "artisanCategory" | "artisanCategoryMap" | "artisanService" | "portfolioItem" | "bookingThread" | "threadMessage" | "booking" | "review" | "promotion" | "platformSetting" | "cpOrganization" | "cpSubscription" | "cpWorkspace" | "cpWorkspaceMember" | "cpCompanyProfile" | "cpWorkspaceInvite" | "cpStaffProfile" | "cpConnectCard" | "cpLead" | "cpClient" | "cpAppointment" | "cpAttendance" | "cpConversation" | "cpConversationParticipant" | "cpMessage" | "cpInvoice" | "cpInvoiceItem" | "cpNotification" | "cpAuditLog" | "cpJobPost" | "cpJobApplication" | "cpSavedTalent" | "healthIncident"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -4303,6 +4304,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    HealthIncident: {
+      payload: Prisma.$HealthIncidentPayload<ExtArgs>
+      fields: Prisma.HealthIncidentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.HealthIncidentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HealthIncidentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.HealthIncidentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HealthIncidentPayload>
+        }
+        findFirst: {
+          args: Prisma.HealthIncidentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HealthIncidentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.HealthIncidentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HealthIncidentPayload>
+        }
+        findMany: {
+          args: Prisma.HealthIncidentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HealthIncidentPayload>[]
+        }
+        create: {
+          args: Prisma.HealthIncidentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HealthIncidentPayload>
+        }
+        createMany: {
+          args: Prisma.HealthIncidentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.HealthIncidentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HealthIncidentPayload>[]
+        }
+        delete: {
+          args: Prisma.HealthIncidentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HealthIncidentPayload>
+        }
+        update: {
+          args: Prisma.HealthIncidentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HealthIncidentPayload>
+        }
+        deleteMany: {
+          args: Prisma.HealthIncidentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.HealthIncidentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.HealthIncidentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HealthIncidentPayload>[]
+        }
+        upsert: {
+          args: Prisma.HealthIncidentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HealthIncidentPayload>
+        }
+        aggregate: {
+          args: Prisma.HealthIncidentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateHealthIncident>
+        }
+        groupBy: {
+          args: Prisma.HealthIncidentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HealthIncidentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.HealthIncidentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HealthIncidentCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -5246,6 +5321,23 @@ export const CpSavedTalentScalarFieldEnum = {
 export type CpSavedTalentScalarFieldEnum = (typeof CpSavedTalentScalarFieldEnum)[keyof typeof CpSavedTalentScalarFieldEnum]
 
 
+export const HealthIncidentScalarFieldEnum = {
+  id: 'id',
+  dependency: 'dependency',
+  status: 'status',
+  startedAt: 'startedAt',
+  resolvedAt: 'resolvedAt',
+  lastAlertAt: 'lastAlertAt',
+  alertCount: 'alertCount',
+  notifiedEmails: 'notifiedEmails',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HealthIncidentScalarFieldEnum = (typeof HealthIncidentScalarFieldEnum)[keyof typeof HealthIncidentScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -5840,6 +5932,34 @@ export type ListEnumCpAuditSourceFieldRefInput<$PrismaModel> = FieldRefInputType
 
 
 /**
+ * Reference to a field of type 'HealthDependency'
+ */
+export type EnumHealthDependencyFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HealthDependency'>
+    
+
+
+/**
+ * Reference to a field of type 'HealthDependency[]'
+ */
+export type ListEnumHealthDependencyFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HealthDependency[]'>
+    
+
+
+/**
+ * Reference to a field of type 'HealthIncidentStatus'
+ */
+export type EnumHealthIncidentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HealthIncidentStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'HealthIncidentStatus[]'
+ */
+export type ListEnumHealthIncidentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HealthIncidentStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -6014,6 +6134,7 @@ export type GlobalOmitConfig = {
   cpJobPost?: Prisma.CpJobPostOmit
   cpJobApplication?: Prisma.CpJobApplicationOmit
   cpSavedTalent?: Prisma.CpSavedTalentOmit
+  healthIncident?: Prisma.HealthIncidentOmit
 }
 
 /* Types for Logging */

@@ -299,3 +299,8 @@ export type CpJobApplication = Prisma.CpJobApplicationModel
  * 
  */
 export type CpSavedTalent = Prisma.CpSavedTalentModel
+/**
+ * Model HealthIncident
+ * 
+ */
+export type HealthIncident = Prisma.HealthIncidentModel

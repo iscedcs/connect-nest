@@ -400,6 +400,12 @@ export class CpWorkspacesService {
   }
 
   async getMyWorkspaces(authUserId: string) {
+    const orgsCreated = await this.db.cpOrganization.findMany({
+      where: { creatorAuthId: authUserId },
+      select: { id: true },
+    });
+    const orgIds = orgsCreated.map((o) => o.id);
+
     const memberships = await this.db.cpWorkspaceMember.findMany({
       where: {
         authUserId,
@@ -419,12 +425,46 @@ export class CpWorkspacesService {
       orderBy: { joinedAt: 'desc' },
     });
 
-    return memberships.map((m) => ({
-      memberId: m.id,
-      role: m.role,
-      status: m.status,
-      joinedAt: m.joinedAt,
-      workspace: m.workspace,
-    }));
+    const memberWorkspaceIds = new Set(memberships.map((m) => m.workspace.id));
+
+    const result = memberships.map((m) => {
+      const isOrgCreator = orgIds.includes(m.workspace.organizationId);
+      return {
+        memberId: m.id,
+        role: isOrgCreator ? CpRole.CREATOR : m.role,
+        status: m.status,
+        joinedAt: m.joinedAt,
+        workspace: m.workspace,
+      };
+    });
+
+    if (orgIds.length > 0) {
+      const extraWorkspaces = await this.db.cpWorkspace.findMany({
+        where: {
+          organizationId: { in: orgIds },
+          id: { notIn: Array.from(memberWorkspaceIds) },
+        },
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          status: true,
+          organizationId: true,
+          createdAt: true,
+        },
+      });
+
+      for (const ws of extraWorkspaces) {
+        result.push({
+          memberId: `creator-${ws.id}`,
+          role: CpRole.CREATOR,
+          status: 'ACTIVE',
+          joinedAt: ws.createdAt,
+          workspace: ws,
+        });
+      }
+    }
+
+    return result;
   }
 }

@@ -64,10 +64,17 @@ export class CpContextGuard implements CanActivate {
       if (!org) {
         throw new BadRequestException('x-workspace-id header is required');
       }
+
+      const defaultWorkspace = await this.db.cpWorkspace.findFirst({
+        where: { organizationId: org.id },
+        orderBy: { createdAt: 'asc' },
+      });
+
       req.cp = {
         authUserId,
         organizationId: org.id,
         role: CpRole.CREATOR,
+        workspaceId: defaultWorkspace?.id,
       };
       return true;
     }
