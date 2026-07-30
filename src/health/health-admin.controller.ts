@@ -1,14 +1,24 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Controller,
+  ForbiddenException,
+  Get,
+  Query,
+  Request,
+  ValidationPipe,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { DatabaseService } from '../database/database.service';
 import { HealthMonitorService } from './health-monitor.service';
 import { IncidentQueryDto } from './dto/incident-query.dto';
-import { SuperAdminGuard } from '../auth/guards/super-admin.guard';
-import { HealthDependency, HealthIncidentStatus } from '../generated/prisma/client';
+import { HealthIncidentStatus } from '../generated/prisma/client';
 
 @ApiTags('Health Admin')
 @ApiBearerAuth('access-token')
-@UseGuards(SuperAdminGuard)
 @Controller('health')
 export class HealthAdminController {
   constructor(
@@ -16,60 +26,70 @@ export class HealthAdminController {
     private readonly monitor: HealthMonitorService,
   ) {}
 
+  private ensureSuperAdmin(req: any) {
+    const user = req.isce_auth;
+    if (!user || user.userType !== 'SUPER_ADMIN') {
+      throw new ForbiddenException('Access denied — Super Admin only');
+    }
+  }
+
+  /**
+   * GET /api/health/status
+   * Returns current failure counts and any open incidents per dependency.
+   */
   @Get('status')
-  @ApiOperation({ summary: 'Get overall internal dependency health status' })
-  @ApiResponse({ status: 200, description: 'Health status summary for super admins' })
-  async getStatus() {
+  @ApiOperation({ summary: '[Super Admin] Current health status' })
+  @ApiResponse({ status: 200, description: 'Current health state' })
+  @ApiResponse({ status: 403, description: 'Super Admin only' })
+  async getStatus(@Request() req: any) {
+    this.ensureSuperAdmin(req);
+
     const failureCounts = this.monitor.getCurrentFailureCounts();
 
     const openIncidents = await this.db.healthIncident.findMany({
       where: { status: HealthIncidentStatus.OPEN },
-    });
-
-    const incidentMap = new Map(openIncidents.map((i) => [i.dependency, i]));
-
-    const dependencies = Object.values(HealthDependency).map((dep) => {
-      const consecutiveFailures = failureCounts[dep] ?? 0;
-      const openIncident = incidentMap.get(dep) ?? null;
-      const isHealthy = !openIncident && consecutiveFailures === 0;
-
-      return {
-        dependency: dep,
-        isHealthy,
-        consecutiveFailures,
-        openIncident,
-      };
+      orderBy: { startedAt: 'desc' },
     });
 
     return {
-      threshold: this.monitor.getThreshold(),
-      dependencies,
-      timestamp: new Date().toISOString(),
+      threshold: 3,
+      dependencies: Object.entries(failureCounts).map(([dep, count]) => ({
+        dependency: dep,
+        consecutiveFailures: count,
+        isHealthy: count === 0,
+        openIncident: openIncidents.find((i) => i.dependency === dep) ?? null,
+      })),
     };
   }
 
+  /**
+   * GET /api/health/incidents?page=1&limit=20
+   * Paginated incident history, newest first.
+   */
   @Get('incidents')
-  @ApiOperation({ summary: 'List health incident history' })
-  @ApiResponse({ status: 200, description: 'Paginated list of health incidents' })
-  async listIncidents(@Query() query: IncidentQueryDto) {
-    const page = query.page ?? 1;
-    const limit = query.limit ?? 10;
+  @ApiOperation({ summary: '[Super Admin] Paginated incident history' })
+  @ApiResponse({ status: 200, description: 'Incident list' })
+  @ApiResponse({ status: 403, description: 'Super Admin only' })
+  async getIncidents(
+    @Request() req: any,
+    @Query(new ValidationPipe({ transform: true })) query: IncidentQueryDto,
+  ) {
+    this.ensureSuperAdmin(req);
+
+    const { page, limit } = query;
     const skip = (page - 1) * limit;
 
-    const where = query.status ? { status: query.status } : {};
-
-    const [data, total] = await Promise.all([
+    const [incidents, total] = await Promise.all([
       this.db.healthIncident.findMany({
-        where,
-        orderBy: { startedAt: 'desc' },
         skip,
         take: limit,
+        orderBy: { startedAt: 'desc' },
       }),
-      this.db.healthIncident.count({ where }),
+      this.db.healthIncident.count(),
     ]);
 
     return {
-      data,
+      data: incidents,
       meta: {
         total,
         page,

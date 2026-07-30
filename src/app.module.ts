@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { ReferralModule } from './referral/referral.module';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_FILTER } from '@nestjs/core';
 import { AuthGuard } from './auth/auth.guard';
 import { ContactModule } from './contact/contact.module';
 import { DatabaseModule } from './database/database.module';
@@ -27,10 +27,15 @@ import { ArtisanModule } from './artisan/artisan.module';
 import { InternalModule } from './internal/internal.module';
 import { MailClientModule } from './mail/mail-client.module';
 import { ConnectPlusModule } from './connect-plus/connect-plus.module';
+import { SentryModule, SentryGlobalFilter } from '@sentry/nestjs/setup';
 import { HealthModule } from './health/health.module';
 
 @Module({
   providers: [
+    {
+      provide: APP_FILTER,
+      useClass: SentryGlobalFilter,
+    },
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
@@ -41,6 +46,7 @@ import { HealthModule } from './health/health.module';
     },
   ],
   imports: [
+    SentryModule.forRoot(),
     ThrottlerModule.forRoot([
       {
         ttl: 60000,

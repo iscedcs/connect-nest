@@ -12,16 +12,15 @@ export class PrismaHealthIndicator extends HealthIndicator {
     super();
   }
 
-  async isHealthy(key: string): Promise<HealthIndicatorResult> {
+  async isHealthy(key: string = 'database'): Promise<HealthIndicatorResult> {
     try {
       await this.db.$queryRaw`SELECT 1`;
       return this.getStatus(key, true);
     } catch (error) {
-      const errMessage = error instanceof Error ? error.message : String(error);
-      throw new HealthCheckError(
-        'Prisma health check failed',
-        this.getStatus(key, false, { message: errMessage }),
-      );
+      const result = this.getStatus(key, false, {
+        message: (error as Error).message,
+      });
+      throw new HealthCheckError('Database health check failed', result);
     }
   }
 }

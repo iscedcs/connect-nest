@@ -1,16 +1,21 @@
 import { Module } from '@nestjs/common';
 import { TerminusModule } from '@nestjs/terminus';
-import { HealthController } from './health.controller';
-import { HealthAdminController } from './health-admin.controller';
-import { PrismaHealthIndicator } from './indicators/prisma-health.indicator';
-import { HealthMonitorService } from './health-monitor.service';
 import { DatabaseModule } from '../database/database.module';
-import { MailClientModule } from '../mail/mail-client.module';
+import { CpChatModule } from '../connect-plus/chat/chat.module';
+import { HealthMonitorService } from './health-monitor.service';
+import { HealthAdminController } from './health-admin.controller';
+import { HealthController } from './health.controller';
+import { PrismaHealthIndicator } from './indicators/prisma-health.indicator';
 
 @Module({
-  imports: [TerminusModule, DatabaseModule, MailClientModule],
+  imports: [
+    TerminusModule,
+    DatabaseModule,
+    CpChatModule, // provides CpChatGateway for WebSocket broadcast
+  ],
+  providers: [HealthMonitorService, PrismaHealthIndicator],
   controllers: [HealthController, HealthAdminController],
-  providers: [PrismaHealthIndicator, HealthMonitorService],
-  exports: [HealthMonitorService],
+  exports: [HealthMonitorService, PrismaHealthIndicator],
 })
 export class HealthModule {}
+

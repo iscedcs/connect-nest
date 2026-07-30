@@ -22,11 +22,13 @@ export class SentryExceptionFilter implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
+    // Capture 5xx errors or non-HttpExceptions (unexpected uncaught errors) in Sentry
     if (status >= HttpStatus.INTERNAL_SERVER_ERROR || !(exception instanceof HttpException)) {
       if (process.env.SENTRY_DSN) {
         Sentry.withScope((scope) => {
           scope.setTag('environment', process.env.NODE_ENV ?? 'development');
 
+          // Tag with request id if available
           const requestId =
             (request.headers['x-request-id'] as string) ||
             (request.headers['x-correlation-id'] as string) ||
