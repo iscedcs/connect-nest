@@ -3,10 +3,7 @@ import { DatabaseService } from '../database/database.service';
 import { CpOrganizationsService } from '../connect-plus/organizations/organizations.service';
 import { CpWorkspacesService } from '../connect-plus/workspaces/workspaces.service';
 import { CpRequestContext } from '../connect-plus/types/cp-request.types';
-import {
-  CpRole,
-  CpMemberStatus,
-} from '../generated/prisma/client';
+import { CpRole } from '../generated/prisma/client';
 
 @Injectable()
 export class InternalService {
@@ -54,19 +51,6 @@ export class InternalService {
     };
     const workspace = await this.workspaces.create(workspaceCtx, {
       name: businessName,
-    });
-
-    // The creator isn't auto-added as a CpWorkspaceMember by workspace
-    // creation — without this, CpContextGuard would lock them out of every
-    // workspace-scoped CP route the moment the frontend sends x-workspace-id.
-    await this.db.cpWorkspaceMember.create({
-      data: {
-        workspaceId: workspace.id,
-        authUserId,
-        role: CpRole.CREATOR,
-        status: CpMemberStatus.ACTIVE,
-        joinedAt: new Date(),
-      },
     });
 
     return {
