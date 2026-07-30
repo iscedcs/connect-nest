@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { randomBytes, createHash } from 'crypto';
 import { DatabaseService } from '../../database/database.service';
-import { CpRequestContext } from '../types/cp-request.types';
+import { CpRequestContext, IsceAuthPayload } from '../types/cp-request.types';
 import { CpAuditLogService } from '../audit-logs/cp-audit-log.service';
 import { CpNotificationsService } from '../notifications/notifications.service';
 import { IsceAuthService } from '../isce-auth/isce-auth.service';
@@ -34,7 +34,11 @@ export class CpWorkspacesService {
     private readonly subscriptions: CpSubscriptionsService,
   ) {}
 
-  async create(ctx: CpRequestContext, dto: CreateWorkspaceDto, req?: Request) {
+  async create(
+    ctx: CpRequestContext,
+    dto: CreateWorkspaceDto,
+    req?: Request & { isce_auth?: IsceAuthPayload },
+  ) {
     const limitCheck = await this.subscriptions.checkLimit(
       ctx.organizationId,
       'workspace',
@@ -73,13 +77,31 @@ export class CpWorkspacesService {
       },
     });
 
-    // Auto-create workspace member for creator
-    await this.db.cpWorkspaceMember.create({
+    // Auto-create workspace member + staff profile for creator
+    const creatorAuth = req?.isce_auth;
+    const creatorName = creatorAuth
+      ? [creatorAuth.firstName, creatorAuth.lastName].filter(Boolean).join(' ') ||
+        creatorAuth.email.split('@')[0]
+      : ctx.authUserId;
+
+    const creatorMember = await this.db.cpWorkspaceMember.create({
       data: {
         workspaceId: workspace.id,
         authUserId: ctx.authUserId,
         role: CpRole.CREATOR,
         status: 'ACTIVE',
+        joinedAt: new Date(),
+      },
+    });
+
+    await this.db.cpStaffProfile.create({
+      data: {
+        workspaceId: workspace.id,
+        memberId: creatorMember.id,
+        authUserId: ctx.authUserId,
+        name: creatorName,
+        email: creatorAuth?.email ?? undefined,
+        photo: creatorAuth?.displayPicture ?? undefined,
       },
     });
 
@@ -378,6 +400,12 @@ export class CpWorkspacesService {
   }
 
   async getMyWorkspaces(authUserId: string) {
+    const orgsCreated = await this.db.cpOrganization.findMany({
+      where: { creatorAuthId: authUserId },
+      select: { id: true },
+    });
+    const orgIds = orgsCreated.map((o) => o.id);
+
     const memberships = await this.db.cpWorkspaceMember.findMany({
       where: {
         authUserId,
@@ -397,12 +425,46 @@ export class CpWorkspacesService {
       orderBy: { joinedAt: 'desc' },
     });
 
-    return memberships.map((m) => ({
-      memberId: m.id,
-      role: m.role,
-      status: m.status,
-      joinedAt: m.joinedAt,
-      workspace: m.workspace,
-    }));
+    const memberWorkspaceIds = new Set(memberships.map((m) => m.workspace.id));
+
+    const result = memberships.map((m) => {
+      const isOrgCreator = orgIds.includes(m.workspace.organizationId);
+      return {
+        memberId: m.id,
+        role: isOrgCreator ? CpRole.CREATOR : m.role,
+        status: m.status,
+        joinedAt: m.joinedAt,
+        workspace: m.workspace,
+      };
+    });
+
+    if (orgIds.length > 0) {
+      const extraWorkspaces = await this.db.cpWorkspace.findMany({
+        where: {
+          organizationId: { in: orgIds },
+          id: { notIn: Array.from(memberWorkspaceIds) },
+        },
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          status: true,
+          organizationId: true,
+          createdAt: true,
+        },
+      });
+
+      for (const ws of extraWorkspaces) {
+        result.push({
+          memberId: `creator-${ws.id}`,
+          role: CpRole.CREATOR,
+          status: 'ACTIVE',
+          joinedAt: ws.createdAt,
+          workspace: ws,
+        });
+      }
+    }
+
+    return result;
   }
 }

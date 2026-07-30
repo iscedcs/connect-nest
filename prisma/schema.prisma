@@ -1000,6 +1000,7 @@ model CpCompanyProfile {
   workspace           CpWorkspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   name                String
   logo                String?
+  coverImage          String?
   description         String?
   contactEmail        String?
   contactPhone        String?
@@ -1389,4 +1390,32 @@ model CpSavedTalent {
   @@unique([workspaceId, artisanId])
   @@index([workspaceId])
   @@index([artisanId])
+}
+
+// ─── Health Monitoring ────────────────────────────────────
+
+enum HealthIncidentStatus {
+  OPEN
+  RESOLVED
+}
+
+enum HealthDependency {
+  POSTGRES
+}
+
+model HealthIncident {
+  id             String               @id @default(uuid())
+  dependency     HealthDependency
+  status         HealthIncidentStatus @default(OPEN)
+  startedAt      DateTime             @default(now())
+  resolvedAt     DateTime?
+  lastAlertAt    DateTime?            // used for 30-min re-reminder de-duplication
+  alertCount     Int                  @default(0)
+  notifiedEmails String[]             // snapshot of emails contacted at alert time
+  notes          String?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+
+  @@index([dependency, status])
+  @@index([status])
 }

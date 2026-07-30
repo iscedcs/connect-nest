@@ -919,6 +919,40 @@ export type EnumWorkModelWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumWorkModelFilter<$PrismaModel>
 }
 
+export type EnumHealthDependencyFilter<$PrismaModel = never> = {
+  equals?: $Enums.HealthDependency | Prisma.EnumHealthDependencyFieldRefInput<$PrismaModel>
+  in?: $Enums.HealthDependency[] | Prisma.ListEnumHealthDependencyFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HealthDependency[] | Prisma.ListEnumHealthDependencyFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHealthDependencyFilter<$PrismaModel> | $Enums.HealthDependency
+}
+
+export type EnumHealthIncidentStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.HealthIncidentStatus | Prisma.EnumHealthIncidentStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.HealthIncidentStatus[] | Prisma.ListEnumHealthIncidentStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HealthIncidentStatus[] | Prisma.ListEnumHealthIncidentStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHealthIncidentStatusFilter<$PrismaModel> | $Enums.HealthIncidentStatus
+}
+
+export type EnumHealthDependencyWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.HealthDependency | Prisma.EnumHealthDependencyFieldRefInput<$PrismaModel>
+  in?: $Enums.HealthDependency[] | Prisma.ListEnumHealthDependencyFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HealthDependency[] | Prisma.ListEnumHealthDependencyFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHealthDependencyWithAggregatesFilter<$PrismaModel> | $Enums.HealthDependency
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumHealthDependencyFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumHealthDependencyFilter<$PrismaModel>
+}
+
+export type EnumHealthIncidentStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.HealthIncidentStatus | Prisma.EnumHealthIncidentStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.HealthIncidentStatus[] | Prisma.ListEnumHealthIncidentStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HealthIncidentStatus[] | Prisma.ListEnumHealthIncidentStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHealthIncidentStatusWithAggregatesFilter<$PrismaModel> | $Enums.HealthIncidentStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumHealthIncidentStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumHealthIncidentStatusFilter<$PrismaModel>
+}
+
 export type NestedStringFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -1781,6 +1815,40 @@ export type NestedEnumWorkModelWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumWorkModelFilter<$PrismaModel>
   _max?: Prisma.NestedEnumWorkModelFilter<$PrismaModel>
+}
+
+export type NestedEnumHealthDependencyFilter<$PrismaModel = never> = {
+  equals?: $Enums.HealthDependency | Prisma.EnumHealthDependencyFieldRefInput<$PrismaModel>
+  in?: $Enums.HealthDependency[] | Prisma.ListEnumHealthDependencyFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HealthDependency[] | Prisma.ListEnumHealthDependencyFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHealthDependencyFilter<$PrismaModel> | $Enums.HealthDependency
+}
+
+export type NestedEnumHealthIncidentStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.HealthIncidentStatus | Prisma.EnumHealthIncidentStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.HealthIncidentStatus[] | Prisma.ListEnumHealthIncidentStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HealthIncidentStatus[] | Prisma.ListEnumHealthIncidentStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHealthIncidentStatusFilter<$PrismaModel> | $Enums.HealthIncidentStatus
+}
+
+export type NestedEnumHealthDependencyWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.HealthDependency | Prisma.EnumHealthDependencyFieldRefInput<$PrismaModel>
+  in?: $Enums.HealthDependency[] | Prisma.ListEnumHealthDependencyFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HealthDependency[] | Prisma.ListEnumHealthDependencyFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHealthDependencyWithAggregatesFilter<$PrismaModel> | $Enums.HealthDependency
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumHealthDependencyFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumHealthDependencyFilter<$PrismaModel>
+}
+
+export type NestedEnumHealthIncidentStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.HealthIncidentStatus | Prisma.EnumHealthIncidentStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.HealthIncidentStatus[] | Prisma.ListEnumHealthIncidentStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HealthIncidentStatus[] | Prisma.ListEnumHealthIncidentStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHealthIncidentStatusWithAggregatesFilter<$PrismaModel> | $Enums.HealthIncidentStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumHealthIncidentStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumHealthIncidentStatusFilter<$PrismaModel>
 }
 
 

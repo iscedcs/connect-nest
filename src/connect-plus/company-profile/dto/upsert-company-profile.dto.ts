@@ -165,6 +165,11 @@ export class UpsertCompanyProfileDto {
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
+  coverImage?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
   description?: string;
 
   @ApiPropertyOptional()

@@ -1,3 +1,4 @@
+import './instrument';
 import 'dotenv/config';
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
@@ -5,6 +6,7 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
+import { SentryExceptionFilter } from './common/filters/sentry-exception.filter';
 
 async function bootstrap() {
   if (!process.env.AUTH_INVITE_WEBHOOK_SECRET) {
@@ -14,6 +16,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, { rawBody: true });
 
   app.use(helmet());
+  app.useGlobalFilters(new SentryExceptionFilter());
 
   app.useGlobalPipes(
     new ValidationPipe({
