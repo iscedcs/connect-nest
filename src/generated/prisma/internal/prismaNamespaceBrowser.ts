@@ -102,7 +102,8 @@ export const ModelName = {
   CpAuditLog: 'CpAuditLog',
   CpJobPost: 'CpJobPost',
   CpJobApplication: 'CpJobApplication',
-  CpSavedTalent: 'CpSavedTalent'
+  CpSavedTalent: 'CpSavedTalent',
+  HealthIncident: 'HealthIncident'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1023,6 +1024,23 @@ export const CpSavedTalentScalarFieldEnum = {
 } as const
 
 export type CpSavedTalentScalarFieldEnum = (typeof CpSavedTalentScalarFieldEnum)[keyof typeof CpSavedTalentScalarFieldEnum]
+
+
+export const HealthIncidentScalarFieldEnum = {
+  id: 'id',
+  dependency: 'dependency',
+  status: 'status',
+  startedAt: 'startedAt',
+  resolvedAt: 'resolvedAt',
+  lastAlertAt: 'lastAlertAt',
+  alertCount: 'alertCount',
+  notifiedEmails: 'notifiedEmails',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HealthIncidentScalarFieldEnum = (typeof HealthIncidentScalarFieldEnum)[keyof typeof HealthIncidentScalarFieldEnum]
 
 
 export const SortOrder = {

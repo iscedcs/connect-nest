@@ -371,3 +371,18 @@ export const WorkModel = {
 } as const
 
 export type WorkModel = (typeof WorkModel)[keyof typeof WorkModel]
+
+
+export const HealthIncidentStatus = {
+  OPEN: 'OPEN',
+  RESOLVED: 'RESOLVED'
+} as const
+
+export type HealthIncidentStatus = (typeof HealthIncidentStatus)[keyof typeof HealthIncidentStatus]
+
+
+export const HealthDependency = {
+  POSTGRES: 'POSTGRES'
+} as const
+
+export type HealthDependency = (typeof HealthDependency)[keyof typeof HealthDependency]
