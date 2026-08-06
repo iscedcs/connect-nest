@@ -23,6 +23,7 @@ import {
   AcceptProposalDto,
   DeclineProposalDto,
   ConfirmPaymentDto,
+  ExecuteWalletPaymentDto,
   DisputePaymentDto,
   ThreadQueryDto,
 } from './dto/artisan.dto';
@@ -154,7 +155,12 @@ export class ThreadController {
   ) {
     const user = req.isce_auth;
     if (!user) return { success: false, message: 'User not found' };
-    return this.threadService.acceptProposal(threadId, user.id, dto);
+    return this.threadService.acceptProposal(
+      threadId,
+      user.id,
+      dto,
+      req.headers.authorization,
+    );
   }
 
   @Post(':threadId/proposals/decline')
@@ -245,5 +251,57 @@ export class ThreadController {
     const user = req.isce_auth;
     if (!user) return { success: false, message: 'User not found' };
     return this.threadService.disputePayment(bookingId, user.id, dto);
+  }
+
+  @Post('bookings/:bookingId/wallet-payment/execute')
+  @ApiOperation({
+    summary: 'Execute the wallet payment for a booking (customer, PIN-confirmed)',
+  })
+  @ApiResponse({ status: 200, description: 'Payment executed (or requires fraud confirmation)' })
+  async executeWalletPayment(
+    @Request() req,
+    @Param('bookingId') bookingId: string,
+    @Body(ValidationPipe) dto: ExecuteWalletPaymentDto,
+  ) {
+    const user = req.isce_auth;
+    if (!user) return { success: false, message: 'User not found' };
+    return this.threadService.executeWalletPayment(
+      bookingId,
+      user.id,
+      dto,
+      req.headers.authorization,
+    );
+  }
+
+  @Post('bookings/:bookingId/wallet-payment/cancel')
+  @ApiOperation({ summary: 'Cancel the wallet payment intent for a booking' })
+  @ApiResponse({ status: 200, description: 'Payment intent cancelled' })
+  async cancelWalletPayment(
+    @Request() req,
+    @Param('bookingId') bookingId: string,
+  ) {
+    const user = req.isce_auth;
+    if (!user) return { success: false, message: 'User not found' };
+    return this.threadService.cancelWalletPayment(
+      bookingId,
+      user.id,
+      req.headers.authorization,
+    );
+  }
+
+  @Get('bookings/:bookingId/wallet-payment')
+  @ApiOperation({ summary: 'Get the wallet payment intent status for a booking' })
+  @ApiResponse({ status: 200, description: 'Payment intent status (or null if none yet)' })
+  async getWalletPaymentStatus(
+    @Request() req,
+    @Param('bookingId') bookingId: string,
+  ) {
+    const user = req.isce_auth;
+    if (!user) return { success: false, message: 'User not found' };
+    return this.threadService.getWalletPaymentStatus(
+      bookingId,
+      user.id,
+      req.headers.authorization,
+    );
   }
 }

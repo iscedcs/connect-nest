@@ -67,7 +67,7 @@ export class ArtisanController {
   ) {
     const user = req.isce_auth;
     if (!user) return { success: false, message: 'User not found' };
-    return this.artisanService.register(user.id, dto);
+    return this.artisanService.register(user.id, dto, req.headers.authorization);
   }
 
   // ─── Self-management ──────────────────────────────────
@@ -401,7 +401,12 @@ export class ArtisanController {
   ) {
     const user = req.isce_auth;
     if (!user) return { success: false, message: 'User not found' };
-    return this.artisanService.createReview(user.id, artisanId, dto);
+    return this.artisanService.createReview(
+      user.id,
+      artisanId,
+      dto,
+      req.headers.authorization,
+    );
   }
 
   // ─── Promotions ───────────────────────────────────────

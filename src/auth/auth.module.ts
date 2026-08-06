@@ -5,6 +5,8 @@ import { JwtService } from './jwt.service';
 import { JwtStrategy } from './jwt.strategy';
 import { AuthClientService } from './auth-client.service';
 import { WalletClientService } from './wallet-client.service';
+import { WalletStatusController } from './wallet-status.controller';
+import { NfcController } from './nfc.controller';
 import { jwtSecret } from 'utils/constants';
 
 @Module({
@@ -15,7 +17,7 @@ import { jwtSecret } from 'utils/constants';
     }),
     PassportModule,
   ],
-  controllers: [],
+  controllers: [WalletStatusController, NfcController],
   providers: [
     JwtService,
     JwtStrategy,

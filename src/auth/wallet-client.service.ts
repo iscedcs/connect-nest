@@ -27,6 +27,7 @@ export interface ExecutePaymentIntentParams {
   userId: string;
   intentId: string;
   pin: string;
+  confirmFraud?: boolean;
 }
 
 export interface NfcResolveResult {
@@ -115,12 +116,15 @@ export class WalletClientService {
    * Check if a user has a KYC-verified wallet (kycLevel >= ONE).
    * Used during artisan registration to enforce the wallet requirement.
    */
-  async getUserWalletKycInfo(userId: string): Promise<WalletKycInfo> {
+  async getUserWalletKycInfo(
+    userId: string,
+    token: string,
+  ): Promise<WalletKycInfo> {
     try {
       const res = await axios.get(
         `${this.walletApiUrl}/api/wallets/kyc-status`,
         {
-          headers: this.buildInternalAuthHeader(userId),
+          headers: this.authHeader(token),
           timeout: 5000,
         },
       );
@@ -152,6 +156,7 @@ export class WalletClientService {
    */
   async createArtisanPaymentIntent(
     params: CreateArtisanPaymentIntentParams,
+    token: string,
   ): Promise<{ success: boolean; data?: any; message?: string }> {
     try {
       const res = await axios.post(
@@ -175,7 +180,7 @@ export class WalletClientService {
           },
         },
         {
-          headers: this.buildInternalAuthHeader(params.senderUserId),
+          headers: this.authHeader(token),
           timeout: 10000,
         },
       );
@@ -195,13 +200,14 @@ export class WalletClientService {
    */
   async executePaymentIntent(
     params: ExecutePaymentIntentParams,
+    token: string,
   ): Promise<{ success: boolean; data?: any; message?: string }> {
     try {
       const res = await axios.post(
         `${this.walletApiUrl}/api/payment-intents/${params.intentId}/execute`,
-        { pin: params.pin },
+        { pin: params.pin, confirmFraud: params.confirmFraud },
         {
-          headers: this.buildInternalAuthHeader(params.userId),
+          headers: this.authHeader(token),
           timeout: 15000,
         },
       );
@@ -223,13 +229,14 @@ export class WalletClientService {
   async cancelPaymentIntent(
     userId: string,
     intentId: string,
+    token: string,
   ): Promise<{ success: boolean; message?: string }> {
     try {
       const res = await axios.patch(
         `${this.walletApiUrl}/api/payment-intents/${intentId}/cancel`,
         {},
         {
-          headers: this.buildInternalAuthHeader(userId),
+          headers: this.authHeader(token),
           timeout: 5000,
         },
       );
@@ -252,12 +259,13 @@ export class WalletClientService {
   async getPaymentIntent(
     userId: string,
     intentId: string,
+    token: string,
   ): Promise<{ success: boolean; data?: any; message?: string }> {
     try {
       const res = await axios.get(
         `${this.walletApiUrl}/api/payment-intents/${intentId}`,
         {
-          headers: this.buildInternalAuthHeader(userId),
+          headers: this.authHeader(token),
           timeout: 5000,
         },
       );
@@ -280,10 +288,12 @@ export class WalletClientService {
    */
   async resolveNfc(
     productId: string,
+    token: string,
   ): Promise<{ success: boolean; data?: NfcResolveResult; message?: string }> {
     try {
       const res = await axios.get(`${this.walletApiUrl}/api/nfc/resolve`, {
         params: { productId },
+        headers: this.authHeader(token),
         timeout: 5000,
       });
       return res.data;
@@ -308,23 +318,22 @@ export class WalletClientService {
   async hasCompletedArtisanPayment(
     customerUserId: string,
     artisanUserId: string,
+    token: string,
   ): Promise<boolean> {
     try {
-      const res = await axios.get(
-        `${this.walletApiUrl}/api/payment-intents/match`,
-        {
-          params: {
-            profileUserId: artisanUserId,
-            sourceModule: 'CONNECT',
-          },
-          headers: this.buildInternalAuthHeader(customerUserId),
-          timeout: 5000,
-        },
-      );
-      if (res.data?.success && Array.isArray(res.data?.data)) {
-        return res.data.data.some(
+      // wallet-nest's /payment-intents/match endpoint hardcodes its status
+      // filter server-side to ACTIVE/PENDING_CONFIRMATION, so it can never
+      // return an EXECUTED intent. Use the list endpoint instead, scoped to
+      // the caller (customerUserId, via the forwarded token) as sender.
+      const res = await axios.get(`${this.walletApiUrl}/api/payment-intents`, {
+        params: { role: 'sender', status: 'EXECUTED', perPage: 100 },
+        headers: this.authHeader(token),
+        timeout: 5000,
+      });
+      if (res.data?.success && Array.isArray(res.data?.data?.intents)) {
+        return res.data.data.intents.some(
           (intent: any) =>
-            intent.status === 'EXECUTED' &&
+            intent.receiverUserId === artisanUserId &&
             intent.metadata?.isArtisanPayment === true,
         );
       }
@@ -339,17 +348,13 @@ export class WalletClientService {
   // ─── Internal Helpers ───────────────────────────────────
 
   /**
-   * Build an authorization header for internal service-to-service calls.
-   * In production this should use a service token or shared secret;
-   * for now we forward the user context via a lightweight internal JWT.
+   * wallet-nest verifies bearer JWTs itself against the shared JWT_SECRET
+   * (same mechanism as connect-nest's own AuthGuard) — so protected routes
+   * need the caller's actual token forwarded, not an internal service header.
    */
-  private buildInternalAuthHeader(userId: string): Record<string, string> {
-    // TODO: Replace with proper service-to-service auth (e.g. internal API key)
-    // For now, wallet-nest public endpoints don't need auth,
-    // and authenticated endpoints will need the user's actual JWT forwarded from the controller.
+  private authHeader(token: string): Record<string, string> {
     return {
-      'Content-Type': 'application/json',
-      'X-Internal-User-Id': userId,
+      Authorization: token.startsWith('Bearer ') ? token : `Bearer ${token}`,
     };
   }
 }
