@@ -475,6 +475,9 @@ model Artisan {
   activatedAt     DateTime? // When status changed to ACTIVE
   suspendedReason String? // Admin reason for suspension
 
+  // Wallet
+  canReceiveWalletPayments Boolean @default(false) // KYC-verified wallet as of registration/last check
+
   // Stats (denormalized for directory performance)
   averageRating Decimal @default(0) @db.Decimal(3, 2) // 0.00 - 5.00
   totalReviews  Int     @default(0)

@@ -13,6 +13,7 @@ import {
   AcceptProposalDto,
   DeclineProposalDto,
   ConfirmPaymentDto,
+  ExecuteWalletPaymentDto,
   DisputePaymentDto,
   ThreadQueryDto,
 } from './dto/artisan.dto';
@@ -20,6 +21,7 @@ import { ThreadEventService } from './thread-event.service';
 import { NotificationDispatcher } from '../notification/notification-dispatcher.service';
 import { AuthClientService } from '../auth/auth-client.service';
 import { MailClientService } from '../mail/mail-client.service';
+import { WalletClientService } from '../auth/wallet-client.service';
 
 @Injectable()
 export class ThreadService {
@@ -29,6 +31,7 @@ export class ThreadService {
     private readonly notifications: NotificationDispatcher,
     private readonly authClient: AuthClientService,
     private readonly mail: MailClientService,
+    private readonly walletClient: WalletClientService,
   ) {}
 
   /**
@@ -405,6 +408,7 @@ export class ThreadService {
     threadId: string,
     userId: string,
     dto: AcceptProposalDto,
+    token: string,
   ) {
     const thread = await this.findAndValidateThread(threadId, userId);
 
@@ -487,6 +491,35 @@ export class ThreadService {
 
       return booking;
     });
+
+    // Best-effort: create the wallet-nest payment intent for WALLET-method
+    // bookings. Never blocks acceptance — if this fails, execute/cancel
+    // routes lazily create the intent later.
+    if (result.paymentMethod === 'WALLET') {
+      try {
+        const intentRes = await this.walletClient.createArtisanPaymentIntent(
+          {
+            senderUserId: userId,
+            receiverUserId: thread.artisan.userId,
+            amount: result.agreedPrice ? Number(result.agreedPrice) : 0,
+            currency: result.currency,
+            artisanId: thread.artisanId,
+            serviceId: (proposal.serviceId as string) || undefined,
+            bookingId: result.id,
+            sourceReference: result.id,
+          },
+          token,
+        );
+        if (intentRes.success && intentRes.data?.intent?.id) {
+          await this.db.booking.update({
+            where: { id: result.id },
+            data: { paymentReference: intentRes.data.intent.id },
+          });
+        }
+      } catch {
+        // leave paymentReference null; wallet-payment routes self-heal
+      }
+    }
 
     // SSE: notify artisan about acceptance
     this.events.emit('status_changed', threadId, {
@@ -991,6 +1024,178 @@ export class ThreadService {
       message: 'Payment dispute raised',
       data: updated,
     };
+  }
+
+  /**
+   * Ensures a WALLET-method booking has a wallet-nest payment intent,
+   * lazily creating one if acceptProposal's best-effort attempt failed.
+   */
+  private async ensurePaymentIntent(
+    booking: {
+      id: string;
+      artisanId: string;
+      serviceId: string | null;
+      customerUserId: string;
+      agreedPrice: Prisma.Decimal | null;
+      currency: string;
+      paymentReference: string | null;
+    },
+    token: string,
+  ): Promise<string> {
+    if (booking.paymentReference) {
+      return booking.paymentReference;
+    }
+
+    const artisan = await this.db.artisan.findUnique({
+      where: { id: booking.artisanId },
+      select: { userId: true },
+    });
+    if (!artisan) {
+      throw new NotFoundException('Artisan not found for this booking');
+    }
+
+    const intentRes = await this.walletClient.createArtisanPaymentIntent(
+      {
+        senderUserId: booking.customerUserId,
+        receiverUserId: artisan.userId,
+        amount: booking.agreedPrice ? Number(booking.agreedPrice) : 0,
+        currency: booking.currency,
+        artisanId: booking.artisanId,
+        serviceId: booking.serviceId || undefined,
+        bookingId: booking.id,
+        sourceReference: booking.id,
+      },
+      token,
+    );
+    if (!intentRes.success || !intentRes.data?.intent?.id) {
+      throw new BadRequestException(
+        intentRes.message || 'Could not create wallet payment for this booking',
+      );
+    }
+
+    await this.db.booking.update({
+      where: { id: booking.id },
+      data: { paymentReference: intentRes.data.intent.id },
+    });
+
+    return intentRes.data.intent.id as string;
+  }
+
+  /**
+   * Customer executes the wallet payment for a booking (PIN-confirmed).
+   */
+  async executeWalletPayment(
+    bookingId: string,
+    userId: string,
+    dto: ExecuteWalletPaymentDto,
+    token: string,
+  ) {
+    const booking = await this.db.booking.findFirst({
+      where: { id: bookingId, customerUserId: userId },
+    });
+    if (!booking) {
+      throw new NotFoundException('Booking not found');
+    }
+    if (booking.paymentMethod !== 'WALLET') {
+      throw new BadRequestException('This booking is not set up for wallet payment');
+    }
+    if (booking.isPaid) {
+      throw new BadRequestException('This booking has already been paid');
+    }
+
+    const intentId = await this.ensurePaymentIntent(booking, token);
+
+    const result = await this.walletClient.executePaymentIntent(
+      { userId, intentId, pin: dto.pin, confirmFraud: dto.confirmFraud },
+      token,
+    );
+
+    if (result.success && result.data?.intent?.status === 'EXECUTED') {
+      await this.db.booking.update({
+        where: { id: bookingId },
+        data: {
+          isPaid: true,
+          paidAt: new Date(),
+          clientPaymentConfirmed: true,
+          artisanPaymentConfirmed: true,
+        },
+      });
+
+      const thread = await this.db.bookingThread.findFirst({
+        where: { bookingId },
+      });
+      if (thread) {
+        this.events.emit('payment_update', thread.id, {
+          action: 'wallet_payment_executed',
+          clientConfirmed: true,
+          artisanConfirmed: true,
+          isPaid: true,
+        });
+        this.notifications
+          .dispatchToThreadRecipient(
+            thread.id,
+            userId,
+            'PAYMENT_RECEIVED_CONFIRMED',
+            'Payment Received',
+            'Wallet payment completed for this booking',
+          )
+          .catch(() => {});
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Cancel the wallet payment intent for a booking (either participant).
+   */
+  async cancelWalletPayment(bookingId: string, userId: string, token: string) {
+    const booking = await this.db.booking.findFirst({
+      where: { id: bookingId },
+    });
+    if (!booking) {
+      throw new NotFoundException('Booking not found');
+    }
+    const isClient = booking.customerUserId === userId;
+    const isArtisan = await this.isArtisanOwner(booking.artisanId, userId);
+    if (!isClient && !isArtisan) {
+      throw new ForbiddenException('You are not a participant of this booking');
+    }
+    if (!booking.paymentReference) {
+      throw new BadRequestException('No wallet payment exists for this booking');
+    }
+
+    return this.walletClient.cancelPaymentIntent(
+      userId,
+      booking.paymentReference,
+      token,
+    );
+  }
+
+  /**
+   * Get the wallet payment intent status for a booking (either participant).
+   */
+  async getWalletPaymentStatus(bookingId: string, userId: string, token: string) {
+    const booking = await this.db.booking.findFirst({
+      where: { id: bookingId },
+    });
+    if (!booking) {
+      throw new NotFoundException('Booking not found');
+    }
+    const isClient = booking.customerUserId === userId;
+    const isArtisan = await this.isArtisanOwner(booking.artisanId, userId);
+    if (!isClient && !isArtisan) {
+      throw new ForbiddenException('You are not a participant of this booking');
+    }
+    if (!booking.paymentReference) {
+      return { success: true, data: null };
+    }
+
+    return this.walletClient.getPaymentIntent(
+      userId,
+      booking.paymentReference,
+      token,
+    );
   }
 
   // ─── Unread Counts ──────────────────────────────────────

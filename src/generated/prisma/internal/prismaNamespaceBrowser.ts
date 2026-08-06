@@ -432,6 +432,7 @@ export const ArtisanScalarFieldEnum = {
   termsAcceptedAt: 'termsAcceptedAt',
   activatedAt: 'activatedAt',
   suspendedReason: 'suspendedReason',
+  canReceiveWalletPayments: 'canReceiveWalletPayments',
   averageRating: 'averageRating',
   totalReviews: 'totalReviews',
   totalBookings: 'totalBookings',
