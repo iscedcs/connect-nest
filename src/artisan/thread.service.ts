@@ -493,31 +493,14 @@ export class ThreadService {
     });
 
     // Best-effort: create the wallet-nest payment intent for WALLET-method
-    // bookings. Never blocks acceptance — if this fails, execute/cancel
-    // routes lazily create the intent later.
+    // bookings via the same atomic-claim path executeWalletPayment uses.
+    // Never blocks acceptance — if this fails, the execute route lazily
+    // creates the intent later.
     if (result.paymentMethod === 'WALLET') {
       try {
-        const intentRes = await this.walletClient.createArtisanPaymentIntent(
-          {
-            senderUserId: userId,
-            receiverUserId: thread.artisan.userId,
-            amount: result.agreedPrice ? Number(result.agreedPrice) : 0,
-            currency: result.currency,
-            artisanId: thread.artisanId,
-            serviceId: (proposal.serviceId as string) || undefined,
-            bookingId: result.id,
-            sourceReference: result.id,
-          },
-          token,
-        );
-        if (intentRes.success && intentRes.data?.intent?.id) {
-          await this.db.booking.update({
-            where: { id: result.id },
-            data: { paymentReference: intentRes.data.intent.id },
-          });
-        }
+        await this.ensurePaymentIntent(result, token);
       } catch {
-        // leave paymentReference null; wallet-payment routes self-heal
+        // leave paymentReference null; executeWalletPayment self-heals
       }
     }
 
@@ -1072,13 +1055,31 @@ export class ThreadService {
         intentRes.message || 'Could not create wallet payment for this booking',
       );
     }
+    const intentId = intentRes.data.intent.id as string;
 
-    await this.db.booking.update({
-      where: { id: booking.id },
-      data: { paymentReference: intentRes.data.intent.id },
+    // Atomically claim the paymentReference slot. Two concurrent callers
+    // (double-tap, client retry racing the original request) can both reach
+    // this point with paymentReference still null and both create a wallet
+    // intent — without this guard both would go on to execute their own
+    // intent, charging the customer twice. Only the request that actually
+    // flips paymentReference from null wins; the loser cancels its
+    // redundant intent and defers to the winner's.
+    const claim = await this.db.booking.updateMany({
+      where: { id: booking.id, paymentReference: null },
+      data: { paymentReference: intentId },
     });
+    if (claim.count === 0) {
+      this.walletClient
+        .cancelPaymentIntent(booking.customerUserId, intentId, token)
+        .catch(() => {});
+      const fresh = await this.db.booking.findUnique({
+        where: { id: booking.id },
+        select: { paymentReference: true },
+      });
+      return fresh!.paymentReference!;
+    }
 
-    return intentRes.data.intent.id as string;
+    return intentId;
   }
 
   /**
