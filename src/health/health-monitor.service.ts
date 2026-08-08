@@ -1,34 +1,22 @@
-import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { MailClientService } from '../mail/mail-client.service';
 import { HealthDependency, HealthIncidentStatus } from '../generated/prisma/client';
 
-const FAILURE_THRESHOLD = 3;
+const FAILURE_THRESHOLD = 1;
 const COOLDOWN_MS = 30 * 60 * 1000; // 30 minutes
-const POLL_INTERVAL_MS = 10 * 1000; // 10 seconds
 
 @Injectable()
-export class HealthMonitorService implements OnModuleInit, OnModuleDestroy {
+export class HealthMonitorService {
   private readonly logger = new Logger(HealthMonitorService.name);
   private failureCounts: Record<HealthDependency, number> = {
     [HealthDependency.POSTGRES]: 0,
   };
-  private timer: NodeJS.Timeout | null = null;
 
   constructor(
     private readonly db: DatabaseService,
     private readonly mailer: MailClientService,
   ) {}
-
-  onModuleInit() {
-    this.timer = setInterval(() => void this.checkHealth(), POLL_INTERVAL_MS);
-  }
-
-  onModuleDestroy() {
-    if (this.timer) {
-      clearInterval(this.timer);
-    }
-  }
 
   getCurrentFailureCounts() {
     return { ...this.failureCounts };
