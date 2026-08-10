@@ -159,16 +159,18 @@ model SupportRequest {
 }
 
 model CardInteraction {
-  id         String    @id @default(uuid())
-  user       Profile   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId     String
-  deviceId   String
-  method     ScanType
-  deviceType String?
-  referrer   String?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  deletedAt  DateTime?
+  id                String    @id @default(uuid())
+  user              Profile   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            String
+  deviceId          String
+  method            ScanType
+  deviceType        String?
+  referrer          String?
+  workspaceId       String?
+  workspaceMemberId String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
 }
 
 // model Invite {
@@ -486,6 +488,12 @@ model Artisan {
   // Working hours: JSON array of { day: 0-6, open: "09:00", close: "17:00", isOpen: boolean }
   workingHours Json?
 
+  // NEW Fields for Talent Sourcing
+  openToWork        Boolean     @default(true)
+  desiredJobTypes   JobType[]   // What kind of work they want
+  desiredWorkModels WorkModel[] // Remote, On-site, etc.
+  skills            String[]    // Array of skill tags for boolean search
+
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
@@ -498,6 +506,8 @@ model Artisan {
   reviews    Review[]
   promotions Promotion[]
   threads    BookingThread[]
+  applications CpJobApplication[]
+  savedBy      CpSavedTalent[]
 
   @@index([userId])
   @@index([status])
@@ -760,7 +770,7 @@ model PlatformSetting {
   updatedAt             DateTime @updatedAt
 }
 
-// ─── Subscription ─────────────────────────────────────────
+// ─── Connect (Personal) Subscription ─────────────────────
 
 enum SubscriptionStatus {
   TRIALING
@@ -825,4 +835,659 @@ model PaymentRecord {
   subscription Subscription @relation(fields: [subscriptionId], references: [id])
 
   @@index([subscriptionId])
+}
+
+// ─── Connect Plus Enums ───────────────────────────────────
+
+
+enum CpOrgStatus {
+  ACTIVE
+  SUSPENDED
+  ARCHIVED
+}
+
+enum CpWorkspaceStatus {
+  ACTIVE
+  SUSPENDED
+  ARCHIVED
+}
+
+enum CpMemberStatus {
+  ACTIVE
+  SUSPENDED
+  REMOVED
+}
+
+enum CpRole {
+  CREATOR
+  WORKSPACE_ADMIN
+  STAFF
+  CLIENT
+  VISITOR
+}
+
+enum CpLeadSource {
+  CARD_TAP
+  QR_SCAN
+  MANUAL
+  FORM_SUBMIT
+}
+
+enum CpLeadStatus {
+  NEW
+  CONTACTED
+  VALIDATED
+  REJECTED
+  CONVERTED
+}
+
+enum CpAppointmentType {
+  PUBLIC
+  CLIENT
+}
+
+enum CpAppointmentStatus {
+  PENDING
+  CONFIRMED
+  RESCHEDULED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum CpConversationType {
+  WORKSPACE_GROUP
+  DIRECT
+  CLIENT_STAFF
+}
+
+enum CpSenderRole {
+  STAFF
+  CLIENT
+  SYSTEM
+}
+
+enum CpParticipantRole {
+  MEMBER
+  ADMIN
+}
+
+enum CpInvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum CpCardStatus {
+  UNASSIGNED
+  ACTIVE
+  SUSPENDED
+  LOST
+}
+
+enum CpNotificationType {
+  APPOINTMENT_BOOKED
+  APPOINTMENT_CONFIRMED
+  APPOINTMENT_REMINDER
+  APPOINTMENT_RESCHEDULED
+  APPOINTMENT_CANCELLED
+  LEAD_ASSIGNED
+  LEAD_VALIDATED
+  NEW_LEAD
+  CLIENT_INVITED
+  CLIENT_MESSAGE
+  INVOICE_ISSUED
+  INVOICE_OVERDUE
+  INVOICE_PAID
+  INVOICE_CANCELLED
+  ATTENDANCE_LATE
+  ATTENDANCE_OVERRIDE
+  WORKSPACE_INVITE_SENT
+  WORKSPACE_INVITE_ACCEPTED
+  STAFF_SUSPENDED
+  STAFF_REMOVED
+  WORKSPACE_CREATED
+  WORKSPACE_SUSPENDED
+  ORG_ALERT
+  NEW_MESSAGE
+  JOB_INVITATION
+}
+
+enum CpAuditSource {
+  WEB
+  MOBILE
+  API
+  SYSTEM
+}
+
+enum CpSubscriptionPlan {
+  FREE
+  STARTER
+  GROWTH
+  BUSINESS
+}
+
+enum CpSubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+}
+
+// ─── Connect Plus Models ──────────────────────────────────
+
+model CpOrganization {
+  id            String      @id @default(uuid())
+  creatorAuthId String
+  name          String
+  slug          String      @unique
+  status        CpOrgStatus @default(ACTIVE)
+  settings      Json?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  deletedAt     DateTime?
+
+  workspaces    CpWorkspace[]
+  auditLogs     CpAuditLog[]
+  subscription  CpSubscription?
+
+  @@index([creatorAuthId])
+}
+
+model CpSubscription {
+  id                   String               @id @default(uuid())
+  organizationId       String               @unique
+  organization         CpOrganization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  plan                 CpSubscriptionPlan   @default(FREE)
+  status               CpSubscriptionStatus @default(ACTIVE)
+  paystackSubCode      String?
+  paystackCustomerCode String?
+  currentPeriodStart   DateTime?
+  currentPeriodEnd     DateTime?
+  cancelledAt          DateTime?
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+
+  @@index([organizationId])
+}
+
+model CpWorkspace {
+  id             String            @id @default(uuid())
+  organizationId String
+  organization   CpOrganization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name           String
+  slug           String            @unique
+  status         CpWorkspaceStatus @default(ACTIVE)
+  suspendedAt    DateTime?
+  archivedAt     DateTime?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  deletedAt      DateTime?
+
+  companyProfile CpCompanyProfile?
+  members        CpWorkspaceMember[]
+  leads          CpLead[]
+  clients        CpClient[]
+  appointments   CpAppointment[]
+  attendance     CpAttendance[]
+  conversations  CpConversation[]
+  invoices       CpInvoice[]
+  notifications  CpNotification[]
+  auditLogs      CpAuditLog[]
+  connectCards   CpConnectCard[]
+  invites        CpWorkspaceInvite[]
+  jobPosts       CpJobPost[]
+  savedTalent    CpSavedTalent[]
+
+  @@index([organizationId])
+  @@index([slug])
+}
+
+model CpWorkspaceMember {
+  id          String         @id @default(uuid())
+  workspaceId String
+  workspace   CpWorkspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  authUserId  String?                              // nullable — null until isce-auth account created
+  role        CpRole
+  status      CpMemberStatus @default(ACTIVE)
+  invitedBy   String?
+  joinedAt    DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  staffProfile CpStaffProfile?
+  clientRecord CpClient?
+  invitesSent  CpWorkspaceInvite[]
+
+  @@unique([workspaceId, authUserId])
+  @@index([authUserId])
+  @@index([workspaceId, role])
+}
+
+model CpCompanyProfile {
+  id                  String      @id @default(uuid())
+  workspaceId         String      @unique
+  workspace           CpWorkspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  name                String
+  logo                String?
+  coverImage          String?
+  description         String?
+  contactEmail        String?
+  contactPhone        String?
+  address             Json?
+  businessHours       Json?
+  branding            Json?
+  appointmentDefaults Json?
+  invoiceDefaults     Json?
+  notificationPrefs   Json?
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+}
+
+model CpWorkspaceInvite {
+  id          String            @id @default(uuid())
+  workspaceId String
+  workspace   CpWorkspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  email       String
+  role        CpRole
+  token       String            @unique
+  status      String            @default("PENDING")
+  invitedById String
+  invitedBy   CpWorkspaceMember @relation(fields: [invitedById], references: [id])
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([workspaceId])
+  @@index([email])
+  @@index([token])
+}
+
+model CpStaffProfile {
+  id          String            @id @default(uuid())
+  workspaceId String
+  memberId    String            @unique
+  member      CpWorkspaceMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  authUserId  String
+  name        String
+  email       String?
+  photo       String?
+  jobTitle    String?
+  department  String?
+  staffNumber String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  deletedAt   DateTime?
+
+  connectCard  CpConnectCard?
+  clients      CpClient[]      @relation("AssignedStaff")
+  appointments CpAppointment[]
+  attendance   CpAttendance[]
+  invoices     CpInvoice[]
+
+  @@index([workspaceId])
+  @@index([authUserId])
+}
+
+model CpConnectCard {
+  id          String          @id @default(uuid())
+  workspaceId String
+  workspace   CpWorkspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  staffId     String?         @unique
+  staff       CpStaffProfile? @relation(fields: [staffId], references: [id], onDelete: SetNull)
+  deviceId    String?
+  cardCode    String          @unique
+  status      CpCardStatus    @default(UNASSIGNED)
+  tapConfig   Json?
+  pairedBy    String?
+  pairedAt    DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([workspaceId])
+}
+
+model CpLead {
+  id              String       @id @default(uuid())
+  workspaceId     String
+  workspace       CpWorkspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  name            String
+  email           String?
+  phone           String?
+  source          CpLeadSource @default(MANUAL)
+  status          CpLeadStatus @default(NEW)
+  assignedStaffId String?
+  notes           String?
+  convertedAt     DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  deletedAt       DateTime?
+
+  appointments CpAppointment[]
+  client       CpClient?
+
+  @@index([workspaceId])
+  @@index([status])
+}
+
+model CpClient {
+  id              String             @id @default(uuid())
+  workspaceId     String
+  workspace       CpWorkspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  memberId        String?            @unique
+  member          CpWorkspaceMember? @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  leadId          String?            @unique
+  lead            CpLead?            @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  assignedStaffId String?
+  assignedStaff   CpStaffProfile?    @relation("AssignedStaff", fields: [assignedStaffId], references: [id], onDelete: SetNull)
+  authUserId      String?
+  name            String
+  email           String?
+  phone           String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  deletedAt       DateTime?
+
+  appointments  CpAppointment[]
+  invoices      CpInvoice[]
+  conversations CpConversation[] @relation("ClientConversation")
+
+  @@index([workspaceId])
+  @@index([assignedStaffId])
+  @@index([authUserId])
+}
+
+model CpAppointment {
+  id             String              @id @default(uuid())
+  workspaceId    String
+  workspace      CpWorkspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  type           CpAppointmentType   @default(PUBLIC)
+  leadId         String?
+  lead           CpLead?             @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  clientId       String?
+  client         CpClient?           @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  staffId        String?
+  staff          CpStaffProfile?     @relation(fields: [staffId], references: [id], onDelete: SetNull)
+  title          String
+  reason         String?
+  scheduledAt    DateTime
+  endsAt         DateTime?
+  status         CpAppointmentStatus @default(PENDING)
+  notes          String?
+  reminderSentAt DateTime?
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  deletedAt      DateTime?
+
+  @@index([workspaceId])
+  @@index([staffId])
+  @@index([scheduledAt])
+}
+
+model CpAttendance {
+  id             String         @id @default(uuid())
+  workspaceId    String
+  workspace      CpWorkspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  staffId        String
+  staff          CpStaffProfile @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  date           DateTime
+  checkIn        DateTime
+  checkOut       DateTime?
+  hoursWorked    Decimal?       @db.Decimal(5, 2)
+  isLate         Boolean        @default(false)
+  isOvertime     Boolean        @default(false)
+  locationData   Json?
+  notes          String?
+  overriddenBy   String?
+  overriddenAt   DateTime?
+  overrideReason String?
+  autoCheckedOut Boolean        @default(false)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@unique([staffId, date])
+  @@index([workspaceId])
+  @@index([staffId])
+  @@index([checkIn])
+}
+
+model CpConversation {
+  id            String             @id @default(uuid())
+  workspaceId   String
+  workspace     CpWorkspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  type          CpConversationType
+  name          String?
+  clientId      String?
+  client        CpClient?          @relation("ClientConversation", fields: [clientId], references: [id], onDelete: SetNull)
+  isAutoCreated Boolean            @default(false)
+  lastMessageAt DateTime?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  deletedAt     DateTime?
+
+  participants CpConversationParticipant[]
+  messages     CpMessage[]
+
+  @@index([workspaceId])
+}
+
+model CpConversationParticipant {
+  id             String            @id @default(uuid())
+  conversationId String
+  conversation   CpConversation    @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  authUserId     String
+  role           CpParticipantRole @default(MEMBER)
+  joinedAt       DateTime          @default(now())
+  leftAt         DateTime?
+  lastReadAt     DateTime?
+
+  @@unique([conversationId, authUserId])
+  @@index([authUserId])
+}
+
+model CpMessage {
+  id             String         @id @default(uuid())
+  conversationId String
+  conversation   CpConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String
+  senderRole     CpSenderRole
+  content        String
+  attachments    Json?
+  isSystem       Boolean        @default(false)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  deletedAt      DateTime?
+
+  @@index([conversationId])
+  @@index([createdAt])
+}
+
+model CpInvoice {
+  id               String          @id @default(uuid())
+  workspaceId      String
+  workspace        CpWorkspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  clientId         String
+  client           CpClient        @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  createdByStaffId String?
+  createdByStaff   CpStaffProfile? @relation(fields: [createdByStaffId], references: [id], onDelete: SetNull)
+  invoiceNumber    String          @unique
+  status           CpInvoiceStatus @default(DRAFT)
+  dueDate          DateTime?
+  notes            String?
+  totalAmount      Decimal         @db.Decimal(18, 4)
+  taxAmount        Decimal?        @db.Decimal(18, 4)
+  discountAmount   Decimal?        @db.Decimal(18, 4)
+  currency         String          @default("NGN")
+  sentAt           DateTime?
+  paidAt           DateTime?
+  overdueAt        DateTime?
+  paidVia          String?
+  externalRef      String?
+  pdfUrl           String?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  deletedAt        DateTime?
+
+  items CpInvoiceItem[]
+
+  @@index([workspaceId])
+  @@index([clientId])
+  @@index([status])
+}
+
+model CpInvoiceItem {
+  id          String    @id @default(uuid())
+  invoiceId   String
+  invoice     CpInvoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  description String
+  quantity    Decimal   @db.Decimal(10, 2)
+  unitPrice   Decimal   @db.Decimal(18, 4)
+  total       Decimal   @db.Decimal(18, 4)
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model CpNotification {
+  id              String             @id @default(uuid())
+  workspaceId     String?
+  workspace       CpWorkspace?       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  organizationId  String?
+  recipientAuthId String
+  title           String
+  message         String
+  type            CpNotificationType
+  isRead          Boolean            @default(false)
+  metadata        Json?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  @@index([recipientAuthId, isRead])
+}
+
+model CpAuditLog {
+  id             String          @id @default(uuid())
+  organizationId String?
+  workspaceId    String?
+  workspace      CpWorkspace?    @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  organization   CpOrganization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  actorId        String?
+  actorRole      String?
+  isSystemEvent  Boolean         @default(false)
+  eventType      String
+  targetEntity   String
+  targetEntityId String
+  action         String
+  before         Json?
+  after          Json?
+  metadata       Json?
+  ipAddress      String?
+  userAgent      String?
+  source         CpAuditSource   @default(API)
+  success        Boolean         @default(true)
+  errorMessage   String?
+  hash           String?
+  previousHash   String?
+  createdAt      DateTime        @default(now())
+
+  @@index([workspaceId])
+  @@index([actorId])
+  @@index([eventType])
+  @@index([createdAt])
+}
+
+// ─── Job Board Models ─────────────────────────────────────
+
+enum JobType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  FREELANCE
+  ONE_TIME_GIG
+  FIXED_TERM
+}
+
+enum WorkModel {
+  REMOTE
+  ON_SITE
+  HYBRID
+}
+
+model CpJobPost {
+  id             String      @id @default(uuid())
+  workspaceId    String
+  workspace      CpWorkspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  title          String
+  description    String
+  jobType        JobType
+  workModel      WorkModel
+  requiredSkills String[]
+  minBudget      Decimal?    @db.Decimal(18, 4)
+  maxBudget      Decimal?    @db.Decimal(18, 4)
+  isActive       Boolean     @default(true)
+  createdAt      DateTime    @default(now())
+
+  applications   CpJobApplication[]
+
+  @@index([workspaceId])
+}
+
+model CpJobApplication {
+  id              String          @id @default(uuid())
+  jobId           String
+  job             CpJobPost       @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  artisanId       String
+  artisan         Artisan         @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+  coverLetter     String?
+  resumeUrl       String?
+  status          String          @default("APPLIED") // APPLIED, REVIEWING, HIRED, REJECTED
+  createdAt       DateTime        @default(now())
+
+  @@index([jobId])
+  @@index([artisanId])
+}
+
+model CpSavedTalent {
+  id          String      @id @default(uuid())
+  workspaceId String
+  workspace   CpWorkspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  artisanId   String
+  artisan     Artisan     @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+  notes       String?
+  createdAt   DateTime    @default(now())
+
+  @@unique([workspaceId, artisanId])
+  @@index([workspaceId])
+  @@index([artisanId])
+}
+
+// ─── Health Monitoring ────────────────────────────────────
+
+enum HealthIncidentStatus {
+  OPEN
+  RESOLVED
+}
+
+enum HealthDependency {
+  POSTGRES
+}
+
+model HealthIncident {
+  id             String               @id @default(uuid())
+  dependency     HealthDependency
+  status         HealthIncidentStatus @default(OPEN)
+  startedAt      DateTime             @default(now())
+  resolvedAt     DateTime?
+  lastAlertAt    DateTime?            // used for 30-min re-reminder de-duplication
+  alertCount     Int                  @default(0)
+  notifiedEmails String[]             // snapshot of emails contacted at alert time
+  notes          String?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+
+  @@index([dependency, status])
+  @@index([status])
 }

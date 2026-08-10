@@ -4,10 +4,7 @@ import { ThreadGateway } from './thread.gateway';
 // ─── Event types emitted over WebSocket ─────────────────
 
 export type ThreadEventType =
-  | 'new_message'
-  | 'status_changed'
-  | 'payment_update'
-  | 'thread_closed';
+  'new_message' | 'status_changed' | 'payment_update' | 'thread_closed';
 
 export interface ThreadEvent {
   threadId: string;

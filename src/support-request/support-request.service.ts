@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
-import { CreateSupportRequestDto, UpdateSupportRequestDto } from './dto/support-request.dto';
+import {
+  CreateSupportRequestDto,
+  UpdateSupportRequestDto,
+} from './dto/support-request.dto';
 
 @Injectable()
 export class SupportRequestService {
@@ -57,15 +60,16 @@ export class SupportRequestService {
 
       const skip = (page - 1) * limit;
 
-      const supportRequests = await this.databaseService.supportRequest.findMany({
-        where: {
-          userId: profile.id,
-          deletedAt: null,
-        },
-        orderBy: { createdAt: 'desc' },
-        skip,
-        take: limit,
-      });
+      const supportRequests =
+        await this.databaseService.supportRequest.findMany({
+          where: {
+            userId: profile.id,
+            deletedAt: null,
+          },
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take: limit,
+        });
 
       const total = await this.databaseService.supportRequest.count({
         where: {
@@ -108,13 +112,14 @@ export class SupportRequestService {
         };
       }
 
-      const supportRequest = await this.databaseService.supportRequest.findFirst({
-        where: {
-          id: supportRequestId,
-          userId: profile.id,
-          deletedAt: null,
-        },
-      });
+      const supportRequest =
+        await this.databaseService.supportRequest.findFirst({
+          where: {
+            id: supportRequestId,
+            userId: profile.id,
+            deletedAt: null,
+          },
+        });
 
       if (!supportRequest) {
         return {
@@ -138,7 +143,11 @@ export class SupportRequestService {
     }
   }
 
-  async updateSupportRequest(user: any, supportRequestId: string, dto: UpdateSupportRequestDto) {
+  async updateSupportRequest(
+    user: any,
+    supportRequestId: string,
+    dto: UpdateSupportRequestDto,
+  ) {
     try {
       const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
@@ -151,13 +160,14 @@ export class SupportRequestService {
         };
       }
 
-      const existingRequest = await this.databaseService.supportRequest.findFirst({
-        where: {
-          id: supportRequestId,
-          userId: profile.id,
-          deletedAt: null,
-        },
-      });
+      const existingRequest =
+        await this.databaseService.supportRequest.findFirst({
+          where: {
+            id: supportRequestId,
+            userId: profile.id,
+            deletedAt: null,
+          },
+        });
 
       if (!existingRequest) {
         return {
@@ -202,13 +212,14 @@ export class SupportRequestService {
         };
       }
 
-      const supportRequest = await this.databaseService.supportRequest.findFirst({
-        where: {
-          id: supportRequestId,
-          userId: profile.id,
-          deletedAt: null,
-        },
-      });
+      const supportRequest =
+        await this.databaseService.supportRequest.findFirst({
+          where: {
+            id: supportRequestId,
+            userId: profile.id,
+            deletedAt: null,
+          },
+        });
 
       if (!supportRequest) {
         return {
@@ -237,7 +248,12 @@ export class SupportRequestService {
     }
   }
 
-  async searchSupportRequests(user: any, query: string, page: number = 1, limit: number = 10) {
+  async searchSupportRequests(
+    user: any,
+    query: string,
+    page: number = 1,
+    limit: number = 10,
+  ) {
     try {
       const profile = await this.databaseService.profile.findFirst({
         where: { userId: user.id },
@@ -252,29 +268,30 @@ export class SupportRequestService {
 
       const skip = (page - 1) * limit;
 
-      const supportRequests = await this.databaseService.supportRequest.findMany({
-        where: {
-          userId: profile.id,
-          deletedAt: null,
-          OR: [
-            {
-              subject: {
-                contains: query,
-                mode: 'insensitive',
+      const supportRequests =
+        await this.databaseService.supportRequest.findMany({
+          where: {
+            userId: profile.id,
+            deletedAt: null,
+            OR: [
+              {
+                subject: {
+                  contains: query,
+                  mode: 'insensitive',
+                },
               },
-            },
-            {
-              message: {
-                contains: query,
-                mode: 'insensitive',
+              {
+                message: {
+                  contains: query,
+                  mode: 'insensitive',
+                },
               },
-            },
-          ],
-        },
-        orderBy: { createdAt: 'desc' },
-        skip,
-        take: limit,
-      });
+            ],
+          },
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take: limit,
+        });
 
       const total = await this.databaseService.supportRequest.count({
         where: {
@@ -331,14 +348,15 @@ export class SupportRequestService {
         };
       }
 
-      const supportRequests = await this.databaseService.supportRequest.findMany({
-        where: {
-          userId: profile.id,
-          deletedAt: null,
-        },
-        orderBy: { createdAt: 'desc' },
-        take: limit,
-      });
+      const supportRequests =
+        await this.databaseService.supportRequest.findMany({
+          where: {
+            userId: profile.id,
+            deletedAt: null,
+          },
+          orderBy: { createdAt: 'desc' },
+          take: limit,
+        });
 
       return {
         success: true,
@@ -395,15 +413,17 @@ export class SupportRequestService {
         },
       });
 
-      const thisMonthRequests = await this.databaseService.supportRequest.count({
-        where: {
-          userId: profile.id,
-          deletedAt: null,
-          createdAt: {
-            gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+      const thisMonthRequests = await this.databaseService.supportRequest.count(
+        {
+          where: {
+            userId: profile.id,
+            deletedAt: null,
+            createdAt: {
+              gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+            },
           },
         },
-      });
+      );
 
       return {
         success: true,

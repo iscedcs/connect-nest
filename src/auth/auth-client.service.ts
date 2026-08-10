@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  HttpException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import axios from 'axios';
 
 export interface DeviceResponse {
@@ -21,8 +26,11 @@ export class AuthClientService {
   async getDeviceByDeviceId(deviceId: string): Promise<DeviceResponse> {
     try {
       console.log('DEVICE ID', deviceId);
+      // isce-auth's /device/product/:productId is JWT+ADMIN-only (II-72) —
+      // this internal-key-gated twin is what the public NFC tap flow uses.
       const response = await axios.get(
-        `${this.authUrl}/device/product/${deviceId}`,
+        `${this.authUrl}/internal/device/product/${deviceId}`,
+        { headers: { 'x-internal-key': this.internalKey ?? '' } },
       );
 
       console.log('DEVICE RESPONSE', response.data);
@@ -67,6 +75,80 @@ export class AuthClientService {
       return [];
     } catch {
       return [];
+    }
+  }
+
+  /** Proxy for ISCE Auth GET /referral/me */
+  async getReferralSummary(authHeader: string): Promise<any> {
+    try {
+      const response = await axios.get(`${this.authUrl}/referral/me`, {
+        headers: {
+          Authorization: authHeader,
+        },
+      });
+      return response.data;
+    } catch (error: any) {
+      if (error.response) {
+        throw new HttpException(
+          error.response.data,
+          error.response.status,
+        );
+      }
+      throw new InternalServerErrorException(
+        'Failed to fetch referral summary',
+      );
+    }
+  }
+
+  /** Proxy for ISCE Auth POST /referral/business/apply */
+  async applyForBusinessReferrer(authHeader: string): Promise<any> {
+    try {
+      const response = await axios.post(
+        `${this.authUrl}/referral/business/apply`,
+        {},
+        {
+          headers: {
+            Authorization: authHeader,
+          },
+        },
+      );
+      return response.data;
+    } catch (error: any) {
+      if (error.response) {
+        throw new HttpException(
+          error.response.data,
+          error.response.status,
+        );
+      }
+      throw new InternalServerErrorException(
+        'Failed to apply for business referrer',
+      );
+    }
+  }
+
+  /** Proxy for ISCE Auth POST /referral/cash-out */
+  async requestCashOut(authHeader: string): Promise<any> {
+    try {
+      const response = await axios.post(
+        `${this.authUrl}/referral/cash-out`,
+        {},
+        {
+          headers: {
+            Authorization: authHeader,
+          },
+        },
+      );
+      return response.data;
+    } catch (error: any) {
+      if (error.response) {
+        throw new HttpException(
+          error.response.data,
+          error.response.status,
+        );
+      }
+      throw new InternalServerErrorException(
+        'Failed to request cash out',
+      );
     }
   }
 }

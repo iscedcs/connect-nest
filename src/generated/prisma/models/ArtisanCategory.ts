@@ -220,7 +220,7 @@ export type ArtisanCategoryGroupByOutputType = {
   _max: ArtisanCategoryMaxAggregateOutputType | null
 }
 
-type GetArtisanCategoryGroupByPayload<T extends ArtisanCategoryGroupByArgs> = Prisma.PrismaPromise<
+export type GetArtisanCategoryGroupByPayload<T extends ArtisanCategoryGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ArtisanCategoryGroupByOutputType, T['by']> &
       {

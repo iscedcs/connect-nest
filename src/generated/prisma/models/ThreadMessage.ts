@@ -182,7 +182,7 @@ export type ThreadMessageGroupByOutputType = {
   _max: ThreadMessageMaxAggregateOutputType | null
 }
 
-type GetThreadMessageGroupByPayload<T extends ThreadMessageGroupByArgs> = Prisma.PrismaPromise<
+export type GetThreadMessageGroupByPayload<T extends ThreadMessageGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ThreadMessageGroupByOutputType, T['by']> &
       {

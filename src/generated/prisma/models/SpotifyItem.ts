@@ -227,7 +227,7 @@ export type SpotifyItemGroupByOutputType = {
   _max: SpotifyItemMaxAggregateOutputType | null
 }
 
-type GetSpotifyItemGroupByPayload<T extends SpotifyItemGroupByArgs> = Prisma.PrismaPromise<
+export type GetSpotifyItemGroupByPayload<T extends SpotifyItemGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<SpotifyItemGroupByOutputType, T['by']> &
       {

@@ -229,7 +229,7 @@ export type PlatformSettingGroupByOutputType = {
   _max: PlatformSettingMaxAggregateOutputType | null
 }
 
-type GetPlatformSettingGroupByPayload<T extends PlatformSettingGroupByArgs> = Prisma.PrismaPromise<
+export type GetPlatformSettingGroupByPayload<T extends PlatformSettingGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<PlatformSettingGroupByOutputType, T['by']> &
       {

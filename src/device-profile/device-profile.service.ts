@@ -209,7 +209,7 @@ export class DeviceProfileService {
       throw new BadRequestException('Device is already linked to this profile');
     }
 
-    let previousProfile = existing?.profile ?? null;
+    const previousProfile = existing?.profile ?? null;
 
     if (existing) {
       // Update existing link

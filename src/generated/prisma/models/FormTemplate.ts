@@ -168,7 +168,7 @@ export type FormTemplateGroupByOutputType = {
   _max: FormTemplateMaxAggregateOutputType | null
 }
 
-type GetFormTemplateGroupByPayload<T extends FormTemplateGroupByArgs> = Prisma.PrismaPromise<
+export type GetFormTemplateGroupByPayload<T extends FormTemplateGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<FormTemplateGroupByOutputType, T['by']> &
       {

@@ -221,7 +221,7 @@ export type BookingThreadGroupByOutputType = {
   _max: BookingThreadMaxAggregateOutputType | null
 }
 
-type GetBookingThreadGroupByPayload<T extends BookingThreadGroupByArgs> = Prisma.PrismaPromise<
+export type GetBookingThreadGroupByPayload<T extends BookingThreadGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<BookingThreadGroupByOutputType, T['by']> &
       {

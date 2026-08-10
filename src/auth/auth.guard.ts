@@ -9,7 +9,16 @@ import * as jwt from 'jsonwebtoken';
 import { Request } from 'express';
 import { IS_PUBLIC_ROUTE_KEY } from './decorators/public-route.decorator';
 
-interface JwtPayload {
+interface IscePermissions {
+  connect: boolean;
+  connect_plus: boolean;
+  store: boolean;
+  wallet: boolean;
+  event: boolean;
+  access: boolean;
+}
+
+export interface JwtPayload {
   id: string;
   email: string;
   phone?: string;
@@ -17,6 +26,7 @@ interface JwtPayload {
   lastName?: string;
   displayPicture?: string;
   userType?: string;
+  iscePermissions?: IscePermissions | null;
   iat?: number;
   exp?: number;
 }

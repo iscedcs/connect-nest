@@ -227,7 +227,7 @@ export type PortfolioItemGroupByOutputType = {
   _max: PortfolioItemMaxAggregateOutputType | null
 }
 
-type GetPortfolioItemGroupByPayload<T extends PortfolioItemGroupByArgs> = Prisma.PrismaPromise<
+export type GetPortfolioItemGroupByPayload<T extends PortfolioItemGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<PortfolioItemGroupByOutputType, T['by']> &
       {

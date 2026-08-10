@@ -227,7 +227,7 @@ export type SocialGroupByOutputType = {
   _max: SocialMaxAggregateOutputType | null
 }
 
-type GetSocialGroupByPayload<T extends SocialGroupByArgs> = Prisma.PrismaPromise<
+export type GetSocialGroupByPayload<T extends SocialGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<SocialGroupByOutputType, T['by']> &
       {

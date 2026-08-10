@@ -10,4 +10,3 @@ import { DatabaseModule } from 'src/database/database.module';
   exports: [AppointmentsService],
 })
 export class AppointmentsModule {}
-

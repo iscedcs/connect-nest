@@ -241,7 +241,7 @@ export type FileItemGroupByOutputType = {
   _max: FileItemMaxAggregateOutputType | null
 }
 
-type GetFileItemGroupByPayload<T extends FileItemGroupByArgs> = Prisma.PrismaPromise<
+export type GetFileItemGroupByPayload<T extends FileItemGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<FileItemGroupByOutputType, T['by']> &
       {

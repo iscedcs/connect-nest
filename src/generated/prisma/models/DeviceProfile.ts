@@ -165,7 +165,7 @@ export type DeviceProfileGroupByOutputType = {
   _max: DeviceProfileMaxAggregateOutputType | null
 }
 
-type GetDeviceProfileGroupByPayload<T extends DeviceProfileGroupByArgs> = Prisma.PrismaPromise<
+export type GetDeviceProfileGroupByPayload<T extends DeviceProfileGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<DeviceProfileGroupByOutputType, T['by']> &
       {

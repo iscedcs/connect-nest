@@ -1,18 +1,22 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
-import { 
-  CreateProfileContactDto, 
+import {
+  CreateProfileContactDto,
   UpdateProfileContactDto,
   BulkVisibilityDto,
   BulkDeleteDto,
-  BulkRestoreDto
+  BulkRestoreDto,
 } from './dto/profile-contact.dto';
 
 @Injectable()
 export class ProfileContactService {
   constructor(private readonly databaseService: DatabaseService) {}
 
-  async createProfileContact(user: any, profileId: string, dto: CreateProfileContactDto) {
+  async createProfileContact(
+    user: any,
+    profileId: string,
+    dto: CreateProfileContactDto,
+  ) {
     try {
       // Verify profile belongs to user
       const profile = await this.databaseService.profile.findFirst({
@@ -76,7 +80,7 @@ export class ProfileContactService {
     perPage: number = 25,
     includeDeleted: boolean = false,
     sort?: string,
-    order: 'asc' | 'desc' = 'asc'
+    order: 'asc' | 'desc' = 'asc',
   ) {
     try {
       // Verify profile belongs to user
@@ -96,7 +100,7 @@ export class ProfileContactService {
 
       const skip = (page - 1) * perPage;
       const where: any = { profileId };
-      
+
       if (!includeDeleted) {
         where.deletedAt = null;
       }
@@ -190,7 +194,7 @@ export class ProfileContactService {
     user: any,
     profileId: string,
     contactId: string,
-    dto: UpdateProfileContactDto
+    dto: UpdateProfileContactDto,
   ) {
     try {
       // Verify profile belongs to user
@@ -369,7 +373,12 @@ export class ProfileContactService {
     }
   }
 
-  async toggleVisibility(user: any, profileId: string, contactId: string, isVisible: boolean) {
+  async toggleVisibility(
+    user: any,
+    profileId: string,
+    contactId: string,
+    isVisible: boolean,
+  ) {
     try {
       // Verify profile belongs to user
       const profile = await this.databaseService.profile.findFirst({
@@ -443,7 +452,7 @@ export class ProfileContactService {
       }
 
       const where: any = { profileId, deletedAt: null };
-      
+
       if (dto.ids && dto.ids.length > 0) {
         where.id = { in: dto.ids };
       }
@@ -620,4 +629,3 @@ export class ProfileContactService {
     }
   }
 }
-

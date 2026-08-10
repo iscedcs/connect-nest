@@ -151,7 +151,7 @@ export type ArtisanCategoryMapGroupByOutputType = {
   _max: ArtisanCategoryMapMaxAggregateOutputType | null
 }
 
-type GetArtisanCategoryMapGroupByPayload<T extends ArtisanCategoryMapGroupByArgs> = Prisma.PrismaPromise<
+export type GetArtisanCategoryMapGroupByPayload<T extends ArtisanCategoryMapGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ArtisanCategoryMapGroupByOutputType, T['by']> &
       {

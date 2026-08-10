@@ -1,28 +1,25 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Delete, 
-  Body, 
-  Request, 
-  ValidationPipe, 
-  Param, 
-  Query, 
-  Patch
+import {
+  Controller,
+  Get,
+  Post,
+  Delete,
+  Body,
+  Request,
+  ValidationPipe,
+  Param,
+  Query,
+  Patch,
 } from '@nestjs/common';
 import { ContactService } from './contact.service';
-import { 
-  CreateContactDto, 
-  ContactResponseDto 
-} from './dto/contact.dto';
-import { 
-  ApiBearerAuth, 
-  ApiBody, 
-  ApiOperation, 
-  ApiResponse, 
-  ApiTags, 
-  ApiParam, 
-  ApiQuery 
+import { CreateContactDto, ContactResponseDto } from './dto/contact.dto';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiParam,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { PublicRoute } from 'src/auth/decorators/public-route.decorator';
 
@@ -33,11 +30,13 @@ export class ContactController {
 
   @PublicRoute()
   @Post('leave')
-  @ApiOperation({ summary: 'Leave contact information for a profile owner (Guest endpoint)' })
-  @ApiResponse({ 
-    status: 201, 
+  @ApiOperation({
+    summary: 'Leave contact information for a profile owner (Guest endpoint)',
+  })
+  @ApiResponse({
+    status: 201,
     description: 'Contact information submitted successfully',
-    type: ContactResponseDto
+    type: ContactResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Profile not found' })
   @ApiBody({ type: CreateContactDto })
@@ -53,11 +52,14 @@ export class ProfileContactController {
   constructor(private readonly contactService: ContactService) {}
 
   @Get('received')
-  @ApiOperation({ summary: 'Get all contacts received by current user (Profile owner endpoint)' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiOperation({
+    summary:
+      'Get all contacts received by current user (Profile owner endpoint)',
+  })
+  @ApiResponse({
+    status: 200,
     description: 'Received contacts retrieved successfully',
-    type: [ContactResponseDto]
+    type: [ContactResponseDto],
   })
   @ApiResponse({ status: 404, description: 'Profile not found' })
   @ApiParam({ name: 'profileId', description: 'Profile ID' })
@@ -66,27 +68,36 @@ export class ProfileContactController {
   getReceivedContacts(
     @Request() req,
     @Param('profileId') profileId: string,
-    @Query('page') page: number = 1, 
-    @Query('limit') limit: number = 10
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
   ) {
     const user = req.isce_auth;
     if (!user) {
       return { success: false, message: 'User not found' };
     }
-    return this.contactService.getReceivedContacts(user, profileId, page, limit);
+    return this.contactService.getReceivedContacts(
+      user,
+      profileId,
+      page,
+      limit,
+    );
   }
 
   @Get('one/:id')
   @ApiOperation({ summary: 'Get a specific received contact by ID' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Contact retrieved successfully',
-    type: ContactResponseDto
+    type: ContactResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Contact not found' })
   @ApiParam({ name: 'profileId', description: 'Profile ID' })
   @ApiParam({ name: 'id', description: 'Contact ID' })
-  getContact(@Request() req, @Param('profileId') profileId: string, @Param('id') id: string) {
+  getContact(
+    @Request() req,
+    @Param('profileId') profileId: string,
+    @Param('id') id: string,
+  ) {
     const user = req.isce_auth;
     if (!user) {
       return { success: false, message: 'User not found' };
@@ -100,7 +111,11 @@ export class ProfileContactController {
   @ApiResponse({ status: 404, description: 'Contact not found' })
   @ApiParam({ name: 'profileId', description: 'Profile ID' })
   @ApiParam({ name: 'id', description: 'Contact ID' })
-  deleteContact(@Request() req, @Param('profileId') profileId: string, @Param('id') id: string) {
+  deleteContact(
+    @Request() req,
+    @Param('profileId') profileId: string,
+    @Param('id') id: string,
+  ) {
     const user = req.isce_auth;
     if (!user) {
       return { success: false, message: 'User not found' };
@@ -110,10 +125,10 @@ export class ProfileContactController {
 
   @Get('search')
   @ApiOperation({ summary: 'Search received contacts by various fields' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Contacts retrieved successfully',
-    type: [ContactResponseDto]
+    type: [ContactResponseDto],
   })
   @ApiResponse({ status: 404, description: 'Profile not found' })
   @ApiParam({ name: 'profileId', description: 'Profile ID' })
@@ -125,26 +140,40 @@ export class ProfileContactController {
     @Param('profileId') profileId: string,
     @Query('q') searchTerm: string,
     @Query('page') page: number = 1,
-    @Query('limit') limit: number = 10
+    @Query('limit') limit: number = 10,
   ) {
     const user = req.isce_auth;
     if (!user) {
       return { success: false, message: 'User not found' };
     }
-    return this.contactService.searchReceivedContacts(user, profileId, searchTerm, page, limit);
+    return this.contactService.searchReceivedContacts(
+      user,
+      profileId,
+      searchTerm,
+      page,
+      limit,
+    );
   }
 
   @Get('recent')
   @ApiOperation({ summary: 'Get recent contacts received by current user' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Recent contacts retrieved successfully',
-    type: [ContactResponseDto]
+    type: [ContactResponseDto],
   })
   @ApiResponse({ status: 404, description: 'Profile not found' })
   @ApiParam({ name: 'profileId', description: 'Profile ID' })
-  @ApiQuery({ name: 'limit', required: false, description: 'Number of recent contacts to retrieve' })
-  getRecentContacts(@Request() req, @Param('profileId') profileId: string, @Query('limit') limit: number = 5) {
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Number of recent contacts to retrieve',
+  })
+  getRecentContacts(
+    @Request() req,
+    @Param('profileId') profileId: string,
+    @Query('limit') limit: number = 5,
+  ) {
     const user = req.isce_auth;
     if (!user) {
       return { success: false, message: 'User not found' };
@@ -154,9 +183,9 @@ export class ProfileContactController {
 
   @Get('stats')
   @ApiOperation({ summary: 'Get contact statistics for current user' })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Contact statistics retrieved successfully'
+  @ApiResponse({
+    status: 200,
+    description: 'Contact statistics retrieved successfully',
   })
   @ApiResponse({ status: 404, description: 'Profile not found' })
   @ApiParam({ name: 'profileId', description: 'Profile ID' })

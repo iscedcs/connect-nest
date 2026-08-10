@@ -61,7 +61,12 @@ export class NotificationService {
     if (!profile) {
       return { success: false, message: 'Profile not found for userId' };
     }
-    return this.createNotification({ profileId: profile.id, title, message, type });
+    return this.createNotification({
+      profileId: profile.id,
+      title,
+      message,
+      type,
+    });
   }
 
   async getNotifications(user: any, page: number = 1, limit: number = 10) {

@@ -1,3 +1,4 @@
+import './instrument';
 import 'dotenv/config';
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
@@ -5,11 +6,17 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
+import { SentryExceptionFilter } from './common/filters/sentry-exception.filter';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  if (!process.env.AUTH_INVITE_WEBHOOK_SECRET) {
+    throw new Error('AUTH_INVITE_WEBHOOK_SECRET is required');
+  }
+  
+  const app = await NestFactory.create(AppModule, { rawBody: true });
 
   app.use(helmet());
+  app.useGlobalFilters(new SentryExceptionFilter());
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -28,7 +35,12 @@ async function bootstrap() {
   app.enableCors({
     origin: allowedOrigins,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'x-workspace-id',
+      'x-webhook-signature',
+    ],
     credentials: true,
   });
 

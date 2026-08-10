@@ -193,7 +193,7 @@ export type MeetingLinkGroupByOutputType = {
   _max: MeetingLinkMaxAggregateOutputType | null
 }
 
-type GetMeetingLinkGroupByPayload<T extends MeetingLinkGroupByArgs> = Prisma.PrismaPromise<
+export type GetMeetingLinkGroupByPayload<T extends MeetingLinkGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<MeetingLinkGroupByOutputType, T['by']> &
       {

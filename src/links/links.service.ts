@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
-import { 
-  CreateLinkDto, 
+import {
+  CreateLinkDto,
   UpdateLinkDto,
   BulkVisibilityDto,
   BulkDeleteDto,
   BulkRestoreDto,
-  ReorderLinksDto
+  ReorderLinksDto,
 } from './dto/link.dto';
 
 @Injectable()
@@ -64,7 +64,7 @@ export class LinksService {
     perPage: number = 25,
     includeDeleted: boolean = false,
     sort?: string,
-    order: 'asc' | 'desc' = 'asc'
+    order: 'asc' | 'desc' = 'asc',
   ) {
     try {
       // Verify profile belongs to user
@@ -84,7 +84,7 @@ export class LinksService {
 
       const skip = (page - 1) * perPage;
       const where: any = { profileId };
-      
+
       if (!includeDeleted) {
         where.deletedAt = null;
       }
@@ -179,7 +179,7 @@ export class LinksService {
     user: any,
     profileId: string,
     linkId: string,
-    dto: UpdateLinkDto
+    dto: UpdateLinkDto,
   ) {
     try {
       // Verify profile belongs to user
@@ -344,7 +344,12 @@ export class LinksService {
     }
   }
 
-  async toggleVisibility(user: any, profileId: string, linkId: string, isVisible: boolean) {
+  async toggleVisibility(
+    user: any,
+    profileId: string,
+    linkId: string,
+    isVisible: boolean,
+  ) {
     try {
       // Verify profile belongs to user
       const profile = await this.databaseService.profile.findFirst({
@@ -418,7 +423,7 @@ export class LinksService {
       }
 
       const where: any = { profileId, deletedAt: null };
-      
+
       if (dto.ids && dto.ids.length > 0) {
         where.id = { in: dto.ids };
       }
@@ -572,4 +577,3 @@ export class LinksService {
     }
   }
 }
-

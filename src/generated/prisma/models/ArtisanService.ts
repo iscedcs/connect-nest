@@ -249,7 +249,7 @@ export type ArtisanServiceGroupByOutputType = {
   _max: ArtisanServiceMaxAggregateOutputType | null
 }
 
-type GetArtisanServiceGroupByPayload<T extends ArtisanServiceGroupByArgs> = Prisma.PrismaPromise<
+export type GetArtisanServiceGroupByPayload<T extends ArtisanServiceGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ArtisanServiceGroupByOutputType, T['by']> &
       {

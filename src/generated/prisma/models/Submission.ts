@@ -168,7 +168,7 @@ export type SubmissionGroupByOutputType = {
   _max: SubmissionMaxAggregateOutputType | null
 }
 
-type GetSubmissionGroupByPayload<T extends SubmissionGroupByArgs> = Prisma.PrismaPromise<
+export type GetSubmissionGroupByPayload<T extends SubmissionGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<SubmissionGroupByOutputType, T['by']> &
       {

@@ -172,7 +172,7 @@ export type SupportRequestGroupByOutputType = {
   _max: SupportRequestMaxAggregateOutputType | null
 }
 
-type GetSupportRequestGroupByPayload<T extends SupportRequestGroupByArgs> = Prisma.PrismaPromise<
+export type GetSupportRequestGroupByPayload<T extends SupportRequestGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<SupportRequestGroupByOutputType, T['by']> &
       {

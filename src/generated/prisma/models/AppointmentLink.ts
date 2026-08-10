@@ -193,7 +193,7 @@ export type AppointmentLinkGroupByOutputType = {
   _max: AppointmentLinkMaxAggregateOutputType | null
 }
 
-type GetAppointmentLinkGroupByPayload<T extends AppointmentLinkGroupByArgs> = Prisma.PrismaPromise<
+export type GetAppointmentLinkGroupByPayload<T extends AppointmentLinkGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<AppointmentLinkGroupByOutputType, T['by']> &
       {

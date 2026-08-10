@@ -31,6 +31,8 @@ export type CardInteractionMinAggregateOutputType = {
   method: $Enums.ScanType | null
   deviceType: string | null
   referrer: string | null
+  workspaceId: string | null
+  workspaceMemberId: string | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -43,6 +45,8 @@ export type CardInteractionMaxAggregateOutputType = {
   method: $Enums.ScanType | null
   deviceType: string | null
   referrer: string | null
+  workspaceId: string | null
+  workspaceMemberId: string | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -55,6 +59,8 @@ export type CardInteractionCountAggregateOutputType = {
   method: number
   deviceType: number
   referrer: number
+  workspaceId: number
+  workspaceMemberId: number
   createdAt: number
   updatedAt: number
   deletedAt: number
@@ -69,6 +75,8 @@ export type CardInteractionMinAggregateInputType = {
   method?: true
   deviceType?: true
   referrer?: true
+  workspaceId?: true
+  workspaceMemberId?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -81,6 +89,8 @@ export type CardInteractionMaxAggregateInputType = {
   method?: true
   deviceType?: true
   referrer?: true
+  workspaceId?: true
+  workspaceMemberId?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -93,6 +103,8 @@ export type CardInteractionCountAggregateInputType = {
   method?: true
   deviceType?: true
   referrer?: true
+  workspaceId?: true
+  workspaceMemberId?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -178,6 +190,8 @@ export type CardInteractionGroupByOutputType = {
   method: $Enums.ScanType
   deviceType: string | null
   referrer: string | null
+  workspaceId: string | null
+  workspaceMemberId: string | null
   createdAt: Date
   updatedAt: Date
   deletedAt: Date | null
@@ -186,7 +200,7 @@ export type CardInteractionGroupByOutputType = {
   _max: CardInteractionMaxAggregateOutputType | null
 }
 
-type GetCardInteractionGroupByPayload<T extends CardInteractionGroupByArgs> = Prisma.PrismaPromise<
+export type GetCardInteractionGroupByPayload<T extends CardInteractionGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<CardInteractionGroupByOutputType, T['by']> &
       {
@@ -211,6 +225,8 @@ export type CardInteractionWhereInput = {
   method?: Prisma.EnumScanTypeFilter<"CardInteraction"> | $Enums.ScanType
   deviceType?: Prisma.StringNullableFilter<"CardInteraction"> | string | null
   referrer?: Prisma.StringNullableFilter<"CardInteraction"> | string | null
+  workspaceId?: Prisma.StringNullableFilter<"CardInteraction"> | string | null
+  workspaceMemberId?: Prisma.StringNullableFilter<"CardInteraction"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CardInteraction"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CardInteraction"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"CardInteraction"> | Date | string | null
@@ -224,6 +240,8 @@ export type CardInteractionOrderByWithRelationInput = {
   method?: Prisma.SortOrder
   deviceType?: Prisma.SortOrderInput | Prisma.SortOrder
   referrer?: Prisma.SortOrderInput | Prisma.SortOrder
+  workspaceId?: Prisma.SortOrderInput | Prisma.SortOrder
+  workspaceMemberId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -240,6 +258,8 @@ export type CardInteractionWhereUniqueInput = Prisma.AtLeast<{
   method?: Prisma.EnumScanTypeFilter<"CardInteraction"> | $Enums.ScanType
   deviceType?: Prisma.StringNullableFilter<"CardInteraction"> | string | null
   referrer?: Prisma.StringNullableFilter<"CardInteraction"> | string | null
+  workspaceId?: Prisma.StringNullableFilter<"CardInteraction"> | string | null
+  workspaceMemberId?: Prisma.StringNullableFilter<"CardInteraction"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CardInteraction"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CardInteraction"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"CardInteraction"> | Date | string | null
@@ -253,6 +273,8 @@ export type CardInteractionOrderByWithAggregationInput = {
   method?: Prisma.SortOrder
   deviceType?: Prisma.SortOrderInput | Prisma.SortOrder
   referrer?: Prisma.SortOrderInput | Prisma.SortOrder
+  workspaceId?: Prisma.SortOrderInput | Prisma.SortOrder
+  workspaceMemberId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -271,6 +293,8 @@ export type CardInteractionScalarWhereWithAggregatesInput = {
   method?: Prisma.EnumScanTypeWithAggregatesFilter<"CardInteraction"> | $Enums.ScanType
   deviceType?: Prisma.StringNullableWithAggregatesFilter<"CardInteraction"> | string | null
   referrer?: Prisma.StringNullableWithAggregatesFilter<"CardInteraction"> | string | null
+  workspaceId?: Prisma.StringNullableWithAggregatesFilter<"CardInteraction"> | string | null
+  workspaceMemberId?: Prisma.StringNullableWithAggregatesFilter<"CardInteraction"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"CardInteraction"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"CardInteraction"> | Date | string
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"CardInteraction"> | Date | string | null
@@ -282,6 +306,8 @@ export type CardInteractionCreateInput = {
   method: $Enums.ScanType
   deviceType?: string | null
   referrer?: string | null
+  workspaceId?: string | null
+  workspaceMemberId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -295,6 +321,8 @@ export type CardInteractionUncheckedCreateInput = {
   method: $Enums.ScanType
   deviceType?: string | null
   referrer?: string | null
+  workspaceId?: string | null
+  workspaceMemberId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -306,6 +334,8 @@ export type CardInteractionUpdateInput = {
   method?: Prisma.EnumScanTypeFieldUpdateOperationsInput | $Enums.ScanType
   deviceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referrer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workspaceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workspaceMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -319,6 +349,8 @@ export type CardInteractionUncheckedUpdateInput = {
   method?: Prisma.EnumScanTypeFieldUpdateOperationsInput | $Enums.ScanType
   deviceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referrer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workspaceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workspaceMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -331,6 +363,8 @@ export type CardInteractionCreateManyInput = {
   method: $Enums.ScanType
   deviceType?: string | null
   referrer?: string | null
+  workspaceId?: string | null
+  workspaceMemberId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -342,6 +376,8 @@ export type CardInteractionUpdateManyMutationInput = {
   method?: Prisma.EnumScanTypeFieldUpdateOperationsInput | $Enums.ScanType
   deviceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referrer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workspaceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workspaceMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -354,6 +390,8 @@ export type CardInteractionUncheckedUpdateManyInput = {
   method?: Prisma.EnumScanTypeFieldUpdateOperationsInput | $Enums.ScanType
   deviceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referrer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workspaceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workspaceMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -376,6 +414,8 @@ export type CardInteractionCountOrderByAggregateInput = {
   method?: Prisma.SortOrder
   deviceType?: Prisma.SortOrder
   referrer?: Prisma.SortOrder
+  workspaceId?: Prisma.SortOrder
+  workspaceMemberId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -388,6 +428,8 @@ export type CardInteractionMaxOrderByAggregateInput = {
   method?: Prisma.SortOrder
   deviceType?: Prisma.SortOrder
   referrer?: Prisma.SortOrder
+  workspaceId?: Prisma.SortOrder
+  workspaceMemberId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -400,6 +442,8 @@ export type CardInteractionMinOrderByAggregateInput = {
   method?: Prisma.SortOrder
   deviceType?: Prisma.SortOrder
   referrer?: Prisma.SortOrder
+  workspaceId?: Prisma.SortOrder
+  workspaceMemberId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -457,6 +501,8 @@ export type CardInteractionCreateWithoutUserInput = {
   method: $Enums.ScanType
   deviceType?: string | null
   referrer?: string | null
+  workspaceId?: string | null
+  workspaceMemberId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -468,6 +514,8 @@ export type CardInteractionUncheckedCreateWithoutUserInput = {
   method: $Enums.ScanType
   deviceType?: string | null
   referrer?: string | null
+  workspaceId?: string | null
+  workspaceMemberId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -509,6 +557,8 @@ export type CardInteractionScalarWhereInput = {
   method?: Prisma.EnumScanTypeFilter<"CardInteraction"> | $Enums.ScanType
   deviceType?: Prisma.StringNullableFilter<"CardInteraction"> | string | null
   referrer?: Prisma.StringNullableFilter<"CardInteraction"> | string | null
+  workspaceId?: Prisma.StringNullableFilter<"CardInteraction"> | string | null
+  workspaceMemberId?: Prisma.StringNullableFilter<"CardInteraction"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CardInteraction"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CardInteraction"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"CardInteraction"> | Date | string | null
@@ -520,6 +570,8 @@ export type CardInteractionCreateManyUserInput = {
   method: $Enums.ScanType
   deviceType?: string | null
   referrer?: string | null
+  workspaceId?: string | null
+  workspaceMemberId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -531,6 +583,8 @@ export type CardInteractionUpdateWithoutUserInput = {
   method?: Prisma.EnumScanTypeFieldUpdateOperationsInput | $Enums.ScanType
   deviceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referrer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workspaceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workspaceMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -542,6 +596,8 @@ export type CardInteractionUncheckedUpdateWithoutUserInput = {
   method?: Prisma.EnumScanTypeFieldUpdateOperationsInput | $Enums.ScanType
   deviceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referrer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workspaceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workspaceMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -553,6 +609,8 @@ export type CardInteractionUncheckedUpdateManyWithoutUserInput = {
   method?: Prisma.EnumScanTypeFieldUpdateOperationsInput | $Enums.ScanType
   deviceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referrer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workspaceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workspaceMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -567,6 +625,8 @@ export type CardInteractionSelect<ExtArgs extends runtime.Types.Extensions.Inter
   method?: boolean
   deviceType?: boolean
   referrer?: boolean
+  workspaceId?: boolean
+  workspaceMemberId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -580,6 +640,8 @@ export type CardInteractionSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   method?: boolean
   deviceType?: boolean
   referrer?: boolean
+  workspaceId?: boolean
+  workspaceMemberId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -593,6 +655,8 @@ export type CardInteractionSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   method?: boolean
   deviceType?: boolean
   referrer?: boolean
+  workspaceId?: boolean
+  workspaceMemberId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -606,12 +670,14 @@ export type CardInteractionSelectScalar = {
   method?: boolean
   deviceType?: boolean
   referrer?: boolean
+  workspaceId?: boolean
+  workspaceMemberId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
 }
 
-export type CardInteractionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "deviceId" | "method" | "deviceType" | "referrer" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["cardInteraction"]>
+export type CardInteractionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "deviceId" | "method" | "deviceType" | "referrer" | "workspaceId" | "workspaceMemberId" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["cardInteraction"]>
 export type CardInteractionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.ProfileDefaultArgs<ExtArgs>
 }
@@ -634,6 +700,8 @@ export type $CardInteractionPayload<ExtArgs extends runtime.Types.Extensions.Int
     method: $Enums.ScanType
     deviceType: string | null
     referrer: string | null
+    workspaceId: string | null
+    workspaceMemberId: string | null
     createdAt: Date
     updatedAt: Date
     deletedAt: Date | null
@@ -1067,6 +1135,8 @@ export interface CardInteractionFieldRefs {
   readonly method: Prisma.FieldRef<"CardInteraction", 'ScanType'>
   readonly deviceType: Prisma.FieldRef<"CardInteraction", 'String'>
   readonly referrer: Prisma.FieldRef<"CardInteraction", 'String'>
+  readonly workspaceId: Prisma.FieldRef<"CardInteraction", 'String'>
+  readonly workspaceMemberId: Prisma.FieldRef<"CardInteraction", 'String'>
   readonly createdAt: Prisma.FieldRef<"CardInteraction", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"CardInteraction", 'DateTime'>
   readonly deletedAt: Prisma.FieldRef<"CardInteraction", 'DateTime'>

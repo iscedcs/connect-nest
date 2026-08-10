@@ -1,6 +1,6 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import * as admin from 'firebase-admin';
-import { AuthClientService } from 'src/auth/auth-client.service';
+import { AuthClientService } from '../auth/auth-client.service';
 
 @Injectable()
 export class PushService implements OnModuleInit {

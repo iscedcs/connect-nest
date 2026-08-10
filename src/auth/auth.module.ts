@@ -16,7 +16,16 @@ import { jwtSecret } from 'utils/constants';
     PassportModule,
   ],
   controllers: [],
-  providers: [JwtService, JwtStrategy, AuthClientService, WalletClientService],
-  exports: [JwtService, AuthClientService, WalletClientService],
+  providers: [
+    JwtService,
+    JwtStrategy,
+    AuthClientService,
+    WalletClientService,
+  ],
+  exports: [
+    JwtService,
+    AuthClientService,
+    WalletClientService,
+  ],
 })
 export class AuthModule {}
