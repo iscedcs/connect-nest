@@ -1001,7 +1001,11 @@ model CpSubscription {
   organizationId       String               @unique
   organization         CpOrganization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   plan                 CpSubscriptionPlan   @default(FREE)
-  status               CpSubscriptionStatus @default(ACTIVE)
+  status               CpSubscriptionStatus @default(TRIALING)
+  trialStartsAt        DateTime?            // Set on creation; null for manual upgrades
+  trialEndsAt          DateTime?            // trialStartsAt + 6 months
+  trialUsed            Boolean              @default(false)
+  targetPlan           CpSubscriptionPlan?  // Plan to activate when trial converts
   paystackSubCode      String?
   paystackCustomerCode String?
   currentPeriodStart   DateTime?
@@ -1011,6 +1015,8 @@ model CpSubscription {
   updatedAt            DateTime             @updatedAt
 
   @@index([organizationId])
+  @@index([status])
+  @@index([trialEndsAt])
 }
 
 model CpWorkspace {

@@ -50,11 +50,17 @@ export class CpSubscriptionsService {
     });
     if (existing) return existing;
 
+    const now = new Date();
+    const trialEndsAt = this.addMonths(now, 6);
+
     const sub = await this.db.cpSubscription.create({
       data: {
         organizationId: ctx.organizationId,
         plan: CpSubscriptionPlan.FREE,
-        status: CpSubscriptionStatus.ACTIVE,
+        status: CpSubscriptionStatus.TRIALING,
+        trialStartsAt: now,
+        trialEndsAt,
+        trialUsed: true,
       },
     });
 
@@ -68,6 +74,12 @@ export class CpSubscriptionsService {
     });
 
     return sub;
+  }
+
+  private addMonths(date: Date, months: number): Date {
+    const result = new Date(date);
+    result.setMonth(result.getMonth() + months);
+    return result;
   }
 
   async upgrade(ctx: CpRequestContext, dto: UpgradePlanDto) {
@@ -101,10 +113,67 @@ export class CpSubscriptionsService {
     resource: 'workspace' | 'staff' | 'client',
     workspaceId?: string,
   ): Promise<{ allowed: boolean; limit: number; current: number }> {
-    // Subscription gating is built but not enforced yet — always allow
-    void organizationId;
-    void resource;
-    void workspaceId;
-    return { allowed: true, limit: -1, current: 0 };
+    const sub = await this.db.cpSubscription.findUnique({
+      where: { organizationId },
+    });
+
+    const plan: CpSubscriptionPlan = sub?.plan ?? CpSubscriptionPlan.FREE;
+    const limits = PLAN_LIMITS[plan];
+    let limitValue: number;
+    let current: number;
+
+    switch (resource) {
+      case 'workspace': {
+        limitValue = limits.workspaces;
+        current = await this.db.cpWorkspace.count({
+          where: { organizationId, deletedAt: null },
+        });
+        break;
+      }
+
+      case 'staff': {
+        if (!workspaceId) {
+          return { allowed: true, limit: -1, current: 0 };
+        }
+        limitValue = limits.staffPerWorkspace;
+        current = await this.db.cpWorkspaceMember.count({
+          where: {
+            workspaceId,
+            role: { in: ['STAFF', 'WORKSPACE_ADMIN'] as any },
+            status: 'ACTIVE',
+          },
+        });
+        break;
+      }
+
+      case 'client': {
+        if (!workspaceId) {
+          return { allowed: true, limit: -1, current: 0 };
+        }
+        limitValue = limits.clientsPerWorkspace;
+        // Count both active leads + clients (non-deleted) combined
+        const [leadCount, clientCount] = await Promise.all([
+          this.db.cpLead.count({
+            where: { workspaceId, deletedAt: null },
+          }),
+          this.db.cpClient.count({
+            where: { workspaceId, deletedAt: null },
+          }),
+        ]);
+        current = leadCount + clientCount;
+        break;
+      }
+    }
+
+    // -1 means unlimited
+    if (limitValue === -1) {
+      return { allowed: true, limit: -1, current };
+    }
+
+    return {
+      allowed: current < limitValue,
+      limit: limitValue,
+      current,
+    };
   }
 }

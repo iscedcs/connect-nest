@@ -42,7 +42,11 @@ export const NotificationType = {
   THREAD_PROPOSAL_DECLINED: 'THREAD_PROPOSAL_DECLINED',
   PAYMENT_SENT_CONFIRMED: 'PAYMENT_SENT_CONFIRMED',
   PAYMENT_RECEIVED_CONFIRMED: 'PAYMENT_RECEIVED_CONFIRMED',
-  PAYMENT_DISPUTED: 'PAYMENT_DISPUTED'
+  PAYMENT_DISPUTED: 'PAYMENT_DISPUTED',
+  SUBSCRIPTION_TRIAL_EXPIRED: 'SUBSCRIPTION_TRIAL_EXPIRED',
+  SUBSCRIPTION_ACTIVATED: 'SUBSCRIPTION_ACTIVATED',
+  SUBSCRIPTION_CANCELLED: 'SUBSCRIPTION_CANCELLED',
+  SUBSCRIPTION_PAST_DUE: 'SUBSCRIPTION_PAST_DUE'
 } as const
 
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
@@ -163,6 +167,26 @@ export const PaymentDisputedBy = {
 } as const
 
 export type PaymentDisputedBy = (typeof PaymentDisputedBy)[keyof typeof PaymentDisputedBy]
+
+
+export const SubscriptionStatus = {
+  TRIALING: 'TRIALING',
+  ACTIVE: 'ACTIVE',
+  PAST_DUE: 'PAST_DUE',
+  CANCELLED: 'CANCELLED',
+  EXPIRED: 'EXPIRED'
+} as const
+
+export type SubscriptionStatus = (typeof SubscriptionStatus)[keyof typeof SubscriptionStatus]
+
+
+export const PlanTier = {
+  FREE: 'FREE',
+  PRO_LITE: 'PRO_LITE',
+  PRO_PLUS: 'PRO_PLUS'
+} as const
+
+export type PlanTier = (typeof PlanTier)[keyof typeof PlanTier]
 
 
 export const CpOrgStatus = {

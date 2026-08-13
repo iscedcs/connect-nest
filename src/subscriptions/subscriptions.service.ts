@@ -29,7 +29,7 @@ export class SubscriptionsService {
   /**
    * Create a subscription for a user.
    * - FREE plan → status ACTIVE, no trial
-   * - PRO_LITE / PRO_PLUS → status TRIALING, 3-month trial, trialUsed = true
+   * - PRO_LITE / PRO_PLUS → status TRIALING, 6-month trial, trialUsed = true
    *
    * @param skipConflictCheck Set to true when auto-creating from ProfileService
    *   to silently skip if a subscription already exists.
@@ -62,7 +62,7 @@ export class SubscriptionsService {
         planId: plan.id,
         status: isFree ? SubscriptionStatus.ACTIVE : SubscriptionStatus.TRIALING,
         trialStartDate: isFree ? null : now,
-        trialEndDate: isFree ? null : this.addMonths(now, 3),
+        trialEndDate: isFree ? null : this.addMonths(now, 6),
         trialUsed: !isFree,
       },
     });
@@ -245,6 +245,27 @@ export class SubscriptionsService {
   }
 
   // ─── Helpers ─────────────────────────────────────────────────────────────
+
+  /**
+   * System Admin: dynamically update a plan's price or metadata.
+   * Used by PATCH /subscriptions/admin/plans/:planKey
+   */
+  async updatePlanPrice(
+    planKey: PlanTier,
+    dto: { priceMonthly?: number; name?: string; isActive?: boolean },
+  ): Promise<Plan> {
+    const plan = await this.db.plan.findUnique({ where: { key: planKey } });
+    if (!plan) throw new NotFoundException(`Plan not found: ${planKey}`);
+
+    return this.db.plan.update({
+      where: { key: planKey },
+      data: {
+        ...(dto.priceMonthly !== undefined && { priceMonthly: dto.priceMonthly }),
+        ...(dto.name !== undefined && { name: dto.name }),
+        ...(dto.isActive !== undefined && { isActive: dto.isActive }),
+      },
+    });
+  }
 
   async getActivePlans(): Promise<Plan[]> {
     return this.db.plan.findMany({

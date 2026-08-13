@@ -213,7 +213,7 @@ export type PaymentRecordGroupByOutputType = {
   _max: PaymentRecordMaxAggregateOutputType | null
 }
 
-type GetPaymentRecordGroupByPayload<T extends PaymentRecordGroupByArgs> = Prisma.PrismaPromise<
+export type GetPaymentRecordGroupByPayload<T extends PaymentRecordGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<PaymentRecordGroupByOutputType, T['by']> &
       {

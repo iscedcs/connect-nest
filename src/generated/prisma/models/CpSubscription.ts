@@ -29,6 +29,10 @@ export type CpSubscriptionMinAggregateOutputType = {
   organizationId: string | null
   plan: $Enums.CpSubscriptionPlan | null
   status: $Enums.CpSubscriptionStatus | null
+  trialStartsAt: Date | null
+  trialEndsAt: Date | null
+  trialUsed: boolean | null
+  targetPlan: $Enums.CpSubscriptionPlan | null
   paystackSubCode: string | null
   paystackCustomerCode: string | null
   currentPeriodStart: Date | null
@@ -43,6 +47,10 @@ export type CpSubscriptionMaxAggregateOutputType = {
   organizationId: string | null
   plan: $Enums.CpSubscriptionPlan | null
   status: $Enums.CpSubscriptionStatus | null
+  trialStartsAt: Date | null
+  trialEndsAt: Date | null
+  trialUsed: boolean | null
+  targetPlan: $Enums.CpSubscriptionPlan | null
   paystackSubCode: string | null
   paystackCustomerCode: string | null
   currentPeriodStart: Date | null
@@ -57,6 +65,10 @@ export type CpSubscriptionCountAggregateOutputType = {
   organizationId: number
   plan: number
   status: number
+  trialStartsAt: number
+  trialEndsAt: number
+  trialUsed: number
+  targetPlan: number
   paystackSubCode: number
   paystackCustomerCode: number
   currentPeriodStart: number
@@ -73,6 +85,10 @@ export type CpSubscriptionMinAggregateInputType = {
   organizationId?: true
   plan?: true
   status?: true
+  trialStartsAt?: true
+  trialEndsAt?: true
+  trialUsed?: true
+  targetPlan?: true
   paystackSubCode?: true
   paystackCustomerCode?: true
   currentPeriodStart?: true
@@ -87,6 +103,10 @@ export type CpSubscriptionMaxAggregateInputType = {
   organizationId?: true
   plan?: true
   status?: true
+  trialStartsAt?: true
+  trialEndsAt?: true
+  trialUsed?: true
+  targetPlan?: true
   paystackSubCode?: true
   paystackCustomerCode?: true
   currentPeriodStart?: true
@@ -101,6 +121,10 @@ export type CpSubscriptionCountAggregateInputType = {
   organizationId?: true
   plan?: true
   status?: true
+  trialStartsAt?: true
+  trialEndsAt?: true
+  trialUsed?: true
+  targetPlan?: true
   paystackSubCode?: true
   paystackCustomerCode?: true
   currentPeriodStart?: true
@@ -188,6 +212,10 @@ export type CpSubscriptionGroupByOutputType = {
   organizationId: string
   plan: $Enums.CpSubscriptionPlan
   status: $Enums.CpSubscriptionStatus
+  trialStartsAt: Date | null
+  trialEndsAt: Date | null
+  trialUsed: boolean
+  targetPlan: $Enums.CpSubscriptionPlan | null
   paystackSubCode: string | null
   paystackCustomerCode: string | null
   currentPeriodStart: Date | null
@@ -223,6 +251,10 @@ export type CpSubscriptionWhereInput = {
   organizationId?: Prisma.StringFilter<"CpSubscription"> | string
   plan?: Prisma.EnumCpSubscriptionPlanFilter<"CpSubscription"> | $Enums.CpSubscriptionPlan
   status?: Prisma.EnumCpSubscriptionStatusFilter<"CpSubscription"> | $Enums.CpSubscriptionStatus
+  trialStartsAt?: Prisma.DateTimeNullableFilter<"CpSubscription"> | Date | string | null
+  trialEndsAt?: Prisma.DateTimeNullableFilter<"CpSubscription"> | Date | string | null
+  trialUsed?: Prisma.BoolFilter<"CpSubscription"> | boolean
+  targetPlan?: Prisma.EnumCpSubscriptionPlanNullableFilter<"CpSubscription"> | $Enums.CpSubscriptionPlan | null
   paystackSubCode?: Prisma.StringNullableFilter<"CpSubscription"> | string | null
   paystackCustomerCode?: Prisma.StringNullableFilter<"CpSubscription"> | string | null
   currentPeriodStart?: Prisma.DateTimeNullableFilter<"CpSubscription"> | Date | string | null
@@ -238,6 +270,10 @@ export type CpSubscriptionOrderByWithRelationInput = {
   organizationId?: Prisma.SortOrder
   plan?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  trialStartsAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  trialEndsAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  trialUsed?: Prisma.SortOrder
+  targetPlan?: Prisma.SortOrderInput | Prisma.SortOrder
   paystackSubCode?: Prisma.SortOrderInput | Prisma.SortOrder
   paystackCustomerCode?: Prisma.SortOrderInput | Prisma.SortOrder
   currentPeriodStart?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -256,6 +292,10 @@ export type CpSubscriptionWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.CpSubscriptionWhereInput | Prisma.CpSubscriptionWhereInput[]
   plan?: Prisma.EnumCpSubscriptionPlanFilter<"CpSubscription"> | $Enums.CpSubscriptionPlan
   status?: Prisma.EnumCpSubscriptionStatusFilter<"CpSubscription"> | $Enums.CpSubscriptionStatus
+  trialStartsAt?: Prisma.DateTimeNullableFilter<"CpSubscription"> | Date | string | null
+  trialEndsAt?: Prisma.DateTimeNullableFilter<"CpSubscription"> | Date | string | null
+  trialUsed?: Prisma.BoolFilter<"CpSubscription"> | boolean
+  targetPlan?: Prisma.EnumCpSubscriptionPlanNullableFilter<"CpSubscription"> | $Enums.CpSubscriptionPlan | null
   paystackSubCode?: Prisma.StringNullableFilter<"CpSubscription"> | string | null
   paystackCustomerCode?: Prisma.StringNullableFilter<"CpSubscription"> | string | null
   currentPeriodStart?: Prisma.DateTimeNullableFilter<"CpSubscription"> | Date | string | null
@@ -271,6 +311,10 @@ export type CpSubscriptionOrderByWithAggregationInput = {
   organizationId?: Prisma.SortOrder
   plan?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  trialStartsAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  trialEndsAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  trialUsed?: Prisma.SortOrder
+  targetPlan?: Prisma.SortOrderInput | Prisma.SortOrder
   paystackSubCode?: Prisma.SortOrderInput | Prisma.SortOrder
   paystackCustomerCode?: Prisma.SortOrderInput | Prisma.SortOrder
   currentPeriodStart?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -291,6 +335,10 @@ export type CpSubscriptionScalarWhereWithAggregatesInput = {
   organizationId?: Prisma.StringWithAggregatesFilter<"CpSubscription"> | string
   plan?: Prisma.EnumCpSubscriptionPlanWithAggregatesFilter<"CpSubscription"> | $Enums.CpSubscriptionPlan
   status?: Prisma.EnumCpSubscriptionStatusWithAggregatesFilter<"CpSubscription"> | $Enums.CpSubscriptionStatus
+  trialStartsAt?: Prisma.DateTimeNullableWithAggregatesFilter<"CpSubscription"> | Date | string | null
+  trialEndsAt?: Prisma.DateTimeNullableWithAggregatesFilter<"CpSubscription"> | Date | string | null
+  trialUsed?: Prisma.BoolWithAggregatesFilter<"CpSubscription"> | boolean
+  targetPlan?: Prisma.EnumCpSubscriptionPlanNullableWithAggregatesFilter<"CpSubscription"> | $Enums.CpSubscriptionPlan | null
   paystackSubCode?: Prisma.StringNullableWithAggregatesFilter<"CpSubscription"> | string | null
   paystackCustomerCode?: Prisma.StringNullableWithAggregatesFilter<"CpSubscription"> | string | null
   currentPeriodStart?: Prisma.DateTimeNullableWithAggregatesFilter<"CpSubscription"> | Date | string | null
@@ -304,6 +352,10 @@ export type CpSubscriptionCreateInput = {
   id?: string
   plan?: $Enums.CpSubscriptionPlan
   status?: $Enums.CpSubscriptionStatus
+  trialStartsAt?: Date | string | null
+  trialEndsAt?: Date | string | null
+  trialUsed?: boolean
+  targetPlan?: $Enums.CpSubscriptionPlan | null
   paystackSubCode?: string | null
   paystackCustomerCode?: string | null
   currentPeriodStart?: Date | string | null
@@ -319,6 +371,10 @@ export type CpSubscriptionUncheckedCreateInput = {
   organizationId: string
   plan?: $Enums.CpSubscriptionPlan
   status?: $Enums.CpSubscriptionStatus
+  trialStartsAt?: Date | string | null
+  trialEndsAt?: Date | string | null
+  trialUsed?: boolean
+  targetPlan?: $Enums.CpSubscriptionPlan | null
   paystackSubCode?: string | null
   paystackCustomerCode?: string | null
   currentPeriodStart?: Date | string | null
@@ -332,6 +388,10 @@ export type CpSubscriptionUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   plan?: Prisma.EnumCpSubscriptionPlanFieldUpdateOperationsInput | $Enums.CpSubscriptionPlan
   status?: Prisma.EnumCpSubscriptionStatusFieldUpdateOperationsInput | $Enums.CpSubscriptionStatus
+  trialStartsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trialEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trialUsed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  targetPlan?: Prisma.NullableEnumCpSubscriptionPlanFieldUpdateOperationsInput | $Enums.CpSubscriptionPlan | null
   paystackSubCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paystackCustomerCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -347,6 +407,10 @@ export type CpSubscriptionUncheckedUpdateInput = {
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   plan?: Prisma.EnumCpSubscriptionPlanFieldUpdateOperationsInput | $Enums.CpSubscriptionPlan
   status?: Prisma.EnumCpSubscriptionStatusFieldUpdateOperationsInput | $Enums.CpSubscriptionStatus
+  trialStartsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trialEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trialUsed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  targetPlan?: Prisma.NullableEnumCpSubscriptionPlanFieldUpdateOperationsInput | $Enums.CpSubscriptionPlan | null
   paystackSubCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paystackCustomerCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -361,6 +425,10 @@ export type CpSubscriptionCreateManyInput = {
   organizationId: string
   plan?: $Enums.CpSubscriptionPlan
   status?: $Enums.CpSubscriptionStatus
+  trialStartsAt?: Date | string | null
+  trialEndsAt?: Date | string | null
+  trialUsed?: boolean
+  targetPlan?: $Enums.CpSubscriptionPlan | null
   paystackSubCode?: string | null
   paystackCustomerCode?: string | null
   currentPeriodStart?: Date | string | null
@@ -374,6 +442,10 @@ export type CpSubscriptionUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   plan?: Prisma.EnumCpSubscriptionPlanFieldUpdateOperationsInput | $Enums.CpSubscriptionPlan
   status?: Prisma.EnumCpSubscriptionStatusFieldUpdateOperationsInput | $Enums.CpSubscriptionStatus
+  trialStartsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trialEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trialUsed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  targetPlan?: Prisma.NullableEnumCpSubscriptionPlanFieldUpdateOperationsInput | $Enums.CpSubscriptionPlan | null
   paystackSubCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paystackCustomerCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -388,6 +460,10 @@ export type CpSubscriptionUncheckedUpdateManyInput = {
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   plan?: Prisma.EnumCpSubscriptionPlanFieldUpdateOperationsInput | $Enums.CpSubscriptionPlan
   status?: Prisma.EnumCpSubscriptionStatusFieldUpdateOperationsInput | $Enums.CpSubscriptionStatus
+  trialStartsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trialEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trialUsed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  targetPlan?: Prisma.NullableEnumCpSubscriptionPlanFieldUpdateOperationsInput | $Enums.CpSubscriptionPlan | null
   paystackSubCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paystackCustomerCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -407,6 +483,10 @@ export type CpSubscriptionCountOrderByAggregateInput = {
   organizationId?: Prisma.SortOrder
   plan?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  trialStartsAt?: Prisma.SortOrder
+  trialEndsAt?: Prisma.SortOrder
+  trialUsed?: Prisma.SortOrder
+  targetPlan?: Prisma.SortOrder
   paystackSubCode?: Prisma.SortOrder
   paystackCustomerCode?: Prisma.SortOrder
   currentPeriodStart?: Prisma.SortOrder
@@ -421,6 +501,10 @@ export type CpSubscriptionMaxOrderByAggregateInput = {
   organizationId?: Prisma.SortOrder
   plan?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  trialStartsAt?: Prisma.SortOrder
+  trialEndsAt?: Prisma.SortOrder
+  trialUsed?: Prisma.SortOrder
+  targetPlan?: Prisma.SortOrder
   paystackSubCode?: Prisma.SortOrder
   paystackCustomerCode?: Prisma.SortOrder
   currentPeriodStart?: Prisma.SortOrder
@@ -435,6 +519,10 @@ export type CpSubscriptionMinOrderByAggregateInput = {
   organizationId?: Prisma.SortOrder
   plan?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  trialStartsAt?: Prisma.SortOrder
+  trialEndsAt?: Prisma.SortOrder
+  trialUsed?: Prisma.SortOrder
+  targetPlan?: Prisma.SortOrder
   paystackSubCode?: Prisma.SortOrder
   paystackCustomerCode?: Prisma.SortOrder
   currentPeriodStart?: Prisma.SortOrder
@@ -484,10 +572,18 @@ export type EnumCpSubscriptionStatusFieldUpdateOperationsInput = {
   set?: $Enums.CpSubscriptionStatus
 }
 
+export type NullableEnumCpSubscriptionPlanFieldUpdateOperationsInput = {
+  set?: $Enums.CpSubscriptionPlan | null
+}
+
 export type CpSubscriptionCreateWithoutOrganizationInput = {
   id?: string
   plan?: $Enums.CpSubscriptionPlan
   status?: $Enums.CpSubscriptionStatus
+  trialStartsAt?: Date | string | null
+  trialEndsAt?: Date | string | null
+  trialUsed?: boolean
+  targetPlan?: $Enums.CpSubscriptionPlan | null
   paystackSubCode?: string | null
   paystackCustomerCode?: string | null
   currentPeriodStart?: Date | string | null
@@ -501,6 +597,10 @@ export type CpSubscriptionUncheckedCreateWithoutOrganizationInput = {
   id?: string
   plan?: $Enums.CpSubscriptionPlan
   status?: $Enums.CpSubscriptionStatus
+  trialStartsAt?: Date | string | null
+  trialEndsAt?: Date | string | null
+  trialUsed?: boolean
+  targetPlan?: $Enums.CpSubscriptionPlan | null
   paystackSubCode?: string | null
   paystackCustomerCode?: string | null
   currentPeriodStart?: Date | string | null
@@ -530,6 +630,10 @@ export type CpSubscriptionUpdateWithoutOrganizationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   plan?: Prisma.EnumCpSubscriptionPlanFieldUpdateOperationsInput | $Enums.CpSubscriptionPlan
   status?: Prisma.EnumCpSubscriptionStatusFieldUpdateOperationsInput | $Enums.CpSubscriptionStatus
+  trialStartsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trialEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trialUsed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  targetPlan?: Prisma.NullableEnumCpSubscriptionPlanFieldUpdateOperationsInput | $Enums.CpSubscriptionPlan | null
   paystackSubCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paystackCustomerCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -543,6 +647,10 @@ export type CpSubscriptionUncheckedUpdateWithoutOrganizationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   plan?: Prisma.EnumCpSubscriptionPlanFieldUpdateOperationsInput | $Enums.CpSubscriptionPlan
   status?: Prisma.EnumCpSubscriptionStatusFieldUpdateOperationsInput | $Enums.CpSubscriptionStatus
+  trialStartsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trialEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trialUsed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  targetPlan?: Prisma.NullableEnumCpSubscriptionPlanFieldUpdateOperationsInput | $Enums.CpSubscriptionPlan | null
   paystackSubCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paystackCustomerCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPeriodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -559,6 +667,10 @@ export type CpSubscriptionSelect<ExtArgs extends runtime.Types.Extensions.Intern
   organizationId?: boolean
   plan?: boolean
   status?: boolean
+  trialStartsAt?: boolean
+  trialEndsAt?: boolean
+  trialUsed?: boolean
+  targetPlan?: boolean
   paystackSubCode?: boolean
   paystackCustomerCode?: boolean
   currentPeriodStart?: boolean
@@ -574,6 +686,10 @@ export type CpSubscriptionSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   organizationId?: boolean
   plan?: boolean
   status?: boolean
+  trialStartsAt?: boolean
+  trialEndsAt?: boolean
+  trialUsed?: boolean
+  targetPlan?: boolean
   paystackSubCode?: boolean
   paystackCustomerCode?: boolean
   currentPeriodStart?: boolean
@@ -589,6 +705,10 @@ export type CpSubscriptionSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   organizationId?: boolean
   plan?: boolean
   status?: boolean
+  trialStartsAt?: boolean
+  trialEndsAt?: boolean
+  trialUsed?: boolean
+  targetPlan?: boolean
   paystackSubCode?: boolean
   paystackCustomerCode?: boolean
   currentPeriodStart?: boolean
@@ -604,6 +724,10 @@ export type CpSubscriptionSelectScalar = {
   organizationId?: boolean
   plan?: boolean
   status?: boolean
+  trialStartsAt?: boolean
+  trialEndsAt?: boolean
+  trialUsed?: boolean
+  targetPlan?: boolean
   paystackSubCode?: boolean
   paystackCustomerCode?: boolean
   currentPeriodStart?: boolean
@@ -613,7 +737,7 @@ export type CpSubscriptionSelectScalar = {
   updatedAt?: boolean
 }
 
-export type CpSubscriptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "plan" | "status" | "paystackSubCode" | "paystackCustomerCode" | "currentPeriodStart" | "currentPeriodEnd" | "cancelledAt" | "createdAt" | "updatedAt", ExtArgs["result"]["cpSubscription"]>
+export type CpSubscriptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "plan" | "status" | "trialStartsAt" | "trialEndsAt" | "trialUsed" | "targetPlan" | "paystackSubCode" | "paystackCustomerCode" | "currentPeriodStart" | "currentPeriodEnd" | "cancelledAt" | "createdAt" | "updatedAt", ExtArgs["result"]["cpSubscription"]>
 export type CpSubscriptionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.CpOrganizationDefaultArgs<ExtArgs>
 }
@@ -634,6 +758,10 @@ export type $CpSubscriptionPayload<ExtArgs extends runtime.Types.Extensions.Inte
     organizationId: string
     plan: $Enums.CpSubscriptionPlan
     status: $Enums.CpSubscriptionStatus
+    trialStartsAt: Date | null
+    trialEndsAt: Date | null
+    trialUsed: boolean
+    targetPlan: $Enums.CpSubscriptionPlan | null
     paystackSubCode: string | null
     paystackCustomerCode: string | null
     currentPeriodStart: Date | null
@@ -1069,6 +1197,10 @@ export interface CpSubscriptionFieldRefs {
   readonly organizationId: Prisma.FieldRef<"CpSubscription", 'String'>
   readonly plan: Prisma.FieldRef<"CpSubscription", 'CpSubscriptionPlan'>
   readonly status: Prisma.FieldRef<"CpSubscription", 'CpSubscriptionStatus'>
+  readonly trialStartsAt: Prisma.FieldRef<"CpSubscription", 'DateTime'>
+  readonly trialEndsAt: Prisma.FieldRef<"CpSubscription", 'DateTime'>
+  readonly trialUsed: Prisma.FieldRef<"CpSubscription", 'Boolean'>
+  readonly targetPlan: Prisma.FieldRef<"CpSubscription", 'CpSubscriptionPlan'>
   readonly paystackSubCode: Prisma.FieldRef<"CpSubscription", 'String'>
   readonly paystackCustomerCode: Prisma.FieldRef<"CpSubscription", 'String'>
   readonly currentPeriodStart: Prisma.FieldRef<"CpSubscription", 'DateTime'>

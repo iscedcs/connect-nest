@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { envValidationSchema } from './config/env.validation';
 import { AuthModule } from './auth/auth.module';
 import { ReferralModule } from './referral/referral.module';
 import { APP_GUARD, APP_FILTER } from '@nestjs/core';
@@ -49,6 +51,13 @@ import { SubscriptionsModule } from './subscriptions/subscriptions.module';
   ],
   imports: [
     SentryModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      validationSchema: envValidationSchema,
+      validationOptions: {
+        abortEarly: false, // report ALL missing vars at once, not just the first
+      },
+    }),
     ThrottlerModule.forRoot([
       {
         ttl: 60000,

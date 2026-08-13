@@ -9,7 +9,7 @@ import { Request } from 'express';
 /**
  * Guards internal service-to-service endpoints.
  * Requires the `X-Internal-Secret` header to match
- * the `INTERNAL_API_SECRET` environment variable.
+ * the `INTERNAL_API_KEY` environment variable.
  *
  * Apply on top of `@PublicRoute()` so the global JWT AuthGuard
  * is bypassed while this guard enforces the shared secret.

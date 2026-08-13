@@ -2,10 +2,13 @@ import {
   Controller,
   Get,
   Post,
+  Patch,
   Body,
+  Param,
   Req,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -15,7 +18,10 @@ import {
 } from '@nestjs/swagger';
 import { SubscriptionsService } from './subscriptions.service';
 import { SelectPlanDto, InitiatePaymentDto } from './dto/subscription.dto';
+import { UpdatePlanDto } from './dto/update-plan.dto';
 import { PublicRoute } from '../auth/decorators/public-route.decorator';
+import { SuperAdminGuard } from '../auth/guards/super-admin.guard';
+import { PlanTier } from '../generated/prisma/client';
 
 @ApiTags('Subscriptions')
 @ApiBearerAuth()
@@ -100,6 +106,30 @@ export class SubscriptionsController {
       success: false,
       message: 'Payment gateway integration pending',
       data: { planKey: dto.planKey, userId: req.user.id },
+    };
+  }
+
+  // ─── Admin ───────────────────────────────────────────────────────────────
+
+  @Patch('admin/plans/:planKey')
+  @UseGuards(SuperAdminGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Update plan pricing/metadata (System Admin only)' })
+  @ApiResponse({ status: 200, description: 'Plan updated' })
+  @ApiResponse({ status: 403, description: 'Super Admin access required' })
+  @ApiResponse({ status: 404, description: 'Plan not found' })
+  async updatePlan(
+    @Param('planKey') planKey: string,
+    @Body() dto: UpdatePlanDto,
+  ) {
+    const plan = await this.subscriptionsService.updatePlanPrice(
+      planKey as PlanTier,
+      dto,
+    );
+    return {
+      success: true,
+      message: 'Plan updated',
+      data: { key: plan.key, name: plan.name, priceMonthly: plan.priceMonthly, isActive: plan.isActive },
     };
   }
 }

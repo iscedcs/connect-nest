@@ -86,6 +86,25 @@ This file captures the main work still left to complete for the Connect Plus fea
 - [x] Implement immutable audit logging for important actions
 - [x] Implement role-based audit log visibility
 
+## Priority 5 — Subscription Plan Lifecycle & 6-Month Auto-Charging (Connect & Connect Plus)
+
+### 12. Automated subscription trial & recurring charging (Personal & Business)
+- [ ] Implement Pluggable Payment Gateway Architecture (Adapter pattern supporting Paydestal, Paystack, Wallet, etc.)
+- [ ] Initialize 6-month free trial (`TRIALING` status) starting on **account creation** for both Personal and Business accounts
+- [ ] Expose `PATCH /subscriptions/admin/plans/:planKey` for System Admins to adjust plan prices dynamically in database
+- [ ] Seed initial `Plan` catalogue (`FREE`, `PRO_LITE`, `PRO_PLUS`) in database
+- [ ] Auto-bootstrap subscriptions on profile (`createProfile`) and organization (`createOrganization`) creation
+- [ ] Implement NestJS `@Cron` scheduler to process trial expirations daily for both account types
+- [ ] Enforce Connect Plus plan limits in `CpSubscriptionsService.checkLimit()` for workspaces, staff, and clients
+
+## Priority 6 — Production Deployment Readiness
+
+### 13. Cloud storage, security, and environment validation
+- [ ] Integrate DigitalOcean Spaces / AWS S3 SDK for physical file uploads and presigned download URLs in `src/files/`
+- [ ] Enforce service-to-service internal API key security in `WalletClientService`
+- [ ] Add `@nestjs/config` schema validation to ensure all required production env vars exist before server boot
+- [ ] Run full automated test suite (`npm run test` & `npm run test:e2e`) to verify clean production readiness
+
 ## Suggested implementation order
 
 1. Finish the Prisma layer and RBAC foundation
@@ -94,6 +113,8 @@ This file captures the main work still left to complete for the Connect Plus fea
 4. Complete public lead capture and lead/client conversion
 5. Complete appointments and messaging
 6. Finish invoices, notifications, attendance, analytics, and audit logs
+7. Implement pluggable subscription plan lifecycle, 6-month free trial (from account creation), and admin pricing
+8. Complete cloud file storage (S3/DigitalOcean Spaces), service security, env validation, and production test suite
 
 ## Notes
 
