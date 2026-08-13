@@ -676,6 +676,20 @@ export class ConfirmPaymentDto {
   note?: string;
 }
 
+export class ExecuteWalletPaymentDto {
+  @ApiProperty({ description: "Customer's wallet PIN" })
+  @IsString()
+  pin: string;
+
+  @ApiPropertyOptional({
+    description:
+      'Set true to proceed after a REQUIRES_CONFIRMATION fraud-check response',
+  })
+  @IsOptional()
+  @IsBoolean()
+  confirmFraud?: boolean;
+}
+
 export class DisputePaymentDto {
   @ApiProperty({ description: 'Reason for disputing the payment' })
   @IsString()

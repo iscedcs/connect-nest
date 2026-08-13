@@ -25,6 +25,7 @@ import { MailClientService } from '../mail/mail-client.service';
 import { SubscriptionsService } from '../subscriptions/subscriptions.service';
 import { PlanLimitException } from '../subscriptions/exceptions/plan-limit.exception';
 import { PlanTier } from '../generated/prisma/client';
+import { WalletClientService } from '../auth/wallet-client.service';
 
 @Injectable()
 export class ArtisanService {
@@ -34,6 +35,7 @@ export class ArtisanService {
     private readonly authClient: AuthClientService,
     private readonly mail: MailClientService,
     private readonly subscriptionsService: SubscriptionsService,
+    private readonly walletClient: WalletClientService,
   ) {}
 
   // ─── Registration ───────────────────────────────────────
@@ -61,7 +63,7 @@ export class ArtisanService {
     };
   }
 
-  async register(userId: string, dto: RegisterArtisanDto) {
+  async register(userId: string, dto: RegisterArtisanDto, token: string) {
     // 1. Validate profile ownership
     const profile = await this.databaseService.profile.findFirst({
       where: { id: dto.profileId, userId },
@@ -165,6 +167,19 @@ export class ArtisanService {
 
       return created;
     });
+
+    // Best-effort wallet KYC check — never block registration on wallet-nest
+    try {
+      const kyc = await this.walletClient.getUserWalletKycInfo(userId, token);
+      if (kyc.canReceive) {
+        await this.databaseService.artisan.update({
+          where: { id: artisan.id },
+          data: { canReceiveWalletPayments: true },
+        });
+      }
+    } catch {
+      // leave canReceiveWalletPayments at its default (false)
+    }
 
     // Return full artisan profile
     return this.getArtisanResponse(artisan.id);
@@ -810,7 +825,12 @@ export class ArtisanService {
 
   // ─── Reviews ────────────────────────────────────────────
 
-  async createReview(userId: string, artisanId: string, dto: CreateReviewDto) {
+  async createReview(
+    userId: string,
+    artisanId: string,
+    dto: CreateReviewDto,
+    token: string,
+  ) {
     // Verify artisan exists
     const artisan = await this.databaseService.artisan.findUnique({
       where: { id: artisanId },
@@ -841,6 +861,19 @@ export class ArtisanService {
       });
       if (existingReview) {
         throw new ConflictException('This booking has already been reviewed');
+      }
+    } else {
+      // No bookingId: only allow if the reviewer has an executed wallet
+      // payment to this artisan (closes the "anyone can review anyone" gap).
+      const eligible = await this.walletClient.hasCompletedArtisanPayment(
+        userId,
+        artisan.userId,
+        token,
+      );
+      if (!eligible) {
+        throw new BadRequestException(
+          'You can only review artisans you have booked and paid',
+        );
       }
     }
 

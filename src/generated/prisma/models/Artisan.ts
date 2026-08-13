@@ -50,6 +50,7 @@ export type ArtisanMinAggregateOutputType = {
   termsAcceptedAt: Date | null
   activatedAt: Date | null
   suspendedReason: string | null
+  canReceiveWalletPayments: boolean | null
   averageRating: runtime.Decimal | null
   totalReviews: number | null
   totalBookings: number | null
@@ -70,6 +71,7 @@ export type ArtisanMaxAggregateOutputType = {
   termsAcceptedAt: Date | null
   activatedAt: Date | null
   suspendedReason: string | null
+  canReceiveWalletPayments: boolean | null
   averageRating: runtime.Decimal | null
   totalReviews: number | null
   totalBookings: number | null
@@ -90,6 +92,7 @@ export type ArtisanCountAggregateOutputType = {
   termsAcceptedAt: number
   activatedAt: number
   suspendedReason: number
+  canReceiveWalletPayments: number
   averageRating: number
   totalReviews: number
   totalBookings: number
@@ -130,6 +133,7 @@ export type ArtisanMinAggregateInputType = {
   termsAcceptedAt?: true
   activatedAt?: true
   suspendedReason?: true
+  canReceiveWalletPayments?: true
   averageRating?: true
   totalReviews?: true
   totalBookings?: true
@@ -150,6 +154,7 @@ export type ArtisanMaxAggregateInputType = {
   termsAcceptedAt?: true
   activatedAt?: true
   suspendedReason?: true
+  canReceiveWalletPayments?: true
   averageRating?: true
   totalReviews?: true
   totalBookings?: true
@@ -170,6 +175,7 @@ export type ArtisanCountAggregateInputType = {
   termsAcceptedAt?: true
   activatedAt?: true
   suspendedReason?: true
+  canReceiveWalletPayments?: true
   averageRating?: true
   totalReviews?: true
   totalBookings?: true
@@ -281,6 +287,7 @@ export type ArtisanGroupByOutputType = {
   termsAcceptedAt: Date | null
   activatedAt: Date | null
   suspendedReason: string | null
+  canReceiveWalletPayments: boolean
   averageRating: runtime.Decimal
   totalReviews: number
   totalBookings: number
@@ -328,6 +335,7 @@ export type ArtisanWhereInput = {
   termsAcceptedAt?: Prisma.DateTimeNullableFilter<"Artisan"> | Date | string | null
   activatedAt?: Prisma.DateTimeNullableFilter<"Artisan"> | Date | string | null
   suspendedReason?: Prisma.StringNullableFilter<"Artisan"> | string | null
+  canReceiveWalletPayments?: Prisma.BoolFilter<"Artisan"> | boolean
   averageRating?: Prisma.DecimalFilter<"Artisan"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: Prisma.IntFilter<"Artisan"> | number
   totalBookings?: Prisma.IntFilter<"Artisan"> | number
@@ -362,6 +370,7 @@ export type ArtisanOrderByWithRelationInput = {
   termsAcceptedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   activatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   suspendedReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  canReceiveWalletPayments?: Prisma.SortOrder
   averageRating?: Prisma.SortOrder
   totalReviews?: Prisma.SortOrder
   totalBookings?: Prisma.SortOrder
@@ -399,6 +408,7 @@ export type ArtisanWhereUniqueInput = Prisma.AtLeast<{
   termsAcceptedAt?: Prisma.DateTimeNullableFilter<"Artisan"> | Date | string | null
   activatedAt?: Prisma.DateTimeNullableFilter<"Artisan"> | Date | string | null
   suspendedReason?: Prisma.StringNullableFilter<"Artisan"> | string | null
+  canReceiveWalletPayments?: Prisma.BoolFilter<"Artisan"> | boolean
   averageRating?: Prisma.DecimalFilter<"Artisan"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: Prisma.IntFilter<"Artisan"> | number
   totalBookings?: Prisma.IntFilter<"Artisan"> | number
@@ -433,6 +443,7 @@ export type ArtisanOrderByWithAggregationInput = {
   termsAcceptedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   activatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   suspendedReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  canReceiveWalletPayments?: Prisma.SortOrder
   averageRating?: Prisma.SortOrder
   totalReviews?: Prisma.SortOrder
   totalBookings?: Prisma.SortOrder
@@ -465,6 +476,7 @@ export type ArtisanScalarWhereWithAggregatesInput = {
   termsAcceptedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Artisan"> | Date | string | null
   activatedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Artisan"> | Date | string | null
   suspendedReason?: Prisma.StringNullableWithAggregatesFilter<"Artisan"> | string | null
+  canReceiveWalletPayments?: Prisma.BoolWithAggregatesFilter<"Artisan"> | boolean
   averageRating?: Prisma.DecimalWithAggregatesFilter<"Artisan"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: Prisma.IntWithAggregatesFilter<"Artisan"> | number
   totalBookings?: Prisma.IntWithAggregatesFilter<"Artisan"> | number
@@ -488,6 +500,7 @@ export type ArtisanCreateInput = {
   termsAcceptedAt?: Date | string | null
   activatedAt?: Date | string | null
   suspendedReason?: string | null
+  canReceiveWalletPayments?: boolean
   averageRating?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: number
   totalBookings?: number
@@ -522,6 +535,7 @@ export type ArtisanUncheckedCreateInput = {
   termsAcceptedAt?: Date | string | null
   activatedAt?: Date | string | null
   suspendedReason?: string | null
+  canReceiveWalletPayments?: boolean
   averageRating?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: number
   totalBookings?: number
@@ -554,6 +568,7 @@ export type ArtisanUpdateInput = {
   termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   suspendedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canReceiveWalletPayments?: Prisma.BoolFieldUpdateOperationsInput | boolean
   averageRating?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: Prisma.IntFieldUpdateOperationsInput | number
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
@@ -588,6 +603,7 @@ export type ArtisanUncheckedUpdateInput = {
   termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   suspendedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canReceiveWalletPayments?: Prisma.BoolFieldUpdateOperationsInput | boolean
   averageRating?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: Prisma.IntFieldUpdateOperationsInput | number
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
@@ -621,6 +637,7 @@ export type ArtisanCreateManyInput = {
   termsAcceptedAt?: Date | string | null
   activatedAt?: Date | string | null
   suspendedReason?: string | null
+  canReceiveWalletPayments?: boolean
   averageRating?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: number
   totalBookings?: number
@@ -644,6 +661,7 @@ export type ArtisanUpdateManyMutationInput = {
   termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   suspendedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canReceiveWalletPayments?: Prisma.BoolFieldUpdateOperationsInput | boolean
   averageRating?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: Prisma.IntFieldUpdateOperationsInput | number
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
@@ -668,6 +686,7 @@ export type ArtisanUncheckedUpdateManyInput = {
   termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   suspendedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canReceiveWalletPayments?: Prisma.BoolFieldUpdateOperationsInput | boolean
   averageRating?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: Prisma.IntFieldUpdateOperationsInput | number
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
@@ -721,6 +740,7 @@ export type ArtisanCountOrderByAggregateInput = {
   termsAcceptedAt?: Prisma.SortOrder
   activatedAt?: Prisma.SortOrder
   suspendedReason?: Prisma.SortOrder
+  canReceiveWalletPayments?: Prisma.SortOrder
   averageRating?: Prisma.SortOrder
   totalReviews?: Prisma.SortOrder
   totalBookings?: Prisma.SortOrder
@@ -752,6 +772,7 @@ export type ArtisanMaxOrderByAggregateInput = {
   termsAcceptedAt?: Prisma.SortOrder
   activatedAt?: Prisma.SortOrder
   suspendedReason?: Prisma.SortOrder
+  canReceiveWalletPayments?: Prisma.SortOrder
   averageRating?: Prisma.SortOrder
   totalReviews?: Prisma.SortOrder
   totalBookings?: Prisma.SortOrder
@@ -772,6 +793,7 @@ export type ArtisanMinOrderByAggregateInput = {
   termsAcceptedAt?: Prisma.SortOrder
   activatedAt?: Prisma.SortOrder
   suspendedReason?: Prisma.SortOrder
+  canReceiveWalletPayments?: Prisma.SortOrder
   averageRating?: Prisma.SortOrder
   totalReviews?: Prisma.SortOrder
   totalBookings?: Prisma.SortOrder
@@ -1000,6 +1022,7 @@ export type ArtisanCreateWithoutProfileInput = {
   termsAcceptedAt?: Date | string | null
   activatedAt?: Date | string | null
   suspendedReason?: string | null
+  canReceiveWalletPayments?: boolean
   averageRating?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: number
   totalBookings?: number
@@ -1032,6 +1055,7 @@ export type ArtisanUncheckedCreateWithoutProfileInput = {
   termsAcceptedAt?: Date | string | null
   activatedAt?: Date | string | null
   suspendedReason?: string | null
+  canReceiveWalletPayments?: boolean
   averageRating?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: number
   totalBookings?: number
@@ -1080,6 +1104,7 @@ export type ArtisanUpdateWithoutProfileInput = {
   termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   suspendedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canReceiveWalletPayments?: Prisma.BoolFieldUpdateOperationsInput | boolean
   averageRating?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: Prisma.IntFieldUpdateOperationsInput | number
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1112,6 +1137,7 @@ export type ArtisanUncheckedUpdateWithoutProfileInput = {
   termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   suspendedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canReceiveWalletPayments?: Prisma.BoolFieldUpdateOperationsInput | boolean
   averageRating?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: Prisma.IntFieldUpdateOperationsInput | number
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1144,6 +1170,7 @@ export type ArtisanCreateWithoutCategoriesInput = {
   termsAcceptedAt?: Date | string | null
   activatedAt?: Date | string | null
   suspendedReason?: string | null
+  canReceiveWalletPayments?: boolean
   averageRating?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: number
   totalBookings?: number
@@ -1177,6 +1204,7 @@ export type ArtisanUncheckedCreateWithoutCategoriesInput = {
   termsAcceptedAt?: Date | string | null
   activatedAt?: Date | string | null
   suspendedReason?: string | null
+  canReceiveWalletPayments?: boolean
   averageRating?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: number
   totalBookings?: number
@@ -1224,6 +1252,7 @@ export type ArtisanUpdateWithoutCategoriesInput = {
   termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   suspendedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canReceiveWalletPayments?: Prisma.BoolFieldUpdateOperationsInput | boolean
   averageRating?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: Prisma.IntFieldUpdateOperationsInput | number
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1257,6 +1286,7 @@ export type ArtisanUncheckedUpdateWithoutCategoriesInput = {
   termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   suspendedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canReceiveWalletPayments?: Prisma.BoolFieldUpdateOperationsInput | boolean
   averageRating?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: Prisma.IntFieldUpdateOperationsInput | number
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1288,6 +1318,7 @@ export type ArtisanCreateWithoutServicesInput = {
   termsAcceptedAt?: Date | string | null
   activatedAt?: Date | string | null
   suspendedReason?: string | null
+  canReceiveWalletPayments?: boolean
   averageRating?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: number
   totalBookings?: number
@@ -1321,6 +1352,7 @@ export type ArtisanUncheckedCreateWithoutServicesInput = {
   termsAcceptedAt?: Date | string | null
   activatedAt?: Date | string | null
   suspendedReason?: string | null
+  canReceiveWalletPayments?: boolean
   averageRating?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: number
   totalBookings?: number
@@ -1368,6 +1400,7 @@ export type ArtisanUpdateWithoutServicesInput = {
   termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   suspendedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canReceiveWalletPayments?: Prisma.BoolFieldUpdateOperationsInput | boolean
   averageRating?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: Prisma.IntFieldUpdateOperationsInput | number
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1401,6 +1434,7 @@ export type ArtisanUncheckedUpdateWithoutServicesInput = {
   termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   suspendedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canReceiveWalletPayments?: Prisma.BoolFieldUpdateOperationsInput | boolean
   averageRating?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: Prisma.IntFieldUpdateOperationsInput | number
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1432,6 +1466,7 @@ export type ArtisanCreateWithoutPortfolioInput = {
   termsAcceptedAt?: Date | string | null
   activatedAt?: Date | string | null
   suspendedReason?: string | null
+  canReceiveWalletPayments?: boolean
   averageRating?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: number
   totalBookings?: number
@@ -1465,6 +1500,7 @@ export type ArtisanUncheckedCreateWithoutPortfolioInput = {
   termsAcceptedAt?: Date | string | null
   activatedAt?: Date | string | null
   suspendedReason?: string | null
+  canReceiveWalletPayments?: boolean
   averageRating?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: number
   totalBookings?: number
@@ -1512,6 +1548,7 @@ export type ArtisanUpdateWithoutPortfolioInput = {
   termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   suspendedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canReceiveWalletPayments?: Prisma.BoolFieldUpdateOperationsInput | boolean
   averageRating?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: Prisma.IntFieldUpdateOperationsInput | number
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1545,6 +1582,7 @@ export type ArtisanUncheckedUpdateWithoutPortfolioInput = {
   termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   suspendedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canReceiveWalletPayments?: Prisma.BoolFieldUpdateOperationsInput | boolean
   averageRating?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: Prisma.IntFieldUpdateOperationsInput | number
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1576,6 +1614,7 @@ export type ArtisanCreateWithoutThreadsInput = {
   termsAcceptedAt?: Date | string | null
   activatedAt?: Date | string | null
   suspendedReason?: string | null
+  canReceiveWalletPayments?: boolean
   averageRating?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: number
   totalBookings?: number
@@ -1609,6 +1648,7 @@ export type ArtisanUncheckedCreateWithoutThreadsInput = {
   termsAcceptedAt?: Date | string | null
   activatedAt?: Date | string | null
   suspendedReason?: string | null
+  canReceiveWalletPayments?: boolean
   averageRating?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: number
   totalBookings?: number
@@ -1656,6 +1696,7 @@ export type ArtisanUpdateWithoutThreadsInput = {
   termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   suspendedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canReceiveWalletPayments?: Prisma.BoolFieldUpdateOperationsInput | boolean
   averageRating?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: Prisma.IntFieldUpdateOperationsInput | number
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1689,6 +1730,7 @@ export type ArtisanUncheckedUpdateWithoutThreadsInput = {
   termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   suspendedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canReceiveWalletPayments?: Prisma.BoolFieldUpdateOperationsInput | boolean
   averageRating?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: Prisma.IntFieldUpdateOperationsInput | number
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1720,6 +1762,7 @@ export type ArtisanCreateWithoutBookingsInput = {
   termsAcceptedAt?: Date | string | null
   activatedAt?: Date | string | null
   suspendedReason?: string | null
+  canReceiveWalletPayments?: boolean
   averageRating?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: number
   totalBookings?: number
@@ -1753,6 +1796,7 @@ export type ArtisanUncheckedCreateWithoutBookingsInput = {
   termsAcceptedAt?: Date | string | null
   activatedAt?: Date | string | null
   suspendedReason?: string | null
+  canReceiveWalletPayments?: boolean
   averageRating?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: number
   totalBookings?: number
@@ -1800,6 +1844,7 @@ export type ArtisanUpdateWithoutBookingsInput = {
   termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   suspendedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canReceiveWalletPayments?: Prisma.BoolFieldUpdateOperationsInput | boolean
   averageRating?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: Prisma.IntFieldUpdateOperationsInput | number
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1833,6 +1878,7 @@ export type ArtisanUncheckedUpdateWithoutBookingsInput = {
   termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   suspendedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canReceiveWalletPayments?: Prisma.BoolFieldUpdateOperationsInput | boolean
   averageRating?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: Prisma.IntFieldUpdateOperationsInput | number
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1864,6 +1910,7 @@ export type ArtisanCreateWithoutReviewsInput = {
   termsAcceptedAt?: Date | string | null
   activatedAt?: Date | string | null
   suspendedReason?: string | null
+  canReceiveWalletPayments?: boolean
   averageRating?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: number
   totalBookings?: number
@@ -1897,6 +1944,7 @@ export type ArtisanUncheckedCreateWithoutReviewsInput = {
   termsAcceptedAt?: Date | string | null
   activatedAt?: Date | string | null
   suspendedReason?: string | null
+  canReceiveWalletPayments?: boolean
   averageRating?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: number
   totalBookings?: number
@@ -1944,6 +1992,7 @@ export type ArtisanUpdateWithoutReviewsInput = {
   termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   suspendedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canReceiveWalletPayments?: Prisma.BoolFieldUpdateOperationsInput | boolean
   averageRating?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: Prisma.IntFieldUpdateOperationsInput | number
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1977,6 +2026,7 @@ export type ArtisanUncheckedUpdateWithoutReviewsInput = {
   termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   suspendedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canReceiveWalletPayments?: Prisma.BoolFieldUpdateOperationsInput | boolean
   averageRating?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: Prisma.IntFieldUpdateOperationsInput | number
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2008,6 +2058,7 @@ export type ArtisanCreateWithoutPromotionsInput = {
   termsAcceptedAt?: Date | string | null
   activatedAt?: Date | string | null
   suspendedReason?: string | null
+  canReceiveWalletPayments?: boolean
   averageRating?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: number
   totalBookings?: number
@@ -2041,6 +2092,7 @@ export type ArtisanUncheckedCreateWithoutPromotionsInput = {
   termsAcceptedAt?: Date | string | null
   activatedAt?: Date | string | null
   suspendedReason?: string | null
+  canReceiveWalletPayments?: boolean
   averageRating?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: number
   totalBookings?: number
@@ -2088,6 +2140,7 @@ export type ArtisanUpdateWithoutPromotionsInput = {
   termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   suspendedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canReceiveWalletPayments?: Prisma.BoolFieldUpdateOperationsInput | boolean
   averageRating?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: Prisma.IntFieldUpdateOperationsInput | number
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2121,6 +2174,7 @@ export type ArtisanUncheckedUpdateWithoutPromotionsInput = {
   termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   suspendedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canReceiveWalletPayments?: Prisma.BoolFieldUpdateOperationsInput | boolean
   averageRating?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: Prisma.IntFieldUpdateOperationsInput | number
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2152,6 +2206,7 @@ export type ArtisanCreateWithoutApplicationsInput = {
   termsAcceptedAt?: Date | string | null
   activatedAt?: Date | string | null
   suspendedReason?: string | null
+  canReceiveWalletPayments?: boolean
   averageRating?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: number
   totalBookings?: number
@@ -2185,6 +2240,7 @@ export type ArtisanUncheckedCreateWithoutApplicationsInput = {
   termsAcceptedAt?: Date | string | null
   activatedAt?: Date | string | null
   suspendedReason?: string | null
+  canReceiveWalletPayments?: boolean
   averageRating?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: number
   totalBookings?: number
@@ -2232,6 +2288,7 @@ export type ArtisanUpdateWithoutApplicationsInput = {
   termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   suspendedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canReceiveWalletPayments?: Prisma.BoolFieldUpdateOperationsInput | boolean
   averageRating?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: Prisma.IntFieldUpdateOperationsInput | number
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2265,6 +2322,7 @@ export type ArtisanUncheckedUpdateWithoutApplicationsInput = {
   termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   suspendedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canReceiveWalletPayments?: Prisma.BoolFieldUpdateOperationsInput | boolean
   averageRating?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: Prisma.IntFieldUpdateOperationsInput | number
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2296,6 +2354,7 @@ export type ArtisanCreateWithoutSavedByInput = {
   termsAcceptedAt?: Date | string | null
   activatedAt?: Date | string | null
   suspendedReason?: string | null
+  canReceiveWalletPayments?: boolean
   averageRating?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: number
   totalBookings?: number
@@ -2329,6 +2388,7 @@ export type ArtisanUncheckedCreateWithoutSavedByInput = {
   termsAcceptedAt?: Date | string | null
   activatedAt?: Date | string | null
   suspendedReason?: string | null
+  canReceiveWalletPayments?: boolean
   averageRating?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: number
   totalBookings?: number
@@ -2376,6 +2436,7 @@ export type ArtisanUpdateWithoutSavedByInput = {
   termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   suspendedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canReceiveWalletPayments?: Prisma.BoolFieldUpdateOperationsInput | boolean
   averageRating?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: Prisma.IntFieldUpdateOperationsInput | number
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2409,6 +2470,7 @@ export type ArtisanUncheckedUpdateWithoutSavedByInput = {
   termsAcceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   suspendedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canReceiveWalletPayments?: Prisma.BoolFieldUpdateOperationsInput | boolean
   averageRating?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReviews?: Prisma.IntFieldUpdateOperationsInput | number
   totalBookings?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2544,6 +2606,7 @@ export type ArtisanSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   termsAcceptedAt?: boolean
   activatedAt?: boolean
   suspendedReason?: boolean
+  canReceiveWalletPayments?: boolean
   averageRating?: boolean
   totalReviews?: boolean
   totalBookings?: boolean
@@ -2579,6 +2642,7 @@ export type ArtisanSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   termsAcceptedAt?: boolean
   activatedAt?: boolean
   suspendedReason?: boolean
+  canReceiveWalletPayments?: boolean
   averageRating?: boolean
   totalReviews?: boolean
   totalBookings?: boolean
@@ -2604,6 +2668,7 @@ export type ArtisanSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   termsAcceptedAt?: boolean
   activatedAt?: boolean
   suspendedReason?: boolean
+  canReceiveWalletPayments?: boolean
   averageRating?: boolean
   totalReviews?: boolean
   totalBookings?: boolean
@@ -2629,6 +2694,7 @@ export type ArtisanSelectScalar = {
   termsAcceptedAt?: boolean
   activatedAt?: boolean
   suspendedReason?: boolean
+  canReceiveWalletPayments?: boolean
   averageRating?: boolean
   totalReviews?: boolean
   totalBookings?: boolean
@@ -2643,7 +2709,7 @@ export type ArtisanSelectScalar = {
   deletedAt?: boolean
 }
 
-export type ArtisanOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "profileId" | "userId" | "bio" | "status" | "customCategory" | "termsAcceptedAt" | "activatedAt" | "suspendedReason" | "averageRating" | "totalReviews" | "totalBookings" | "totalEarnings" | "workingHours" | "openToWork" | "desiredJobTypes" | "desiredWorkModels" | "skills" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["artisan"]>
+export type ArtisanOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "profileId" | "userId" | "bio" | "status" | "customCategory" | "termsAcceptedAt" | "activatedAt" | "suspendedReason" | "canReceiveWalletPayments" | "averageRating" | "totalReviews" | "totalBookings" | "totalEarnings" | "workingHours" | "openToWork" | "desiredJobTypes" | "desiredWorkModels" | "skills" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["artisan"]>
 export type ArtisanInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   profile?: boolean | Prisma.ProfileDefaultArgs<ExtArgs>
   categories?: boolean | Prisma.Artisan$categoriesArgs<ExtArgs>
@@ -2688,6 +2754,7 @@ export type $ArtisanPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     termsAcceptedAt: Date | null
     activatedAt: Date | null
     suspendedReason: string | null
+    canReceiveWalletPayments: boolean
     averageRating: runtime.Decimal
     totalReviews: number
     totalBookings: number
@@ -3142,6 +3209,7 @@ export interface ArtisanFieldRefs {
   readonly termsAcceptedAt: Prisma.FieldRef<"Artisan", 'DateTime'>
   readonly activatedAt: Prisma.FieldRef<"Artisan", 'DateTime'>
   readonly suspendedReason: Prisma.FieldRef<"Artisan", 'String'>
+  readonly canReceiveWalletPayments: Prisma.FieldRef<"Artisan", 'Boolean'>
   readonly averageRating: Prisma.FieldRef<"Artisan", 'Decimal'>
   readonly totalReviews: Prisma.FieldRef<"Artisan", 'Int'>
   readonly totalBookings: Prisma.FieldRef<"Artisan", 'Int'>
