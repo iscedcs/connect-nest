@@ -55,9 +55,9 @@ describe('CpJobs (e2e)', () => {
     await app.close();
   });
 
-  it('/api/cp/workspaces/:wsId/jobs (POST) - create job', async () => {
+  it('/api/cp/jobs (POST) - create job', async () => {
     const res = await request(app.getHttpServer())
-      .post(`/api/cp/workspaces/${workspaceId}/jobs`)
+      .post('/api/cp/jobs')
       .set('Authorization', `Bearer ${token}`)
       .set('x-workspace-id', workspaceId)
       .send({
@@ -73,9 +73,9 @@ describe('CpJobs (e2e)', () => {
     jobId = res.body.id;
   });
 
-  it('/api/cp/workspaces/:wsId/jobs (GET) - get workspace jobs', async () => {
+  it('/api/cp/jobs (GET) - get workspace jobs', async () => {
     const res = await request(app.getHttpServer())
-      .get(`/api/cp/workspaces/${workspaceId}/jobs`)
+      .get('/api/cp/jobs')
       .set('Authorization', `Bearer ${token}`)
       .set('x-workspace-id', workspaceId)
       .expect(200);
