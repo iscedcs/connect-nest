@@ -145,6 +145,7 @@ enum NotificationType {
   SUBSCRIPTION_ACTIVATED
   SUBSCRIPTION_CANCELLED
   SUBSCRIPTION_PAST_DUE
+  SUBSCRIPTION_LAUNCH_ANNOUNCEMENT
 }
 
 model SupportRequest {
@@ -795,6 +796,7 @@ model Plan {
   name          String
   priceMonthly  Int            // in kobo; 0 for FREE
   isActive      Boolean        @default(true)
+  limits        Json?          // Dynamic feature quotas and boolean flags
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   subscriptions Subscription[]
@@ -813,6 +815,7 @@ model Subscription {
   cancelledAt        DateTime?
   gatewayCustomerId  String?
   gatewaySubId       String?
+  notifiedLaunch     Boolean            @default(false)
   createdAt          DateTime           @default(now())
   updatedAt          DateTime           @updatedAt
 
@@ -1020,6 +1023,17 @@ model CpSubscription {
   @@index([organizationId])
   @@index([status])
   @@index([trialEndsAt])
+}
+
+model CpPlan {
+  id           String             @id @default(uuid())
+  key          CpSubscriptionPlan @unique
+  name         String
+  priceMonthly Int                @default(0) // in kobo
+  isActive     Boolean            @default(true)
+  limits       Json               // { workspaces: number, staffPerWorkspace: number, clientsPerWorkspace: number }
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
 }
 
 model CpWorkspace {
@@ -1500,3 +1514,17 @@ model HealthIncident {
   @@index([dependency, status])
   @@index([status])
 }
+
+// ─── System Configuration & Feature Flags ─────────────────
+
+model SystemConfig {
+  id                              String   @id @default("default")
+  personalSubscriptionsEnabled    Boolean  @default(true)
+  connectPlusSubscriptionsEnabled Boolean  @default(true)
+  bypassMode                      String   @default("OPEN_ACCESS") // "OPEN_ACCESS" | "FREE_TIER_ONLY"
+  maintenanceReason               String?
+  updatedBy                       String?
+  createdAt                       DateTime @default(now())
+  updatedAt                       DateTime @updatedAt
+}
+

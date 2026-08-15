@@ -1,4 +1,31 @@
-export const PLAN_LIMITS = {
+export interface PlanLimits {
+  id: string;
+  name: string;
+  priceMonthly: number;
+  profiles: number;
+  tapsPerDay: number;
+  socialLinks: number;
+  videos: number;
+  files: number;
+  storageBytes: number;
+  meetingLinks: number;
+  customForms: number;
+  analyticsHistoryDays: number;
+  contactExport: boolean;
+  removeIsceBranding: boolean;
+  themeCustomization: 'none' | 'basic' | 'full';
+  moduleReordering: boolean;
+  spotifyItems: number;
+  cryptoWallets: number;
+  serviceCategories: number;
+  artisanDirectoryEligible: boolean;
+  publiclySearchable: boolean;
+  verifiedBadge: boolean;
+  prioritySupport: boolean;
+  priorityRanking: boolean;
+}
+
+export const PLAN_LIMITS: Record<'FREE' | 'PRO_LITE' | 'PRO_PLUS', PlanLimits> = {
   FREE: {
     id: 'free',
     name: 'Free',
@@ -14,7 +41,7 @@ export const PLAN_LIMITS = {
     analyticsHistoryDays: 3,
     contactExport: false,
     removeIsceBranding: false,
-    themeCustomization: 'none' as 'none' | 'basic' | 'full',
+    themeCustomization: 'none',
     moduleReordering: false,
     spotifyItems: 0,
     cryptoWallets: 0,
@@ -41,7 +68,7 @@ export const PLAN_LIMITS = {
     analyticsHistoryDays: 15,
     contactExport: true,
     removeIsceBranding: true,
-    themeCustomization: 'basic' as 'none' | 'basic' | 'full',
+    themeCustomization: 'basic',
     moduleReordering: false,
     spotifyItems: 3,
     cryptoWallets: 1,
@@ -68,7 +95,7 @@ export const PLAN_LIMITS = {
     analyticsHistoryDays: Infinity,
     contactExport: true,
     removeIsceBranding: true,
-    themeCustomization: 'full' as 'none' | 'basic' | 'full',
+    themeCustomization: 'full',
     moduleReordering: true,
     spotifyItems: Infinity,
     cryptoWallets: Infinity,
@@ -79,7 +106,34 @@ export const PLAN_LIMITS = {
     prioritySupport: true,
     priorityRanking: true,
   },
-} as const;
+};
 
 export type PlanKey = keyof typeof PLAN_LIMITS;
-export type PlanLimits = (typeof PLAN_LIMITS)[PlanKey];
+
+export const UNLIMITED_PLAN_LIMITS: PlanLimits = {
+  id: 'unlimited',
+  name: 'Unlimited Preview',
+  priceMonthly: 0,
+  profiles: Infinity,
+  tapsPerDay: Infinity,
+  socialLinks: Infinity,
+  videos: Infinity,
+  files: Infinity,
+  storageBytes: Infinity,
+  meetingLinks: Infinity,
+  customForms: Infinity,
+  analyticsHistoryDays: Infinity,
+  contactExport: true,
+  removeIsceBranding: true,
+  themeCustomization: 'full',
+  moduleReordering: true,
+  spotifyItems: Infinity,
+  cryptoWallets: Infinity,
+  serviceCategories: Infinity,
+  artisanDirectoryEligible: true,
+  publiclySearchable: true,
+  verifiedBadge: true,
+  prioritySupport: true,
+  priorityRanking: true,
+};
+

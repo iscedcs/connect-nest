@@ -193,6 +193,11 @@ export type CpOrganization = Prisma.CpOrganizationModel
  */
 export type CpSubscription = Prisma.CpSubscriptionModel
 /**
+ * Model CpPlan
+ * 
+ */
+export type CpPlan = Prisma.CpPlanModel
+/**
  * Model CpWorkspace
  * 
  */
@@ -297,3 +302,8 @@ export type CpSavedTalent = Prisma.CpSavedTalentModel
  * 
  */
 export type HealthIncident = Prisma.HealthIncidentModel
+/**
+ * Model SystemConfig
+ * 
+ */
+export type SystemConfig = Prisma.SystemConfigModel

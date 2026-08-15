@@ -1,28 +1,124 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
-import { CreateFileDto, UpdateFileDto, BulkVisibilityDto, BulkDeleteDto, BulkRestoreDto } from './dto/file.dto';
+import {
+  CreateFileDto,
+  UpdateFileDto,
+  GeneratePresignedUploadUrlDto,
+  BulkVisibilityDto,
+  BulkDeleteDto,
+  BulkRestoreDto,
+} from './dto/file.dto';
 import { SubscriptionsService } from '../subscriptions/subscriptions.service';
 import { PlanLimitException } from '../subscriptions/exceptions/plan-limit.exception';
 import { PlanTier } from '../generated/prisma/client';
-// TODO: Import AWS SDK or Digital Ocean Spaces SDK for file operations
-// import { S3Client, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
-// import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import {
+  S3Client,
+  GetObjectCommand,
+  PutObjectCommand,
+  DeleteObjectCommand,
+} from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 @Injectable()
 export class FilesService {
+  private readonly logger = new Logger(FilesService.name);
+  private readonly spacesClient: S3Client | null = null;
+  private readonly bucket: string;
+
   constructor(
     private readonly databaseService: DatabaseService,
     private readonly subscriptionsService: SubscriptionsService,
   ) {
-    // TODO: Initialize Digital Ocean Spaces client
-    // this.spacesClient = new S3Client({
-    //   endpoint: process.env.DO_SPACES_ENDPOINT,
-    //   region: process.env.DO_SPACES_REGION,
-    //   credentials: {
-    //     accessKeyId: process.env.DO_SPACES_KEY,
-    //     secretAccessKey: process.env.DO_SPACES_SECRET,
-    //   },
-    // });
+    const endpoint = process.env.DO_SPACES_ENDPOINT || process.env.AWS_S3_ENDPOINT;
+    const region = process.env.DO_SPACES_REGION || process.env.AWS_REGION || 'us-east-1';
+    const accessKeyId = process.env.DO_SPACES_KEY || process.env.AWS_ACCESS_KEY_ID;
+    const secretAccessKey = process.env.DO_SPACES_SECRET || process.env.AWS_SECRET_ACCESS_KEY;
+    this.bucket = process.env.DO_SPACES_BUCKET || process.env.AWS_S3_BUCKET || 'isce-connect-files';
+
+    if (accessKeyId && secretAccessKey) {
+      this.spacesClient = new S3Client({
+        endpoint: endpoint || undefined,
+        region,
+        credentials: {
+          accessKeyId,
+          secretAccessKey,
+        },
+        forcePathStyle: false,
+      });
+      this.logger.log('S3 / DigitalOcean Spaces client initialized');
+    } else {
+      this.logger.warn('S3 / DigitalOcean Spaces credentials not found; using mock presigned URLs');
+    }
+  }
+
+  async generatePresignedUploadUrl(
+    user: any,
+    profileId: string,
+    dto: GeneratePresignedUploadUrlDto,
+  ) {
+    try {
+      const profile = await this.databaseService.profile.findFirst({
+        where: { id: profileId, userId: user.id, deletedAt: null },
+      });
+      if (!profile) return { success: false, message: 'Profile not found' };
+
+      // Enforce files count limit
+      const limits = await this.subscriptionsService.getUserLimits(user.id);
+      const currentCount = await this.databaseService.fileItem.count({
+        where: { profile: { userId: user.id }, deletedAt: null },
+      });
+      if (currentCount >= limits.files) {
+        throw new PlanLimitException('files', PlanTier.PRO_LITE);
+      }
+
+      // Enforce storage bytes limit
+      if (limits.storageBytes !== Infinity) {
+        const storageResult = await this.databaseService.fileItem.aggregate({
+          _sum: { size_bytes: true },
+          where: { profile: { userId: user.id }, deletedAt: null },
+        });
+        const usedBytes = storageResult._sum.size_bytes ?? 0;
+        if (usedBytes + (dto.size_bytes ?? 0) > limits.storageBytes) {
+          throw new PlanLimitException('storageBytes', PlanTier.PRO_LITE);
+        }
+      }
+
+      const cleanFilename = dto.filename.replace(/[^a-zA-Z0-9.-]/g, '_');
+      const storageKey = `profiles/${profileId}/files/${Date.now()}_${cleanFilename}`;
+      const expiresSeconds = 900; // 15 mins
+
+      let uploadUrl: string;
+      if (this.spacesClient) {
+        const command = new PutObjectCommand({
+          Bucket: this.bucket,
+          Key: storageKey,
+          ContentType: dto.media_type,
+          ACL: 'public-read',
+        });
+        uploadUrl = await getSignedUrl(this.spacesClient, command, {
+          expiresIn: expiresSeconds,
+        });
+      } else {
+        uploadUrl = `https://${this.bucket}.nyc3.digitaloceanspaces.com/${storageKey}?mock_signature=true`;
+      }
+
+      const publicUrl = `https://${this.bucket}.nyc3.digitaloceanspaces.com/${storageKey}`;
+      const expiresAt = new Date(Date.now() + expiresSeconds * 1000).toISOString();
+
+      return {
+        success: true,
+        message: 'Presigned upload URL generated successfully',
+        data: {
+          upload_url: uploadUrl,
+          storage_key: storageKey,
+          spaces_url: publicUrl,
+          expires_at: expiresAt,
+        },
+      };
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      return { success: false, message: error.message };
+    }
   }
 
   async createFile(user: any, profileId: string, dto: CreateFileDto) {
@@ -194,28 +290,41 @@ export class FilesService {
 
   async getDownloadUrl(user: any, profileId: string, fileId: string) {
     try {
-      const profile = await this.databaseService.profile.findFirst({ where: { id: profileId, userId: user.id, deletedAt: null } });
+      const profile = await this.databaseService.profile.findFirst({
+        where: { id: profileId, userId: user.id, deletedAt: null },
+      });
       if (!profile) return { success: false, message: 'Profile not found' };
 
-      const file = await this.databaseService.fileItem.findFirst({ where: { id: fileId, profileId, deletedAt: null } });
+      const file = await this.databaseService.fileItem.findFirst({
+        where: { id: fileId, profileId, deletedAt: null },
+      });
       if (!file) return { success: false, message: 'File not found' };
 
-      // TODO: Generate time-limited signed URL using Digital Ocean Spaces SDK
-      // const command = new GetObjectCommand({
-      //   Bucket: process.env.DO_SPACES_BUCKET,
-      //   Key: file.storage_key,
-      // });
-      // const downloadUrl = await getSignedUrl(this.spacesClient, command, { expiresIn: 3600 }); // 1 hour
-      // const expiresAt = new Date(Date.now() + 3600 * 1000);
+      const expiresSeconds = 3600; // 1 hour
+      let downloadUrl: string;
 
-      // For now, return a placeholder response
-      const expiresAt = new Date(Date.now() + 3600 * 1000); // 1 hour from now
+      if (this.spacesClient && file.storage_key) {
+        const command = new GetObjectCommand({
+          Bucket: this.bucket,
+          Key: file.storage_key,
+        });
+        downloadUrl = await getSignedUrl(this.spacesClient, command, {
+          expiresIn: expiresSeconds,
+        });
+      } else {
+        downloadUrl = file.spaces_url;
+      }
+
+      const expiresAt = new Date(Date.now() + expiresSeconds * 1000).toISOString();
       return {
         success: true,
         message: 'Download URL generated successfully',
         data: {
-          download_url: file.spaces_url, // TODO: Replace with signed URL
-          expires_at: expiresAt.toISOString(),
+          download_url: downloadUrl,
+          expires_at: expiresAt,
+          filename: file.filename,
+          media_type: file.media_type,
+          size_bytes: file.size_bytes,
         },
       };
     } catch (error) {
@@ -223,21 +332,33 @@ export class FilesService {
     }
   }
 
-  async permanentDelete(user: any, profileId: string, fileId: string, forceDelete: boolean = false) {
+  async permanentDelete(
+    user: any,
+    profileId: string,
+    fileId: string,
+    forceDelete: boolean = false,
+  ) {
     try {
-      const profile = await this.databaseService.profile.findFirst({ where: { id: profileId, userId: user.id } });
+      const profile = await this.databaseService.profile.findFirst({
+        where: { id: profileId, userId: user.id },
+      });
       if (!profile) return { success: false, message: 'Profile not found' };
 
-      const file = await this.databaseService.fileItem.findFirst({ where: { id: fileId, profileId } });
+      const file = await this.databaseService.fileItem.findFirst({
+        where: { id: fileId, profileId },
+      });
       if (!file) return { success: false, message: 'File not found' };
 
-      if (forceDelete) {
-        // TODO: Delete physical file from Digital Ocean Spaces
-        // const command = new DeleteObjectCommand({
-        //   Bucket: process.env.DO_SPACES_BUCKET,
-        //   Key: file.storage_key,
-        // });
-        // await this.spacesClient.send(command);
+      if (forceDelete && this.spacesClient && file.storage_key) {
+        try {
+          const command = new DeleteObjectCommand({
+            Bucket: this.bucket,
+            Key: file.storage_key,
+          });
+          await this.spacesClient.send(command);
+        } catch (e) {
+          this.logger.error(`Error deleting physical file from S3: ${e.message}`);
+        }
       }
 
       // Permanently delete from database

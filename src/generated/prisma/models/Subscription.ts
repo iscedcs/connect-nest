@@ -37,6 +37,7 @@ export type SubscriptionMinAggregateOutputType = {
   cancelledAt: Date | null
   gatewayCustomerId: string | null
   gatewaySubId: string | null
+  notifiedLaunch: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -54,6 +55,7 @@ export type SubscriptionMaxAggregateOutputType = {
   cancelledAt: Date | null
   gatewayCustomerId: string | null
   gatewaySubId: string | null
+  notifiedLaunch: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -71,6 +73,7 @@ export type SubscriptionCountAggregateOutputType = {
   cancelledAt: number
   gatewayCustomerId: number
   gatewaySubId: number
+  notifiedLaunch: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -90,6 +93,7 @@ export type SubscriptionMinAggregateInputType = {
   cancelledAt?: true
   gatewayCustomerId?: true
   gatewaySubId?: true
+  notifiedLaunch?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -107,6 +111,7 @@ export type SubscriptionMaxAggregateInputType = {
   cancelledAt?: true
   gatewayCustomerId?: true
   gatewaySubId?: true
+  notifiedLaunch?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -124,6 +129,7 @@ export type SubscriptionCountAggregateInputType = {
   cancelledAt?: true
   gatewayCustomerId?: true
   gatewaySubId?: true
+  notifiedLaunch?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -214,6 +220,7 @@ export type SubscriptionGroupByOutputType = {
   cancelledAt: Date | null
   gatewayCustomerId: string | null
   gatewaySubId: string | null
+  notifiedLaunch: boolean
   createdAt: Date
   updatedAt: Date
   _count: SubscriptionCountAggregateOutputType | null
@@ -252,6 +259,7 @@ export type SubscriptionWhereInput = {
   cancelledAt?: Prisma.DateTimeNullableFilter<"Subscription"> | Date | string | null
   gatewayCustomerId?: Prisma.StringNullableFilter<"Subscription"> | string | null
   gatewaySubId?: Prisma.StringNullableFilter<"Subscription"> | string | null
+  notifiedLaunch?: Prisma.BoolFilter<"Subscription"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Subscription"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Subscription"> | Date | string
   plan?: Prisma.XOR<Prisma.PlanScalarRelationFilter, Prisma.PlanWhereInput>
@@ -271,6 +279,7 @@ export type SubscriptionOrderByWithRelationInput = {
   cancelledAt?: Prisma.SortOrderInput | Prisma.SortOrder
   gatewayCustomerId?: Prisma.SortOrderInput | Prisma.SortOrder
   gatewaySubId?: Prisma.SortOrderInput | Prisma.SortOrder
+  notifiedLaunch?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   plan?: Prisma.PlanOrderByWithRelationInput
@@ -293,6 +302,7 @@ export type SubscriptionWhereUniqueInput = Prisma.AtLeast<{
   cancelledAt?: Prisma.DateTimeNullableFilter<"Subscription"> | Date | string | null
   gatewayCustomerId?: Prisma.StringNullableFilter<"Subscription"> | string | null
   gatewaySubId?: Prisma.StringNullableFilter<"Subscription"> | string | null
+  notifiedLaunch?: Prisma.BoolFilter<"Subscription"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Subscription"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Subscription"> | Date | string
   plan?: Prisma.XOR<Prisma.PlanScalarRelationFilter, Prisma.PlanWhereInput>
@@ -312,6 +322,7 @@ export type SubscriptionOrderByWithAggregationInput = {
   cancelledAt?: Prisma.SortOrderInput | Prisma.SortOrder
   gatewayCustomerId?: Prisma.SortOrderInput | Prisma.SortOrder
   gatewaySubId?: Prisma.SortOrderInput | Prisma.SortOrder
+  notifiedLaunch?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.SubscriptionCountOrderByAggregateInput
@@ -335,6 +346,7 @@ export type SubscriptionScalarWhereWithAggregatesInput = {
   cancelledAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Subscription"> | Date | string | null
   gatewayCustomerId?: Prisma.StringNullableWithAggregatesFilter<"Subscription"> | string | null
   gatewaySubId?: Prisma.StringNullableWithAggregatesFilter<"Subscription"> | string | null
+  notifiedLaunch?: Prisma.BoolWithAggregatesFilter<"Subscription"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Subscription"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Subscription"> | Date | string
 }
@@ -351,6 +363,7 @@ export type SubscriptionCreateInput = {
   cancelledAt?: Date | string | null
   gatewayCustomerId?: string | null
   gatewaySubId?: string | null
+  notifiedLaunch?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   plan: Prisma.PlanCreateNestedOneWithoutSubscriptionsInput
@@ -370,6 +383,7 @@ export type SubscriptionUncheckedCreateInput = {
   cancelledAt?: Date | string | null
   gatewayCustomerId?: string | null
   gatewaySubId?: string | null
+  notifiedLaunch?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   paymentHistory?: Prisma.PaymentRecordUncheckedCreateNestedManyWithoutSubscriptionInput
@@ -387,6 +401,7 @@ export type SubscriptionUpdateInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gatewayCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gatewaySubId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifiedLaunch?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   plan?: Prisma.PlanUpdateOneRequiredWithoutSubscriptionsNestedInput
@@ -406,6 +421,7 @@ export type SubscriptionUncheckedUpdateInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gatewayCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gatewaySubId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifiedLaunch?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   paymentHistory?: Prisma.PaymentRecordUncheckedUpdateManyWithoutSubscriptionNestedInput
@@ -424,6 +440,7 @@ export type SubscriptionCreateManyInput = {
   cancelledAt?: Date | string | null
   gatewayCustomerId?: string | null
   gatewaySubId?: string | null
+  notifiedLaunch?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -440,6 +457,7 @@ export type SubscriptionUpdateManyMutationInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gatewayCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gatewaySubId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifiedLaunch?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -457,6 +475,7 @@ export type SubscriptionUncheckedUpdateManyInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gatewayCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gatewaySubId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifiedLaunch?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -484,6 +503,7 @@ export type SubscriptionCountOrderByAggregateInput = {
   cancelledAt?: Prisma.SortOrder
   gatewayCustomerId?: Prisma.SortOrder
   gatewaySubId?: Prisma.SortOrder
+  notifiedLaunch?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -501,6 +521,7 @@ export type SubscriptionMaxOrderByAggregateInput = {
   cancelledAt?: Prisma.SortOrder
   gatewayCustomerId?: Prisma.SortOrder
   gatewaySubId?: Prisma.SortOrder
+  notifiedLaunch?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -518,6 +539,7 @@ export type SubscriptionMinOrderByAggregateInput = {
   cancelledAt?: Prisma.SortOrder
   gatewayCustomerId?: Prisma.SortOrder
   gatewaySubId?: Prisma.SortOrder
+  notifiedLaunch?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -599,6 +621,7 @@ export type SubscriptionCreateWithoutPlanInput = {
   cancelledAt?: Date | string | null
   gatewayCustomerId?: string | null
   gatewaySubId?: string | null
+  notifiedLaunch?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   paymentHistory?: Prisma.PaymentRecordCreateNestedManyWithoutSubscriptionInput
@@ -616,6 +639,7 @@ export type SubscriptionUncheckedCreateWithoutPlanInput = {
   cancelledAt?: Date | string | null
   gatewayCustomerId?: string | null
   gatewaySubId?: string | null
+  notifiedLaunch?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   paymentHistory?: Prisma.PaymentRecordUncheckedCreateNestedManyWithoutSubscriptionInput
@@ -663,6 +687,7 @@ export type SubscriptionScalarWhereInput = {
   cancelledAt?: Prisma.DateTimeNullableFilter<"Subscription"> | Date | string | null
   gatewayCustomerId?: Prisma.StringNullableFilter<"Subscription"> | string | null
   gatewaySubId?: Prisma.StringNullableFilter<"Subscription"> | string | null
+  notifiedLaunch?: Prisma.BoolFilter<"Subscription"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Subscription"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Subscription"> | Date | string
 }
@@ -679,6 +704,7 @@ export type SubscriptionCreateWithoutPaymentHistoryInput = {
   cancelledAt?: Date | string | null
   gatewayCustomerId?: string | null
   gatewaySubId?: string | null
+  notifiedLaunch?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   plan: Prisma.PlanCreateNestedOneWithoutSubscriptionsInput
@@ -697,6 +723,7 @@ export type SubscriptionUncheckedCreateWithoutPaymentHistoryInput = {
   cancelledAt?: Date | string | null
   gatewayCustomerId?: string | null
   gatewaySubId?: string | null
+  notifiedLaunch?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -729,6 +756,7 @@ export type SubscriptionUpdateWithoutPaymentHistoryInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gatewayCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gatewaySubId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifiedLaunch?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   plan?: Prisma.PlanUpdateOneRequiredWithoutSubscriptionsNestedInput
@@ -747,6 +775,7 @@ export type SubscriptionUncheckedUpdateWithoutPaymentHistoryInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gatewayCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gatewaySubId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifiedLaunch?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -763,6 +792,7 @@ export type SubscriptionCreateManyPlanInput = {
   cancelledAt?: Date | string | null
   gatewayCustomerId?: string | null
   gatewaySubId?: string | null
+  notifiedLaunch?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -779,6 +809,7 @@ export type SubscriptionUpdateWithoutPlanInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gatewayCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gatewaySubId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifiedLaunch?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   paymentHistory?: Prisma.PaymentRecordUpdateManyWithoutSubscriptionNestedInput
@@ -796,6 +827,7 @@ export type SubscriptionUncheckedUpdateWithoutPlanInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gatewayCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gatewaySubId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifiedLaunch?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   paymentHistory?: Prisma.PaymentRecordUncheckedUpdateManyWithoutSubscriptionNestedInput
@@ -813,6 +845,7 @@ export type SubscriptionUncheckedUpdateManyWithoutPlanInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gatewayCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gatewaySubId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifiedLaunch?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -861,6 +894,7 @@ export type SubscriptionSelect<ExtArgs extends runtime.Types.Extensions.Internal
   cancelledAt?: boolean
   gatewayCustomerId?: boolean
   gatewaySubId?: boolean
+  notifiedLaunch?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   plan?: boolean | Prisma.PlanDefaultArgs<ExtArgs>
@@ -881,6 +915,7 @@ export type SubscriptionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   cancelledAt?: boolean
   gatewayCustomerId?: boolean
   gatewaySubId?: boolean
+  notifiedLaunch?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   plan?: boolean | Prisma.PlanDefaultArgs<ExtArgs>
@@ -899,6 +934,7 @@ export type SubscriptionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   cancelledAt?: boolean
   gatewayCustomerId?: boolean
   gatewaySubId?: boolean
+  notifiedLaunch?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   plan?: boolean | Prisma.PlanDefaultArgs<ExtArgs>
@@ -917,11 +953,12 @@ export type SubscriptionSelectScalar = {
   cancelledAt?: boolean
   gatewayCustomerId?: boolean
   gatewaySubId?: boolean
+  notifiedLaunch?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type SubscriptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "planId" | "status" | "trialStartDate" | "trialEndDate" | "trialUsed" | "currentPeriodStart" | "currentPeriodEnd" | "cancelledAt" | "gatewayCustomerId" | "gatewaySubId" | "createdAt" | "updatedAt", ExtArgs["result"]["subscription"]>
+export type SubscriptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "planId" | "status" | "trialStartDate" | "trialEndDate" | "trialUsed" | "currentPeriodStart" | "currentPeriodEnd" | "cancelledAt" | "gatewayCustomerId" | "gatewaySubId" | "notifiedLaunch" | "createdAt" | "updatedAt", ExtArgs["result"]["subscription"]>
 export type SubscriptionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   plan?: boolean | Prisma.PlanDefaultArgs<ExtArgs>
   paymentHistory?: boolean | Prisma.Subscription$paymentHistoryArgs<ExtArgs>
@@ -953,6 +990,7 @@ export type $SubscriptionPayload<ExtArgs extends runtime.Types.Extensions.Intern
     cancelledAt: Date | null
     gatewayCustomerId: string | null
     gatewaySubId: string | null
+    notifiedLaunch: boolean
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["subscription"]>
@@ -1392,6 +1430,7 @@ export interface SubscriptionFieldRefs {
   readonly cancelledAt: Prisma.FieldRef<"Subscription", 'DateTime'>
   readonly gatewayCustomerId: Prisma.FieldRef<"Subscription", 'String'>
   readonly gatewaySubId: Prisma.FieldRef<"Subscription", 'String'>
+  readonly notifiedLaunch: Prisma.FieldRef<"Subscription", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Subscription", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Subscription", 'DateTime'>
 }

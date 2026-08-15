@@ -10,12 +10,14 @@ import { PlanLimits } from '../plan-limits.config';
 import { PlanLimitException } from '../exceptions/plan-limit.exception';
 import { PLAN_FEATURE_KEY } from '../decorators/plan-feature.decorator';
 import { PlanTier } from '../../generated/prisma/client';
+import { SystemConfigService } from '../../system-config/system-config.service';
 
 @Injectable()
 export class PlanLimitGuard implements CanActivate {
   constructor(
     private readonly subscriptionsService: SubscriptionsService,
     private readonly reflector: Reflector,
+    private readonly systemConfigService: SystemConfigService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -25,6 +27,11 @@ export class PlanLimitGuard implements CanActivate {
     );
 
     if (!feature) return true;
+
+    // Check if subscriptions are globally disabled in OPEN_ACCESS mode
+    if (await this.systemConfigService.isPersonalBypassed()) {
+      return true;
+    }
 
     const request = context.switchToHttp().getRequest();
     const userId: string | undefined = request.isce_auth?.id;

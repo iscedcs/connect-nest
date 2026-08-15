@@ -14,6 +14,7 @@ import { FilesService } from './files.service';
 import {
   CreateFileDto,
   UpdateFileDto,
+  GeneratePresignedUploadUrlDto,
   BulkVisibilityDto,
   BulkDeleteDto,
   BulkRestoreDto,
@@ -35,6 +36,24 @@ import {
 @Controller('profiles/:profileId/files')
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
+
+  @Post('presigned-upload-url')
+  @ApiOperation({ summary: 'Generate a presigned S3/Spaces upload URL' })
+  @ApiResponse({
+    status: 200,
+    description: 'Presigned upload URL generated successfully',
+  })
+  @ApiParam({ name: 'profileId', description: 'Profile ID' })
+  @ApiBody({ type: GeneratePresignedUploadUrlDto })
+  getPresignedUploadUrl(
+    @Request() req,
+    @Param('profileId') profileId: string,
+    @Body(ValidationPipe) dto: GeneratePresignedUploadUrlDto,
+  ) {
+    const user = req.isce_auth;
+    if (!user) return { success: false, message: 'User not found' };
+    return this.filesService.generatePresignedUploadUrl(user, profileId, dto);
+  }
 
   @Post('add')
   @ApiOperation({ summary: "Register an uploaded file's metadata" })

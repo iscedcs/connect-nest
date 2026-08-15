@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { envValidationSchema } from './config/env.validation';
+import { validate } from './config/env.validation';
 import { AuthModule } from './auth/auth.module';
 import { ReferralModule } from './referral/referral.module';
 import { APP_GUARD } from '@nestjs/core';
@@ -33,6 +33,7 @@ import { SentryModule } from '@sentry/nestjs/setup';
 import { HealthModule } from './health/health.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
+import { SystemConfigModule } from './system-config/system-config.module';
 
 @Module({
   providers: [
@@ -49,10 +50,7 @@ import { SubscriptionsModule } from './subscriptions/subscriptions.module';
     SentryModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
-      validationSchema: envValidationSchema,
-      validationOptions: {
-        abortEarly: false, // report ALL missing vars at once, not just the first
-      },
+      validate,
     }),
     ThrottlerModule.forRoot([
       {
@@ -61,6 +59,7 @@ import { SubscriptionsModule } from './subscriptions/subscriptions.module';
       },
     ]),
     ScheduleModule.forRoot(),
+    SystemConfigModule,
     SubscriptionsModule,
     AuthModule,
     DatabaseModule,

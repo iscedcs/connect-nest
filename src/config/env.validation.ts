@@ -1,40 +1,65 @@
 /**
- * Fail-fast environment validation schema.
+ * Fail-fast environment validation using class-validator.
  * The server will refuse to boot if any required variable is missing or invalid.
- * Import this via ConfigModule.forRoot({ validate }) in app.module.ts.
+ * Used by ConfigModule.forRoot({ validate }) in app.module.ts.
  */
 
-import * as Joi from 'joi';
+import { plainToInstance } from 'class-transformer';
+import {
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  validateSync,
+} from 'class-validator';
 
-export const envValidationSchema = Joi.object({
-  // Database
-  DATABASE_URL: Joi.string().uri().required(),
+enum Environment {
+  Development = 'development',
+  Production = 'production',
+  Test = 'test',
+}
 
-  // JWT
-  JWT_ACCESS_SECRET: Joi.string().min(32).required(),
-  ACCESS_EXPIRES_IN: Joi.string().default('15m'),
-  JWT_REFRESH_SECRET: Joi.string().min(32).required(),
-  REFRESH_EXPIRES_IN: Joi.string().default('7d'),
+export class EnvironmentVariables {
+  @IsString()
+  DATABASE_URL: string;
 
-  // Service-to-service
-  INTERNAL_API_KEY: Joi.string().min(16).required(),
+  @IsOptional()
+  @IsString()
+  JWT_SECRET?: string;
 
-  // Connect Plus webhooks
-  AUTH_INVITE_WEBHOOK_SECRET: Joi.string().min(16).required(),
+  @IsOptional()
+  @IsString()
+  JWT_ACCESS_SECRET?: string;
 
-  // Paystack
-  PAYSTACK_SECRET_KEY: Joi.string().required(),
+  @IsOptional()
+  @IsString()
+  INTERNAL_API_KEY?: string;
 
-  // DigitalOcean Spaces (optional until Track 4 is implemented)
-  DO_SPACES_KEY: Joi.string().optional(),
-  DO_SPACES_SECRET: Joi.string().optional(),
-  DO_SPACES_BUCKET: Joi.string().optional(),
-  DO_SPACES_ENDPOINT: Joi.string().uri().optional(),
-  DO_SPACES_REGION: Joi.string().optional(),
+  @IsOptional()
+  @IsString()
+  PAYSTACK_SECRET_KEY?: string;
 
-  // App
-  PORT: Joi.number().default(3000),
-  NODE_ENV: Joi.string()
-    .valid('development', 'production', 'test')
-    .default('development'),
-}).options({ allowUnknown: true }); // allow other vars (Sentry DSN, etc.)
+  @IsOptional()
+  @IsNumber()
+  PORT: number = 4990;
+
+  @IsOptional()
+  @IsEnum(Environment)
+  NODE_ENV: Environment = Environment.Development;
+}
+
+export function validate(config: Record<string, any>) {
+  const validatedConfig = plainToInstance(EnvironmentVariables, config, {
+    enableImplicitConversion: true,
+  });
+  const errors = validateSync(validatedConfig, {
+    skipMissingProperties: false,
+  });
+
+  if (errors.length > 0) {
+    const messages = errors.map((err) => Object.values(err.constraints || {})).flat();
+    throw new Error(`Environment validation failed:\n - ${messages.join('\n - ')}`);
+  }
+  return validatedConfig;
+}
+

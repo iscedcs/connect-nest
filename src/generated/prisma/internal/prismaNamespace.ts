@@ -419,6 +419,7 @@ export const ModelName = {
   PaymentRecord: 'PaymentRecord',
   CpOrganization: 'CpOrganization',
   CpSubscription: 'CpSubscription',
+  CpPlan: 'CpPlan',
   CpWorkspace: 'CpWorkspace',
   CpWorkspaceMember: 'CpWorkspaceMember',
   CpCompanyProfile: 'CpCompanyProfile',
@@ -439,7 +440,8 @@ export const ModelName = {
   CpJobPost: 'CpJobPost',
   CpJobApplication: 'CpJobApplication',
   CpSavedTalent: 'CpSavedTalent',
-  HealthIncident: 'HealthIncident'
+  HealthIncident: 'HealthIncident',
+  SystemConfig: 'SystemConfig'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -455,7 +457,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "profile" | "social" | "contact" | "notification" | "supportRequest" | "cardInteraction" | "profileContact" | "link" | "video" | "meetingLink" | "appointmentLink" | "spotifyItem" | "fileItem" | "form" | "formTemplate" | "submission" | "wallet" | "connectConfig" | "deviceProfile" | "artisan" | "artisanCategory" | "artisanCategoryMap" | "artisanService" | "portfolioItem" | "bookingThread" | "threadMessage" | "booking" | "review" | "promotion" | "platformSetting" | "plan" | "subscription" | "paymentRecord" | "cpOrganization" | "cpSubscription" | "cpWorkspace" | "cpWorkspaceMember" | "cpCompanyProfile" | "cpWorkspaceInvite" | "cpStaffProfile" | "cpConnectCard" | "cpLead" | "cpClient" | "cpAppointment" | "cpAttendance" | "cpConversation" | "cpConversationParticipant" | "cpMessage" | "cpInvoice" | "cpInvoiceItem" | "cpNotification" | "cpAuditLog" | "cpJobPost" | "cpJobApplication" | "cpSavedTalent" | "healthIncident"
+    modelProps: "profile" | "social" | "contact" | "notification" | "supportRequest" | "cardInteraction" | "profileContact" | "link" | "video" | "meetingLink" | "appointmentLink" | "spotifyItem" | "fileItem" | "form" | "formTemplate" | "submission" | "wallet" | "connectConfig" | "deviceProfile" | "artisan" | "artisanCategory" | "artisanCategoryMap" | "artisanService" | "portfolioItem" | "bookingThread" | "threadMessage" | "booking" | "review" | "promotion" | "platformSetting" | "plan" | "subscription" | "paymentRecord" | "cpOrganization" | "cpSubscription" | "cpPlan" | "cpWorkspace" | "cpWorkspaceMember" | "cpCompanyProfile" | "cpWorkspaceInvite" | "cpStaffProfile" | "cpConnectCard" | "cpLead" | "cpClient" | "cpAppointment" | "cpAttendance" | "cpConversation" | "cpConversationParticipant" | "cpMessage" | "cpInvoice" | "cpInvoiceItem" | "cpNotification" | "cpAuditLog" | "cpJobPost" | "cpJobApplication" | "cpSavedTalent" | "healthIncident" | "systemConfig"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3049,6 +3051,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    CpPlan: {
+      payload: Prisma.$CpPlanPayload<ExtArgs>
+      fields: Prisma.CpPlanFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CpPlanFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpPlanPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CpPlanFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpPlanPayload>
+        }
+        findFirst: {
+          args: Prisma.CpPlanFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpPlanPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CpPlanFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpPlanPayload>
+        }
+        findMany: {
+          args: Prisma.CpPlanFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpPlanPayload>[]
+        }
+        create: {
+          args: Prisma.CpPlanCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpPlanPayload>
+        }
+        createMany: {
+          args: Prisma.CpPlanCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CpPlanCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpPlanPayload>[]
+        }
+        delete: {
+          args: Prisma.CpPlanDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpPlanPayload>
+        }
+        update: {
+          args: Prisma.CpPlanUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpPlanPayload>
+        }
+        deleteMany: {
+          args: Prisma.CpPlanDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CpPlanUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CpPlanUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpPlanPayload>[]
+        }
+        upsert: {
+          args: Prisma.CpPlanUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CpPlanPayload>
+        }
+        aggregate: {
+          args: Prisma.CpPlanAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCpPlan>
+        }
+        groupBy: {
+          args: Prisma.CpPlanGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CpPlanGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CpPlanCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CpPlanCountAggregateOutputType> | number
+        }
+      }
+    }
     CpWorkspace: {
       payload: Prisma.$CpWorkspacePayload<ExtArgs>
       fields: Prisma.CpWorkspaceFieldRefs
@@ -4603,6 +4679,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    SystemConfig: {
+      payload: Prisma.$SystemConfigPayload<ExtArgs>
+      fields: Prisma.SystemConfigFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SystemConfigFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemConfigPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SystemConfigFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemConfigPayload>
+        }
+        findFirst: {
+          args: Prisma.SystemConfigFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemConfigPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SystemConfigFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemConfigPayload>
+        }
+        findMany: {
+          args: Prisma.SystemConfigFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemConfigPayload>[]
+        }
+        create: {
+          args: Prisma.SystemConfigCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemConfigPayload>
+        }
+        createMany: {
+          args: Prisma.SystemConfigCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SystemConfigCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemConfigPayload>[]
+        }
+        delete: {
+          args: Prisma.SystemConfigDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemConfigPayload>
+        }
+        update: {
+          args: Prisma.SystemConfigUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemConfigPayload>
+        }
+        deleteMany: {
+          args: Prisma.SystemConfigDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SystemConfigUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SystemConfigUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemConfigPayload>[]
+        }
+        upsert: {
+          args: Prisma.SystemConfigUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SystemConfigPayload>
+        }
+        aggregate: {
+          args: Prisma.SystemConfigAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSystemConfig>
+        }
+        groupBy: {
+          args: Prisma.SystemConfigGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SystemConfigGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SystemConfigCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SystemConfigCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -5162,6 +5312,7 @@ export const PlanScalarFieldEnum = {
   name: 'name',
   priceMonthly: 'priceMonthly',
   isActive: 'isActive',
+  limits: 'limits',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -5182,6 +5333,7 @@ export const SubscriptionScalarFieldEnum = {
   cancelledAt: 'cancelledAt',
   gatewayCustomerId: 'gatewayCustomerId',
   gatewaySubId: 'gatewaySubId',
+  notifiedLaunch: 'notifiedLaunch',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -5237,6 +5389,20 @@ export const CpSubscriptionScalarFieldEnum = {
 } as const
 
 export type CpSubscriptionScalarFieldEnum = (typeof CpSubscriptionScalarFieldEnum)[keyof typeof CpSubscriptionScalarFieldEnum]
+
+
+export const CpPlanScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  name: 'name',
+  priceMonthly: 'priceMonthly',
+  isActive: 'isActive',
+  limits: 'limits',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CpPlanScalarFieldEnum = (typeof CpPlanScalarFieldEnum)[keyof typeof CpPlanScalarFieldEnum]
 
 
 export const CpWorkspaceScalarFieldEnum = {
@@ -5614,6 +5780,20 @@ export const HealthIncidentScalarFieldEnum = {
 } as const
 
 export type HealthIncidentScalarFieldEnum = (typeof HealthIncidentScalarFieldEnum)[keyof typeof HealthIncidentScalarFieldEnum]
+
+
+export const SystemConfigScalarFieldEnum = {
+  id: 'id',
+  personalSubscriptionsEnabled: 'personalSubscriptionsEnabled',
+  connectPlusSubscriptionsEnabled: 'connectPlusSubscriptionsEnabled',
+  bypassMode: 'bypassMode',
+  maintenanceReason: 'maintenanceReason',
+  updatedBy: 'updatedBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SystemConfigScalarFieldEnum = (typeof SystemConfigScalarFieldEnum)[keyof typeof SystemConfigScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -6423,6 +6603,7 @@ export type GlobalOmitConfig = {
   paymentRecord?: Prisma.PaymentRecordOmit
   cpOrganization?: Prisma.CpOrganizationOmit
   cpSubscription?: Prisma.CpSubscriptionOmit
+  cpPlan?: Prisma.CpPlanOmit
   cpWorkspace?: Prisma.CpWorkspaceOmit
   cpWorkspaceMember?: Prisma.CpWorkspaceMemberOmit
   cpCompanyProfile?: Prisma.CpCompanyProfileOmit
@@ -6444,6 +6625,7 @@ export type GlobalOmitConfig = {
   cpJobApplication?: Prisma.CpJobApplicationOmit
   cpSavedTalent?: Prisma.CpSavedTalentOmit
   healthIncident?: Prisma.HealthIncidentOmit
+  systemConfig?: Prisma.SystemConfigOmit
 }
 
 /* Types for Logging */

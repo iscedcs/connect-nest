@@ -18,7 +18,10 @@ import { Request } from 'express';
 export class InternalGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest<Request>();
-    const provided = request.headers['x-internal-secret'];
+    const provided =
+      request.headers['x-internal-secret'] ||
+      request.headers['x-internal-api-key'] ||
+      request.headers['internal-api-key'];
     const expected = process.env.INTERNAL_API_KEY;
 
     if (!expected) {
