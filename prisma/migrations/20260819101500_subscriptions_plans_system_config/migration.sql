@@ -1,32 +1,42 @@
--- CreateEnum
-CREATE TYPE "SubscriptionStatus" AS ENUM ('TRIALING', 'ACTIVE', 'PAST_DUE', 'CANCELLED', 'EXPIRED');
+-- Idempotent by design. The test database already carries part of this schema from
+-- an earlier `prisma db push` off the sub branch (Plan/Subscription/PaymentRecord and
+-- most enum values exist, but Plan.limits, Subscription.notifiedLaunch, CpPlan and
+-- SystemConfig do not), while production is clean. Every statement below is written to
+-- create only what is missing so the same migration applies correctly to both.
 
 -- CreateEnum
-CREATE TYPE "PlanTier" AS ENUM ('FREE', 'PRO_LITE', 'PRO_PLUS');
+DO $$ BEGIN
+    CREATE TYPE "SubscriptionStatus" AS ENUM ('TRIALING', 'ACTIVE', 'PAST_DUE', 'CANCELLED', 'EXPIRED');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+-- CreateEnum
+DO $$ BEGIN
+    CREATE TYPE "PlanTier" AS ENUM ('FREE', 'PRO_LITE', 'PRO_PLUS');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- AlterEnum
--- This migration adds more than one value to an enum.
--- With PostgreSQL versions 11 and earlier, this is not possible
--- in a single migration. This can be worked around by creating
--- multiple migrations, each migration adding only one value to
--- the enum.
-
-
-ALTER TYPE "NotificationType" ADD VALUE 'SUBSCRIPTION_TRIAL_EXPIRED';
-ALTER TYPE "NotificationType" ADD VALUE 'SUBSCRIPTION_ACTIVATED';
-ALTER TYPE "NotificationType" ADD VALUE 'SUBSCRIPTION_CANCELLED';
-ALTER TYPE "NotificationType" ADD VALUE 'SUBSCRIPTION_PAST_DUE';
-ALTER TYPE "NotificationType" ADD VALUE 'SUBSCRIPTION_LAUNCH_ANNOUNCEMENT';
+-- Safe inside the migration transaction on PostgreSQL 12+, and none of these values are
+-- referenced later in this file (a value added here could not be used in the same
+-- transaction).
+ALTER TYPE "NotificationType" ADD VALUE IF NOT EXISTS 'SUBSCRIPTION_TRIAL_EXPIRED';
+ALTER TYPE "NotificationType" ADD VALUE IF NOT EXISTS 'SUBSCRIPTION_ACTIVATED';
+ALTER TYPE "NotificationType" ADD VALUE IF NOT EXISTS 'SUBSCRIPTION_CANCELLED';
+ALTER TYPE "NotificationType" ADD VALUE IF NOT EXISTS 'SUBSCRIPTION_PAST_DUE';
+ALTER TYPE "NotificationType" ADD VALUE IF NOT EXISTS 'SUBSCRIPTION_LAUNCH_ANNOUNCEMENT';
 
 -- AlterTable
-ALTER TABLE "CpSubscription" ADD COLUMN     "targetPlan" "CpSubscriptionPlan",
-ADD COLUMN     "trialEndsAt" TIMESTAMP(3),
-ADD COLUMN     "trialStartsAt" TIMESTAMP(3),
-ADD COLUMN     "trialUsed" BOOLEAN NOT NULL DEFAULT false,
-ALTER COLUMN "status" SET DEFAULT 'TRIALING';
+ALTER TABLE "CpSubscription" ADD COLUMN IF NOT EXISTS "targetPlan" "CpSubscriptionPlan",
+ADD COLUMN IF NOT EXISTS "trialEndsAt" TIMESTAMP(3),
+ADD COLUMN IF NOT EXISTS "trialStartsAt" TIMESTAMP(3),
+ADD COLUMN IF NOT EXISTS "trialUsed" BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE "CpSubscription" ALTER COLUMN "status" SET DEFAULT 'TRIALING';
 
 -- CreateTable
-CREATE TABLE "Plan" (
+CREATE TABLE IF NOT EXISTS "Plan" (
     "id" TEXT NOT NULL,
     "key" "PlanTier" NOT NULL,
     "name" TEXT NOT NULL,
@@ -40,7 +50,7 @@ CREATE TABLE "Plan" (
 );
 
 -- CreateTable
-CREATE TABLE "Subscription" (
+CREATE TABLE IF NOT EXISTS "Subscription" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "planId" TEXT NOT NULL,
@@ -61,7 +71,7 @@ CREATE TABLE "Subscription" (
 );
 
 -- CreateTable
-CREATE TABLE "PaymentRecord" (
+CREATE TABLE IF NOT EXISTS "PaymentRecord" (
     "id" TEXT NOT NULL,
     "subscriptionId" TEXT NOT NULL,
     "amount" INTEGER NOT NULL,
@@ -75,7 +85,7 @@ CREATE TABLE "PaymentRecord" (
 );
 
 -- CreateTable
-CREATE TABLE "CpPlan" (
+CREATE TABLE IF NOT EXISTS "CpPlan" (
     "id" TEXT NOT NULL,
     "key" "CpSubscriptionPlan" NOT NULL,
     "name" TEXT NOT NULL,
@@ -89,7 +99,7 @@ CREATE TABLE "CpPlan" (
 );
 
 -- CreateTable
-CREATE TABLE "SystemConfig" (
+CREATE TABLE IF NOT EXISTS "SystemConfig" (
     "id" TEXT NOT NULL DEFAULT 'default',
     "personalSubscriptionsEnabled" BOOLEAN NOT NULL DEFAULT true,
     "connectPlusSubscriptionsEnabled" BOOLEAN NOT NULL DEFAULT true,
@@ -102,44 +112,58 @@ CREATE TABLE "SystemConfig" (
     CONSTRAINT "SystemConfig_pkey" PRIMARY KEY ("id")
 );
 
--- CreateIndex
-CREATE UNIQUE INDEX "Plan_key_key" ON "Plan"("key");
+-- Columns absent from the older db-push state of the test database. These run after the
+-- CREATE TABLE statements above so they apply whether the table was just created or
+-- already existed. Plan.limits in particular must exist before the seed INSERT below.
+ALTER TABLE "Plan" ADD COLUMN IF NOT EXISTS "limits" JSONB;
+ALTER TABLE "Subscription" ADD COLUMN IF NOT EXISTS "notifiedLaunch" BOOLEAN NOT NULL DEFAULT false;
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Subscription_userId_key" ON "Subscription"("userId");
+CREATE UNIQUE INDEX IF NOT EXISTS "Plan_key_key" ON "Plan"("key");
 
 -- CreateIndex
-CREATE INDEX "Subscription_userId_idx" ON "Subscription"("userId");
+CREATE UNIQUE INDEX IF NOT EXISTS "Subscription_userId_key" ON "Subscription"("userId");
 
 -- CreateIndex
-CREATE INDEX "Subscription_status_idx" ON "Subscription"("status");
+CREATE INDEX IF NOT EXISTS "Subscription_userId_idx" ON "Subscription"("userId");
 
 -- CreateIndex
-CREATE INDEX "Subscription_trialEndDate_idx" ON "Subscription"("trialEndDate");
+CREATE INDEX IF NOT EXISTS "Subscription_status_idx" ON "Subscription"("status");
 
 -- CreateIndex
-CREATE INDEX "Subscription_currentPeriodEnd_idx" ON "Subscription"("currentPeriodEnd");
+CREATE INDEX IF NOT EXISTS "Subscription_trialEndDate_idx" ON "Subscription"("trialEndDate");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "PaymentRecord_gatewayRef_key" ON "PaymentRecord"("gatewayRef");
+CREATE INDEX IF NOT EXISTS "Subscription_currentPeriodEnd_idx" ON "Subscription"("currentPeriodEnd");
 
 -- CreateIndex
-CREATE INDEX "PaymentRecord_subscriptionId_idx" ON "PaymentRecord"("subscriptionId");
+CREATE UNIQUE INDEX IF NOT EXISTS "PaymentRecord_gatewayRef_key" ON "PaymentRecord"("gatewayRef");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "CpPlan_key_key" ON "CpPlan"("key");
+CREATE INDEX IF NOT EXISTS "PaymentRecord_subscriptionId_idx" ON "PaymentRecord"("subscriptionId");
 
 -- CreateIndex
-CREATE INDEX "CpSubscription_status_idx" ON "CpSubscription"("status");
+CREATE UNIQUE INDEX IF NOT EXISTS "CpPlan_key_key" ON "CpPlan"("key");
 
 -- CreateIndex
-CREATE INDEX "CpSubscription_trialEndsAt_idx" ON "CpSubscription"("trialEndsAt");
+CREATE INDEX IF NOT EXISTS "CpSubscription_status_idx" ON "CpSubscription"("status");
+
+-- CreateIndex
+CREATE INDEX IF NOT EXISTS "CpSubscription_trialEndsAt_idx" ON "CpSubscription"("trialEndsAt");
 
 -- AddForeignKey
-ALTER TABLE "Subscription" ADD CONSTRAINT "Subscription_planId_fkey" FOREIGN KEY ("planId") REFERENCES "Plan"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+DO $$ BEGIN
+    ALTER TABLE "Subscription" ADD CONSTRAINT "Subscription_planId_fkey" FOREIGN KEY ("planId") REFERENCES "Plan"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- AddForeignKey
-ALTER TABLE "PaymentRecord" ADD CONSTRAINT "PaymentRecord_subscriptionId_fkey" FOREIGN KEY ("subscriptionId") REFERENCES "Subscription"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+DO $$ BEGIN
+    ALTER TABLE "PaymentRecord" ADD CONSTRAINT "PaymentRecord_subscriptionId_fkey" FOREIGN KEY ("subscriptionId") REFERENCES "Subscription"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- Seed the plan catalogues.
 -- `prisma migrate deploy` never runs prisma/seed.ts, and the Dockerfile CMD only runs
