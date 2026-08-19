@@ -178,22 +178,30 @@ export class SubscriptionsService {
     return currentCount < limit;
   }
 
+  /**
+   * `tx` lets a caller run the upgrade inside its own transaction — the payment
+   * webhook does this so that a duplicate gateway reference rolls the upgrade back
+   * instead of extending the paid period a second time.
+   */
   async upgradePlan(
     userId: string,
     newPlanKey: PlanTier,
     gatewaySubId: string,
+    tx?: Pick<DatabaseService, 'subscription' | 'plan'>,
   ): Promise<Subscription> {
-    let sub = await this.db.subscription.findUnique({ where: { userId } });
+    const db = tx ?? this.db;
+
+    let sub = await db.subscription.findUnique({ where: { userId } });
     if (!sub) {
       sub = await this.createSubscription(userId, PlanTier.FREE, true);
     }
 
-    const plan = await this.db.plan.findUnique({ where: { key: newPlanKey } });
+    const plan = await db.plan.findUnique({ where: { key: newPlanKey } });
     if (!plan) throw new NotFoundException(`Plan not found: ${newPlanKey}`);
 
     const now = new Date();
 
-    return this.db.subscription.update({
+    return db.subscription.update({
       where: { userId },
       data: {
         planId: plan.id,

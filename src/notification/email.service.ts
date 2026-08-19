@@ -29,8 +29,11 @@ export class EmailService {
 
   constructor() {
     const apiKey = process.env.RESEND_API_KEY;
+    // Send from the already-verified isce.app domain (SPF/DKIM/DMARC in place).
+    // The LYNCON rebrand changes the display name only — moving the sending domain
+    // to lyncon.app needs its DNS records verified in Resend first.
     this.fromAddress =
-      process.env.RESEND_FROM_EMAIL || 'LYNCON <notifications@lyncon.app>';
+      process.env.RESEND_FROM_EMAIL || 'LYNCON <lyncon@isce.app>';
     this.appUrl = process.env.APP_URL || 'https://connect.isce.app';
 
     if (apiKey) {

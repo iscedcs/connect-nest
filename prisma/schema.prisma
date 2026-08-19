@@ -834,7 +834,7 @@ model PaymentRecord {
   amount         Int          // in kobo
   currency       String       @default("NGN")
   status         String       // 'success' | 'failed' | 'pending'
-  gatewayRef     String?
+  gatewayRef     String?      @unique // gateways retry webhooks; DB enforces once-only processing
   paidAt         DateTime?
   createdAt      DateTime     @default(now())
 
