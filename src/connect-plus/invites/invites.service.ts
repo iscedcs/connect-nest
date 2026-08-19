@@ -81,6 +81,7 @@ export class CpInvitesService {
       email: dto.email,
       token: rawToken,
       role: CpRole.STAFF,
+      workspaceId,
       workspaceName: workspace?.companyProfile?.name ?? workspace?.name ?? workspaceId,
       inviterName: ctx.authUserId,
       name: dto.name,
@@ -167,6 +168,7 @@ export class CpInvitesService {
       email: invite.email,
       token: rawToken,
       role: invite.role,
+      workspaceId,
       workspaceName: workspace?.companyProfile?.name ?? workspace?.name ?? workspaceId,
       inviterName: ctx.authUserId,
     });
