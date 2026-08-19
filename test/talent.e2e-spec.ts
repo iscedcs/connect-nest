@@ -97,9 +97,9 @@ describe('CpTalent (e2e)', () => {
     await app.close();
   });
 
-  it('/api/cp/workspaces/:wsId/talent/search (GET) - search by keyword', async () => {
+  it('/api/cp/talent/search (GET) - search by keyword', async () => {
     const res = await request(app.getHttpServer())
-      .get(`/api/cp/workspaces/${workspaceId}/talent/search`)
+      .get('/api/cp/talent/search')
       .query({ keyword: 'nestjs' })
       .set('Authorization', `Bearer ${token}`)
       .set('x-workspace-id', workspaceId)
@@ -110,9 +110,9 @@ describe('CpTalent (e2e)', () => {
     expect(res.body[0].id).toBe(artisanId);
   });
 
-  it('/api/cp/workspaces/:wsId/talent/saved/:artisanId (POST) - save talent', async () => {
+  it('/api/cp/talent/saved/:artisanId (POST) - save talent', async () => {
     const res = await request(app.getHttpServer())
-      .post(`/api/cp/workspaces/${workspaceId}/talent/saved/${artisanId}`)
+      .post(`/api/cp/talent/saved/${artisanId}`)
       .set('Authorization', `Bearer ${token}`)
       .set('x-workspace-id', workspaceId)
       .send({ notes: 'Looks like a great fit' })
@@ -122,9 +122,9 @@ describe('CpTalent (e2e)', () => {
     expect(res.body.notes).toBe('Looks like a great fit');
   });
 
-  it('/api/cp/workspaces/:wsId/talent/saved (GET) - get saved talent', async () => {
+  it('/api/cp/talent/saved (GET) - get saved talent', async () => {
     const res = await request(app.getHttpServer())
-      .get(`/api/cp/workspaces/${workspaceId}/talent/saved`)
+      .get('/api/cp/talent/saved')
       .set('Authorization', `Bearer ${token}`)
       .set('x-workspace-id', workspaceId)
       .expect(200);
@@ -135,9 +135,9 @@ describe('CpTalent (e2e)', () => {
     expect(res.body[0].artisan.profile.name).toBe('John Artisan');
   });
 
-  it('/api/cp/workspaces/:wsId/talent/:artisanId/invite/:jobId (POST) - invite to job', async () => {
+  it('/api/cp/talent/:artisanId/invite/:jobId (POST) - invite to job', async () => {
     const res = await request(app.getHttpServer())
-      .post(`/api/cp/workspaces/${workspaceId}/talent/${artisanId}/invite/${jobId}`)
+      .post(`/api/cp/talent/${artisanId}/invite/${jobId}`)
       .set('Authorization', `Bearer ${token}`)
       .set('x-workspace-id', workspaceId)
       .expect(201);
@@ -145,9 +145,9 @@ describe('CpTalent (e2e)', () => {
     expect(res.body.success).toBe(true);
   });
 
-  it('/api/cp/workspaces/:wsId/talent/saved/:artisanId (DELETE) - remove saved talent', async () => {
+  it('/api/cp/talent/saved/:artisanId (DELETE) - remove saved talent', async () => {
     const res = await request(app.getHttpServer())
-      .delete(`/api/cp/workspaces/${workspaceId}/talent/saved/${artisanId}`)
+      .delete(`/api/cp/talent/saved/${artisanId}`)
       .set('Authorization', `Bearer ${token}`)
       .set('x-workspace-id', workspaceId)
       .expect(200);
@@ -155,7 +155,7 @@ describe('CpTalent (e2e)', () => {
     expect(res.body.success).toBe(true);
 
     const checkRes = await request(app.getHttpServer())
-      .get(`/api/cp/workspaces/${workspaceId}/talent/saved`)
+      .get('/api/cp/talent/saved')
       .set('Authorization', `Bearer ${token}`)
       .set('x-workspace-id', workspaceId)
       .expect(200);

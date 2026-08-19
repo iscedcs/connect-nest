@@ -8,6 +8,7 @@ import {
   UpdateCardInteractionDto,
 } from './dto/card-interaction.dto';
 import { ScanType } from '../generated/prisma/client';
+import { SubscriptionsService } from '../subscriptions/subscriptions.service';
 
 @Injectable()
 export class CardInteractionsService {
@@ -16,6 +17,7 @@ export class CardInteractionsService {
     private readonly authClientService: AuthClientService,
     private readonly pushService: PushService,
     private readonly notifications: NotificationDispatcher,
+    private readonly subscriptionsService: SubscriptionsService,
   ) {}
 
   async recordCardInteraction(dto: CreateCardInteractionDto) {
@@ -97,6 +99,36 @@ export class CardInteractionsService {
         }
       }
 
+      // Enforce tapsPerDay limit — look up profile owner's plan
+      const ownerProfile = await this.databaseService.profile.findUnique({
+        where: { id: profileId },
+        select: { userId: true },
+      });
+      if (ownerProfile?.userId) {
+        const limits = await this.subscriptionsService.getUserLimits(
+          ownerProfile.userId,
+        );
+        if (limits.tapsPerDay !== Infinity) {
+          const todayStart = new Date();
+          todayStart.setHours(0, 0, 0, 0);
+          const todayCount = await this.databaseService.cardInteraction.count({
+            where: {
+              userId: profileId,
+              createdAt: { gte: todayStart },
+              deletedAt: null,
+            },
+          });
+          if (todayCount >= limits.tapsPerDay) {
+            // Silently succeed — do not record, but do not expose the limit to public callers
+            return {
+              success: true,
+              message: 'Card interaction recorded successfully',
+              data: { cardInteraction: null },
+            };
+          }
+        }
+      }
+
       const cardInteraction = await this.databaseService.cardInteraction.create(
         {
           data: {
@@ -165,6 +197,15 @@ export class CardInteractionsService {
         };
       }
 
+      // Enforce analyticsHistoryDays — restrict visible history to plan limit
+      const limits = await this.subscriptionsService.getUserLimits(user.id);
+      const dateFilter: { createdAt?: { gte: Date } } = {};
+      if (limits.analyticsHistoryDays !== Infinity) {
+        const cutoff = new Date();
+        cutoff.setDate(cutoff.getDate() - limits.analyticsHistoryDays);
+        dateFilter.createdAt = { gte: cutoff };
+      }
+
       const skip = (page - 1) * limit;
 
       const cardInteractions =
@@ -172,6 +213,7 @@ export class CardInteractionsService {
           where: {
             userId: profile.id,
             deletedAt: null,
+            ...dateFilter,
           },
           orderBy: { createdAt: 'desc' },
           skip,
@@ -182,6 +224,7 @@ export class CardInteractionsService {
         where: {
           userId: profile.id,
           deletedAt: null,
+          ...dateFilter,
         },
       });
 
@@ -374,6 +417,14 @@ export class CardInteractionsService {
         };
       }
 
+      const limits = await this.subscriptionsService.getUserLimits(user.id);
+      const dateFilter: { createdAt?: { gte: Date } } = {};
+      if (limits.analyticsHistoryDays !== Infinity) {
+        const cutoff = new Date();
+        cutoff.setDate(cutoff.getDate() - limits.analyticsHistoryDays);
+        dateFilter.createdAt = { gte: cutoff };
+      }
+
       const skip = (page - 1) * limit;
 
       const cardInteractions =
@@ -382,6 +433,7 @@ export class CardInteractionsService {
             userId: profile.id,
             method: method,
             deletedAt: null,
+            ...dateFilter,
           },
           orderBy: { createdAt: 'desc' },
           skip,
@@ -393,6 +445,7 @@ export class CardInteractionsService {
           userId: profile.id,
           method: method,
           deletedAt: null,
+          ...dateFilter,
         },
       });
 
@@ -435,6 +488,14 @@ export class CardInteractionsService {
         };
       }
 
+      const limits = await this.subscriptionsService.getUserLimits(user.id);
+      const dateFilter: { createdAt?: { gte: Date } } = {};
+      if (limits.analyticsHistoryDays !== Infinity) {
+        const cutoff = new Date();
+        cutoff.setDate(cutoff.getDate() - limits.analyticsHistoryDays);
+        dateFilter.createdAt = { gte: cutoff };
+      }
+
       const skip = (page - 1) * limit;
 
       const cardInteractions =
@@ -443,6 +504,7 @@ export class CardInteractionsService {
             userId: profile.id,
             deviceId: deviceId,
             deletedAt: null,
+            ...dateFilter,
           },
           orderBy: { createdAt: 'desc' },
           skip,
@@ -454,6 +516,7 @@ export class CardInteractionsService {
           userId: profile.id,
           deviceId: deviceId,
           deletedAt: null,
+          ...dateFilter,
         },
       });
 
@@ -491,11 +554,20 @@ export class CardInteractionsService {
         };
       }
 
+      const limits = await this.subscriptionsService.getUserLimits(user.id);
+      const dateFilter: { createdAt?: { gte: Date } } = {};
+      if (limits.analyticsHistoryDays !== Infinity) {
+        const cutoff = new Date();
+        cutoff.setDate(cutoff.getDate() - limits.analyticsHistoryDays);
+        dateFilter.createdAt = { gte: cutoff };
+      }
+
       const cardInteractions =
         await this.databaseService.cardInteraction.findMany({
           where: {
             userId: profile.id,
             deletedAt: null,
+            ...dateFilter,
           },
           orderBy: { createdAt: 'desc' },
           take: limit,
@@ -529,11 +601,20 @@ export class CardInteractionsService {
         };
       }
 
+      const limits = await this.subscriptionsService.getUserLimits(user.id);
+      const dateFilter: { createdAt?: { gte: Date } } = {};
+      if (limits.analyticsHistoryDays !== Infinity) {
+        const cutoff = new Date();
+        cutoff.setDate(cutoff.getDate() - limits.analyticsHistoryDays);
+        dateFilter.createdAt = { gte: cutoff };
+      }
+
       const totalInteractions =
         await this.databaseService.cardInteraction.count({
           where: {
             userId: profile.id,
             deletedAt: null,
+            ...dateFilter,
           },
         });
 
@@ -542,6 +623,7 @@ export class CardInteractionsService {
           userId: profile.id,
           method: 'TAP',
           deletedAt: null,
+          ...dateFilter,
         },
       });
 
@@ -551,6 +633,7 @@ export class CardInteractionsService {
             userId: profile.id,
             method: 'SCAN',
             deletedAt: null,
+            ...dateFilter,
           },
         },
       );
@@ -594,6 +677,7 @@ export class CardInteractionsService {
         where: {
           userId: profile.id,
           deletedAt: null,
+          ...dateFilter,
         },
         _count: {
           deviceId: true,
@@ -650,6 +734,16 @@ export class CardInteractionsService {
         };
       }
 
+      const limits = await this.subscriptionsService.getUserLimits(user.id);
+      let effectiveStart = new Date(startDate);
+      if (limits.analyticsHistoryDays !== Infinity) {
+        const cutoff = new Date();
+        cutoff.setDate(cutoff.getDate() - limits.analyticsHistoryDays);
+        if (effectiveStart < cutoff) {
+          effectiveStart = cutoff;
+        }
+      }
+
       const skip = (page - 1) * limit;
 
       const cardInteractions =
@@ -658,7 +752,7 @@ export class CardInteractionsService {
             userId: profile.id,
             deletedAt: null,
             createdAt: {
-              gte: new Date(startDate),
+              gte: effectiveStart,
               lte: new Date(endDate),
             },
           },
@@ -672,7 +766,7 @@ export class CardInteractionsService {
           userId: profile.id,
           deletedAt: null,
           createdAt: {
-            gte: new Date(startDate),
+            gte: effectiveStart,
             lte: new Date(endDate),
           },
         },

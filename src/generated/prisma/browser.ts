@@ -168,6 +168,21 @@ export type Promotion = Prisma.PromotionModel
  */
 export type PlatformSetting = Prisma.PlatformSettingModel
 /**
+ * Model Plan
+ * 
+ */
+export type Plan = Prisma.PlanModel
+/**
+ * Model Subscription
+ * 
+ */
+export type Subscription = Prisma.SubscriptionModel
+/**
+ * Model PaymentRecord
+ * 
+ */
+export type PaymentRecord = Prisma.PaymentRecordModel
+/**
  * Model CpOrganization
  * 
  */
@@ -177,6 +192,11 @@ export type CpOrganization = Prisma.CpOrganizationModel
  * 
  */
 export type CpSubscription = Prisma.CpSubscriptionModel
+/**
+ * Model CpPlan
+ * 
+ */
+export type CpPlan = Prisma.CpPlanModel
 /**
  * Model CpWorkspace
  * 
@@ -282,3 +302,8 @@ export type CpSavedTalent = Prisma.CpSavedTalentModel
  * 
  */
 export type HealthIncident = Prisma.HealthIncidentModel
+/**
+ * Model SystemConfig
+ * 
+ */
+export type SystemConfig = Prisma.SystemConfigModel

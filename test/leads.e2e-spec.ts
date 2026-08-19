@@ -70,9 +70,9 @@ describe('CpLeads (e2e)', () => {
     leadId = res.body.leadId;
   });
 
-  it('/api/cp/workspaces/:wsId/leads (GET) - get workspace leads', async () => {
+  it('/api/cp/leads (GET) - get workspace leads', async () => {
     const res = await request(app.getHttpServer())
-      .get(`/api/cp/workspaces/${workspaceId}/leads`)
+      .get('/api/cp/leads')
       .set('Authorization', `Bearer ${token}`)
       .set('x-workspace-id', workspaceId)
       .expect(200);

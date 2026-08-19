@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { validate } from './config/env.validation';
 import { AuthModule } from './auth/auth.module';
 import { ReferralModule } from './referral/referral.module';
 import { APP_GUARD } from '@nestjs/core';
@@ -29,6 +31,9 @@ import { MailClientModule } from './mail/mail-client.module';
 import { ConnectPlusModule } from './connect-plus/connect-plus.module';
 import { SentryModule } from '@sentry/nestjs/setup';
 import { HealthModule } from './health/health.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { SubscriptionsModule } from './subscriptions/subscriptions.module';
+import { SystemConfigModule } from './system-config/system-config.module';
 
 @Module({
   providers: [
@@ -43,12 +48,19 @@ import { HealthModule } from './health/health.module';
   ],
   imports: [
     SentryModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      validate,
+    }),
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
         limit: 30,
       },
     ]),
+    ScheduleModule.forRoot(),
+    SystemConfigModule,
+    SubscriptionsModule,
     AuthModule,
     DatabaseModule,
     ContactModule,

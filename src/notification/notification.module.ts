@@ -18,6 +18,6 @@ import { AuthModule } from 'src/auth/auth.module';
     NotificationDispatcher,
     DatabaseService,
   ],
-  exports: [NotificationService, NotificationDispatcher],
+  exports: [NotificationService, NotificationDispatcher, EmailService],
 })
 export class NotificationModule {}

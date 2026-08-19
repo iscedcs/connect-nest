@@ -8,6 +8,21 @@ import {
   IsUrl,
 } from 'class-validator';
 
+export class GeneratePresignedUploadUrlDto {
+  @ApiProperty({ description: 'Original filename', example: 'resume.pdf' })
+  @IsString()
+  filename: string;
+
+  @ApiProperty({ description: 'Media MIME type', example: 'application/pdf' })
+  @IsString()
+  media_type: string;
+
+  @ApiProperty({ description: 'File size in bytes', example: 1048576 })
+  @IsNumber()
+  @Min(1)
+  size_bytes: number;
+}
+
 export class CreateFileDto {
   @ApiProperty({ description: 'Original filename', example: 'brochure.pdf' })
   @IsString()

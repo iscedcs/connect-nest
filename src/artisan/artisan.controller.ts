@@ -8,6 +8,7 @@ import {
   Param,
   Query,
   Request,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import {
@@ -19,6 +20,7 @@ import {
 } from '@nestjs/swagger';
 import { ArtisanService } from './artisan.service';
 import { PublicRoute } from '../auth/decorators/public-route.decorator';
+import { SuperAdminGuard } from '../auth/guards/super-admin.guard';
 import {
   RegisterArtisanDto,
   UpdateArtisanDto,
@@ -532,6 +534,7 @@ export class DirectoryController {
 
 @ApiTags('Artisan Admin')
 @ApiBearerAuth('access-token')
+@UseGuards(SuperAdminGuard)
 @Controller('admin/artisan')
 export class ArtisanAdminController {
   constructor(private readonly artisanService: ArtisanService) {}

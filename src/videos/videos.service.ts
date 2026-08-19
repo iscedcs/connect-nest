@@ -1,16 +1,22 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
-import {
-  CreateVideoDto,
+import { 
+  CreateVideoDto, 
   UpdateVideoDto,
   BulkVisibilityDto,
   BulkDeleteDto,
-  BulkRestoreDto,
+  BulkRestoreDto
 } from './dto/video.dto';
+import { SubscriptionsService } from '../subscriptions/subscriptions.service';
+import { PlanLimitException } from '../subscriptions/exceptions/plan-limit.exception';
+import { PlanTier } from '../generated/prisma/client';
 
 @Injectable()
 export class VideosService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly subscriptionsService: SubscriptionsService,
+  ) {}
 
   async createVideo(user: any, profileId: string, dto: CreateVideoDto) {
     try {
@@ -30,6 +36,15 @@ export class VideosService {
         };
       }
 
+      // Enforce videos limit (aggregate across all user profiles)
+      const limits = await this.subscriptionsService.getUserLimits(user.id);
+      const currentCount = await this.databaseService.video.count({
+        where: { profile: { userId: user.id }, deletedAt: null },
+      });
+      if (currentCount >= limits.videos) {
+        throw new PlanLimitException('videos', PlanTier.PRO_LITE);
+      }
+
       const video = await this.databaseService.video.create({
         data: {
           profileId,
@@ -42,18 +57,10 @@ export class VideosService {
         },
       });
 
-      return {
-        success: true,
-        message: 'Video created successfully',
-        data: {
-          video,
-        },
-      };
+      return { success: true, message: 'Video created successfully', data: { video } };
     } catch (error) {
-      return {
-        success: false,
-        message: error.message,
-      };
+      if (error instanceof HttpException) throw error;
+      return { success: false, message: error.message };
     }
   }
 
@@ -64,7 +71,7 @@ export class VideosService {
     perPage: number = 25,
     includeDeleted: boolean = false,
     sort?: string,
-    order: 'asc' | 'desc' = 'asc',
+    order: 'asc' | 'desc' = 'asc'
   ) {
     try {
       // Verify profile belongs to user
@@ -84,7 +91,7 @@ export class VideosService {
 
       const skip = (page - 1) * perPage;
       const where: any = { profileId };
-
+      
       if (!includeDeleted) {
         where.deletedAt = null;
       }
@@ -178,7 +185,7 @@ export class VideosService {
     user: any,
     profileId: string,
     videoId: string,
-    dto: UpdateVideoDto,
+    dto: UpdateVideoDto
   ) {
     try {
       // Verify profile belongs to user
@@ -218,9 +225,8 @@ export class VideosService {
       if (dto.url !== undefined) updateData.url = dto.url;
       if (dto.thumbnail !== undefined) updateData.thumbnail = dto.thumbnail;
       if (dto.is_visible !== undefined) updateData.is_visible = dto.is_visible;
-      if (dto.is_featured !== undefined)
-        updateData.is_featured = dto.is_featured;
-
+      if (dto.is_featured !== undefined) updateData.is_featured = dto.is_featured;
+      
       const updatedVideo = await this.databaseService.video.update({
         where: { id: videoId },
         data: updateData,
@@ -346,12 +352,7 @@ export class VideosService {
     }
   }
 
-  async toggleVisibility(
-    user: any,
-    profileId: string,
-    videoId: string,
-    isVisible: boolean,
-  ) {
+  async toggleVisibility(user: any, profileId: string, videoId: string, isVisible: boolean) {
     try {
       // Verify profile belongs to user
       const profile = await this.databaseService.profile.findFirst({
@@ -584,7 +585,7 @@ export class VideosService {
       }
 
       const where: any = { profileId, deletedAt: null };
-
+      
       if (dto.ids && dto.ids.length > 0) {
         where.id = { in: dto.ids };
       }
@@ -692,3 +693,4 @@ export class VideosService {
     }
   }
 }
+

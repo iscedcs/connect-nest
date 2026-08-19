@@ -9,7 +9,7 @@ import { Request } from 'express';
 /**
  * Guards internal service-to-service endpoints.
  * Requires the `X-Internal-Secret` header to match
- * the `INTERNAL_API_SECRET` environment variable.
+ * the `INTERNAL_API_KEY` environment variable.
  *
  * Apply on top of `@PublicRoute()` so the global JWT AuthGuard
  * is bypassed while this guard enforces the shared secret.
@@ -18,7 +18,10 @@ import { Request } from 'express';
 export class InternalGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest<Request>();
-    const provided = request.headers['x-internal-secret'];
+    const provided =
+      request.headers['x-internal-secret'] ||
+      request.headers['x-internal-api-key'] ||
+      request.headers['internal-api-key'];
     const expected = process.env.INTERNAL_API_KEY;
 
     if (!expected) {

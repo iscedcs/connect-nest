@@ -1,16 +1,22 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
-import {
-  CreateMeetingDto,
+import { 
+  CreateMeetingDto, 
   UpdateMeetingDto,
   BulkVisibilityDto,
   BulkDeleteDto,
-  BulkRestoreDto,
+  BulkRestoreDto
 } from './dto/meeting.dto';
+import { SubscriptionsService } from '../subscriptions/subscriptions.service';
+import { PlanLimitException } from '../subscriptions/exceptions/plan-limit.exception';
+import { PlanTier } from '../generated/prisma/client';
 
 @Injectable()
 export class MeetingsService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly subscriptionsService: SubscriptionsService,
+  ) {}
 
   async createMeeting(user: any, profileId: string, dto: CreateMeetingDto) {
     try {
@@ -20,6 +26,15 @@ export class MeetingsService {
 
       if (!profile) {
         return { success: false, message: 'Profile not found' };
+      }
+
+      // Enforce meeting links limit (aggregate across all user profiles)
+      const limits = await this.subscriptionsService.getUserLimits(user.id);
+      const currentCount = await this.databaseService.meetingLink.count({
+        where: { profile: { userId: user.id }, deletedAt: null },
+      });
+      if (currentCount >= limits.meetingLinks) {
+        throw new PlanLimitException('meetingLinks', PlanTier.PRO_LITE);
       }
 
       const meeting = await this.databaseService.meetingLink.create({
@@ -33,25 +48,14 @@ export class MeetingsService {
         },
       });
 
-      return {
-        success: true,
-        message: 'Meeting created successfully',
-        data: { meeting },
-      };
+      return { success: true, message: 'Meeting created successfully', data: { meeting } };
     } catch (error) {
+      if (error instanceof HttpException) throw error;
       return { success: false, message: error.message };
     }
   }
 
-  async getAllMeetings(
-    user: any,
-    profileId: string,
-    page: number = 1,
-    perPage: number = 25,
-    includeDeleted: boolean = false,
-    sort?: string,
-    order: 'asc' | 'desc' = 'asc',
-  ) {
+  async getAllMeetings(user: any, profileId: string, page: number = 1, perPage: number = 25, includeDeleted: boolean = false, sort?: string, order: 'asc' | 'desc' = 'asc') {
     try {
       const profile = await this.databaseService.profile.findFirst({
         where: { id: profileId, userId: user.id },
@@ -68,27 +72,14 @@ export class MeetingsService {
       const orderBy: any = sort ? { [sort]: order } : { createdAt: order };
 
       const [meetings, total] = await Promise.all([
-        this.databaseService.meetingLink.findMany({
-          where,
-          skip,
-          take: perPage,
-          orderBy: [orderBy],
-        }),
+        this.databaseService.meetingLink.findMany({ where, skip, take: perPage, orderBy: [orderBy] }),
         this.databaseService.meetingLink.count({ where }),
       ]);
 
       return {
         success: true,
         message: 'Meetings retrieved successfully',
-        data: {
-          meetings,
-          pagination: {
-            page,
-            per_page: perPage,
-            total,
-            pages: Math.ceil(total / perPage),
-          },
-        },
+        data: { meetings, pagination: { page, per_page: perPage, total, pages: Math.ceil(total / perPage) } },
       };
     } catch (error) {
       return { success: false, message: error.message };
@@ -113,22 +104,13 @@ export class MeetingsService {
         return { success: false, message: 'Meeting not found' };
       }
 
-      return {
-        success: true,
-        message: 'Meeting retrieved successfully',
-        data: { meeting },
-      };
+      return { success: true, message: 'Meeting retrieved successfully', data: { meeting } };
     } catch (error) {
       return { success: false, message: error.message };
     }
   }
 
-  async updateMeeting(
-    user: any,
-    profileId: string,
-    meetingId: string,
-    dto: UpdateMeetingDto,
-  ) {
+  async updateMeeting(user: any, profileId: string, meetingId: string, dto: UpdateMeetingDto) {
     try {
       const profile = await this.databaseService.profile.findFirst({
         where: { id: profileId, userId: user.id, deletedAt: null },
@@ -148,19 +130,10 @@ export class MeetingsService {
 
       const updatedMeeting = await this.databaseService.meetingLink.update({
         where: { id: meetingId },
-        data: {
-          provider: dto.provider,
-          url: dto.url,
-          label: dto.label,
-          is_visible: dto.is_visible,
-        },
+        data: { provider: dto.provider, url: dto.url, label: dto.label, is_visible: dto.is_visible },
       });
 
-      return {
-        success: true,
-        message: 'Meeting updated successfully',
-        data: { meeting: updatedMeeting },
-      };
+      return { success: true, message: 'Meeting updated successfully', data: { meeting: updatedMeeting } };
     } catch (error) {
       return { success: false, message: error.message };
     }
@@ -218,22 +191,13 @@ export class MeetingsService {
         data: { deletedAt: null },
       });
 
-      return {
-        success: true,
-        message: 'Meeting restored successfully',
-        data: { meeting: restoredMeeting },
-      };
+      return { success: true, message: 'Meeting restored successfully', data: { meeting: restoredMeeting } };
     } catch (error) {
       return { success: false, message: error.message };
     }
   }
 
-  async toggleVisibility(
-    user: any,
-    profileId: string,
-    meetingId: string,
-    isVisible: boolean,
-  ) {
+  async toggleVisibility(user: any, profileId: string, meetingId: string, isVisible: boolean) {
     try {
       const profile = await this.databaseService.profile.findFirst({
         where: { id: profileId, userId: user.id, deletedAt: null },
@@ -256,11 +220,7 @@ export class MeetingsService {
         data: { is_visible: isVisible },
       });
 
-      return {
-        success: true,
-        message: 'Meeting visibility updated successfully',
-        data: { meeting: updatedMeeting },
-      };
+      return { success: true, message: 'Meeting visibility updated successfully', data: { meeting: updatedMeeting } };
     } catch (error) {
       return { success: false, message: error.message };
     }
@@ -285,12 +245,7 @@ export class MeetingsService {
       }
 
       await this.databaseService.meetingLink.updateMany({
-        where: {
-          profileId,
-          id: { not: meetingId },
-          is_default: true,
-          deletedAt: null,
-        },
+        where: { profileId, id: { not: meetingId }, is_default: true, deletedAt: null },
         data: { is_default: false },
       });
 
@@ -299,11 +254,7 @@ export class MeetingsService {
         data: { is_default: true },
       });
 
-      return {
-        success: true,
-        message: 'Default meeting set successfully',
-        data: { meeting: updatedMeeting },
-      };
+      return { success: true, message: 'Default meeting set successfully', data: { meeting: updatedMeeting } };
     } catch (error) {
       return { success: false, message: error.message };
     }
@@ -327,11 +278,7 @@ export class MeetingsService {
         return { success: false, message: 'Default meeting not found' };
       }
 
-      return {
-        success: true,
-        message: 'Default meeting retrieved successfully',
-        data: { meeting },
-      };
+      return { success: true, message: 'Default meeting retrieved successfully', data: { meeting } };
     } catch (error) {
       return { success: false, message: error.message };
     }
@@ -352,11 +299,7 @@ export class MeetingsService {
         orderBy: { createdAt: 'desc' },
       });
 
-      return {
-        success: true,
-        message: 'Meetings retrieved successfully',
-        data: { meetings },
-      };
+      return { success: true, message: 'Meetings retrieved successfully', data: { meetings } };
     } catch (error) {
       return { success: false, message: error.message };
     }
@@ -425,12 +368,10 @@ export class MeetingsService {
         data: { is_visible: dto.is_visible },
       });
 
-      return {
-        success: true,
-        message: 'Meetings visibility updated successfully',
-      };
+      return { success: true, message: 'Meetings visibility updated successfully' };
     } catch (error) {
       return { success: false, message: error.message };
     }
   }
 }
+

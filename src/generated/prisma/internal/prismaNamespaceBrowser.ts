@@ -81,8 +81,12 @@ export const ModelName = {
   Review: 'Review',
   Promotion: 'Promotion',
   PlatformSetting: 'PlatformSetting',
+  Plan: 'Plan',
+  Subscription: 'Subscription',
+  PaymentRecord: 'PaymentRecord',
   CpOrganization: 'CpOrganization',
   CpSubscription: 'CpSubscription',
+  CpPlan: 'CpPlan',
   CpWorkspace: 'CpWorkspace',
   CpWorkspaceMember: 'CpWorkspaceMember',
   CpCompanyProfile: 'CpCompanyProfile',
@@ -103,7 +107,8 @@ export const ModelName = {
   CpJobPost: 'CpJobPost',
   CpJobApplication: 'CpJobApplication',
   CpSavedTalent: 'CpSavedTalent',
-  HealthIncident: 'HealthIncident'
+  HealthIncident: 'HealthIncident',
+  SystemConfig: 'SystemConfig'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -636,6 +641,55 @@ export const PlatformSettingScalarFieldEnum = {
 export type PlatformSettingScalarFieldEnum = (typeof PlatformSettingScalarFieldEnum)[keyof typeof PlatformSettingScalarFieldEnum]
 
 
+export const PlanScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  name: 'name',
+  priceMonthly: 'priceMonthly',
+  isActive: 'isActive',
+  limits: 'limits',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PlanScalarFieldEnum = (typeof PlanScalarFieldEnum)[keyof typeof PlanScalarFieldEnum]
+
+
+export const SubscriptionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  planId: 'planId',
+  status: 'status',
+  trialStartDate: 'trialStartDate',
+  trialEndDate: 'trialEndDate',
+  trialUsed: 'trialUsed',
+  currentPeriodStart: 'currentPeriodStart',
+  currentPeriodEnd: 'currentPeriodEnd',
+  cancelledAt: 'cancelledAt',
+  gatewayCustomerId: 'gatewayCustomerId',
+  gatewaySubId: 'gatewaySubId',
+  notifiedLaunch: 'notifiedLaunch',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SubscriptionScalarFieldEnum = (typeof SubscriptionScalarFieldEnum)[keyof typeof SubscriptionScalarFieldEnum]
+
+
+export const PaymentRecordScalarFieldEnum = {
+  id: 'id',
+  subscriptionId: 'subscriptionId',
+  amount: 'amount',
+  currency: 'currency',
+  status: 'status',
+  gatewayRef: 'gatewayRef',
+  paidAt: 'paidAt',
+  createdAt: 'createdAt'
+} as const
+
+export type PaymentRecordScalarFieldEnum = (typeof PaymentRecordScalarFieldEnum)[keyof typeof PaymentRecordScalarFieldEnum]
+
+
 export const CpOrganizationScalarFieldEnum = {
   id: 'id',
   creatorAuthId: 'creatorAuthId',
@@ -656,6 +710,10 @@ export const CpSubscriptionScalarFieldEnum = {
   organizationId: 'organizationId',
   plan: 'plan',
   status: 'status',
+  trialStartsAt: 'trialStartsAt',
+  trialEndsAt: 'trialEndsAt',
+  trialUsed: 'trialUsed',
+  targetPlan: 'targetPlan',
   paystackSubCode: 'paystackSubCode',
   paystackCustomerCode: 'paystackCustomerCode',
   currentPeriodStart: 'currentPeriodStart',
@@ -666,6 +724,20 @@ export const CpSubscriptionScalarFieldEnum = {
 } as const
 
 export type CpSubscriptionScalarFieldEnum = (typeof CpSubscriptionScalarFieldEnum)[keyof typeof CpSubscriptionScalarFieldEnum]
+
+
+export const CpPlanScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  name: 'name',
+  priceMonthly: 'priceMonthly',
+  isActive: 'isActive',
+  limits: 'limits',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CpPlanScalarFieldEnum = (typeof CpPlanScalarFieldEnum)[keyof typeof CpPlanScalarFieldEnum]
 
 
 export const CpWorkspaceScalarFieldEnum = {
@@ -1043,6 +1115,20 @@ export const HealthIncidentScalarFieldEnum = {
 } as const
 
 export type HealthIncidentScalarFieldEnum = (typeof HealthIncidentScalarFieldEnum)[keyof typeof HealthIncidentScalarFieldEnum]
+
+
+export const SystemConfigScalarFieldEnum = {
+  id: 'id',
+  personalSubscriptionsEnabled: 'personalSubscriptionsEnabled',
+  connectPlusSubscriptionsEnabled: 'connectPlusSubscriptionsEnabled',
+  bypassMode: 'bypassMode',
+  maintenanceReason: 'maintenanceReason',
+  updatedBy: 'updatedBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SystemConfigScalarFieldEnum = (typeof SystemConfigScalarFieldEnum)[keyof typeof SystemConfigScalarFieldEnum]
 
 
 export const SortOrder = {

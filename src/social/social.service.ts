@@ -1,16 +1,16 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
-import {
-  CreateSocialDto,
-  UpdateSocialDto,
-  BulkVisibilityDto,
-  BulkDeleteDto,
-  BulkRestoreDto,
-} from './dto/social.dto';
+import { CreateSocialDto, UpdateSocialDto, BulkVisibilityDto, BulkDeleteDto, BulkRestoreDto } from './dto/social.dto';
+import { SubscriptionsService } from '../subscriptions/subscriptions.service';
+import { PlanLimitException } from '../subscriptions/exceptions/plan-limit.exception';
+import { PlanTier } from '../generated/prisma/client';
 
 @Injectable()
 export class SocialService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly subscriptionsService: SubscriptionsService,
+  ) {}
 
   async addSocial(user: any, dto: CreateSocialDto) {
     try {
@@ -21,6 +21,15 @@ export class SocialService {
 
       if (!profile) {
         throw new BadRequestException('Profile not found');
+      }
+
+      // Enforce social links limit (aggregate across all user profiles)
+      const limits = await this.subscriptionsService.getUserLimits(user.id);
+      const currentCount = await this.databaseService.social.count({
+        where: { user: { userId: user.id }, deletedAt: null },
+      });
+      if (currentCount >= limits.socialLinks) {
+        throw new PlanLimitException('socialLinks', PlanTier.PRO_LITE);
       }
 
       const social = await this.databaseService.social.create({
@@ -317,7 +326,7 @@ export class SocialService {
         data: {
           stats: {
             totalSocials,
-            platforms: platforms.map((p) => ({
+            platforms: platforms.map(p => ({
               platform: p.platform,
               count: p._count.platform,
             })),
@@ -333,11 +342,7 @@ export class SocialService {
   }
 
   // Profile-scoped methods
-  async createProfileSocial(
-    user: any,
-    profileId: string,
-    dto: CreateSocialDto,
-  ) {
+  async createProfileSocial(user: any, profileId: string, dto: CreateSocialDto) {
     try {
       // Verify profile belongs to user
       const profile = await this.databaseService.profile.findFirst({
@@ -388,7 +393,7 @@ export class SocialService {
     perPage: number = 25,
     includeDeleted: boolean = false,
     sort?: string,
-    order: 'asc' | 'desc' = 'asc',
+    order: 'asc' | 'desc' = 'asc'
   ) {
     try {
       // Verify profile belongs to user
@@ -408,7 +413,7 @@ export class SocialService {
 
       const skip = (page - 1) * perPage;
       const where: any = { userId: profile.id };
-
+      
       if (!includeDeleted) {
         where.deletedAt = null;
       }
@@ -503,7 +508,7 @@ export class SocialService {
     user: any,
     profileId: string,
     socialId: string,
-    dto: UpdateSocialDto,
+    dto: UpdateSocialDto
   ) {
     try {
       // Verify profile belongs to user
@@ -668,12 +673,7 @@ export class SocialService {
     }
   }
 
-  async toggleVisibility(
-    user: any,
-    profileId: string,
-    socialId: string,
-    isVisible: boolean,
-  ) {
+  async toggleVisibility(user: any, profileId: string, socialId: string, isVisible: boolean) {
     try {
       // Verify profile belongs to user
       const profile = await this.databaseService.profile.findFirst({
@@ -747,7 +747,7 @@ export class SocialService {
       }
 
       const where: any = { userId: profile.id, deletedAt: null };
-
+      
       if (dto.ids && dto.ids.length > 0) {
         where.id = { in: dto.ids };
       }
@@ -855,11 +855,7 @@ export class SocialService {
     }
   }
 
-  async getProfileSocialsByPlatform(
-    user: any,
-    profileId: string,
-    platform: string,
-  ) {
+  async getProfileSocialsByPlatform(user: any, profileId: string, platform: string) {
     try {
       // Verify profile belongs to user
       const profile = await this.databaseService.profile.findFirst({

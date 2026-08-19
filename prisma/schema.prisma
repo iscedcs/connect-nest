@@ -141,6 +141,11 @@ enum NotificationType {
   PAYMENT_SENT_CONFIRMED
   PAYMENT_RECEIVED_CONFIRMED
   PAYMENT_DISPUTED
+  SUBSCRIPTION_TRIAL_EXPIRED
+  SUBSCRIPTION_ACTIVATED
+  SUBSCRIPTION_CANCELLED
+  SUBSCRIPTION_PAST_DUE
+  SUBSCRIPTION_LAUNCH_ANNOUNCEMENT
 }
 
 model SupportRequest {
@@ -769,7 +774,77 @@ model PlatformSetting {
   updatedAt             DateTime @updatedAt
 }
 
+// ─── Connect (Personal) Subscription ─────────────────────
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  EXPIRED
+}
+
+enum PlanTier {
+  FREE
+  PRO_LITE
+  PRO_PLUS
+}
+
+model Plan {
+  id            String         @id @default(uuid())
+  key           PlanTier       @unique
+  name          String
+  priceMonthly  Int            // in kobo; 0 for FREE
+  isActive      Boolean        @default(true)
+  limits        Json?          // Dynamic feature quotas and boolean flags
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id                 String             @id @default(uuid())
+  userId             String             @unique // userId from JWT, no FK
+  planId             String
+  status             SubscriptionStatus @default(TRIALING)
+  trialStartDate     DateTime?
+  trialEndDate       DateTime?
+  trialUsed          Boolean            @default(false)
+  currentPeriodStart DateTime?
+  currentPeriodEnd   DateTime?
+  cancelledAt        DateTime?
+  gatewayCustomerId  String?
+  gatewaySubId       String?
+  notifiedLaunch     Boolean            @default(false)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  plan           Plan            @relation(fields: [planId], references: [id])
+  paymentHistory PaymentRecord[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([trialEndDate])
+  @@index([currentPeriodEnd])
+}
+
+model PaymentRecord {
+  id             String       @id @default(uuid())
+  subscriptionId String
+  amount         Int          // in kobo
+  currency       String       @default("NGN")
+  status         String       // 'success' | 'failed' | 'pending'
+  gatewayRef     String?      @unique // gateways retry webhooks; DB enforces once-only processing
+  paidAt         DateTime?
+  createdAt      DateTime     @default(now())
+
+  subscription Subscription @relation(fields: [subscriptionId], references: [id])
+
+  @@index([subscriptionId])
+}
+
 // ─── Connect Plus Enums ───────────────────────────────────
+
 
 enum CpOrgStatus {
   ACTIVE
@@ -932,7 +1007,11 @@ model CpSubscription {
   organizationId       String               @unique
   organization         CpOrganization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   plan                 CpSubscriptionPlan   @default(FREE)
-  status               CpSubscriptionStatus @default(ACTIVE)
+  status               CpSubscriptionStatus @default(TRIALING)
+  trialStartsAt        DateTime?            // Set on creation; null for manual upgrades
+  trialEndsAt          DateTime?            // trialStartsAt + 6 months
+  trialUsed            Boolean              @default(false)
+  targetPlan           CpSubscriptionPlan?  // Plan to activate when trial converts
   paystackSubCode      String?
   paystackCustomerCode String?
   currentPeriodStart   DateTime?
@@ -942,6 +1021,19 @@ model CpSubscription {
   updatedAt            DateTime             @updatedAt
 
   @@index([organizationId])
+  @@index([status])
+  @@index([trialEndsAt])
+}
+
+model CpPlan {
+  id           String             @id @default(uuid())
+  key          CpSubscriptionPlan @unique
+  name         String
+  priceMonthly Int                @default(0) // in kobo
+  isActive     Boolean            @default(true)
+  limits       Json               // { workspaces: number, staffPerWorkspace: number, clientsPerWorkspace: number }
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
 }
 
 model CpWorkspace {
@@ -1422,3 +1514,17 @@ model HealthIncident {
   @@index([dependency, status])
   @@index([status])
 }
+
+// ─── System Configuration & Feature Flags ─────────────────
+
+model SystemConfig {
+  id                              String   @id @default("default")
+  personalSubscriptionsEnabled    Boolean  @default(true)
+  connectPlusSubscriptionsEnabled Boolean  @default(true)
+  bypassMode                      String   @default("OPEN_ACCESS") // "OPEN_ACCESS" | "FREE_TIER_ONLY"
+  maintenanceReason               String?
+  updatedBy                       String?
+  createdAt                       DateTime @default(now())
+  updatedAt                       DateTime @updatedAt
+}
+
