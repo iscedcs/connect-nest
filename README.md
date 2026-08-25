@@ -45,6 +45,39 @@ $ yarn run start:dev
 $ yarn run start:prod
 ```
 
+## Database Migrations & Schema Management
+
+This project uses **Prisma Migrate** to manage database schema evolutions.
+
+### Workflow
+
+1. **Developing a schema change**:
+   - Update `prisma/schema.prisma`
+   - Generate and apply a new migration locally:
+     ```bash
+     npm run prisma:migrate:dev -- --name <migration_name>
+     ```
+   - This creates a reviewed `.sql` migration file in `prisma/migrations/`.
+
+2. **Applying migrations in Staging/Production**:
+   ```bash
+   npm run prisma:migrate
+   ```
+
+3. **Checking migration status & drift**:
+   ```bash
+   npm run prisma:migrate:status
+   ```
+
+4. **Seeding Plan Catalogues (Idempotent)**:
+   ```bash
+   npm run seed:plans
+   ```
+
+### Baseline History
+
+The database has been baselined with migration `0_init` generated from the initial schema and resolved as applied. All future schema additions must go through version-controlled migration files in `prisma/migrations/`.
+
 ## Run tests
 
 ```bash

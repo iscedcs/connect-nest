@@ -83,6 +83,64 @@ export class PaystackGatewayProvider implements PaymentGatewayProvider {
     }
   }
 
+  async chargeRecurring(params: {
+    email: string;
+    amountKobo: number;
+    authorizationCode: string;
+    reference?: string;
+    metadata?: Record<string, any>;
+  }) {
+    if (!this.secretKey) {
+      throw new BadRequestException('Paystack gateway is not configured');
+    }
+
+    const reference =
+      params.reference || `REC_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+    const payload = {
+      email: params.email,
+      amount: params.amountKobo,
+      authorization_code: params.authorizationCode,
+      reference,
+      metadata: params.metadata,
+    };
+
+    try {
+      const response = await fetch(`${this.baseUrl}/transaction/charge_authorization`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${this.secretKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+      if (!response.ok || !data.status) {
+        this.logger.error(`Paystack charge_authorization error: ${JSON.stringify(data)}`);
+        return {
+          success: false,
+          reference,
+          amountKobo: params.amountKobo,
+          status: data.data?.status || 'failed',
+          rawResponse: data,
+        };
+      }
+
+      return {
+        success: data.data?.status === 'success',
+        reference: data.data?.reference || reference,
+        amountKobo: data.data?.amount || params.amountKobo,
+        status: data.data?.status || 'success',
+        rawResponse: data,
+      };
+    } catch (error) {
+      this.logger.error(`Paystack recurring charge error: ${error.message}`);
+      throw new BadRequestException(
+        `Paystack recurring charge failed: ${error.message}`,
+      );
+    }
+  }
+
   verifyWebhookSignature(rawBody: string | Buffer, signature: string): boolean {
     if (!this.secretKey || !signature) return false;
     const bodyStr = typeof rawBody === 'string' ? rawBody : rawBody.toString('utf8');
@@ -90,7 +148,10 @@ export class PaystackGatewayProvider implements PaymentGatewayProvider {
       .createHmac('sha512', this.secretKey)
       .update(bodyStr)
       .digest('hex');
-    return hash === signature;
+    const hashBuf = Buffer.from(hash);
+    const sigBuf = Buffer.from(signature);
+    if (hashBuf.length !== sigBuf.length) return false;
+    return crypto.timingSafeEqual(hashBuf, sigBuf);
   }
 
   async handleWebhookEvent(event: any): Promise<WebhookResult | null> {

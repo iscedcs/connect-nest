@@ -9,10 +9,6 @@ import helmet from 'helmet';
 import { SentryExceptionFilter } from './common/filters/sentry-exception.filter';
 
 async function bootstrap() {
-  if (!process.env.AUTH_INVITE_WEBHOOK_SECRET) {
-    throw new Error('AUTH_INVITE_WEBHOOK_SECRET is required');
-  }
-  
   const app = await NestFactory.create(AppModule, { rawBody: true });
 
   app.use(helmet());

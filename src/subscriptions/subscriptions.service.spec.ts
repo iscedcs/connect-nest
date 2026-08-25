@@ -125,4 +125,83 @@ describe('SubscriptionsService (Personal Dynamic Limits)', () => {
       expect(result.resolvedLimits.socialLinks).toBe(Infinity);
     });
   });
+
+  describe('createSubscription & getActiveSubscription', () => {
+    it('should create FREE subscription with status ACTIVE for new users', async () => {
+      (db.subscription.findUnique as jest.Mock).mockResolvedValue(null);
+      (db.plan.findUnique as jest.Mock).mockResolvedValue({ id: 'plan_free', key: PlanTier.FREE });
+      (db.subscription.create as jest.Mock).mockResolvedValue({
+        id: 'sub_free',
+        userId: 'usr_new',
+        planId: 'plan_free',
+        status: SubscriptionStatus.ACTIVE,
+        trialStartDate: null,
+        trialEndDate: null,
+        trialUsed: false,
+      });
+
+      const sub = await service.createSubscription('usr_new', PlanTier.FREE);
+      expect(sub.status).toBe(SubscriptionStatus.ACTIVE);
+      expect(sub.trialUsed).toBe(false);
+      expect(db.subscription.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          userId: 'usr_new',
+          status: SubscriptionStatus.ACTIVE,
+          trialUsed: false,
+        }),
+      });
+    });
+
+    it('should create paid plan trial with 6-month trial window and status TRIALING', async () => {
+      (db.subscription.findUnique as jest.Mock).mockResolvedValue(null);
+      (db.plan.findUnique as jest.Mock).mockResolvedValue({ id: 'plan_pro', key: PlanTier.PRO_LITE });
+      (db.subscription.create as jest.Mock).mockResolvedValue({
+        id: 'sub_pro',
+        userId: 'usr_trial',
+        planId: 'plan_pro',
+        status: SubscriptionStatus.TRIALING,
+        trialStartDate: new Date(),
+        trialEndDate: new Date(Date.now() + 180 * 86400000),
+        trialUsed: true,
+      });
+
+      const sub = await service.createSubscription('usr_trial', PlanTier.PRO_LITE);
+      expect(sub.status).toBe(SubscriptionStatus.TRIALING);
+      expect(sub.trialUsed).toBe(true);
+      expect(db.subscription.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          userId: 'usr_trial',
+          status: SubscriptionStatus.TRIALING,
+          trialUsed: true,
+          trialStartDate: expect.any(Date),
+          trialEndDate: expect.any(Date),
+        }),
+      });
+    });
+
+    it('should auto-bootstrap a FREE subscription on getActiveSubscription for legacy users without one', async () => {
+      (db.subscription.findUnique as jest.Mock)
+        .mockResolvedValueOnce(null) // getActiveSubscription check
+        .mockResolvedValueOnce(null) // createSubscription check
+        .mockResolvedValueOnce({
+          id: 'sub_legacy',
+          userId: 'usr_legacy',
+          planId: 'plan_free',
+          status: SubscriptionStatus.ACTIVE,
+          plan: { key: PlanTier.FREE, name: 'Free' },
+        }); // getActiveSubscription re-fetch after bootstrap
+
+      (db.plan.findUnique as jest.Mock).mockResolvedValue({ id: 'plan_free', key: PlanTier.FREE });
+      (db.subscription.create as jest.Mock).mockResolvedValue({
+        id: 'sub_legacy',
+        userId: 'usr_legacy',
+        planId: 'plan_free',
+        status: SubscriptionStatus.ACTIVE,
+      });
+
+      const sub = await service.getActiveSubscription('usr_legacy');
+      expect(sub.id).toBe('sub_legacy');
+      expect(db.subscription.create).toHaveBeenCalled();
+    });
+  });
 });

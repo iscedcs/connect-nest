@@ -60,4 +60,60 @@ describe('PaystackGatewayProvider', () => {
       expect(result).toBeNull();
     });
   });
+
+  describe('initiateCheckout', () => {
+    it('should initialize transaction against Paystack and return authorization url', async () => {
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          status: true,
+          message: 'Authorization URL created',
+          data: {
+            authorization_url: 'https://checkout.paystack.com/auth_xyz',
+            access_code: 'acc_123',
+            reference: 'SUB_PRO_LITE_usr_123_1720000000',
+          },
+        }),
+      } as any);
+
+      const result = await provider.initiateCheckout({
+        userId: 'usr_123',
+        email: 'user@example.com',
+        planKey: PlanTier.PRO_LITE,
+        amountKobo: 100000,
+        callbackUrl: 'https://example.com/callback',
+      });
+
+      expect(result.checkoutUrl).toBe('https://checkout.paystack.com/auth_xyz');
+      expect(result.accessCode).toBe('acc_123');
+      expect(result.reference).toBe('SUB_PRO_LITE_usr_123_1720000000');
+    });
+  });
+
+  describe('chargeRecurring', () => {
+    it('should charge authorization successfully', async () => {
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          status: true,
+          message: 'Charge successful',
+          data: {
+            status: 'success',
+            reference: 'REC_1720000000',
+            amount: 100000,
+          },
+        }),
+      } as any);
+
+      const result = await provider.chargeRecurring({
+        email: 'user@example.com',
+        amountKobo: 100000,
+        authorizationCode: 'AUTH_code_123',
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.status).toBe('success');
+      expect(result.reference).toBe('REC_1720000000');
+    });
+  });
 });

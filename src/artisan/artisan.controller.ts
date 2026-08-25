@@ -8,6 +8,7 @@ import {
   Param,
   Query,
   Request,
+  Req,
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
@@ -628,7 +629,11 @@ export class ArtisanAdminController {
   @Patch('settings')
   @ApiOperation({ summary: 'Update platform settings' })
   @ApiResponse({ status: 200, description: 'Settings updated' })
-  async updateSettings(@Body(ValidationPipe) dto: UpdatePlatformSettingsDto) {
-    return this.artisanService.updateSettings(dto);
+  async updateSettings(
+    @Body(ValidationPipe) dto: UpdatePlatformSettingsDto,
+    @Req() req: any,
+  ) {
+    const actorId = req.isce_auth?.id ?? 'unknown';
+    return this.artisanService.updateSettings(dto, actorId);
   }
 }

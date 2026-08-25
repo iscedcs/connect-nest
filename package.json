@@ -20,7 +20,14 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "import:db": "ts-node scripts/import-to-db.ts",
     "generate:slugs": "ts-node scripts/generate-profile-slugs.ts",
-    "notify:subscription-launch": "ts-node prisma/notify-existing-users.ts"
+    "notify:subscription-launch": "ts-node prisma/notify-existing-users.ts",
+    "backfill:acls": "ts-node scripts/backfill-acls.ts",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate deploy",
+    "prisma:migrate:dev": "prisma migrate dev",
+    "prisma:migrate:status": "prisma migrate status",
+    "seed": "ts-node prisma/seed.ts",
+    "seed:plans": "ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1111.0",
@@ -124,6 +131,9 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^src/(.*)$": "<rootDir>/$1"
+    }
   }
 }

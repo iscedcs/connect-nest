@@ -35,10 +35,14 @@ export class CpWebhooksService {
       if (!signature || !rawBody) {
         throw new UnauthorizedException('Missing signature or raw body');
       }
+      const secret = process.env.AUTH_INVITE_WEBHOOK_SECRET;
+      if (!secret) {
+        throw new UnauthorizedException('AUTH_INVITE_WEBHOOK_SECRET is not configured');
+      }
       verifyWebhookSignature(
         rawBody,
         signature,
-        process.env.AUTH_INVITE_WEBHOOK_SECRET ?? '',
+        secret,
       );
 
       // Hash incoming token to compare with stored hash
@@ -150,7 +154,10 @@ export class CpWebhooksService {
 
   async handlePaystackEvent(signature: string, rawBody: Buffer): Promise<void> {
     try {
-      const secret = process.env.PAYSTACK_SECRET_KEY ?? '';
+      const secret = process.env.PAYSTACK_SECRET_KEY;
+      if (!secret) {
+        throw new UnauthorizedException('PAYSTACK_SECRET_KEY is not configured');
+      }
       const expected = createHmac('sha512', secret).update(rawBody).digest('hex');
       const sigBuf = Buffer.from(signature);
       const expBuf = Buffer.from(expected);

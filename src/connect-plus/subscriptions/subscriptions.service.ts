@@ -1,4 +1,4 @@
-import { Injectable, ForbiddenException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service';
 import { CpAuditLogService } from '../audit-logs/cp-audit-log.service';
 import { CpRequestContext } from '../types/cp-request.types';
@@ -6,7 +6,7 @@ import {
   CpSubscriptionPlan,
   CpSubscriptionStatus,
 } from '../../generated/prisma/client';
-import { UpgradePlanDto } from './dto/upgrade-plan.dto';
+import { AdminOverrideSubscriptionDto } from './dto/admin-override-subscription.dto';
 import { SystemConfigService } from '../../system-config/system-config.service';
 
 export type CpPlanLimits = {
@@ -148,36 +148,60 @@ export class CpSubscriptionsService {
     return result;
   }
 
-  async upgrade(ctx: CpRequestContext, dto: UpgradePlanDto) {
-    const isEnabled =
-      await this.systemConfigService.isConnectPlusSubscriptionEnabled();
-    if (!isEnabled) {
-      throw new ForbiddenException(
-        'Connect Plus subscription upgrades are currently disabled by the system administrator',
-      );
-    }
-
-    const sub = await this.getOrCreate(ctx);
-
-    const updated = await this.db.cpSubscription.update({
-      where: { id: sub.id },
-      data: {
-        plan: dto.plan,
-        paystackSubCode: dto.paystackSubCode ?? sub.paystackSubCode,
-        paystackCustomerCode:
-          dto.paystackCustomerCode ?? sub.paystackCustomerCode,
-        status: CpSubscriptionStatus.ACTIVE,
-      },
+  /**
+   * Admin-only: manually set an organization's plan without requiring payment.
+   * Only reachable via the SuperAdminGuard-protected endpoint.
+   */
+  async adminOverrideSubscription(
+    organizationId: string,
+    dto: AdminOverrideSubscriptionDto,
+    actorId?: string,
+  ) {
+    const existing = await this.db.cpSubscription.findUnique({
+      where: { organizationId },
     });
 
+    const now = new Date();
+    const trialEndsAt = this.addMonths(now, 6);
+
+    const updated = existing
+      ? await this.db.cpSubscription.update({
+          where: { id: existing.id },
+          data: {
+            plan: dto.plan,
+            status: CpSubscriptionStatus.ACTIVE,
+            currentPeriodStart: now,
+          },
+        })
+      : await this.db.cpSubscription.create({
+          data: {
+            organizationId,
+            plan: dto.plan,
+            status: CpSubscriptionStatus.ACTIVE,
+            trialUsed: true,
+            trialStartsAt: now,
+            trialEndsAt,
+            currentPeriodStart: now,
+          },
+        });
+
     this.auditLog.write({
-      ctx,
-      eventType: 'SUBSCRIPTION_UPGRADE',
+      ctx: null,
+      organizationId,
+      eventType: 'ADMIN_SUBSCRIPTION_OVERRIDE',
       targetEntity: 'CpSubscription',
       targetEntityId: updated.id,
       action: 'UPDATE',
       success: true,
+      metadata: {
+        plan: dto.plan,
+        reason: dto.reason ?? 'No reason provided',
+        actorId: actorId ?? 'unknown',
+      },
     });
+
+    // Bust the plan-limits cache so limits are re-evaluated immediately
+    this.cpPlanLimitsCache.clear();
 
     return updated;
   }

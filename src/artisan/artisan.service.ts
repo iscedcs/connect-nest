@@ -24,7 +24,7 @@ import { AuthClientService } from '../auth/auth-client.service';
 import { MailClientService } from '../mail/mail-client.service';
 import { SubscriptionsService } from '../subscriptions/subscriptions.service';
 import { PlanLimitException } from '../subscriptions/exceptions/plan-limit.exception';
-import { PlanTier } from '../generated/prisma/client';
+import { PlanTier, CpAuditSource } from '../generated/prisma/client';
 import { WalletClientService } from '../auth/wallet-client.service';
 
 @Injectable()
@@ -1437,7 +1437,7 @@ export class ArtisanService {
     return { success: true, data: settings };
   }
 
-  async updateSettings(data: Record<string, any>) {
+  async updateSettings(data: Record<string, any>, actorId: string = 'unknown') {
     const settings = await this.getOrCreateSettings();
 
     const updated = await this.databaseService.platformSetting.update({
@@ -1445,8 +1445,31 @@ export class ArtisanService {
       data,
     });
 
+    // Write an audit-log entry so every PlatformSetting change is traceable.
+    // Fire-and-forget — a logging failure must never break the settings update.
+    void this.databaseService.cpAuditLog
+      .create({
+        data: {
+          actorId,
+          actorRole: 'SUPER_ADMIN',
+          isSystemEvent: false,
+          eventType: 'PLATFORM_SETTINGS_UPDATED',
+          targetEntity: 'PlatformSetting',
+          targetEntityId: settings.id,
+          action: 'UPDATE',
+          before: settings as unknown as Prisma.InputJsonValue,
+          after: updated as unknown as Prisma.InputJsonValue,
+          source: CpAuditSource.API,
+          success: true,
+        },
+      })
+      .catch((err) =>
+        console.error('[ArtisanService] Failed to write audit log for PlatformSetting update:', err),
+      );
+
     return { success: true, message: 'Settings updated', data: updated };
   }
+
 
   // ─── Admin Category CRUD ───────────────────────────────
 
