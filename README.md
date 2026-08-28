@@ -76,7 +76,7 @@ This project uses **Prisma Migrate** to manage database schema evolutions.
 
 ### Baseline History
 
-The database has been baselined with migration `0_init` generated from the initial schema and resolved as applied. All future schema additions must go through version-controlled migration files in `prisma/migrations/`.
+The database is baselined by `20260816060752_baseline`. All future schema additions must go through version-controlled migration files in `prisma/migrations/`, and must be written idempotently (`CREATE TABLE IF NOT EXISTS`, `DO $$ ... EXCEPTION WHEN duplicate_object`) — test databases have drifted from the baseline through past `db push` use, so a non-idempotent migration will fail with 42710 and leave `migrate deploy` in a P3009 crash loop.
 
 ## Run tests
 
