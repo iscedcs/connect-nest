@@ -11,6 +11,7 @@ import {
   Req,
   UseGuards,
   ValidationPipe,
+  UnauthorizedException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -78,9 +79,13 @@ export class ArtisanController {
   @Get('me/:profileId')
   @ApiOperation({ summary: 'Get own artisan profile' })
   @ApiResponse({ status: 200, description: 'Artisan profile returned' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 404, description: 'Artisan profile not found' })
   async getMyArtisan(@Request() req, @Param('profileId') profileId: string) {
     const user = req.isce_auth;
-    if (!user) return { success: false, message: 'User not found' };
+    if (!user || !user.id) {
+      throw new UnauthorizedException('User not authenticated');
+    }
     return this.artisanService.getMyArtisan(user.id, profileId);
   }
 

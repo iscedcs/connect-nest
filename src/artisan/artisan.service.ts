@@ -1,5 +1,6 @@
 import {
   Injectable,
+  Logger,
   BadRequestException,
   NotFoundException,
   ConflictException,
@@ -29,6 +30,8 @@ import { WalletClientService } from '../auth/wallet-client.service';
 
 @Injectable()
 export class ArtisanService {
+  private readonly logger = new Logger(ArtisanService.name);
+
   constructor(
     private readonly databaseService: DatabaseService,
     private readonly notifications: NotificationDispatcher,
@@ -188,16 +191,41 @@ export class ArtisanService {
   // ─── Self-management ────────────────────────────────────
 
   async getMyArtisan(userId: string, profileId: string) {
-    const artisan = await this.databaseService.artisan.findFirst({
-      where: { userId, profileId },
-      include: this.fullArtisanInclude(),
-    });
-
-    if (!artisan) {
-      throw new NotFoundException('Artisan profile not found');
+    if (!userId || !profileId) {
+      throw new BadRequestException('User ID and Profile ID are required');
     }
 
-    return { success: true, data: artisan };
+    try {
+      const artisan = await this.databaseService.artisan.findFirst({
+        where: {
+          OR: [
+            { userId, profileId },
+            { profile: { id: profileId, userId } },
+          ],
+        },
+        include: this.fullArtisanInclude(),
+      });
+
+      if (!artisan) {
+        throw new NotFoundException('Artisan profile not found');
+      }
+
+      return { success: true, data: artisan };
+    } catch (error) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
+        throw error;
+      }
+      this.logger.error(
+        `Failed to retrieve artisan profile for userId: "${userId}", profileId: "${profileId}": ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+        error instanceof Error ? error.stack : undefined,
+      );
+      throw error;
+    }
   }
 
   async updateArtisan(userId: string, dto: UpdateArtisanDto) {
@@ -1627,8 +1655,17 @@ export class ArtisanService {
   // ─── Helpers ────────────────────────────────────────────
 
   private async findOwnArtisan(userId: string, profileId: string) {
+    if (!userId || !profileId) {
+      throw new BadRequestException('User ID and Profile ID are required');
+    }
+
     const artisan = await this.databaseService.artisan.findFirst({
-      where: { userId, profileId },
+      where: {
+        OR: [
+          { userId, profileId },
+          { profile: { id: profileId, userId } },
+        ],
+      },
     });
     if (!artisan) {
       throw new NotFoundException('Artisan profile not found');
