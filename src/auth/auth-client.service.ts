@@ -151,4 +151,101 @@ export class AuthClientService {
       );
     }
   }
+
+  /**
+   * Bind a new user to a referrer.
+   * Uses the internal key — never called from the browser.
+   * Safe to call on every signup; isce-auth silently no-ops if
+   * referredById is already set, the code is unknown, or it's a self-referral.
+   */
+  async attachReferral(
+    newUserId: string,
+    referralUsername: string,
+  ): Promise<any> {
+    try {
+      const response = await axios.post(
+        `${this.authUrl}/internal/referral/attach`,
+        { newUserId, referralUsername },
+        { headers: { 'x-internal-key': this.internalKey ?? '' } },
+      );
+      return response.data;
+    } catch (error: any) {
+      if (error.response) {
+        throw new HttpException(
+          error.response.data,
+          error.response.status,
+        );
+      }
+      throw new InternalServerErrorException('Failed to attach referral');
+    }
+  }
+
+  /** Proxy for ISCE Auth PATCH /admin/referral/business/:userId */
+  async adminPatchBusinessReferrer(
+    userId: string,
+    body: { status: string; businessReferrerReward?: number },
+    authHeader: string,
+  ): Promise<any> {
+    try {
+      const response = await axios.patch(
+        `${this.authUrl}/admin/referral/business/${userId}`,
+        body,
+        { headers: { Authorization: authHeader } },
+      );
+      return response.data;
+    } catch (error: any) {
+      if (error.response) {
+        throw new HttpException(
+          error.response.data,
+          error.response.status,
+        );
+      }
+      throw new InternalServerErrorException(
+        'Failed to update business referrer status',
+      );
+    }
+  }
+
+  /** Proxy for ISCE Auth GET /admin/referral/stats */
+  async adminGetReferralStats(authHeader: string): Promise<any> {
+    try {
+      const response = await axios.get(
+        `${this.authUrl}/admin/referral/stats`,
+        { headers: { Authorization: authHeader } },
+      );
+      return response.data;
+    } catch (error: any) {
+      if (error.response) {
+        throw new HttpException(
+          error.response.data,
+          error.response.status,
+        );
+      }
+      throw new InternalServerErrorException(
+        'Failed to fetch referral stats',
+      );
+    }
+  }
+
+  /** Proxy for ISCE Auth GET /admin/referral/default-account */
+  async adminGetDefaultAccount(authHeader: string): Promise<any> {
+    try {
+      const response = await axios.get(
+        `${this.authUrl}/admin/referral/default-account`,
+        { headers: { Authorization: authHeader } },
+      );
+      return response.data;
+    } catch (error: any) {
+      if (error.response) {
+        throw new HttpException(
+          error.response.data,
+          error.response.status,
+        );
+      }
+      throw new InternalServerErrorException(
+        'Failed to fetch default referral account',
+      );
+    }
+  }
 }
+
