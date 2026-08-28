@@ -9,6 +9,7 @@ import {
   CpRole,
   CpMemberStatus,
 } from '../../generated/prisma/client';
+import { withDbRetry } from '../../common/utils/db-retry.util';
 
 @Injectable()
 export class CpInvoicesScheduler {
@@ -22,25 +23,30 @@ export class CpInvoicesScheduler {
 
   @Cron('0 1 * * *', { name: 'invoice-overdue-sweep', timeZone: 'UTC' })
   async markOverdue(): Promise<void> {
-    const now = new Date();
+    try {
+      const now = new Date();
 
-    const invoices = await this.db.cpInvoice.findMany({
-      where: {
-        status: CpInvoiceStatus.SENT,
-        dueDate: { lte: now },
-        deletedAt: null,
-      },
-      include: {
-        client: { include: { member: true } },
-        workspace: true,
-        createdByStaff: { include: { member: true } },
-      },
-    });
+      const invoices = await withDbRetry(
+        () =>
+          this.db.cpInvoice.findMany({
+            where: {
+              status: CpInvoiceStatus.SENT,
+              dueDate: { lte: now },
+              deletedAt: null,
+            },
+            include: {
+              client: { include: { member: true } },
+              workspace: true,
+              createdByStaff: { include: { member: true } },
+            },
+          }),
+        { logger: this.logger, label: 'markOverdue.findMany' },
+      );
 
-    if (!invoices.length) {
-      this.logger.debug('No overdue invoices found');
-      return;
-    }
+      if (!invoices.length) {
+        this.logger.debug('No overdue invoices found');
+        return;
+      }
 
     for (const invoice of invoices) {
       try {
@@ -93,6 +99,9 @@ export class CpInvoicesScheduler {
           error as Error,
         );
       }
+      }
+    } catch (err) {
+      this.logger.error('Invoice overdue sweep CRON failed', err);
     }
   }
 }

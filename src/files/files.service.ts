@@ -93,7 +93,7 @@ export class FilesService {
           Bucket: this.bucket,
           Key: storageKey,
           ContentType: dto.media_type,
-          ACL: 'public-read',
+          // No ACL field — objects default to private
         });
         uploadUrl = await getSignedUrl(this.spacesClient, command, {
           expiresIn: expiresSeconds,
@@ -125,6 +125,12 @@ export class FilesService {
     try {
       const profile = await this.databaseService.profile.findFirst({ where: { id: profileId, userId: user.id, deletedAt: null } });
       if (!profile) return { success: false, message: 'Profile not found' };
+
+      // Reject any storage_key that does not live under this profile's path
+      const expectedPrefix = `profiles/${profileId}/files/`;
+      if (!dto.storage_key.startsWith(expectedPrefix)) {
+        return { success: false, message: 'Invalid storage_key: key does not belong to this profile' };
+      }
 
       // Enforce files count limit (aggregate across all user profiles)
       const limits = await this.subscriptionsService.getUserLimits(user.id);
@@ -336,7 +342,7 @@ export class FilesService {
     user: any,
     profileId: string,
     fileId: string,
-    forceDelete: boolean = false,
+    forceDelete: boolean = true,
   ) {
     try {
       const profile = await this.databaseService.profile.findFirst({
@@ -349,6 +355,8 @@ export class FilesService {
       });
       if (!file) return { success: false, message: 'File not found' };
 
+      // Delete the physical object from Spaces whenever credentials are available.
+      // The forceDelete flag is retained for callers that explicitly opt out (false).
       if (forceDelete && this.spacesClient && file.storage_key) {
         try {
           const command = new DeleteObjectCommand({
@@ -356,8 +364,9 @@ export class FilesService {
             Key: file.storage_key,
           });
           await this.spacesClient.send(command);
+          this.logger.log(`Deleted Spaces object: ${file.storage_key}`);
         } catch (e) {
-          this.logger.error(`Error deleting physical file from S3: ${e.message}`);
+          this.logger.error(`Error deleting physical file from Spaces: ${e.message}`);
         }
       }
 

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, UseGuards, HttpCode, HttpStatus, GoneException } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -12,7 +12,6 @@ import { CpRoles } from '../decorators/cp-roles.decorator';
 import { CpContext } from '../decorators/cp-context.decorator';
 import { CpRequestContext } from '../types/cp-request.types';
 import { CpRole } from '../../generated/prisma/client';
-import { UpgradePlanDto } from './dto/upgrade-plan.dto';
 
 @ApiTags('Connect Plus - Subscriptions')
 @ApiBearerAuth('access-token')
@@ -29,11 +28,27 @@ export class CpSubscriptionsController {
     return this.service.getOrCreate(ctx);
   }
 
+  /**
+   * This endpoint has been intentionally removed.
+   * Plan upgrades are handled exclusively via Paystack payment webhooks.
+   * Initiate payment on the client side using Paystack's JS SDK;
+   * the subscription activates automatically once payment is verified.
+   */
   @Post('me/subscription/upgrade')
   @CpRoles(CpRole.CREATOR)
-  @ApiOperation({ summary: 'Upgrade or change subscription plan' })
-  @ApiResponse({ status: 200, description: 'Subscription updated' })
-  upgrade(@CpContext() ctx: CpRequestContext, @Body() dto: UpgradePlanDto) {
-    return this.service.upgrade(ctx, dto);
+  @HttpCode(HttpStatus.GONE)
+  @ApiOperation({
+    summary: '[REMOVED] Use Paystack payment flow to upgrade',
+    deprecated: true,
+  })
+  @ApiResponse({
+    status: 410,
+    description: 'Endpoint removed — upgrades happen via verified Paystack webhook',
+  })
+  upgrade() {
+    throw new GoneException(
+      'This endpoint has been removed. Initiate payment through Paystack; ' +
+      'your subscription will activate automatically once payment is verified.',
+    );
   }
 }

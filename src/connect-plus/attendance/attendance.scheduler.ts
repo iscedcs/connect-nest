@@ -4,6 +4,7 @@ import { DatabaseService } from '../../database/database.service';
 import { CpNotificationsService } from '../notifications/notifications.service';
 import { CpAuditLogService } from '../audit-logs/cp-audit-log.service';
 import { CpNotificationType, CpRole } from '../../generated/prisma/client';
+import { withDbRetry } from '../../common/utils/db-retry.util';
 
 @Injectable()
 export class AttendanceScheduler {
@@ -19,34 +20,39 @@ export class AttendanceScheduler {
   async autoCheckout(): Promise<void> {
     this.logger.log('Running auto-checkout CRON');
 
-    // Find today's attendance records (UTC) that have not been checked out
-    const startOfDay = new Date();
-    startOfDay.setUTCHours(0, 0, 0, 0);
-    const endOfDay = new Date();
-    endOfDay.setUTCHours(23, 59, 59, 999);
+    try {
+      // Find today's attendance records (UTC) that have not been checked out
+      const startOfDay = new Date();
+      startOfDay.setUTCHours(0, 0, 0, 0);
+      const endOfDay = new Date();
+      endOfDay.setUTCHours(23, 59, 59, 999);
 
-    const records = await this.db.cpAttendance.findMany({
-      where: {
-        date: { gte: startOfDay, lte: endOfDay },
-        checkIn: { not: null },
-        checkOut: null,
-      },
-      include: {
-        staff: { include: { member: { select: { authUserId: true } } } },
-        workspace: {
-          select: {
-            id: true,
-            organizationId: true,
-            companyProfile: { select: { businessHours: true } },
-          },
-        },
-      },
-    });
+      const records = await withDbRetry(
+        () =>
+          this.db.cpAttendance.findMany({
+            where: {
+              date: { gte: startOfDay, lte: endOfDay },
+              checkIn: { not: null },
+              checkOut: null,
+            },
+            include: {
+              staff: { include: { member: { select: { authUserId: true } } } },
+              workspace: {
+                select: {
+                  id: true,
+                  organizationId: true,
+                  companyProfile: { select: { businessHours: true } },
+                },
+              },
+            },
+          }),
+        { logger: this.logger, label: 'autoCheckout.findMany' },
+      );
 
-    if (!records.length) {
-      this.logger.debug('Auto-checkout: no open records found');
-      return;
-    }
+      if (!records.length) {
+        this.logger.debug('Auto-checkout: no open records found');
+        return;
+      }
 
     const now = new Date();
 
@@ -124,6 +130,9 @@ export class AttendanceScheduler {
       }),
     );
 
-    this.logger.log(`Auto-checkout: processed ${records.length} record(s)`);
+      this.logger.log(`Auto-checkout: processed ${records.length} record(s)`);
+    } catch (err) {
+      this.logger.error('Auto-checkout CRON failed', err);
+    }
   }
 }

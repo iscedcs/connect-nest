@@ -6,6 +6,12 @@ import { CpRequestContext } from '../types/cp-request.types';
 import { Request } from 'express';
 import { paginateResult } from '../utils/paginate';
 import { ListAuditLogsQueryDto } from './dto/list-audit-logs-query.dto';
+import {
+  resolveActors,
+  resolveTargetNames,
+  buildSummary,
+  EnrichedAuditLog,
+} from './cp-audit-log.enricher';
 
 export interface WriteAuditLogOptions {
   ctx: CpRequestContext | null;
@@ -157,7 +163,9 @@ export class CpAuditLogService {
       this.db.cpAuditLog.count({ where }),
     ]);
 
-    return paginateResult(data, total, page, limit);
+    const enriched = await this.enrich(data);
+
+    return paginateResult(enriched, total, page, limit);
   }
 
   // ---------------------------------------------------------------------------
@@ -200,7 +208,9 @@ export class CpAuditLogService {
       this.db.cpAuditLog.count({ where }),
     ]);
 
-    return paginateResult(data, total, page, limit);
+    const enriched = await this.enrich(data);
+
+    return paginateResult(enriched, total, page, limit);
   }
 
   // ---------------------------------------------------------------------------
@@ -262,7 +272,52 @@ export class CpAuditLogService {
       this.db.cpAuditLog.count({ where }),
     ]);
 
-    return paginateResult(data, total, page, limit);
+    const enriched = await this.enrich(data);
+
+    return paginateResult(enriched, total, page, limit);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Private helper — batch enrichment of audit log rows
+  // ---------------------------------------------------------------------------
+  private async enrich(rows: any[]): Promise<EnrichedAuditLog[]> {
+    if (!rows || rows.length === 0) return [];
+
+    const actorIds = rows
+      .map((r) => r.actorId)
+      .filter((id): id is string => typeof id === 'string' && id.length > 0);
+
+    const targets = rows.map((r) => ({
+      entity: r.targetEntity,
+      entityId: r.targetEntityId,
+    }));
+
+    const [actorMap, targetMap] = await Promise.all([
+      resolveActors(this.db, actorIds),
+      resolveTargetNames(this.db, targets),
+    ]);
+
+    return rows.map((row) => {
+      const isSystem = row.isSystemEvent || !row.actorId;
+      const actorInfo = row.actorId ? actorMap.get(row.actorId) : undefined;
+      const actorName = isSystem
+        ? 'System'
+        : (actorInfo?.name ?? 'Unknown User');
+      const actorEmail = isSystem ? null : (actorInfo?.email ?? null);
+
+      const targetKey = `${row.targetEntity}:${row.targetEntityId}`;
+      const targetName = targetMap.get(targetKey) ?? null;
+
+      const summary = buildSummary(actorName, row.eventType, targetName);
+
+      return {
+        ...row,
+        actorName,
+        actorEmail,
+        targetName,
+        summary,
+      };
+    });
   }
 
   // ---------------------------------------------------------------------------

@@ -268,7 +268,7 @@ export class FilesController {
     @Request() req,
     @Param('profileId') profileId: string,
     @Param('id') id: string,
-    @Query('force_delete') forceDelete: boolean = false,
+    @Query('force_delete') forceDelete: boolean = true,
   ) {
     const user = req.isce_auth;
     if (!user) return { success: false, message: 'User not found' };

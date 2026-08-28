@@ -8,6 +8,7 @@ import {
   CpAppointmentStatus,
   CpNotificationType,
 } from '../../generated/prisma/client';
+import { withDbRetry } from '../../common/utils/db-retry.util';
 
 @Injectable()
 export class AppointmentsScheduler {
@@ -24,31 +25,36 @@ export class AppointmentsScheduler {
   async sendReminders(): Promise<void> {
     this.logger.log('Running appointment reminders CRON');
 
-    // Find appointments in a 23–25h window (tomorrow roughly) that haven't had reminders sent
-    const now = new Date();
-    const windowStart = new Date(now.getTime() + 23 * 60 * 60 * 1000);
-    const windowEnd = new Date(now.getTime() + 25 * 60 * 60 * 1000);
+    try {
+      // Find appointments in a 23–25h window (tomorrow roughly) that haven't had reminders sent
+      const now = new Date();
+      const windowStart = new Date(now.getTime() + 23 * 60 * 60 * 1000);
+      const windowEnd = new Date(now.getTime() + 25 * 60 * 60 * 1000);
 
-    const appointments = await this.db.cpAppointment.findMany({
-      where: {
-        scheduledAt: { gte: windowStart, lte: windowEnd },
-        status: {
-          in: [CpAppointmentStatus.PENDING, CpAppointmentStatus.CONFIRMED],
-        },
-        reminderSentAt: null,
-        deletedAt: null,
-      },
-      include: {
-        client: { select: { email: true, authUserId: true, name: true } },
-        staff: { select: { email: true, authUserId: true, name: true } },
-        workspace: { select: { name: true } },
-      },
-    });
+      const appointments = await withDbRetry(
+        () =>
+          this.db.cpAppointment.findMany({
+            where: {
+              scheduledAt: { gte: windowStart, lte: windowEnd },
+              status: {
+                in: [CpAppointmentStatus.PENDING, CpAppointmentStatus.CONFIRMED],
+              },
+              reminderSentAt: null,
+              deletedAt: null,
+            },
+            include: {
+              client: { select: { email: true, authUserId: true, name: true } },
+              staff: { select: { email: true, authUserId: true, name: true } },
+              workspace: { select: { name: true } },
+            },
+          }),
+        { logger: this.logger, label: 'sendReminders.findMany' },
+      );
 
-    if (!appointments.length) {
-      this.logger.debug('Appointment reminders: no appointments in window');
-      return;
-    }
+      if (!appointments.length) {
+        this.logger.debug('Appointment reminders: no appointments in window');
+        return;
+      }
 
     await Promise.all(
       appointments.map(async (appt) => {
@@ -99,19 +105,27 @@ export class AppointmentsScheduler {
       }),
     );
 
-    this.logger.log(
-      `Appointment reminders: sent for ${appointments.length} appointment(s)`,
-    );
+      this.logger.log(
+        `Appointment reminders: sent for ${appointments.length} appointment(s)`,
+      );
+    } catch (err) {
+      this.logger.error('Appointment reminders CRON failed', err);
+    }
   }
 
   @Cron('0 * * * *', { name: 'appointment-no-show', timeZone: 'UTC' })
   async autoNoShowPastDue(): Promise<void> {
     this.logger.log('Running auto NO_SHOW transition CRON');
 
-    const now = new Date();
-    const profiles = await this.db.cpCompanyProfile.findMany({
-      select: { workspaceId: true, appointmentDefaults: true },
-    });
+    try {
+      const now = new Date();
+      const profiles = await withDbRetry(
+        () =>
+          this.db.cpCompanyProfile.findMany({
+            select: { workspaceId: true, appointmentDefaults: true },
+          }),
+        { logger: this.logger, label: 'autoNoShowPastDue.findMany' },
+      );
 
     let processedCount = 0;
 
@@ -144,8 +158,11 @@ export class AppointmentsScheduler {
           this.logger.error(`Error processing NO_SHOW for workspace ${profile.workspaceId}`, err);
         }
       })
-    );
+      );
 
-    this.logger.log(`Finished auto NO_SHOW transition CRON. Processed ${processedCount} appointments.`);
+      this.logger.log(`Finished auto NO_SHOW transition CRON. Processed ${processedCount} appointments.`);
+    } catch (err) {
+      this.logger.error('Auto NO_SHOW transition CRON failed', err);
+    }
   }
 }
