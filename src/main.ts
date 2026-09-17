@@ -50,10 +50,10 @@ async function bootstrap() {
 
   if (process.env.NODE_ENV !== 'production') {
     const config = new DocumentBuilder()
-      .setTitle('ISCE CONNECT API')
-      .setDescription('The official Documentations of ISCE CONNECT API.')
+      .setTitle('LYNCON API')
+      .setDescription('The official documentation for LYNCON API.')
       .setVersion('1.0')
-      .addTag('ISCE CONNECT API')
+      .addTag('LYNCON API')
       .addBearerAuth(
         {
           type: 'http',

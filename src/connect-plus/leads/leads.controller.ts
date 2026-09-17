@@ -29,7 +29,7 @@ import { ListLeadsQueryDto } from './dto/list-leads-query.dto';
 import { AssignLeadDto } from './dto/assign-lead.dto';
 import { RejectLeadDto } from './dto/reject-lead.dto';
 
-@ApiTags('Connect Plus - Leads')
+@ApiTags('LYNCON Plus - Leads')
 @ApiBearerAuth('access-token')
 @UseGuards(CpContextGuard, CpRolesGuard)
 @Controller('cp/leads')

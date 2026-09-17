@@ -25,7 +25,7 @@ import { SuperAdminGuard } from '../../auth/guards/super-admin.guard';
 import { CpSubscriptionPlan } from '../../generated/prisma/client';
 import { PublicRoute } from '../../auth/decorators/public-route.decorator';
 
-@ApiTags('Connect Plus - Admin Plans')
+@ApiTags('LYNCON Plus - Admin Plans')
 @Controller()
 export class CpAdminPlansController {
   constructor(private readonly subscriptionsService: CpSubscriptionsService) {}

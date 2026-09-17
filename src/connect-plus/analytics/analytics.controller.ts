@@ -15,7 +15,7 @@ import { CpRequestContext } from '../types/cp-request.types';
 import { CpRole } from '../../generated/prisma/client';
 import { AnalyticsQueryDto } from './dto/analytics-query.dto';
 
-@ApiTags('Connect Plus - Analytics')
+@ApiTags('LYNCON Plus - Analytics')
 @ApiBearerAuth('access-token')
 @UseGuards(CpContextGuard, CpRolesGuard)
 @Controller('cp/analytics')

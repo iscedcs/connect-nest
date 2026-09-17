@@ -16,7 +16,7 @@ export class UpdateSubscriptionConfigDto {
   personalSubscriptionsEnabled?: boolean;
 
   @ApiPropertyOptional({
-    description: 'Toggle for Connect Plus (B2B / Organizations) subscriptions',
+    description: 'Toggle for LYNCON Plus (B2B / Organizations) subscriptions',
     example: true,
   })
   @IsOptional()

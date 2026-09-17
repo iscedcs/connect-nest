@@ -16,7 +16,7 @@ import { BookAppointmentDto } from './dto/book-appointment.dto';
 import { SaveContactDto } from './dto/save-contact.dto';
 import { Throttle } from '@nestjs/throttler';
 
-@ApiTags('Connect Plus - Public')
+@ApiTags('LYNCON Plus - Public')
 @PublicRoute()
 @Controller('cp/public/:workspaceSlug')
 export class CpPublicController {

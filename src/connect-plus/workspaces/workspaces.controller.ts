@@ -27,7 +27,7 @@ import { UpdateWorkspaceDto } from './dto/update-workspace.dto';
 import { UpdateWorkspaceStatusDto } from './dto/update-workspace-status.dto';
 import { InviteAdminDto } from './dto/invite-admin.dto';
 
-@ApiTags('Connect Plus - Workspaces')
+@ApiTags('LYNCON Plus - Workspaces')
 @ApiBearerAuth('access-token')
 @UseGuards(CpContextGuard, CpRolesGuard)
 @Controller('cp/workspaces')
@@ -103,7 +103,7 @@ export class CpWorkspacesController {
 }
 
 // ─── Standalone: my workspaces (no CpContextGuard) ──────────────────────────
-@ApiTags('Connect Plus - Workspaces')
+@ApiTags('LYNCON Plus - Workspaces')
 @ApiBearerAuth('access-token')
 @Controller('cp')
 export class CpMyWorkspacesController {

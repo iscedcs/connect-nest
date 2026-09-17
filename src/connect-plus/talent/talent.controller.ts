@@ -17,7 +17,7 @@ import { CpContext } from '../decorators/cp-context.decorator';
 import { CpRequestContext } from '../types/cp-request.types';
 import { CpRole } from '../../generated/prisma/client';
 
-@ApiTags('Connect Plus - Talent')
+@ApiTags('LYNCON Plus - Talent')
 @ApiBearerAuth('access-token')
 @UseGuards(CpContextGuard, CpRolesGuard)
 @Controller('cp/talent')

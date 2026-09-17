@@ -30,7 +30,7 @@ import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { CpAnalyticsService } from '../analytics/analytics.service';
 import { AnalyticsQueryDto } from '../analytics/dto/analytics-query.dto';
 
-@ApiTags('Connect Plus - Organizations')
+@ApiTags('LYNCON Plus - Organizations')
 @ApiBearerAuth('access-token')
 @UseGuards(CpContextGuard, CpRolesGuard)
 @Controller('cp/organizations')

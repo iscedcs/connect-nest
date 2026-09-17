@@ -27,7 +27,7 @@ import { AssignClientDto } from './dto/assign-client.dto';
 import { InviteClientDto } from './dto/invite-client.dto';
 import { PaginateQueryDto } from '../common/dto/paginate-query.dto';
 
-@ApiTags('Connect Plus - Clients')
+@ApiTags('LYNCON Plus - Clients')
 @ApiBearerAuth('access-token')
 @UseGuards(CpContextGuard, CpRolesGuard)
 @Controller('cp/clients')

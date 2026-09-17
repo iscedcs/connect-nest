@@ -27,7 +27,7 @@ import { CpRequestContext } from '../types/cp-request.types';
 import { CpRole } from '../../generated/prisma/client';
 import { SendInviteDto } from './dto';
 
-@ApiTags('Connect Plus - Invites')
+@ApiTags('LYNCON Plus - Invites')
 @ApiBearerAuth('access-token')
 @ApiHeader({
   name: 'x-workspace-id',
