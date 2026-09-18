@@ -14,7 +14,7 @@ import { CpRequestContext } from '../types/cp-request.types';
 import { CpRole } from '../../generated/prisma/client';
 import { ListAuditLogsQueryDto } from './dto/list-audit-logs-query.dto';
 
-@ApiTags('Connect Plus - Audit Logs')
+@ApiTags('LYNCON Plus - Audit Logs')
 @ApiBearerAuth('access-token')
 @UseGuards(CpContextGuard, CpRolesGuard)
 @Controller('cp/audit-logs')

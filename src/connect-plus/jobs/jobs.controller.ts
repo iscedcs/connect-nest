@@ -21,7 +21,7 @@ import { ApplyJobDto } from './dto/apply-job.dto';
 import { Request } from 'express';
 import { AuthGuard } from '../../auth/auth.guard';
 
-@ApiTags('Connect Plus - Jobs')
+@ApiTags('LYNCON Plus - Jobs')
 @Controller('cp')
 export class JobsController {
   constructor(private readonly jobsService: JobsService) {}

@@ -36,7 +36,7 @@ export class CpPlanLimitsDto {
 
 export class UpdateCpPlanDto {
   @ApiPropertyOptional({
-    description: 'Display name of the Connect Plus plan',
+    description: 'Display name of the LYNCON Plus plan',
     example: 'Starter',
   })
   @IsOptional()
@@ -61,7 +61,7 @@ export class UpdateCpPlanDto {
   isActive?: boolean;
 
   @ApiPropertyOptional({
-    description: 'Resource quotas for this Connect Plus tier',
+    description: 'Resource quotas for this LYNCON Plus tier',
   })
   @IsOptional()
   @IsObject()

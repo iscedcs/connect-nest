@@ -1303,7 +1303,7 @@ export class ArtisanService {
               subject: 'Your Artisan Profile Has Been Approved!',
               html: `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px">
   <h2 style="margin-top:0">Artisan Profile Approved 🎉</h2>
-  <p>Congratulations! Your artisan profile has been reviewed and approved. You are now live on ISCE Connect and can start receiving bookings.</p>
+  <p>Congratulations! Your artisan profile has been reviewed and approved. You are now live on LYNCON and can start receiving bookings.</p>
   <a href="${webUrl}/connect/artisan" style="display:inline-block;margin-top:16px;padding:10px 20px;background:#000;color:#fff;text-decoration:none;border-radius:6px">View Your Profile</a>
 </div>`,
             })
@@ -1409,7 +1409,7 @@ export class ArtisanService {
               subject: 'Your Artisan Profile Has Been Reactivated',
               html: `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px">
   <h2 style="margin-top:0">Artisan Profile Reactivated</h2>
-  <p>Good news! Your artisan profile has been reactivated and is now live on ISCE Connect again.</p>
+  <p>Good news! Your artisan profile has been reactivated and is now live on LYNCON again.</p>
   <a href="${webUrl}/connect/artisan" style="display:inline-block;margin-top:16px;padding:10px 20px;background:#000;color:#fff;text-decoration:none;border-radius:6px">View Your Profile</a>
 </div>`,
             })

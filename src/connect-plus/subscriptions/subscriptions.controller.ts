@@ -13,7 +13,7 @@ import { CpContext } from '../decorators/cp-context.decorator';
 import { CpRequestContext } from '../types/cp-request.types';
 import { CpRole } from '../../generated/prisma/client';
 
-@ApiTags('Connect Plus - Subscriptions')
+@ApiTags('LYNCON Plus - Subscriptions')
 @ApiBearerAuth('access-token')
 @UseGuards(CpContextGuard, CpRolesGuard)
 @Controller('cp/organizations')

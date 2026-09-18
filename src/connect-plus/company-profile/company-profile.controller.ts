@@ -23,7 +23,7 @@ import { CpRequestContext } from '../types/cp-request.types';
 import { CpRole } from '../../generated/prisma/client';
 import { UpsertCompanyProfileDto } from './dto/upsert-company-profile.dto';
 
-@ApiTags('Connect Plus - Company Profile')
+@ApiTags('LYNCON Plus - Company Profile')
 @ApiBearerAuth('access-token')
 @UseGuards(CpContextGuard, CpRolesGuard)
 @Controller('cp/company-profile')

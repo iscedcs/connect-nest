@@ -77,6 +77,30 @@ export async function resolveActors(
     }
   }
 
+  // 3. For any still-unresolved IDs (e.g. CREATOR role, org owners not enrolled as staff/client),
+  //    fall back to the personal Connect Profile (Profile.userId == isce-auth authUserId).
+  //    Email is not stored in connect-nest — it lives in isce-auth — so actorEmail stays null
+  //    for these actors, but actorName will resolve correctly.
+  const stillMissingIds = uniqueIds.filter((id) => !actorMap.has(id));
+  if (stillMissingIds.length > 0) {
+    const profiles = await db.profile.findMany({
+      where: { userId: { in: stillMissingIds }, deletedAt: null },
+      orderBy: { is_default: 'desc' }, // prefer the default profile when a user has multiple
+      select: { userId: true, name: true },
+    });
+
+    const seen = new Set<string>();
+    for (const p of profiles) {
+      if (p.userId && !seen.has(p.userId)) {
+        seen.add(p.userId);
+        actorMap.set(p.userId, {
+          name: p.name || 'User',
+          email: null,
+        });
+      }
+    }
+  }
+
   return actorMap;
 }
 

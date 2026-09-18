@@ -31,7 +31,7 @@ import { UpdateCpAppointmentDto } from './dto/update-cp-appointment.dto';
 import { UpdateCpAppointmentStatusDto } from './dto/update-cp-appointment-status.dto';
 import { PaginateQueryDto } from '../common/dto/paginate-query.dto';
 
-@ApiTags('Connect Plus - Appointments')
+@ApiTags('LYNCON Plus - Appointments')
 @ApiBearerAuth('access-token')
 @UseGuards(CpContextGuard, CpRolesGuard)
 @Controller('cp/appointments')

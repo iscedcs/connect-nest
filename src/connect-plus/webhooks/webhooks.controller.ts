@@ -14,7 +14,7 @@ import { CpWebhooksService } from './webhooks.service';
 import { InviteAcceptedWebhookDto } from './dto/invite-accepted-webhook.dto';
 import { PublicRoute } from '../../auth/decorators/public-route.decorator';
 
-@ApiTags('Connect Plus - Webhooks')
+@ApiTags('LYNCON Plus - Webhooks')
 @Controller('cp/webhooks')
 export class CpWebhooksController {
   constructor(private readonly service: CpWebhooksService) {}

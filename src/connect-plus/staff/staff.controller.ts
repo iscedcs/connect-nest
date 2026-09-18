@@ -29,7 +29,7 @@ import { UpdateStaffStatusDto } from './dto/update-staff-status.dto';
 import { UpdateStaffRoleDto } from './dto/update-staff-role.dto';
 import { PaginateQueryDto } from '../common/dto/paginate-query.dto';
 
-@ApiTags('Connect Plus - Staff')
+@ApiTags('LYNCON Plus - Staff')
 @ApiBearerAuth('access-token')
 @UseGuards(CpContextGuard, CpRolesGuard)
 @Controller('cp/staff')
