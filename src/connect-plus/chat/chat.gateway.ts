@@ -8,8 +8,9 @@ import {
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import * as jwt from 'jsonwebtoken';
 import { Server, Socket } from 'socket.io';
+import { verifyAccessToken } from '../../auth/token-verifier';
 import { DatabaseService } from '../../database/database.service';
 import {
   CpMemberStatus,
@@ -38,21 +39,18 @@ export class CpChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   /** authUserId → Set of socketIds */
   private readonly connectedUsers = new Map<string, Set<string>>();
 
-  constructor(
-    private readonly jwtService: JwtService,
-    private readonly db: DatabaseService,
-  ) {}
+  constructor(private readonly db: DatabaseService) {}
 
   // ─── Connection ─────────────────────────────────────────────
-  handleConnection(client: Socket): void {
+  async handleConnection(client: Socket): Promise<void> {
     try {
       const token = client.handshake.auth?.token as string | undefined;
       if (!token) throw new Error('No token');
-      const payload = this.jwtService.verify<JwtPayload>(token, {
-        secret: process.env.JWT_SECRET,
-      });
+      const { payload } = await verifyAccessToken<JwtPayload & jwt.JwtPayload>(
+        token,
+      );
       client.data.authUserId = payload.id;
-      
+
       let sockets = this.connectedUsers.get(payload.id);
       if (!sockets) {
         sockets = new Set<string>();

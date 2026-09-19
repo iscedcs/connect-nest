@@ -10,6 +10,7 @@ import {
 import { Logger, UnauthorizedException } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import * as jwt from 'jsonwebtoken';
+import { verifyAccessToken } from '../auth/token-verifier';
 import { ThreadEventType } from './thread-event.service';
 import { DatabaseService } from '../database/database.service';
 
@@ -50,7 +51,7 @@ export class ThreadGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   async handleConnection(client: Socket) {
     try {
-      const user = this.authenticate(client);
+      const user = await this.authenticate(client);
       // Attach userId to socket for later use
       client.data.userId = user.id;
       this.logger.debug(`Client connected: ${client.id} (user: ${user.id})`);
@@ -132,7 +133,7 @@ export class ThreadGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   // ─── Auth helper ────────────────────────────────────
 
-  private authenticate(client: Socket): JwtPayload {
+  private async authenticate(client: Socket): Promise<JwtPayload> {
     const token =
       (client.handshake.auth?.token as string) ||
       (client.handshake.query?.token as string);
@@ -141,11 +142,9 @@ export class ThreadGateway implements OnGatewayConnection, OnGatewayDisconnect {
       throw new UnauthorizedException('No token provided');
     }
 
-    const secret = process.env.JWT_SECRET;
-    if (!secret) {
-      throw new Error('JWT_SECRET not set');
-    }
-
-    return jwt.verify(token, secret) as JwtPayload;
+    const { payload } = await verifyAccessToken<JwtPayload & jwt.JwtPayload>(
+      token,
+    );
+    return payload;
   }
 }
