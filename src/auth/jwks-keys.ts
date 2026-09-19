@@ -48,7 +48,9 @@ async function fetchJwks(): Promise<void> {
       try {
         fresh.set(jwk.kid, createPublicKey({ key: jwk, format: 'jwk' }));
       } catch (err) {
-        logger.warn(`Could not import JWK ${jwk.kid}: ${(err as Error).message}`);
+        logger.warn(
+          `Could not import JWK ${jwk.kid}: ${(err as Error).message}`,
+        );
       }
     }
 

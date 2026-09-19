@@ -7,7 +7,7 @@ export class JwtService {
     try {
       const { payload } = await verifyAccessToken(token);
       return payload;
-    } catch (error) {
+    } catch {
       throw new UnauthorizedException('Invalid token');
     }
   }
@@ -32,7 +32,7 @@ export class JwtService {
         displayPicture: payload.displayPicture,
         userType: payload.userType,
       };
-    } catch (error) {
+    } catch {
       return null;
     }
   }
