@@ -1,18 +1,13 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtService as NestJwtService } from '@nestjs/jwt';
-import { jwtSecret } from 'utils/constants';
+import { verifyAccessToken } from './token-verifier';
 
 @Injectable()
 export class JwtService {
-  constructor(private readonly jwtService: NestJwtService) {}
-
   async validateToken(token: string): Promise<any> {
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
-        secret: jwtSecret,
-      });
+      const { payload } = await verifyAccessToken(token);
       return payload;
-    } catch (error) {
+    } catch {
       throw new UnauthorizedException('Invalid token');
     }
   }
@@ -37,7 +32,7 @@ export class JwtService {
         displayPicture: payload.displayPicture,
         userType: payload.userType,
       };
-    } catch (error) {
+    } catch {
       return null;
     }
   }
