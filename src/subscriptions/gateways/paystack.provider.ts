@@ -1,4 +1,9 @@
-import { Injectable, Logger, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  BadRequestException,
+  BadGatewayException,
+} from '@nestjs/common';
 import * as crypto from 'crypto';
 import {
   PaymentGatewayProvider,
@@ -14,25 +19,37 @@ export class PaystackGatewayProvider implements PaymentGatewayProvider {
   private readonly logger = new Logger(PaystackGatewayProvider.name);
   private readonly secretKey: string;
   private readonly baseUrl = 'https://api.paystack.co';
+  private readonly walletApiUrl: string;
+  private readonly internalKey: string;
 
   constructor() {
+    // Only chargeRecurring and the direct webhook route still use the key;
+    // checkout goes through wallet-nest, which holds it.
     this.secretKey = process.env.PAYSTACK_SECRET_KEY || '';
-    if (!this.secretKey) {
-      this.logger.warn('PAYSTACK_SECRET_KEY is not set');
-    }
+    this.walletApiUrl = (process.env.WALLET_API_URL || '').replace(/\/+$/, '');
+    this.internalKey = process.env.INTERNAL_API_KEY || '';
   }
 
+  /**
+   * wallet-nest creates the charge: it holds the Paystack key and owns the only
+   * webhook Paystack can deliver to. The charge is tagged service=connect, so
+   * wallet-nest forwards its charge.success to
+   * POST /api/subscriptions/webhooks/internal/paystack-event. The payer needs no wallet.
+   */
   async initiateCheckout(params: InitiateCheckoutParams): Promise<CheckoutResult> {
-    if (!this.secretKey) {
-      throw new BadRequestException('Paystack gateway is not configured');
+    if (!this.walletApiUrl || !this.internalKey) {
+      throw new BadRequestException(
+        'Card payments are not configured (WALLET_API_URL / INTERNAL_API_KEY)',
+      );
     }
 
     const reference = `SUB_${params.planKey}_${params.userId}_${Date.now()}`;
     const payload = {
+      service: 'connect',
       email: params.email,
-      amount: params.amountKobo,
+      amountKobo: params.amountKobo,
       reference,
-      callback_url: params.callbackUrl,
+      callbackUrl: params.callbackUrl,
       metadata: {
         userId: params.userId,
         planKey: params.planKey,
@@ -52,35 +69,35 @@ export class PaystackGatewayProvider implements PaymentGatewayProvider {
       },
     };
 
+    let response: Response;
     try {
-      const response = await fetch(`${this.baseUrl}/transaction/initialize`, {
+      response = await fetch(`${this.walletApiUrl}/api/internal/paystack/initialize`, {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${this.secretKey}`,
           'Content-Type': 'application/json',
+          'X-Internal-Secret': this.internalKey,
         },
         body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(15000),
       });
-
-      const data = await response.json();
-      if (!response.ok || !data.status) {
-        this.logger.error(`Paystack initialize error: ${JSON.stringify(data)}`);
-        throw new BadRequestException(
-          data.message || 'Failed to initialize Paystack transaction',
-        );
-      }
-
-      return {
-        checkoutUrl: data.data.authorization_url,
-        reference: data.data.reference || reference,
-        accessCode: data.data.access_code,
-      };
     } catch (error) {
-      this.logger.error(`Paystack request error: ${error.message}`);
-      throw new BadRequestException(
-        `Paystack checkout initialization failed: ${error.message}`,
-      );
+      this.logger.error(`wallet-nest checkout unreachable: ${error.message}`);
+      throw new BadGatewayException('Could not start the card payment');
     }
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data?.status || !data?.data?.authorization_url) {
+      this.logger.error(
+        `wallet-nest checkout failed | status=${response.status} | ref=${reference} | ${JSON.stringify(data)}`,
+      );
+      throw new BadGatewayException('Could not start the card payment');
+    }
+
+    return {
+      checkoutUrl: data.data.authorization_url,
+      reference: data.data.reference || reference,
+      accessCode: data.data.access_code,
+    };
   }
 
   async chargeRecurring(params: {

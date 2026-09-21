@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Post,
   Req,
@@ -7,10 +8,15 @@ import {
   HttpStatus,
   Logger,
   BadRequestException,
+  InternalServerErrorException,
+  UnprocessableEntityException,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Request } from 'express';
 import { PublicRoute } from '../auth/decorators/public-route.decorator';
+import { InternalGuard } from '../internal/internal.guard';
+import { ForwardedPaystackEventDto } from './dto/subscription.dto';
 import { PaymentGatewayFactory } from './gateways/payment-gateway.factory';
 import { WebhookResult } from './gateways/payment-gateway.interface';
 import { SubscriptionsService } from './subscriptions.service';
@@ -81,6 +87,44 @@ export class PaymentWebhookController {
     }
 
     return this.activateFromPayment(result, 'Paydestal');
+  }
+
+  /**
+   * Paystack delivers every webhook to wallet-nest (one URL per account), which
+   * forwards charges tagged service=connect here as { event, data }. wallet-nest
+   * has already checked Paystack's signature; this route trusts the internal
+   * secret. A non-2xx makes wallet-nest record the webhook as FAILED, so an
+   * underpaid or unappliable payment stays visible instead of looking handled.
+   */
+  @Post('internal/paystack-event')
+  @PublicRoute()
+  @UseGuards(InternalGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: '[Internal] Apply a Paystack charge forwarded by wallet-nest',
+  })
+  @ApiResponse({ status: 200, description: 'Applied, already applied, or ignored' })
+  @ApiResponse({ status: 403, description: 'Invalid or missing internal secret' })
+  async handleForwardedPaystackEvent(@Body() body: ForwardedPaystackEventDto) {
+    const provider = this.gatewayFactory.getProvider('PAYSTACK');
+    const result = await provider.handleWebhookEvent({
+      event: body.event,
+      data: body.data,
+    });
+    if (!result || !result.success) {
+      return { status: 'ignored' };
+    }
+
+    const outcome = await this.activateFromPayment(result, 'Paystack via wallet-nest');
+    if (outcome.status === 'success' || outcome.status === 'already_processed') {
+      return outcome;
+    }
+    if (outcome.status === 'rejected') {
+      throw new UnprocessableEntityException(outcome.message);
+    }
+    throw new InternalServerErrorException(
+      outcome.message ?? 'Subscription could not be activated',
+    );
   }
 
   /**

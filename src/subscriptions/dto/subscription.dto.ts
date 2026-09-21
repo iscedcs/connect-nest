@@ -1,4 +1,4 @@
-import { IsEnum, IsOptional, IsString, IsUrl } from 'class-validator';
+import { IsEnum, IsObject, IsOptional, IsString, IsUrl } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PlanTier } from '../../generated/prisma/client';
 
@@ -22,5 +22,16 @@ export class InitiatePaymentDto {
   @IsOptional()
   @IsString()
   gateway?: string;
+}
+
+/** A Paystack webhook event as wallet-nest forwards it. */
+export class ForwardedPaystackEventDto {
+  @ApiProperty({ example: 'charge.success' })
+  @IsString()
+  event: string;
+
+  @ApiProperty({ description: "Paystack's event data, unchanged" })
+  @IsObject()
+  data: Record<string, any>;
 }
 
