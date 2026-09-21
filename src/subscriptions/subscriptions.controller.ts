@@ -47,8 +47,9 @@ export class SubscriptionsController {
   @ApiResponse({ status: 200, description: 'Subscription details returned' })
   @ApiResponse({ status: 404, description: 'No subscription found' })
   async getMySubscription(@Req() req: any) {
+    const user = req.user || req.isce_auth;
     const sub = await this.subscriptionsService.getActiveSubscription(
-      req.user.id,
+      user.id,
     );
     return {
       success: true,
@@ -69,7 +70,8 @@ export class SubscriptionsController {
   @ApiOperation({ summary: 'Get effective plan limits for the current user' })
   @ApiResponse({ status: 200, description: 'Limits returned' })
   async getMyLimits(@Req() req: any) {
-    const limits = await this.subscriptionsService.getUserLimits(req.user.id);
+    const user = req.user || req.isce_auth;
+    const limits = await this.subscriptionsService.getUserLimits(user.id);
     return { success: true, data: { limits } };
   }
 
@@ -89,8 +91,9 @@ export class SubscriptionsController {
       }
     }
 
+    const user = req.user || req.isce_auth;
     const sub = await this.subscriptionsService.createSubscription(
-      req.user.id,
+      user.id,
       dto.planKey,
     );
     return {
@@ -109,7 +112,8 @@ export class SubscriptionsController {
   @ApiResponse({ status: 200, description: 'Subscription cancelled' })
   @ApiResponse({ status: 404, description: 'No subscription found' })
   async cancelSubscription(@Req() req: any) {
-    const sub = await this.subscriptionsService.cancelSubscription(req.user.id);
+    const user = req.user || req.isce_auth;
+    const sub = await this.subscriptionsService.cancelSubscription(user.id);
     return {
       success: true,
       message:
