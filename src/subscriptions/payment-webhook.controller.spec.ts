@@ -1,4 +1,4 @@
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, UnprocessableEntityException } from '@nestjs/common';
 import { PaymentWebhookController } from './payment-webhook.controller';
 import { PlanTier } from '../generated/prisma/client';
 
@@ -196,6 +196,61 @@ describe('PaymentWebhookController', () => {
       ).rejects.toBeInstanceOf(BadRequestException);
 
       expect(mockSubscriptionsService.upgradePlan).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('handleForwardedPaystackEvent (forwarded by wallet-nest)', () => {
+    it('activates the subscription from the forwarded event and data', async () => {
+      const response = await controller.handleForwardedPaystackEvent(validBody as any);
+
+      expect(mockPaystackProvider.handleWebhookEvent).toHaveBeenCalledWith(validBody);
+      expect(response).toEqual({
+        status: 'success',
+        userId: 'usr_test_123',
+        planKey: PlanTier.PRO_LITE,
+      });
+      expect(mockTx.paymentRecord.create).toHaveBeenCalled();
+    });
+
+    it('does not re-check a Paystack signature (wallet-nest already did)', async () => {
+      await controller.handleForwardedPaystackEvent(validBody as any);
+
+      expect(mockPaystackProvider.verifyWebhookSignature).not.toHaveBeenCalled();
+    });
+
+    it('ignores events the provider does not act on, such as charge.failed', async () => {
+      mockPaystackProvider.handleWebhookEvent.mockResolvedValue(null);
+
+      await expect(
+        controller.handleForwardedPaystackEvent({ event: 'charge.failed', data: {} } as any),
+      ).resolves.toEqual({ status: 'ignored' });
+      expect(mockSubscriptionsService.upgradePlan).not.toHaveBeenCalled();
+    });
+
+    it('fails an underpaid charge so wallet-nest records it as FAILED', async () => {
+      mockPaystackProvider.handleWebhookEvent.mockResolvedValue({
+        success: true,
+        userId: 'usr_test_123',
+        planKey: PlanTier.PRO_LITE,
+        reference: REFERENCE,
+        amountKobo: 100,
+      });
+
+      await expect(
+        controller.handleForwardedPaystackEvent(validBody as any),
+      ).rejects.toBeInstanceOf(UnprocessableEntityException);
+      expect(mockSubscriptionsService.upgradePlan).not.toHaveBeenCalled();
+    });
+
+    it('treats a repeat delivery as already processed, not an error', async () => {
+      mockDb.$transaction.mockRejectedValue({
+        code: 'P2002',
+        meta: { target: ['gatewayRef'] },
+      });
+
+      await expect(
+        controller.handleForwardedPaystackEvent(validBody as any),
+      ).resolves.toEqual({ status: 'already_processed' });
     });
   });
 });
