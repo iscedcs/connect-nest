@@ -160,8 +160,12 @@ export class EmailService {
   private buildSubscriptionLaunchHtml(
     options: SendSubscriptionLaunchOptions,
   ): string {
-    const { recipientName, trialMonths = 6, trialEndDate, dashboardUrl } =
-      options;
+    const {
+      recipientName,
+      trialMonths = 6,
+      trialEndDate,
+      dashboardUrl,
+    } = options;
     const greeting = recipientName ? `Hi ${recipientName},` : 'Hello,';
     const targetUrl = dashboardUrl || `${this.appUrl}/subscriptions`;
 
@@ -288,12 +292,15 @@ export class EmailService {
       SUBSCRIPTION_CANCELLED: '🚫',
       SUBSCRIPTION_PAST_DUE: '⚠️',
       SUBSCRIPTION_LAUNCH_ANNOUNCEMENT: '🚀',
+      SUBSCRIPTION_RENEWAL_REMINDER: '🔁',
+      SUBSCRIPTION_RENEWAL_FAILED: '⚠️',
     };
     return map[type] || '🔔';
   }
 
   private getCategoryLabel(type: NotificationType): string {
-    if (type === 'SUBSCRIPTION_LAUNCH_ANNOUNCEMENT') return 'Special Announcement';
+    if (type === 'SUBSCRIPTION_LAUNCH_ANNOUNCEMENT')
+      return 'Special Announcement';
     if (type.startsWith('SUBSCRIPTION_')) return 'Subscription';
     if (type.startsWith('THREAD_') || type.startsWith('BOOKING_'))
       return 'Bookings & Threads';

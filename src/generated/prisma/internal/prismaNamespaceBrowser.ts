@@ -669,6 +669,14 @@ export const SubscriptionScalarFieldEnum = {
   gatewayCustomerId: 'gatewayCustomerId',
   gatewaySubId: 'gatewaySubId',
   notifiedLaunch: 'notifiedLaunch',
+  autoRenew: 'autoRenew',
+  paymentMethod: 'paymentMethod',
+  savedCardId: 'savedCardId',
+  savedCardLabel: 'savedCardLabel',
+  walletMandateId: 'walletMandateId',
+  renewalAttempts: 'renewalAttempts',
+  lastRenewalAttemptAt: 'lastRenewalAttemptAt',
+  renewalReminderFor: 'renewalReminderFor',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

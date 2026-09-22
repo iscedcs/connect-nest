@@ -5,7 +5,6 @@ import {
   NotFoundException,
   Logger,
 } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
 import { DatabaseService } from '../database/database.service';
 import { NotificationDispatcher } from '../notification/notification-dispatcher.service';
 import {
@@ -39,24 +38,65 @@ export const MIN_CHARGE_KOBO = 5_000;
  */
 export const PRORATION_ROUNDING_KOBO = 1;
 
-const DAY_MS = 24 * 60 * 60 * 1000;
+/** How long a free trial of a paid plan lasts. */
+export const TRIAL_MONTHS = 6;
+
+/**
+ * Charged to start a trial, to check the card (or wallet) that the first
+ * month will be taken from when the trial ends. Not refunded.
+ */
+export const TRIAL_START_KOBO = MIN_CHARGE_KOBO;
+
+export const DAY_MS = 24 * 60 * 60 * 1000;
+
+/** Anything that isn't a trial, a renewal or a prorated upgrade is a `full` payment. */
+export type CheckoutKind = 'full' | 'prorated_upgrade' | 'trial' | 'renewal';
+export const CHECKOUT_KINDS: readonly CheckoutKind[] = [
+  'full',
+  'prorated_upgrade',
+  'trial',
+  'renewal',
+];
 
 /** What a checkout for a plan will charge, and what the payment buys. */
 export interface CheckoutQuote {
   /**
    * `prorated_upgrade`: a mid-cycle move to a dearer plan; charges the
    * difference for the time left and keeps the renewal date.
+   * `trial`: a first paid plan starts with a TRIAL_MONTHS free trial;
+   * TRIAL_START_KOBO checks the payment method, and the first month is
+   * charged to it when the trial ends.
    * `full`: one month at the plan's price.
    */
-  kind: 'full' | 'prorated_upgrade';
+  kind: Exclude<CheckoutKind, 'renewal'>;
   planKey: PlanTier;
   amountKobo: number;
   /** The plan's monthly price, charged in full from the next month on. */
   fullPriceKobo: number;
   /** The plan being upgraded from; set only for a prorated upgrade. */
   fromPlanKey: PlanTier | null;
-  /** When the paid period will end once this payment lands. */
+  /** When the paid period (or the trial) will end once this payment lands. */
   renewsAt: Date;
+}
+
+/** How a subscription renews itself, for /me and the renewal job. */
+export type PaymentMethod = 'CARD' | 'WALLET';
+
+/**
+ * What an automatic renewal would charge, or null if it won't renew by
+ * itself: renewing is on, and the card or wallet permission for the chosen
+ * method is on file.
+ */
+export function renewalInstrument(
+  sub: Pick<
+    Subscription,
+    'autoRenew' | 'paymentMethod' | 'savedCardId' | 'walletMandateId'
+  >,
+): PaymentMethod | null {
+  if (!sub.autoRenew) return null;
+  if (sub.paymentMethod === 'WALLET' && sub.walletMandateId) return 'WALLET';
+  if (sub.paymentMethod === 'CARD' && sub.savedCardId) return 'CARD';
+  return null;
 }
 
 type LifecycleFields = Pick<
@@ -234,23 +274,69 @@ export class SubscriptionsService {
     planKey: PlanTier,
     now = new Date(),
   ): string | null {
+    const trialing = sub.status === SubscriptionStatus.TRIALING;
     if (
       sub.plan.key !== planKey ||
-      sub.status !== SubscriptionStatus.ACTIVE ||
-      !sub.currentPeriodEnd
+      (sub.status !== SubscriptionStatus.ACTIVE && !trialing)
     ) {
       return null;
     }
+    const end = this.coveredUntil(sub);
+    if (!end) return null;
     const renewalOpensAt = new Date(
-      sub.currentPeriodEnd.getTime() - RENEWAL_WINDOW_DAYS * DAY_MS,
+      end.getTime() - RENEWAL_WINDOW_DAYS * DAY_MS,
     );
     if (now >= renewalOpensAt) return null;
 
     const day = (d: Date) => d.toISOString().slice(0, 10);
-    return (
-      `You're already on ${sub.plan.name} until ${day(sub.currentPeriodEnd)}. ` +
-      `You can renew from ${day(renewalOpensAt)}.`
-    );
+    return trialing
+      ? `You're on a free trial of ${sub.plan.name} until ${day(end)}. ` +
+          `You can pay for it from ${day(renewalOpensAt)}.`
+      : `You're already on ${sub.plan.name} until ${day(end)}. ` +
+          `You can renew from ${day(renewalOpensAt)}.`;
+  }
+
+  /**
+   * The end of the time already paid for, or trialled, on the current plan:
+   * paying again for the same plan adds a month after it, so none is lost.
+   * Unlike accessEndsAt, a past-due plan's grace days don't count.
+   */
+  private coveredUntil(sub: LifecycleFields): Date | null {
+    return sub.status === SubscriptionStatus.PAST_DUE
+      ? (sub.currentPeriodEnd ?? null)
+      : this.accessEndsAt(sub);
+  }
+
+  /**
+   * A user's first paid plan starts with a free trial: they have never had
+   * one, aren't on a paid plan now, and have never paid for one.
+   */
+  async isTrialEligible(
+    sub: LifecycleFields & {
+      id: string;
+      trialUsed: boolean;
+      plan: Pick<Plan, 'priceMonthly'>;
+    },
+    now = new Date(),
+  ): Promise<boolean> {
+    if (sub.trialUsed) return false;
+    if (sub.plan.priceMonthly > 0 && this.isEntitled(sub, now)) return false;
+    const paid = await this.db.paymentRecord.count({
+      where: { subscriptionId: sub.id, status: 'success' },
+    });
+    return paid === 0;
+  }
+
+  /**
+   * The date an automatic charge renews from: the end of the trial for a
+   * trial, else the end of the paid period. Null if nothing is scheduled.
+   */
+  renewalAnchor(
+    sub: Pick<Subscription, 'status' | 'currentPeriodEnd' | 'trialEndDate'>,
+  ): Date | null {
+    return sub.status === SubscriptionStatus.TRIALING
+      ? (sub.trialEndDate ?? null)
+      : (sub.currentPeriodEnd ?? null);
   }
 
   /** Whether the paid period is still running (so its unused time is worth something). */
@@ -326,6 +412,10 @@ export class SubscriptionsService {
     },
     target: Pick<Plan, 'key' | 'name' | 'priceMonthly'>,
     now = new Date(),
+    options: {
+      /** From isTrialEligible: this user's first paid plan starts with a trial. */
+      trialEligible?: boolean;
+    } = {},
   ): CheckoutQuote {
     const blocked = this.checkoutBlockedReason(sub, target.key, now);
     if (blocked) throw new ConflictException(blocked);
@@ -341,6 +431,17 @@ export class SubscriptionsService {
       );
     }
 
+    if (options.trialEligible) {
+      return {
+        kind: 'trial',
+        planKey: target.key,
+        amountKobo: TRIAL_START_KOBO,
+        fullPriceKobo: target.priceMonthly,
+        fromPlanKey: null,
+        renewsAt: this.addMonths(now, TRIAL_MONTHS),
+      };
+    }
+
     const prorated = this.prorationQuote(sub, target, now);
     if (prorated) {
       return {
@@ -352,19 +453,17 @@ export class SubscriptionsService {
         renewsAt: prorated.periodEnd,
       };
     }
-    // Mirrors upgradePlan: the same plan with paid time left extends from its
-    // current end; anything else starts a month from today.
-    const extendsCurrent =
-      sub.plan.key === target.key &&
-      sub.currentPeriodEnd !== null &&
-      sub.currentPeriodEnd > now;
+    // Mirrors upgradePlan: the same plan with paid or trial time left extends
+    // from where that ends; anything else starts a month from today.
+    const end = this.coveredUntil(sub);
+    const extendsCurrent = sub.plan.key === target.key && !!end && end > now;
     return {
       kind: 'full',
       planKey: target.key,
       amountKobo: target.priceMonthly,
       fullPriceKobo: target.priceMonthly,
       fromPlanKey: null,
-      renewsAt: this.addMonths(extendsCurrent ? sub.currentPeriodEnd! : now, 1),
+      renewsAt: this.addMonths(extendsCurrent ? end : now, 1),
     };
   }
 
@@ -432,6 +531,14 @@ export class SubscriptionsService {
        * the difference for the time left.
        */
       keepCurrentPeriod?: boolean;
+      /**
+       * An automatic renewal: the next month runs from this anchor (the end
+       * of the period or trial being renewed), not from today, so a charge
+       * taken a day early or during the grace days never moves the date.
+       */
+      renewFrom?: Date;
+      /** Start the TRIAL_MONTHS free trial of `newPlanKey` today. */
+      startTrial?: boolean;
     } = {},
   ): Promise<Subscription> {
     const db = tx ?? this.db;
@@ -443,6 +550,40 @@ export class SubscriptionsService {
 
     const plan = await db.plan.findUnique({ where: { key: newPlanKey } });
     if (!plan) throw new NotFoundException(`Plan not found: ${newPlanKey}`);
+
+    if (options.startTrial) {
+      const now = new Date();
+      return db.subscription.update({
+        where: { userId },
+        data: {
+          planId: plan.id,
+          status: SubscriptionStatus.TRIALING,
+          trialStartDate: now,
+          trialEndDate: this.addMonths(now, TRIAL_MONTHS),
+          trialUsed: true,
+          currentPeriodStart: null,
+          currentPeriodEnd: null,
+          cancelledAt: null,
+          ...SubscriptionsService.NEW_RENEWAL_DATE,
+          gatewaySubId,
+        },
+      });
+    }
+
+    if (options.renewFrom) {
+      return db.subscription.update({
+        where: { userId },
+        data: {
+          planId: plan.id,
+          status: SubscriptionStatus.ACTIVE,
+          currentPeriodStart: options.renewFrom,
+          currentPeriodEnd: this.addMonths(options.renewFrom, 1),
+          cancelledAt: null,
+          ...SubscriptionsService.NEW_RENEWAL_DATE,
+          gatewaySubId,
+        },
+      });
+    }
 
     if (options.keepCurrentPeriod) {
       return db.subscription.update({
@@ -458,15 +599,14 @@ export class SubscriptionsService {
 
     const now = new Date();
 
-    // Paying again for the same plan before its period ends (an early
-    // renewal, or resubscribing after cancelling) adds a month to the end
-    // already paid for, so no paid days are lost. A different plan, or a
-    // lapsed one, starts a fresh month today.
+    // Paying again for the same plan before its period or trial ends (an
+    // early renewal, or resubscribing after cancelling) adds a month to the
+    // end already covered, so no paid or trial days are lost. A different
+    // plan, or a lapsed one, starts a fresh month today.
+    const coveredUntil = this.coveredUntil(sub);
     const extendsCurrentPeriod =
-      sub.planId === plan.id &&
-      sub.currentPeriodEnd !== null &&
-      sub.currentPeriodEnd > now;
-    const periodBase = extendsCurrentPeriod ? sub.currentPeriodEnd! : now;
+      sub.planId === plan.id && !!coveredUntil && coveredUntil > now;
+    const periodBase = extendsCurrentPeriod ? coveredUntil : now;
 
     return db.subscription.update({
       where: { userId },
@@ -475,11 +615,23 @@ export class SubscriptionsService {
         status: SubscriptionStatus.ACTIVE,
         gatewaySubId,
         cancelledAt: null,
-        currentPeriodStart: extendsCurrentPeriod ? sub.currentPeriodStart : now,
+        currentPeriodStart: extendsCurrentPeriod
+          ? (sub.currentPeriodStart ?? coveredUntil)
+          : now,
         currentPeriodEnd: this.addMonths(periodBase, 1),
+        ...SubscriptionsService.NEW_RENEWAL_DATE,
       },
     });
   }
+
+  /**
+   * The renewal date moved: the failed attempts counted so far belonged to
+   * the old one, and the first decline for the new one must be announced.
+   */
+  private static readonly NEW_RENEWAL_DATE = {
+    renewalAttempts: 0,
+    lastRenewalAttemptAt: null,
+  } as const;
 
   async cancelSubscription(userId: string): Promise<Subscription> {
     const sub = await this.db.subscription.findUnique({
@@ -500,11 +652,14 @@ export class SubscriptionsService {
       return sub;
     }
 
+    // Cancelling stops automatic renewal too; the saved card or wallet
+    // permission itself is released by the caller (SubscriptionPaymentsService).
     return this.db.subscription.update({
       where: { userId },
       data: {
         status: SubscriptionStatus.CANCELLED,
         cancelledAt: new Date(),
+        autoRenew: false,
       },
     });
   }
@@ -518,14 +673,31 @@ export class SubscriptionsService {
     });
     if (!sub) return;
 
-    if (sub.gatewayCustomerId) {
-      // Attempt to charge via Paydestal — placeholder for gateway integration
-      // Payment initiation is handled in payment-webhook.handler.ts
-      // If charge succeeds the webhook will call upgradePlan().
-      // For now log and fall through to downgrade.
-      this.logger.log(
-        `Trial expired for user ${sub.userId} — gateway charge pending (gatewayCustomerId: ${sub.gatewayCustomerId})`,
+    // A trial set to renew whose first charge hasn't gone through yet (the
+    // renewal job tries from the day before it ends) gets the same grace
+    // days as an unpaid month, with retries, before it drops to Free.
+    const willRenew = sub.plan.priceMonthly > 0 && !!renewalInstrument(sub);
+    if (willRenew && sub.trialEndDate) {
+      await this.db.subscription.update({
+        where: { id: sub.id },
+        data: {
+          status: SubscriptionStatus.PAST_DUE,
+          currentPeriodEnd: sub.trialEndDate,
+        },
+      });
+      const graceEnds = new Date(
+        sub.trialEndDate.getTime() + PAST_DUE_GRACE_DAYS * DAY_MS,
       );
+      await this.notifications.dispatch({
+        userId: sub.userId,
+        type: 'SUBSCRIPTION_PAST_DUE',
+        title: `Your ${sub.plan.name} trial has ended`,
+        message:
+          "We couldn't take the first month's payment yet. We'll try again, " +
+          `or you can pay on your plan page by ${graceEnds.toISOString().slice(0, 10)} ` +
+          'to keep your features.',
+        skipPush: false,
+      });
       return;
     }
 
@@ -594,7 +766,10 @@ export class SubscriptionsService {
 
   // ─── Cron Jobs ────────────────────────────────────────────────────────────
 
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  /**
+   * Run nightly by SubscriptionRenewalService.runNightly, after automatic
+   * renewals have been charged, so a renewed plan is never marked expired.
+   */
   async processTrialExpiries(): Promise<void> {
     const isEnabled =
       await this.systemConfigService.isPersonalSubscriptionEnabled();
@@ -618,7 +793,7 @@ export class SubscriptionsService {
     }
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  /** Run nightly by SubscriptionRenewalService.runNightly, after renewals and trial expiries. */
   async processPaidExpiries(): Promise<void> {
     const isEnabled =
       await this.systemConfigService.isPersonalSubscriptionEnabled();
@@ -820,8 +995,14 @@ export class SubscriptionsService {
     }));
   }
 
-  /** Build the response shape for GET /subscriptions/me */
-  buildSubscriptionResponse(sub: Subscription & { plan: Plan }) {
+  /**
+   * Build the response shape for GET /subscriptions/me. `trialEligible`
+   * comes from isTrialEligible, which needs a query of its own.
+   */
+  buildSubscriptionResponse(
+    sub: Subscription & { plan: Plan },
+    extra: { trialEligible?: boolean } = {},
+  ) {
     const now = new Date();
     const isInTrial = sub.status === SubscriptionStatus.TRIALING;
     const daysRemaining =
@@ -836,13 +1017,18 @@ export class SubscriptionsService {
         : null;
 
     const isPaidPlan = sub.plan.priceMonthly > 0;
+    const willAutoRenew =
+      isPaidPlan &&
+      !!renewalInstrument(sub) &&
+      (sub.status === SubscriptionStatus.ACTIVE ||
+        sub.status === SubscriptionStatus.TRIALING ||
+        sub.status === SubscriptionStatus.PAST_DUE);
+    const coveredUntil = this.coveredUntil(sub);
     const renewalOpensAt =
       isPaidPlan &&
-      sub.status === SubscriptionStatus.ACTIVE &&
-      sub.currentPeriodEnd
-        ? new Date(
-            sub.currentPeriodEnd.getTime() - RENEWAL_WINDOW_DAYS * DAY_MS,
-          )
+      (sub.status === SubscriptionStatus.ACTIVE || isInTrial) &&
+      coveredUntil
+        ? new Date(coveredUntil.getTime() - RENEWAL_WINDOW_DAYS * DAY_MS)
         : null;
 
     return {
@@ -864,8 +1050,21 @@ export class SubscriptionsService {
       canRenew:
         isPaidPlan &&
         this.checkoutBlockedReason(sub, sub.plan.key, now) === null,
-      /** For an active paid plan: when renewing the same plan opens. */
+      /** For an active paid plan or a trial: when paying for the same plan opens. */
       renewalOpensAt,
+      /** Whether the plan renews itself by charging the saved card or wallet. */
+      autoRenew: willAutoRenew,
+      /** What automatic renewals charge: CARD or WALLET, or null. */
+      paymentMethod: willAutoRenew
+        ? ((sub.paymentMethod as PaymentMethod | null) ?? null)
+        : null,
+      /** e.g. "visa •••• 4081" for a card; null for the wallet. */
+      savedCardLabel: willAutoRenew ? (sub.savedCardLabel ?? null) : null,
+      /** When the next automatic charge is due, and how much it takes. */
+      nextChargeAt: willAutoRenew ? this.renewalAnchor(sub) : null,
+      nextChargeKobo: willAutoRenew ? sub.plan.priceMonthly : null,
+      /** Whether choosing a paid plan starts a free trial instead of charging a month. */
+      trialEligible: extra.trialEligible ?? false,
     };
   }
 

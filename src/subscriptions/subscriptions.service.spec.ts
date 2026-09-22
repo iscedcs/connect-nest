@@ -5,7 +5,10 @@ import {
   PAST_DUE_GRACE_DAYS,
   PRORATION_ROUNDING_KOBO,
   RENEWAL_WINDOW_DAYS,
+  renewalInstrument,
   SubscriptionsService,
+  TRIAL_MONTHS,
+  TRIAL_START_KOBO,
 } from './subscriptions.service';
 import { DatabaseService } from '../database/database.service';
 import { SystemConfigService } from '../system-config/system-config.service';
@@ -278,6 +281,7 @@ describe('SubscriptionsService (paid plan lifecycle)', () => {
           ),
         ),
       },
+      paymentRecord: { count: jest.fn().mockResolvedValue(0) },
     };
     notifications = { dispatch: jest.fn() };
 
@@ -846,6 +850,336 @@ describe('SubscriptionsService (paid plan lifecycle)', () => {
       } as any);
       expect(res.canRenew).toBe(false);
       expect(res.accessEndsAt).toBeNull();
+    });
+
+    const renewing = {
+      autoRenew: true,
+      paymentMethod: 'CARD',
+      savedCardId: 'card_1',
+      savedCardLabel: 'visa •••• 4081',
+      walletMandateId: null,
+    };
+
+    it('reports the card, date and amount of the next automatic charge', () => {
+      const res = service.buildSubscriptionResponse({
+        plan: proLite,
+        status: SubscriptionStatus.ACTIVE,
+        currentPeriodEnd: daysFromNow(20),
+        trialEndDate: null,
+        ...renewing,
+      } as any);
+      expect(res.autoRenew).toBe(true);
+      expect(res.paymentMethod).toBe('CARD');
+      expect(res.savedCardLabel).toBe('visa •••• 4081');
+      expect(res.nextChargeAt).toEqual(daysFromNow(20));
+      expect(res.nextChargeKobo).toBe(100000);
+    });
+
+    it('charges a trial at its end, and opens paying by hand in its last days', () => {
+      const res = service.buildSubscriptionResponse(
+        {
+          plan: proLite,
+          status: SubscriptionStatus.TRIALING,
+          currentPeriodEnd: null,
+          trialEndDate: daysFromNow(30),
+          ...renewing,
+        } as any,
+        { trialEligible: false },
+      );
+      expect(res.nextChargeAt).toEqual(daysFromNow(30));
+      expect(res.canRenew).toBe(false);
+      expect(res.renewalOpensAt).toEqual(daysFromNow(30 - RENEWAL_WINDOW_DAYS));
+    });
+
+    it('reports no automatic charge once cancelled, or without the chosen card or permission', () => {
+      const cancelled = service.buildSubscriptionResponse({
+        plan: proLite,
+        status: SubscriptionStatus.CANCELLED,
+        currentPeriodEnd: daysFromNow(20),
+        trialEndDate: null,
+        ...renewing,
+      } as any);
+      expect(cancelled.autoRenew).toBe(false);
+      expect(cancelled.nextChargeAt).toBeNull();
+      expect(cancelled.savedCardLabel).toBeNull();
+
+      const noMandate = service.buildSubscriptionResponse({
+        plan: proLite,
+        status: SubscriptionStatus.ACTIVE,
+        currentPeriodEnd: daysFromNow(20),
+        trialEndDate: null,
+        ...renewing,
+        paymentMethod: 'WALLET',
+      } as any);
+      expect(noMandate.autoRenew).toBe(false);
+      expect(noMandate.paymentMethod).toBeNull();
+    });
+
+    it('passes trial eligibility through', () => {
+      const res = service.buildSubscriptionResponse(
+        {
+          plan: freePlan,
+          status: SubscriptionStatus.ACTIVE,
+          currentPeriodEnd: null,
+          trialEndDate: null,
+        } as any,
+        { trialEligible: true },
+      );
+      expect(res.trialEligible).toBe(true);
+      expect(res.autoRenew).toBe(false);
+    });
+  });
+
+  describe('free trials', () => {
+    const freeSub = {
+      id: 'sub_1',
+      plan: freePlan,
+      status: SubscriptionStatus.ACTIVE,
+      currentPeriodEnd: null,
+      trialEndDate: null,
+      trialUsed: false,
+    };
+
+    it('offers a trial to a first-time upgrader who has never paid', async () => {
+      await expect(service.isTrialEligible(freeSub)).resolves.toBe(true);
+      expect(db.paymentRecord.count).toHaveBeenCalledWith({
+        where: { subscriptionId: 'sub_1', status: 'success' },
+      });
+    });
+
+    it('offers no second trial, none on a paid plan, and none after a past payment', async () => {
+      await expect(
+        service.isTrialEligible({ ...freeSub, trialUsed: true }),
+      ).resolves.toBe(false);
+      await expect(
+        service.isTrialEligible({
+          ...freeSub,
+          plan: proLite,
+          currentPeriodEnd: daysFromNow(10),
+        }),
+      ).resolves.toBe(false);
+
+      db.paymentRecord.count.mockResolvedValue(1);
+      await expect(service.isTrialEligible(freeSub)).resolves.toBe(false);
+    });
+
+    it('prices a trial as the ₦50 card check, renewing after TRIAL_MONTHS', () => {
+      const quote = service.quoteCheckout(freeSub, proPlus, NOW, {
+        trialEligible: true,
+      });
+      expect(quote).toEqual({
+        kind: 'trial',
+        planKey: PlanTier.PRO_PLUS,
+        amountKobo: TRIAL_START_KOBO,
+        fullPriceKobo: 150000,
+        fromPlanKey: null,
+        renewsAt: new Date('2027-03-22T12:00:00Z'),
+      });
+      expect(TRIAL_MONTHS).toBe(6);
+    });
+
+    it('starts the trial today, with no paid period', async () => {
+      db.subscription.findUnique.mockResolvedValue({
+        userId: 'usr_1',
+        planId: 'plan_free',
+        status: SubscriptionStatus.ACTIVE,
+        currentPeriodEnd: null,
+        renewalAttempts: 2,
+      });
+      await service.upgradePlan(
+        'usr_1',
+        PlanTier.PRO_LITE,
+        'ref_t',
+        undefined,
+        {
+          startTrial: true,
+        },
+      );
+      expect(db.subscription.update).toHaveBeenCalledWith({
+        where: { userId: 'usr_1' },
+        data: {
+          planId: 'plan_lite',
+          status: SubscriptionStatus.TRIALING,
+          trialStartDate: NOW,
+          trialEndDate: new Date('2027-03-22T12:00:00Z'),
+          trialUsed: true,
+          currentPeriodStart: null,
+          currentPeriodEnd: null,
+          cancelledAt: null,
+          renewalAttempts: 0,
+          lastRenewalAttemptAt: null,
+          gatewaySubId: 'ref_t',
+        },
+      });
+    });
+
+    const trialing = {
+      userId: 'usr_1',
+      planId: 'plan_lite',
+      plan: proLite,
+      status: SubscriptionStatus.TRIALING,
+      currentPeriodStart: null,
+      currentPeriodEnd: null,
+      trialEndDate: daysFromNow(3),
+    };
+
+    it('lets a trial be paid for by hand only in its last days, adding the month after it', async () => {
+      expect(
+        service.checkoutBlockedReason(
+          { ...trialing, trialEndDate: daysFromNow(30) },
+          PlanTier.PRO_LITE,
+          NOW,
+        ),
+      ).toMatch(/free trial of Pro Lite until 2026-10-22.*from 2026-10-15/);
+      expect(service.quoteCheckout(trialing, proLite, NOW).renewsAt).toEqual(
+        new Date('2026-10-25T12:00:00Z'),
+      );
+
+      db.subscription.findUnique.mockResolvedValue(trialing);
+      const updated: any = await service.upgradePlan(
+        'usr_1',
+        PlanTier.PRO_LITE,
+        'ref_m',
+      );
+      expect(updated.status).toBe(SubscriptionStatus.ACTIVE);
+      expect(updated.currentPeriodStart).toEqual(daysFromNow(3));
+      expect(updated.currentPeriodEnd).toEqual(
+        new Date('2026-10-25T12:00:00Z'),
+      );
+    });
+
+    it('moves an ended trial set to renew into its grace days, not to Free', async () => {
+      db.subscription.findUnique.mockResolvedValue({
+        ...trialing,
+        id: 'sub_1',
+        trialEndDate: daysFromNow(-0.5),
+        autoRenew: true,
+        paymentMethod: 'WALLET',
+        walletMandateId: 'mandate_1',
+      });
+      await service.handleTrialExpiry('sub_1');
+      expect(db.subscription.update).toHaveBeenCalledWith({
+        where: { id: 'sub_1' },
+        data: {
+          status: SubscriptionStatus.PAST_DUE,
+          currentPeriodEnd: daysFromNow(-0.5),
+        },
+      });
+      expect(notifications.dispatch).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'SUBSCRIPTION_PAST_DUE',
+          title: 'Your Pro Lite trial has ended',
+        }),
+      );
+    });
+
+    it('moves an ended trial with nothing to charge to Free', async () => {
+      db.subscription.findUnique.mockResolvedValue({
+        ...trialing,
+        id: 'sub_1',
+        trialEndDate: daysFromNow(-0.5),
+        autoRenew: true,
+        paymentMethod: 'CARD',
+        savedCardId: null,
+      });
+      await service.handleTrialExpiry('sub_1');
+      expect(db.subscription.update).toHaveBeenCalledWith({
+        where: { id: 'sub_1' },
+        data: { planId: 'plan_free', status: SubscriptionStatus.EXPIRED },
+      });
+    });
+  });
+
+  describe('automatic renewal', () => {
+    it('renews from the date being renewed, not from today', async () => {
+      db.subscription.findUnique.mockResolvedValue({
+        userId: 'usr_1',
+        planId: 'plan_lite',
+        status: SubscriptionStatus.PAST_DUE,
+        currentPeriodEnd: daysFromNow(-2),
+      });
+      await service.upgradePlan(
+        'usr_1',
+        PlanTier.PRO_LITE,
+        'ref_r',
+        undefined,
+        {
+          renewFrom: daysFromNow(-2),
+        },
+      );
+      expect(db.subscription.update).toHaveBeenCalledWith({
+        where: { userId: 'usr_1' },
+        data: {
+          planId: 'plan_lite',
+          status: SubscriptionStatus.ACTIVE,
+          currentPeriodStart: daysFromNow(-2),
+          currentPeriodEnd: new Date('2026-10-20T12:00:00Z'),
+          cancelledAt: null,
+          renewalAttempts: 0,
+          lastRenewalAttemptAt: null,
+          gatewaySubId: 'ref_r',
+        },
+      });
+    });
+
+    it('forgets failed attempts when a payment by hand moves the renewal date', async () => {
+      db.subscription.findUnique.mockResolvedValue({
+        userId: 'usr_1',
+        planId: 'plan_lite',
+        status: SubscriptionStatus.PAST_DUE,
+        currentPeriodEnd: daysFromNow(-1),
+        renewalAttempts: 2,
+      });
+      const updated: any = await service.upgradePlan(
+        'usr_1',
+        PlanTier.PRO_LITE,
+        'ref_h',
+      );
+      expect(updated.renewalAttempts).toBe(0);
+      expect(updated.lastRenewalAttemptAt).toBeNull();
+    });
+
+    it('stops renewing when cancelled', async () => {
+      db.subscription.findUnique.mockResolvedValue({
+        userId: 'usr_1',
+        plan: proLite,
+        status: SubscriptionStatus.ACTIVE,
+      });
+      const updated: any = await service.cancelSubscription('usr_1');
+      expect(updated.autoRenew).toBe(false);
+    });
+
+    it('renews from the trial end for a trial, else from the period end', () => {
+      expect(
+        service.renewalAnchor({
+          status: SubscriptionStatus.TRIALING,
+          trialEndDate: daysFromNow(9),
+          currentPeriodEnd: null,
+        }),
+      ).toEqual(daysFromNow(9));
+      expect(
+        service.renewalAnchor({
+          status: SubscriptionStatus.PAST_DUE,
+          trialEndDate: daysFromNow(-40),
+          currentPeriodEnd: daysFromNow(-1),
+        }),
+      ).toEqual(daysFromNow(-1));
+    });
+
+    it('only renews by itself from the card or wallet permission it was set up with', () => {
+      const base = {
+        autoRenew: true,
+        paymentMethod: 'CARD',
+        savedCardId: 'card_1',
+        walletMandateId: 'mandate_1',
+      };
+      expect(renewalInstrument(base)).toBe('CARD');
+      expect(renewalInstrument({ ...base, paymentMethod: 'WALLET' })).toBe(
+        'WALLET',
+      );
+      expect(renewalInstrument({ ...base, autoRenew: false })).toBeNull();
+      expect(renewalInstrument({ ...base, savedCardId: null })).toBeNull();
+      expect(renewalInstrument({ ...base, paymentMethod: null })).toBeNull();
     });
   });
 });

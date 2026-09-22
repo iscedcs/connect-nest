@@ -20,8 +20,18 @@ export type SubscriptionModel = runtime.Types.Result.DefaultSelection<Prisma.$Su
 
 export type AggregateSubscription = {
   _count: SubscriptionCountAggregateOutputType | null
+  _avg: SubscriptionAvgAggregateOutputType | null
+  _sum: SubscriptionSumAggregateOutputType | null
   _min: SubscriptionMinAggregateOutputType | null
   _max: SubscriptionMaxAggregateOutputType | null
+}
+
+export type SubscriptionAvgAggregateOutputType = {
+  renewalAttempts: number | null
+}
+
+export type SubscriptionSumAggregateOutputType = {
+  renewalAttempts: number | null
 }
 
 export type SubscriptionMinAggregateOutputType = {
@@ -38,6 +48,14 @@ export type SubscriptionMinAggregateOutputType = {
   gatewayCustomerId: string | null
   gatewaySubId: string | null
   notifiedLaunch: boolean | null
+  autoRenew: boolean | null
+  paymentMethod: string | null
+  savedCardId: string | null
+  savedCardLabel: string | null
+  walletMandateId: string | null
+  renewalAttempts: number | null
+  lastRenewalAttemptAt: Date | null
+  renewalReminderFor: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -56,6 +74,14 @@ export type SubscriptionMaxAggregateOutputType = {
   gatewayCustomerId: string | null
   gatewaySubId: string | null
   notifiedLaunch: boolean | null
+  autoRenew: boolean | null
+  paymentMethod: string | null
+  savedCardId: string | null
+  savedCardLabel: string | null
+  walletMandateId: string | null
+  renewalAttempts: number | null
+  lastRenewalAttemptAt: Date | null
+  renewalReminderFor: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -74,11 +100,27 @@ export type SubscriptionCountAggregateOutputType = {
   gatewayCustomerId: number
   gatewaySubId: number
   notifiedLaunch: number
+  autoRenew: number
+  paymentMethod: number
+  savedCardId: number
+  savedCardLabel: number
+  walletMandateId: number
+  renewalAttempts: number
+  lastRenewalAttemptAt: number
+  renewalReminderFor: number
   createdAt: number
   updatedAt: number
   _all: number
 }
 
+
+export type SubscriptionAvgAggregateInputType = {
+  renewalAttempts?: true
+}
+
+export type SubscriptionSumAggregateInputType = {
+  renewalAttempts?: true
+}
 
 export type SubscriptionMinAggregateInputType = {
   id?: true
@@ -94,6 +136,14 @@ export type SubscriptionMinAggregateInputType = {
   gatewayCustomerId?: true
   gatewaySubId?: true
   notifiedLaunch?: true
+  autoRenew?: true
+  paymentMethod?: true
+  savedCardId?: true
+  savedCardLabel?: true
+  walletMandateId?: true
+  renewalAttempts?: true
+  lastRenewalAttemptAt?: true
+  renewalReminderFor?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -112,6 +162,14 @@ export type SubscriptionMaxAggregateInputType = {
   gatewayCustomerId?: true
   gatewaySubId?: true
   notifiedLaunch?: true
+  autoRenew?: true
+  paymentMethod?: true
+  savedCardId?: true
+  savedCardLabel?: true
+  walletMandateId?: true
+  renewalAttempts?: true
+  lastRenewalAttemptAt?: true
+  renewalReminderFor?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -130,6 +188,14 @@ export type SubscriptionCountAggregateInputType = {
   gatewayCustomerId?: true
   gatewaySubId?: true
   notifiedLaunch?: true
+  autoRenew?: true
+  paymentMethod?: true
+  savedCardId?: true
+  savedCardLabel?: true
+  walletMandateId?: true
+  renewalAttempts?: true
+  lastRenewalAttemptAt?: true
+  renewalReminderFor?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -173,6 +239,18 @@ export type SubscriptionAggregateArgs<ExtArgs extends runtime.Types.Extensions.I
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: SubscriptionAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: SubscriptionSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: SubscriptionMinAggregateInputType
@@ -203,6 +281,8 @@ export type SubscriptionGroupByArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   _count?: SubscriptionCountAggregateInputType | true
+  _avg?: SubscriptionAvgAggregateInputType
+  _sum?: SubscriptionSumAggregateInputType
   _min?: SubscriptionMinAggregateInputType
   _max?: SubscriptionMaxAggregateInputType
 }
@@ -221,9 +301,19 @@ export type SubscriptionGroupByOutputType = {
   gatewayCustomerId: string | null
   gatewaySubId: string | null
   notifiedLaunch: boolean
+  autoRenew: boolean
+  paymentMethod: string | null
+  savedCardId: string | null
+  savedCardLabel: string | null
+  walletMandateId: string | null
+  renewalAttempts: number
+  lastRenewalAttemptAt: Date | null
+  renewalReminderFor: Date | null
   createdAt: Date
   updatedAt: Date
   _count: SubscriptionCountAggregateOutputType | null
+  _avg: SubscriptionAvgAggregateOutputType | null
+  _sum: SubscriptionSumAggregateOutputType | null
   _min: SubscriptionMinAggregateOutputType | null
   _max: SubscriptionMaxAggregateOutputType | null
 }
@@ -260,6 +350,14 @@ export type SubscriptionWhereInput = {
   gatewayCustomerId?: Prisma.StringNullableFilter<"Subscription"> | string | null
   gatewaySubId?: Prisma.StringNullableFilter<"Subscription"> | string | null
   notifiedLaunch?: Prisma.BoolFilter<"Subscription"> | boolean
+  autoRenew?: Prisma.BoolFilter<"Subscription"> | boolean
+  paymentMethod?: Prisma.StringNullableFilter<"Subscription"> | string | null
+  savedCardId?: Prisma.StringNullableFilter<"Subscription"> | string | null
+  savedCardLabel?: Prisma.StringNullableFilter<"Subscription"> | string | null
+  walletMandateId?: Prisma.StringNullableFilter<"Subscription"> | string | null
+  renewalAttempts?: Prisma.IntFilter<"Subscription"> | number
+  lastRenewalAttemptAt?: Prisma.DateTimeNullableFilter<"Subscription"> | Date | string | null
+  renewalReminderFor?: Prisma.DateTimeNullableFilter<"Subscription"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Subscription"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Subscription"> | Date | string
   plan?: Prisma.XOR<Prisma.PlanScalarRelationFilter, Prisma.PlanWhereInput>
@@ -280,6 +378,14 @@ export type SubscriptionOrderByWithRelationInput = {
   gatewayCustomerId?: Prisma.SortOrderInput | Prisma.SortOrder
   gatewaySubId?: Prisma.SortOrderInput | Prisma.SortOrder
   notifiedLaunch?: Prisma.SortOrder
+  autoRenew?: Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrderInput | Prisma.SortOrder
+  savedCardId?: Prisma.SortOrderInput | Prisma.SortOrder
+  savedCardLabel?: Prisma.SortOrderInput | Prisma.SortOrder
+  walletMandateId?: Prisma.SortOrderInput | Prisma.SortOrder
+  renewalAttempts?: Prisma.SortOrder
+  lastRenewalAttemptAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  renewalReminderFor?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   plan?: Prisma.PlanOrderByWithRelationInput
@@ -303,6 +409,14 @@ export type SubscriptionWhereUniqueInput = Prisma.AtLeast<{
   gatewayCustomerId?: Prisma.StringNullableFilter<"Subscription"> | string | null
   gatewaySubId?: Prisma.StringNullableFilter<"Subscription"> | string | null
   notifiedLaunch?: Prisma.BoolFilter<"Subscription"> | boolean
+  autoRenew?: Prisma.BoolFilter<"Subscription"> | boolean
+  paymentMethod?: Prisma.StringNullableFilter<"Subscription"> | string | null
+  savedCardId?: Prisma.StringNullableFilter<"Subscription"> | string | null
+  savedCardLabel?: Prisma.StringNullableFilter<"Subscription"> | string | null
+  walletMandateId?: Prisma.StringNullableFilter<"Subscription"> | string | null
+  renewalAttempts?: Prisma.IntFilter<"Subscription"> | number
+  lastRenewalAttemptAt?: Prisma.DateTimeNullableFilter<"Subscription"> | Date | string | null
+  renewalReminderFor?: Prisma.DateTimeNullableFilter<"Subscription"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Subscription"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Subscription"> | Date | string
   plan?: Prisma.XOR<Prisma.PlanScalarRelationFilter, Prisma.PlanWhereInput>
@@ -323,11 +437,21 @@ export type SubscriptionOrderByWithAggregationInput = {
   gatewayCustomerId?: Prisma.SortOrderInput | Prisma.SortOrder
   gatewaySubId?: Prisma.SortOrderInput | Prisma.SortOrder
   notifiedLaunch?: Prisma.SortOrder
+  autoRenew?: Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrderInput | Prisma.SortOrder
+  savedCardId?: Prisma.SortOrderInput | Prisma.SortOrder
+  savedCardLabel?: Prisma.SortOrderInput | Prisma.SortOrder
+  walletMandateId?: Prisma.SortOrderInput | Prisma.SortOrder
+  renewalAttempts?: Prisma.SortOrder
+  lastRenewalAttemptAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  renewalReminderFor?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.SubscriptionCountOrderByAggregateInput
+  _avg?: Prisma.SubscriptionAvgOrderByAggregateInput
   _max?: Prisma.SubscriptionMaxOrderByAggregateInput
   _min?: Prisma.SubscriptionMinOrderByAggregateInput
+  _sum?: Prisma.SubscriptionSumOrderByAggregateInput
 }
 
 export type SubscriptionScalarWhereWithAggregatesInput = {
@@ -347,6 +471,14 @@ export type SubscriptionScalarWhereWithAggregatesInput = {
   gatewayCustomerId?: Prisma.StringNullableWithAggregatesFilter<"Subscription"> | string | null
   gatewaySubId?: Prisma.StringNullableWithAggregatesFilter<"Subscription"> | string | null
   notifiedLaunch?: Prisma.BoolWithAggregatesFilter<"Subscription"> | boolean
+  autoRenew?: Prisma.BoolWithAggregatesFilter<"Subscription"> | boolean
+  paymentMethod?: Prisma.StringNullableWithAggregatesFilter<"Subscription"> | string | null
+  savedCardId?: Prisma.StringNullableWithAggregatesFilter<"Subscription"> | string | null
+  savedCardLabel?: Prisma.StringNullableWithAggregatesFilter<"Subscription"> | string | null
+  walletMandateId?: Prisma.StringNullableWithAggregatesFilter<"Subscription"> | string | null
+  renewalAttempts?: Prisma.IntWithAggregatesFilter<"Subscription"> | number
+  lastRenewalAttemptAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Subscription"> | Date | string | null
+  renewalReminderFor?: Prisma.DateTimeNullableWithAggregatesFilter<"Subscription"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Subscription"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Subscription"> | Date | string
 }
@@ -364,6 +496,14 @@ export type SubscriptionCreateInput = {
   gatewayCustomerId?: string | null
   gatewaySubId?: string | null
   notifiedLaunch?: boolean
+  autoRenew?: boolean
+  paymentMethod?: string | null
+  savedCardId?: string | null
+  savedCardLabel?: string | null
+  walletMandateId?: string | null
+  renewalAttempts?: number
+  lastRenewalAttemptAt?: Date | string | null
+  renewalReminderFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   plan: Prisma.PlanCreateNestedOneWithoutSubscriptionsInput
@@ -384,6 +524,14 @@ export type SubscriptionUncheckedCreateInput = {
   gatewayCustomerId?: string | null
   gatewaySubId?: string | null
   notifiedLaunch?: boolean
+  autoRenew?: boolean
+  paymentMethod?: string | null
+  savedCardId?: string | null
+  savedCardLabel?: string | null
+  walletMandateId?: string | null
+  renewalAttempts?: number
+  lastRenewalAttemptAt?: Date | string | null
+  renewalReminderFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   paymentHistory?: Prisma.PaymentRecordUncheckedCreateNestedManyWithoutSubscriptionInput
@@ -402,6 +550,14 @@ export type SubscriptionUpdateInput = {
   gatewayCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gatewaySubId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notifiedLaunch?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  autoRenew?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  savedCardId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  savedCardLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  walletMandateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  renewalAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  lastRenewalAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  renewalReminderFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   plan?: Prisma.PlanUpdateOneRequiredWithoutSubscriptionsNestedInput
@@ -422,6 +578,14 @@ export type SubscriptionUncheckedUpdateInput = {
   gatewayCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gatewaySubId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notifiedLaunch?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  autoRenew?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  savedCardId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  savedCardLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  walletMandateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  renewalAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  lastRenewalAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  renewalReminderFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   paymentHistory?: Prisma.PaymentRecordUncheckedUpdateManyWithoutSubscriptionNestedInput
@@ -441,6 +605,14 @@ export type SubscriptionCreateManyInput = {
   gatewayCustomerId?: string | null
   gatewaySubId?: string | null
   notifiedLaunch?: boolean
+  autoRenew?: boolean
+  paymentMethod?: string | null
+  savedCardId?: string | null
+  savedCardLabel?: string | null
+  walletMandateId?: string | null
+  renewalAttempts?: number
+  lastRenewalAttemptAt?: Date | string | null
+  renewalReminderFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -458,6 +630,14 @@ export type SubscriptionUpdateManyMutationInput = {
   gatewayCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gatewaySubId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notifiedLaunch?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  autoRenew?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  savedCardId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  savedCardLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  walletMandateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  renewalAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  lastRenewalAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  renewalReminderFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -476,6 +656,14 @@ export type SubscriptionUncheckedUpdateManyInput = {
   gatewayCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gatewaySubId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notifiedLaunch?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  autoRenew?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  savedCardId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  savedCardLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  walletMandateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  renewalAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  lastRenewalAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  renewalReminderFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -504,8 +692,20 @@ export type SubscriptionCountOrderByAggregateInput = {
   gatewayCustomerId?: Prisma.SortOrder
   gatewaySubId?: Prisma.SortOrder
   notifiedLaunch?: Prisma.SortOrder
+  autoRenew?: Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrder
+  savedCardId?: Prisma.SortOrder
+  savedCardLabel?: Prisma.SortOrder
+  walletMandateId?: Prisma.SortOrder
+  renewalAttempts?: Prisma.SortOrder
+  lastRenewalAttemptAt?: Prisma.SortOrder
+  renewalReminderFor?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type SubscriptionAvgOrderByAggregateInput = {
+  renewalAttempts?: Prisma.SortOrder
 }
 
 export type SubscriptionMaxOrderByAggregateInput = {
@@ -522,6 +722,14 @@ export type SubscriptionMaxOrderByAggregateInput = {
   gatewayCustomerId?: Prisma.SortOrder
   gatewaySubId?: Prisma.SortOrder
   notifiedLaunch?: Prisma.SortOrder
+  autoRenew?: Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrder
+  savedCardId?: Prisma.SortOrder
+  savedCardLabel?: Prisma.SortOrder
+  walletMandateId?: Prisma.SortOrder
+  renewalAttempts?: Prisma.SortOrder
+  lastRenewalAttemptAt?: Prisma.SortOrder
+  renewalReminderFor?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -540,8 +748,20 @@ export type SubscriptionMinOrderByAggregateInput = {
   gatewayCustomerId?: Prisma.SortOrder
   gatewaySubId?: Prisma.SortOrder
   notifiedLaunch?: Prisma.SortOrder
+  autoRenew?: Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrder
+  savedCardId?: Prisma.SortOrder
+  savedCardLabel?: Prisma.SortOrder
+  walletMandateId?: Prisma.SortOrder
+  renewalAttempts?: Prisma.SortOrder
+  lastRenewalAttemptAt?: Prisma.SortOrder
+  renewalReminderFor?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type SubscriptionSumOrderByAggregateInput = {
+  renewalAttempts?: Prisma.SortOrder
 }
 
 export type SubscriptionScalarRelationFilter = {
@@ -622,6 +842,14 @@ export type SubscriptionCreateWithoutPlanInput = {
   gatewayCustomerId?: string | null
   gatewaySubId?: string | null
   notifiedLaunch?: boolean
+  autoRenew?: boolean
+  paymentMethod?: string | null
+  savedCardId?: string | null
+  savedCardLabel?: string | null
+  walletMandateId?: string | null
+  renewalAttempts?: number
+  lastRenewalAttemptAt?: Date | string | null
+  renewalReminderFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   paymentHistory?: Prisma.PaymentRecordCreateNestedManyWithoutSubscriptionInput
@@ -640,6 +868,14 @@ export type SubscriptionUncheckedCreateWithoutPlanInput = {
   gatewayCustomerId?: string | null
   gatewaySubId?: string | null
   notifiedLaunch?: boolean
+  autoRenew?: boolean
+  paymentMethod?: string | null
+  savedCardId?: string | null
+  savedCardLabel?: string | null
+  walletMandateId?: string | null
+  renewalAttempts?: number
+  lastRenewalAttemptAt?: Date | string | null
+  renewalReminderFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   paymentHistory?: Prisma.PaymentRecordUncheckedCreateNestedManyWithoutSubscriptionInput
@@ -688,6 +924,14 @@ export type SubscriptionScalarWhereInput = {
   gatewayCustomerId?: Prisma.StringNullableFilter<"Subscription"> | string | null
   gatewaySubId?: Prisma.StringNullableFilter<"Subscription"> | string | null
   notifiedLaunch?: Prisma.BoolFilter<"Subscription"> | boolean
+  autoRenew?: Prisma.BoolFilter<"Subscription"> | boolean
+  paymentMethod?: Prisma.StringNullableFilter<"Subscription"> | string | null
+  savedCardId?: Prisma.StringNullableFilter<"Subscription"> | string | null
+  savedCardLabel?: Prisma.StringNullableFilter<"Subscription"> | string | null
+  walletMandateId?: Prisma.StringNullableFilter<"Subscription"> | string | null
+  renewalAttempts?: Prisma.IntFilter<"Subscription"> | number
+  lastRenewalAttemptAt?: Prisma.DateTimeNullableFilter<"Subscription"> | Date | string | null
+  renewalReminderFor?: Prisma.DateTimeNullableFilter<"Subscription"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Subscription"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Subscription"> | Date | string
 }
@@ -705,6 +949,14 @@ export type SubscriptionCreateWithoutPaymentHistoryInput = {
   gatewayCustomerId?: string | null
   gatewaySubId?: string | null
   notifiedLaunch?: boolean
+  autoRenew?: boolean
+  paymentMethod?: string | null
+  savedCardId?: string | null
+  savedCardLabel?: string | null
+  walletMandateId?: string | null
+  renewalAttempts?: number
+  lastRenewalAttemptAt?: Date | string | null
+  renewalReminderFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   plan: Prisma.PlanCreateNestedOneWithoutSubscriptionsInput
@@ -724,6 +976,14 @@ export type SubscriptionUncheckedCreateWithoutPaymentHistoryInput = {
   gatewayCustomerId?: string | null
   gatewaySubId?: string | null
   notifiedLaunch?: boolean
+  autoRenew?: boolean
+  paymentMethod?: string | null
+  savedCardId?: string | null
+  savedCardLabel?: string | null
+  walletMandateId?: string | null
+  renewalAttempts?: number
+  lastRenewalAttemptAt?: Date | string | null
+  renewalReminderFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -757,6 +1017,14 @@ export type SubscriptionUpdateWithoutPaymentHistoryInput = {
   gatewayCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gatewaySubId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notifiedLaunch?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  autoRenew?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  savedCardId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  savedCardLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  walletMandateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  renewalAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  lastRenewalAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  renewalReminderFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   plan?: Prisma.PlanUpdateOneRequiredWithoutSubscriptionsNestedInput
@@ -776,6 +1044,14 @@ export type SubscriptionUncheckedUpdateWithoutPaymentHistoryInput = {
   gatewayCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gatewaySubId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notifiedLaunch?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  autoRenew?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  savedCardId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  savedCardLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  walletMandateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  renewalAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  lastRenewalAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  renewalReminderFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -793,6 +1069,14 @@ export type SubscriptionCreateManyPlanInput = {
   gatewayCustomerId?: string | null
   gatewaySubId?: string | null
   notifiedLaunch?: boolean
+  autoRenew?: boolean
+  paymentMethod?: string | null
+  savedCardId?: string | null
+  savedCardLabel?: string | null
+  walletMandateId?: string | null
+  renewalAttempts?: number
+  lastRenewalAttemptAt?: Date | string | null
+  renewalReminderFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -810,6 +1094,14 @@ export type SubscriptionUpdateWithoutPlanInput = {
   gatewayCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gatewaySubId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notifiedLaunch?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  autoRenew?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  savedCardId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  savedCardLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  walletMandateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  renewalAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  lastRenewalAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  renewalReminderFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   paymentHistory?: Prisma.PaymentRecordUpdateManyWithoutSubscriptionNestedInput
@@ -828,6 +1120,14 @@ export type SubscriptionUncheckedUpdateWithoutPlanInput = {
   gatewayCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gatewaySubId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notifiedLaunch?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  autoRenew?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  savedCardId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  savedCardLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  walletMandateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  renewalAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  lastRenewalAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  renewalReminderFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   paymentHistory?: Prisma.PaymentRecordUncheckedUpdateManyWithoutSubscriptionNestedInput
@@ -846,6 +1146,14 @@ export type SubscriptionUncheckedUpdateManyWithoutPlanInput = {
   gatewayCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gatewaySubId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notifiedLaunch?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  autoRenew?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  savedCardId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  savedCardLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  walletMandateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  renewalAttempts?: Prisma.IntFieldUpdateOperationsInput | number
+  lastRenewalAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  renewalReminderFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -895,6 +1203,14 @@ export type SubscriptionSelect<ExtArgs extends runtime.Types.Extensions.Internal
   gatewayCustomerId?: boolean
   gatewaySubId?: boolean
   notifiedLaunch?: boolean
+  autoRenew?: boolean
+  paymentMethod?: boolean
+  savedCardId?: boolean
+  savedCardLabel?: boolean
+  walletMandateId?: boolean
+  renewalAttempts?: boolean
+  lastRenewalAttemptAt?: boolean
+  renewalReminderFor?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   plan?: boolean | Prisma.PlanDefaultArgs<ExtArgs>
@@ -916,6 +1232,14 @@ export type SubscriptionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   gatewayCustomerId?: boolean
   gatewaySubId?: boolean
   notifiedLaunch?: boolean
+  autoRenew?: boolean
+  paymentMethod?: boolean
+  savedCardId?: boolean
+  savedCardLabel?: boolean
+  walletMandateId?: boolean
+  renewalAttempts?: boolean
+  lastRenewalAttemptAt?: boolean
+  renewalReminderFor?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   plan?: boolean | Prisma.PlanDefaultArgs<ExtArgs>
@@ -935,6 +1259,14 @@ export type SubscriptionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   gatewayCustomerId?: boolean
   gatewaySubId?: boolean
   notifiedLaunch?: boolean
+  autoRenew?: boolean
+  paymentMethod?: boolean
+  savedCardId?: boolean
+  savedCardLabel?: boolean
+  walletMandateId?: boolean
+  renewalAttempts?: boolean
+  lastRenewalAttemptAt?: boolean
+  renewalReminderFor?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   plan?: boolean | Prisma.PlanDefaultArgs<ExtArgs>
@@ -954,11 +1286,19 @@ export type SubscriptionSelectScalar = {
   gatewayCustomerId?: boolean
   gatewaySubId?: boolean
   notifiedLaunch?: boolean
+  autoRenew?: boolean
+  paymentMethod?: boolean
+  savedCardId?: boolean
+  savedCardLabel?: boolean
+  walletMandateId?: boolean
+  renewalAttempts?: boolean
+  lastRenewalAttemptAt?: boolean
+  renewalReminderFor?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type SubscriptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "planId" | "status" | "trialStartDate" | "trialEndDate" | "trialUsed" | "currentPeriodStart" | "currentPeriodEnd" | "cancelledAt" | "gatewayCustomerId" | "gatewaySubId" | "notifiedLaunch" | "createdAt" | "updatedAt", ExtArgs["result"]["subscription"]>
+export type SubscriptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "planId" | "status" | "trialStartDate" | "trialEndDate" | "trialUsed" | "currentPeriodStart" | "currentPeriodEnd" | "cancelledAt" | "gatewayCustomerId" | "gatewaySubId" | "notifiedLaunch" | "autoRenew" | "paymentMethod" | "savedCardId" | "savedCardLabel" | "walletMandateId" | "renewalAttempts" | "lastRenewalAttemptAt" | "renewalReminderFor" | "createdAt" | "updatedAt", ExtArgs["result"]["subscription"]>
 export type SubscriptionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   plan?: boolean | Prisma.PlanDefaultArgs<ExtArgs>
   paymentHistory?: boolean | Prisma.Subscription$paymentHistoryArgs<ExtArgs>
@@ -991,6 +1331,32 @@ export type $SubscriptionPayload<ExtArgs extends runtime.Types.Extensions.Intern
     gatewayCustomerId: string | null
     gatewaySubId: string | null
     notifiedLaunch: boolean
+    /**
+     * Charge the saved card or wallet automatically when the period (or trial) ends.
+     */
+    autoRenew: boolean
+    /**
+     * CARD | WALLET: what automatic renewals charge.
+     */
+    paymentMethod: string | null
+    /**
+     * wallet-nest ServiceCard id for card renewals, and its label ("visa •••• 4081").
+     */
+    savedCardId: string | null
+    savedCardLabel: string | null
+    /**
+     * wallet-nest ServiceMandate id for wallet renewals.
+     */
+    walletMandateId: string | null
+    /**
+     * Failed automatic charges for the current period; reset when one succeeds.
+     */
+    renewalAttempts: number
+    lastRenewalAttemptAt: Date | null
+    /**
+     * The renewal date the last reminder was sent for, so each is sent once.
+     */
+    renewalReminderFor: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["subscription"]>
@@ -1431,6 +1797,14 @@ export interface SubscriptionFieldRefs {
   readonly gatewayCustomerId: Prisma.FieldRef<"Subscription", 'String'>
   readonly gatewaySubId: Prisma.FieldRef<"Subscription", 'String'>
   readonly notifiedLaunch: Prisma.FieldRef<"Subscription", 'Boolean'>
+  readonly autoRenew: Prisma.FieldRef<"Subscription", 'Boolean'>
+  readonly paymentMethod: Prisma.FieldRef<"Subscription", 'String'>
+  readonly savedCardId: Prisma.FieldRef<"Subscription", 'String'>
+  readonly savedCardLabel: Prisma.FieldRef<"Subscription", 'String'>
+  readonly walletMandateId: Prisma.FieldRef<"Subscription", 'String'>
+  readonly renewalAttempts: Prisma.FieldRef<"Subscription", 'Int'>
+  readonly lastRenewalAttemptAt: Prisma.FieldRef<"Subscription", 'DateTime'>
+  readonly renewalReminderFor: Prisma.FieldRef<"Subscription", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Subscription", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Subscription", 'DateTime'>
 }

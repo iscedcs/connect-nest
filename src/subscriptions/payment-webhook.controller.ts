@@ -16,16 +16,18 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Request } from 'express';
 import { PublicRoute } from '../auth/decorators/public-route.decorator';
 import { InternalGuard } from '../internal/internal.guard';
-import { ForwardedPaystackEventDto } from './dto/subscription.dto';
+import {
+  ForwardedPaystackEventDto,
+  WalletPaymentDeliveryDto,
+} from './dto/subscription.dto';
 import { PaymentGatewayFactory } from './gateways/payment-gateway.factory';
 import { WebhookResult } from './gateways/payment-gateway.interface';
+import { CHECKOUT_KINDS, CheckoutKind } from './subscriptions.service';
 import {
-  PRORATION_ROUNDING_KOBO,
-  SubscriptionsService,
-} from './subscriptions.service';
-import { DatabaseService } from '../database/database.service';
-import { NotificationDispatcher } from '../notification/notification-dispatcher.service';
-import { Plan, Prisma } from '../generated/prisma/client';
+  ActivationOutcome,
+  SubscriptionPaymentsService,
+} from './subscription-payments.service';
+import { PlanTier } from '../generated/prisma/client';
 
 @ApiTags('Subscriptions Webhooks')
 @Controller('subscriptions/webhooks')
@@ -34,9 +36,7 @@ export class PaymentWebhookController {
 
   constructor(
     private readonly gatewayFactory: PaymentGatewayFactory,
-    private readonly subscriptionsService: SubscriptionsService,
-    private readonly db: DatabaseService,
-    private readonly notifications: NotificationDispatcher,
+    private readonly payments: SubscriptionPaymentsService,
   ) {}
 
   @Post('paystack')
@@ -67,7 +67,7 @@ export class PaymentWebhookController {
       };
     }
 
-    return this.activateFromPayment(result, 'Paystack');
+    return this.payments.activateFromPayment(result, 'Paystack');
   }
 
   @Post('paydestal')
@@ -93,7 +93,7 @@ export class PaymentWebhookController {
       return { status: 'ignored' };
     }
 
-    return this.activateFromPayment(result, 'Paydestal');
+    return this.payments.activateFromPayment(result, 'Paydestal');
   }
 
   /**
@@ -127,11 +127,68 @@ export class PaymentWebhookController {
     if (!result || !result.success) {
       return { status: 'ignored' };
     }
+    // wallet-nest saved the card this checkout asked it to keep, and sends
+    // its id and label next to the event (never the card's token).
+    if (body.savedCard) result.savedCard = body.savedCard;
 
-    const outcome = await this.activateFromPayment(
-      result,
-      'Paystack via wallet-nest',
+    return PaymentWebhookController.answer(
+      await this.payments.activateFromPayment(
+        result,
+        'Paystack via wallet-nest',
+      ),
     );
+  }
+
+  /**
+   * wallet-nest delivers a payment the user made from their Fiscus wallet
+   * (approved with their PIN) or took under their wallet mandate. The same
+   * checks as a card payment apply. A 422 makes wallet-nest move the money
+   * back to the wallet; a 5xx makes it retry.
+   */
+  @Post('internal/wallet-payment')
+  @PublicRoute()
+  @UseGuards(InternalGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: '[Internal] Apply a wallet payment delivered by wallet-nest',
+  })
+  @ApiResponse({ status: 200, description: 'Applied or already applied' })
+  @ApiResponse({
+    status: 403,
+    description: 'Invalid or missing internal secret',
+  })
+  @ApiResponse({
+    status: 422,
+    description: 'The payment no longer applies; wallet-nest returns the money',
+  })
+  async handleWalletPayment(@Body() body: WalletPaymentDeliveryDto) {
+    const metadata = body.metadata ?? {};
+    const kind = metadata.checkoutKind as CheckoutKind;
+    const planKey = metadata.planKey as PlanTier;
+    if (!Object.values(PlanTier).includes(planKey)) {
+      throw new UnprocessableEntityException('The payment names no plan');
+    }
+    const result: WebhookResult = {
+      success: true,
+      userId: body.userId,
+      planKey,
+      reference: body.reference,
+      amountKobo: body.amountKobo,
+      checkoutKind: CHECKOUT_KINDS.includes(kind) ? kind : 'full',
+      fromPlanKey: metadata.fromPlanKey as PlanTier | undefined,
+      pricedPeriodEnd: (metadata.anchor ?? metadata.renewsAt) as
+        string | undefined,
+      autoRenew: metadata.autoRenew === true,
+      paymentMethod: 'WALLET',
+      walletMandateId: body.mandateId ?? null,
+    };
+    return PaymentWebhookController.answer(
+      await this.payments.activateFromPayment(result, 'Wallet'),
+    );
+  }
+
+  /** Internal callers learn the outcome from the status code. */
+  private static answer(outcome: ActivationOutcome) {
     if (
       outcome.status === 'success' ||
       outcome.status === 'already_processed'
@@ -160,204 +217,5 @@ export class PaymentWebhookController {
       throw new BadRequestException('Unable to verify webhook payload');
     }
     return rawBody;
-  }
-
-  /**
-   * Shared activation path for every gateway. Both webhook handlers funnel through
-   * here so the amount and idempotency checks can never drift between providers.
-   */
-  private async activateFromPayment(result: WebhookResult, gateway: string) {
-    // Trust the signature for authenticity, but still confirm the customer actually
-    // paid for the plan the metadata is asking us to grant.
-    const plan = await this.db.plan.findUnique({
-      where: { key: result.planKey },
-    });
-    if (!plan) {
-      this.logger.error(
-        `${gateway} webhook referenced unknown plan: ${result.planKey}`,
-      );
-      return { status: 'error', message: 'Unknown plan' };
-    }
-
-    // A prorated upgrade only paid the difference for the rest of the period,
-    // so it is checked against what is due when it lands (inside the
-    // transaction below); every other payment must cover a full month.
-    const prorated = result.checkoutKind === 'prorated_upgrade';
-    if (!prorated && (result.amountKobo ?? 0) < plan.priceMonthly) {
-      this.logger.warn(
-        `${gateway} webhook underpaid for ${result.planKey}: paid ${result.amountKobo}, expected ${plan.priceMonthly} (ref: ${result.reference})`,
-      );
-      return {
-        status: 'rejected',
-        message: 'Amount does not cover plan price',
-      };
-    }
-
-    try {
-      // Idempotency is enforced by the unique index on gatewayRef rather than a
-      // read-then-write check — gateways retry, and two concurrent deliveries would
-      // both pass a findFirst. Both writes share one transaction so a duplicate
-      // reference rolls the upgrade back instead of extending the period again.
-      const refusal = await this.db.$transaction(async (tx) => {
-        if (prorated) {
-          const outcome = await this.checkProratedUpgrade(
-            tx,
-            result,
-            plan,
-            gateway,
-          );
-          if (outcome) return outcome;
-        }
-
-        const updatedSub = prorated
-          ? await this.subscriptionsService.upgradePlan(
-              result.userId,
-              result.planKey,
-              result.reference,
-              tx,
-              { keepCurrentPeriod: true },
-            )
-          : await this.subscriptionsService.upgradePlan(
-              result.userId,
-              result.planKey,
-              result.reference,
-              tx,
-            );
-
-        await tx.paymentRecord.create({
-          data: {
-            subscriptionId: updatedSub.id,
-            amount: result.amountKobo,
-            currency: 'NGN',
-            status: 'success',
-            gatewayRef: result.reference,
-            paidAt: new Date(),
-          },
-        });
-        return null;
-      });
-      if (refusal) return refusal;
-
-      await this.notifications.dispatch({
-        userId: result.userId,
-        type: 'SUBSCRIPTION_ACTIVATED',
-        title: 'Subscription Activated! 🎉',
-        message: `Your subscription to ${result.planKey} has been activated successfully.`,
-        skipPush: false,
-      });
-
-      this.logger.log(
-        `Successfully upgraded user ${result.userId} to ${result.planKey} via ${gateway} ref: ${result.reference}`,
-      );
-
-      return {
-        status: 'success',
-        userId: result.userId,
-        planKey: result.planKey,
-      };
-    } catch (err) {
-      // Scoped to the gatewayRef index specifically: a unique violation on any other
-      // column (e.g. userId while bootstrapping a subscription) is a real error, and
-      // reporting it as already-processed would silently swallow a genuine payment.
-      const target = err?.meta?.target;
-      const isDuplicateRef =
-        err?.code === 'P2002' &&
-        (Array.isArray(target)
-          ? target.includes('gatewayRef')
-          : String(target ?? '').includes('gatewayRef'));
-
-      if (isDuplicateRef) {
-        this.logger.log(
-          `Payment already processed for reference ${result.reference}`,
-        );
-        return { status: 'already_processed' };
-      }
-      this.logger.error(
-        `Error activating subscription after ${gateway} webhook: ${err.message}`,
-      );
-      return { status: 'error', message: err.message };
-    }
-  }
-
-  /**
-   * Decide, inside the activation transaction, whether a prorated upgrade
-   * payment can be applied. Returns an outcome to stop with, or null to go on.
-   *
-   * The payment was priced at checkout against the subscription as it was
-   * then: its plan and its renewal date. If either has changed since (a
-   * second upgrade paid in another tab, an early renewal, a lapse), the
-   * payment no longer fits and is refused for a refund.
-   *
-   * If neither has changed, the amount due is recomputed for the time now
-   * left and what was paid must cover it. Less time is left than at checkout,
-   * so the fair difference has only shrunk, but each price is rounded to
-   * whole kobo separately and the rounded difference can tick up by 1 kobo
-   * as the ratio falls. That 1 kobo is allowed; anything more is refused.
-   */
-  private async checkProratedUpgrade(
-    tx: Prisma.TransactionClient,
-    result: WebhookResult,
-    plan: Plan,
-    gateway: string,
-  ): Promise<{ status: string; message?: string } | null> {
-    // Serialise activations for this user: two upgrade payments landing
-    // together must not both pass the check below.
-    await tx.$queryRaw`SELECT id FROM "Subscription" WHERE "userId" = ${result.userId} FOR UPDATE`;
-
-    // A redelivery of an upgrade already applied. By now the user is on the
-    // new plan, so the re-quote below would wrongly refuse it.
-    const seen = await tx.paymentRecord.findUnique({
-      where: { gatewayRef: result.reference },
-    });
-    if (seen) {
-      this.logger.log(
-        `Payment already processed for reference ${result.reference}`,
-      );
-      return { status: 'already_processed' };
-    }
-
-    const sub = await tx.subscription.findUnique({
-      where: { userId: result.userId },
-      include: { plan: true },
-    });
-    const due = sub
-      ? this.subscriptionsService.prorationQuote(sub, plan)
-      : null;
-
-    const pricedEnd = result.pricedPeriodEnd
-      ? new Date(result.pricedPeriodEnd).getTime()
-      : NaN;
-    if (
-      !due ||
-      due.fromPlanKey !== result.fromPlanKey ||
-      due.periodEnd.getTime() !== pricedEnd
-    ) {
-      this.logger.error(
-        `REFUND NEEDED: ${gateway} prorated upgrade to ${result.planKey} no longer applies ` +
-          `(user ${result.userId}, now on ${sub?.plan.key ?? 'no plan'} / ${sub?.status ?? '-'} ` +
-          `until ${sub?.currentPeriodEnd?.toISOString() ?? '-'}, priced from ${result.fromPlanKey} ` +
-          `until ${result.pricedPeriodEnd ?? '-'}; paid ${result.amountKobo}, ref: ${result.reference})`,
-      );
-      return {
-        status: 'rejected',
-        message:
-          'The subscription changed after this upgrade was priced; the payment needs a refund',
-      };
-    }
-
-    if ((result.amountKobo ?? 0) < due.amountKobo - PRORATION_ROUNDING_KOBO) {
-      // Checkout sets the amount server-side, so this is a tampered or
-      // hand-made charge rather than a customer mistake — still money taken
-      // with nothing granted.
-      this.logger.error(
-        `REFUND NEEDED: ${gateway} prorated upgrade underpaid for ${result.planKey}: ` +
-          `paid ${result.amountKobo}, due ${due.amountKobo} (user ${result.userId}, ref: ${result.reference})`,
-      );
-      return {
-        status: 'rejected',
-        message: 'Amount does not cover the prorated upgrade',
-      };
-    }
-    return null;
   }
 }

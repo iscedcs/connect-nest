@@ -146,6 +146,8 @@ enum NotificationType {
   SUBSCRIPTION_CANCELLED
   SUBSCRIPTION_PAST_DUE
   SUBSCRIPTION_LAUNCH_ANNOUNCEMENT
+  SUBSCRIPTION_RENEWAL_REMINDER
+  SUBSCRIPTION_RENEWAL_FAILED
 }
 
 model SupportRequest {
@@ -816,6 +818,21 @@ model Subscription {
   gatewayCustomerId  String?
   gatewaySubId       String?
   notifiedLaunch     Boolean            @default(false)
+
+  /// Charge the saved card or wallet automatically when the period (or trial) ends.
+  autoRenew            Boolean   @default(false)
+  /// CARD | WALLET: what automatic renewals charge.
+  paymentMethod        String?
+  /// wallet-nest ServiceCard id for card renewals, and its label ("visa •••• 4081").
+  savedCardId          String?
+  savedCardLabel       String?
+  /// wallet-nest ServiceMandate id for wallet renewals.
+  walletMandateId      String?
+  /// Failed automatic charges for the current period; reset when one succeeds.
+  renewalAttempts      Int       @default(0)
+  lastRenewalAttemptAt DateTime?
+  /// The renewal date the last reminder was sent for, so each is sent once.
+  renewalReminderFor   DateTime?
   createdAt          DateTime           @default(now())
   updatedAt          DateTime           @updatedAt
 
