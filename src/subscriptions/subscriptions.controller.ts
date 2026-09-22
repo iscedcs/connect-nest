@@ -21,7 +21,6 @@ import {
 } from '@nestjs/swagger';
 import { SubscriptionsService } from './subscriptions.service';
 import { SelectPlanDto, InitiatePaymentDto } from './dto/subscription.dto';
-import { UpdatePlanDto } from './dto/update-plan.dto';
 import { UpdatePlanWithLimitsDto } from './dto/admin-plan.dto';
 import { BroadcastLaunchDto } from './dto/broadcast-launch.dto';
 import { PublicRoute } from '../auth/decorators/public-route.decorator';
@@ -48,9 +47,7 @@ export class SubscriptionsController {
   @ApiResponse({ status: 404, description: 'No subscription found' })
   async getMySubscription(@Req() req: any) {
     const user = req.user || req.isce_auth;
-    const sub = await this.subscriptionsService.getActiveSubscription(
-      user.id,
-    );
+    const sub = await this.subscriptionsService.getActiveSubscription(user.id);
     return {
       success: true,
       data: this.subscriptionsService.buildSubscriptionResponse(sub),
@@ -78,7 +75,10 @@ export class SubscriptionsController {
   @Post('select-plan')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Select a plan (starts trial for paid plans)' })
-  @ApiResponse({ status: 200, description: 'Plan selected, subscription created' })
+  @ApiResponse({
+    status: 200,
+    description: 'Plan selected, subscription created',
+  })
   @ApiResponse({ status: 409, description: 'User already has a subscription' })
   async selectPlan(@Req() req: any, @Body() dto: SelectPlanDto) {
     if (dto.planKey !== 'FREE') {
@@ -101,7 +101,7 @@ export class SubscriptionsController {
       message:
         dto.planKey === 'FREE'
           ? 'Free plan activated'
-          : 'Trial started — enjoy 3 months of full access',
+          : 'Trial started — enjoy 6 months of full access',
       data: { subscriptionId: sub.id, status: sub.status },
     };
   }
@@ -126,6 +126,11 @@ export class SubscriptionsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Initiate a payment session to upgrade plan' })
   @ApiResponse({ status: 200, description: 'Payment session created' })
+  @ApiResponse({
+    status: 409,
+    description:
+      'Already on this plan with more than 7 days left; renewing opens 7 days before it ends',
+  })
   async initiatePayment(@Req() req: any, @Body() dto: InitiatePaymentDto) {
     const isEnabled =
       await this.systemConfigService.isPersonalSubscriptionEnabled();
@@ -144,6 +149,10 @@ export class SubscriptionsController {
     if (plan.priceMonthly === 0) {
       throw new BadRequestException('FREE plan does not require payment');
     }
+
+    // Refuse to charge for the plan the user already has, outside the
+    // renewal window — nearly always a double payment.
+    await this.subscriptionsService.assertCheckoutAllowed(user.id, dto.planKey);
 
     const provider = this.gatewayFactory.getProvider(dto.gateway);
     const result = await provider.initiateCheckout({
@@ -170,7 +179,9 @@ export class SubscriptionsController {
 
   @Get('admin/plans')
   @UseGuards(SuperAdminGuard)
-  @ApiOperation({ summary: 'List all subscription plans with limits (Super Admin only)' })
+  @ApiOperation({
+    summary: 'List all subscription plans with limits (Super Admin only)',
+  })
   @ApiResponse({ status: 200, description: 'All plans returned with limits' })
   @ApiResponse({ status: 403, description: 'Super Admin access required' })
   async getAllPlansAdmin() {
@@ -184,7 +195,10 @@ export class SubscriptionsController {
   @Patch('admin/plans/:planKey')
   @UseGuards(SuperAdminGuard)
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Update plan pricing, status, and feature limits (Super Admin only)' })
+  @ApiOperation({
+    summary:
+      'Update plan pricing, status, and feature limits (Super Admin only)',
+  })
   @ApiResponse({ status: 200, description: 'Plan updated' })
   @ApiResponse({ status: 403, description: 'Super Admin access required' })
   @ApiResponse({ status: 404, description: 'Plan not found' })
