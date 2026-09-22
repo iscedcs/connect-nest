@@ -36,7 +36,9 @@ export class PaystackGatewayProvider implements PaymentGatewayProvider {
    * wallet-nest forwards its charge.success to
    * POST /api/subscriptions/webhooks/internal/paystack-event. The payer needs no wallet.
    */
-  async initiateCheckout(params: InitiateCheckoutParams): Promise<CheckoutResult> {
+  async initiateCheckout(
+    params: InitiateCheckoutParams,
+  ): Promise<CheckoutResult> {
     if (!this.walletApiUrl || !this.internalKey) {
       throw new BadRequestException(
         'Card payments are not configured (WALLET_API_URL / INTERNAL_API_KEY)',
@@ -71,15 +73,18 @@ export class PaystackGatewayProvider implements PaymentGatewayProvider {
 
     let response: Response;
     try {
-      response = await fetch(`${this.walletApiUrl}/api/internal/paystack/initialize`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Internal-Secret': this.internalKey,
+      response = await fetch(
+        `${this.walletApiUrl}/api/internal/paystack/initialize`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Internal-Secret': this.internalKey,
+          },
+          body: JSON.stringify(payload),
+          signal: AbortSignal.timeout(15000),
         },
-        body: JSON.stringify(payload),
-        signal: AbortSignal.timeout(15000),
-      });
+      );
     } catch (error) {
       this.logger.error(`wallet-nest checkout unreachable: ${error.message}`);
       throw new BadGatewayException('Could not start the card payment');
@@ -112,7 +117,8 @@ export class PaystackGatewayProvider implements PaymentGatewayProvider {
     }
 
     const reference =
-      params.reference || `REC_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+      params.reference ||
+      `REC_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
     const payload = {
       email: params.email,
       amount: params.amountKobo,
@@ -122,18 +128,23 @@ export class PaystackGatewayProvider implements PaymentGatewayProvider {
     };
 
     try {
-      const response = await fetch(`${this.baseUrl}/transaction/charge_authorization`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${this.secretKey}`,
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `${this.baseUrl}/transaction/charge_authorization`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${this.secretKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
         },
-        body: JSON.stringify(payload),
-      });
+      );
 
       const data = await response.json();
       if (!response.ok || !data.status) {
-        this.logger.error(`Paystack charge_authorization error: ${JSON.stringify(data)}`);
+        this.logger.error(
+          `Paystack charge_authorization error: ${JSON.stringify(data)}`,
+        );
         return {
           success: false,
           reference,
@@ -160,7 +171,8 @@ export class PaystackGatewayProvider implements PaymentGatewayProvider {
 
   verifyWebhookSignature(rawBody: string | Buffer, signature: string): boolean {
     if (!this.secretKey || !signature) return false;
-    const bodyStr = typeof rawBody === 'string' ? rawBody : rawBody.toString('utf8');
+    const bodyStr =
+      typeof rawBody === 'string' ? rawBody : rawBody.toString('utf8');
     const hash = crypto
       .createHmac('sha512', this.secretKey)
       .update(bodyStr)
@@ -179,7 +191,8 @@ export class PaystackGatewayProvider implements PaymentGatewayProvider {
 
     const data = event.data;
     const userId = data?.metadata?.userId || data?.metadata?.user_id;
-    const planKey = (data?.metadata?.planKey || data?.metadata?.plan_key) as PlanTier;
+    const planKey = (data?.metadata?.planKey ||
+      data?.metadata?.plan_key) as PlanTier;
     const reference = data?.reference;
     const amountKobo = data?.amount;
     const customerCode = data?.customer?.customer_code;
@@ -191,6 +204,13 @@ export class PaystackGatewayProvider implements PaymentGatewayProvider {
       return null;
     }
 
+    // Set by initiate-payment for a mid-cycle upgrade; absent on older
+    // checkouts, which were always full-price.
+    const checkoutKind =
+      data?.metadata?.checkoutKind === 'prorated_upgrade'
+        ? 'prorated_upgrade'
+        : 'full';
+
     return {
       success: true,
       userId,
@@ -198,6 +218,8 @@ export class PaystackGatewayProvider implements PaymentGatewayProvider {
       reference,
       amountKobo,
       gatewayCustomerId: customerCode,
+      checkoutKind,
+      fromPlanKey: data?.metadata?.fromPlanKey as PlanTier | undefined,
       rawEvent: event,
     };
   }

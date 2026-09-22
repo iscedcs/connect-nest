@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BadRequestException, ConflictException } from '@nestjs/common';
 import {
+  MIN_CHARGE_KOBO,
   PAST_DUE_GRACE_DAYS,
   RENEWAL_WINDOW_DAYS,
   SubscriptionsService,
@@ -403,14 +404,123 @@ describe('SubscriptionsService (paid plan lifecycle)', () => {
       }
     });
 
-    it('turns the refusal into a 409 when starting a checkout', async () => {
-      db.subscription.findUnique.mockResolvedValue({
-        id: 'sub_1',
-        ...activeLite(20),
+    it('turns the refusal into a 409 when pricing a checkout', () => {
+      expect(() => service.quoteCheckout(activeLite(20), proLite)).toThrow(
+        ConflictException,
+      );
+    });
+  });
+
+  describe('prorated mid-cycle upgrades', () => {
+    // A Pro Lite period ending 2026-10-07: the month ending there is
+    // 7 Sep → 7 Oct, 30 days, and NOW (22 Sep) is 15 days before its end.
+    const liteUntil = (
+      end: Date,
+      status: SubscriptionStatus = SubscriptionStatus.ACTIVE,
+    ) => ({
+      plan: proLite,
+      status,
+      currentPeriodEnd: end,
+      trialEndDate: null,
+    });
+    const midCycle = liteUntil(daysFromNow(15));
+
+    it('charges the difference for the time left and keeps the renewal date (the ₦250 example)', () => {
+      const quote = service.quoteCheckout(midCycle, proPlus);
+      expect(quote).toEqual({
+        kind: 'prorated_upgrade',
+        planKey: PlanTier.PRO_PLUS,
+        amountKobo: 25_000, // round(150000 × ½) − round(100000 × ½)
+        fullPriceKobo: 150_000,
+        fromPlanKey: PlanTier.PRO_LITE,
+        renewsAt: daysFromNow(15),
       });
-      await expect(
-        service.assertCheckoutAllowed('usr_1', PlanTier.PRO_LITE),
-      ).rejects.toBeInstanceOf(ConflictException);
+    });
+
+    it('rounds each side to whole kobo before subtracting', () => {
+      // 10 of 30 days left: round(150000/3)=50000, round(100000/3)=33333.
+      const due = service.prorationQuote(liteUntil(daysFromNow(10)), proPlus);
+      expect(due!.amountKobo).toBe(50_000 - 33_333);
+    });
+
+    it('never charges less than ₦50 near the end of the cycle', () => {
+      const due = service.prorationQuote(liteUntil(daysFromNow(1)), proPlus);
+      expect(due!.amountKobo).toBe(MIN_CHARGE_KOBO);
+    });
+
+    it('credits time beyond one month in full after an early renewal', () => {
+      // Renewed early: 45 days left, ending 6 Nov. The month ending there
+      // (6 Oct → 6 Nov) has 31 days, so the ratio is 45/31 — more than one
+      // month's worth of credit, where end − start would have halved it.
+      const due = service.prorationQuote(liteUntil(daysFromNow(45)), proPlus);
+      expect(due!.amountKobo).toBe(
+        Math.round((150_000 * 45) / 31) - Math.round((100_000 * 45) / 31),
+      );
+    });
+
+    it('prorates a cancelled plan that still has paid time', () => {
+      const due = service.prorationQuote(
+        liteUntil(daysFromNow(15), SubscriptionStatus.CANCELLED),
+        proPlus,
+      );
+      expect(due!.amountKobo).toBe(25_000);
+    });
+
+    it('charges the full price when there is no paid time to credit', () => {
+      for (const sub of [
+        liteUntil(daysFromNow(-1), SubscriptionStatus.PAST_DUE),
+        { ...liteUntil(daysFromNow(15)), plan: freePlan },
+        { ...liteUntil(null as any, SubscriptionStatus.TRIALING) },
+      ]) {
+        const quote = service.quoteCheckout(sub, proPlus);
+        expect(quote.kind).toBe('full');
+        expect(quote.amountKobo).toBe(150_000);
+      }
+    });
+
+    it('starts a full-price month today, or after the current end for an early renewal', () => {
+      expect(
+        service.quoteCheckout({ ...midCycle, plan: freePlan }, proLite)
+          .renewsAt,
+      ).toEqual(new Date('2026-10-22T12:00:00Z'));
+      expect(
+        service.quoteCheckout(liteUntil(daysFromNow(5)), proLite).renewsAt,
+      ).toEqual(new Date('2026-10-27T12:00:00Z'));
+    });
+
+    it('refuses a cheaper plan while paid time is left', () => {
+      const plusMidCycle = { ...midCycle, plan: proPlus };
+      expect(() => service.quoteCheckout(plusMidCycle, proLite)).toThrow(
+        /isn't available while your Pro Plus plan has paid time left/,
+      );
+    });
+
+    it('switches plans without touching the period when applying a prorated upgrade', async () => {
+      db.subscription.findUnique.mockResolvedValue({
+        userId: 'usr_1',
+        planId: 'plan_lite',
+        status: SubscriptionStatus.ACTIVE,
+        currentPeriodStart: daysFromNow(-15),
+        currentPeriodEnd: daysFromNow(15),
+      });
+      await service.upgradePlan(
+        'usr_1',
+        PlanTier.PRO_PLUS,
+        'ref_p',
+        undefined,
+        {
+          keepCurrentPeriod: true,
+        },
+      );
+      expect(db.subscription.update).toHaveBeenCalledWith({
+        where: { userId: 'usr_1' },
+        data: {
+          planId: 'plan_plus',
+          status: SubscriptionStatus.ACTIVE,
+          gatewaySubId: 'ref_p',
+          cancelledAt: null,
+        },
+      });
     });
   });
 

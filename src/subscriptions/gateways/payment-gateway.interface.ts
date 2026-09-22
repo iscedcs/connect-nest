@@ -23,6 +23,13 @@ export interface WebhookResult {
   reference: string;
   amountKobo: number;
   gatewayCustomerId?: string;
+  /**
+   * From the checkout's metadata: `prorated_upgrade` when the payment only
+   * covered the difference for the rest of the current period.
+   */
+  checkoutKind?: 'full' | 'prorated_upgrade';
+  /** The plan a prorated upgrade was priced from. */
+  fromPlanKey?: PlanTier;
   rawEvent?: any;
 }
 
@@ -47,10 +54,11 @@ export interface PaymentGatewayProvider {
 
   initiateCheckout(params: InitiateCheckoutParams): Promise<CheckoutResult>;
 
-  chargeRecurring?(params: ChargeRecurringParams): Promise<ChargeRecurringResult>;
+  chargeRecurring?(
+    params: ChargeRecurringParams,
+  ): Promise<ChargeRecurringResult>;
 
   verifyWebhookSignature(rawBody: string | Buffer, signature: string): boolean;
 
   handleWebhookEvent(event: any): Promise<WebhookResult | null>;
 }
-
