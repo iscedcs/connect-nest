@@ -28,7 +28,36 @@ export const PAST_DUE_GRACE_DAYS = 3;
 /** How close to the end of a paid period the same plan can be paid for again. */
 export const RENEWAL_WINDOW_DAYS = 7;
 
+/** Smallest charge sent to Paystack: ₦50, what wallet-nest's own card check charges. */
+export const MIN_CHARGE_KOBO = 5_000;
+
+/**
+ * How far the prorated difference can rise as time passes. Each price is
+ * rounded separately, so round(new × r) − round(old × r) is off the exact
+ * value by less than 1 kobo either way: as r falls, the rounded difference
+ * can go up by at most 1 kobo before the shrinking exact value outweighs it.
+ */
+export const PRORATION_ROUNDING_KOBO = 1;
+
 const DAY_MS = 24 * 60 * 60 * 1000;
+
+/** What a checkout for a plan will charge, and what the payment buys. */
+export interface CheckoutQuote {
+  /**
+   * `prorated_upgrade`: a mid-cycle move to a dearer plan; charges the
+   * difference for the time left and keeps the renewal date.
+   * `full`: one month at the plan's price.
+   */
+  kind: 'full' | 'prorated_upgrade';
+  planKey: PlanTier;
+  amountKobo: number;
+  /** The plan's monthly price, charged in full from the next month on. */
+  fullPriceKobo: number;
+  /** The plan being upgraded from; set only for a prorated upgrade. */
+  fromPlanKey: PlanTier | null;
+  /** When the paid period will end once this payment lands. */
+  renewsAt: Date;
+}
 
 type LifecycleFields = Pick<
   Subscription,
@@ -224,14 +253,119 @@ export class SubscriptionsService {
     );
   }
 
-  /** Throws a 409 when a checkout for `planKey` must not start. */
-  async assertCheckoutAllowed(
-    userId: string,
-    planKey: PlanTier,
-  ): Promise<void> {
-    const sub = await this.getActiveSubscription(userId);
-    const reason = this.checkoutBlockedReason(sub, planKey);
-    if (reason) throw new ConflictException(reason);
+  /** Whether the paid period is still running (so its unused time is worth something). */
+  private hasPaidTimeLeft(sub: LifecycleFields, now: Date): boolean {
+    return (
+      (sub.status === SubscriptionStatus.ACTIVE ||
+        sub.status === SubscriptionStatus.CANCELLED) &&
+      sub.currentPeriodEnd !== null &&
+      sub.currentPeriodEnd > now
+    );
+  }
+
+  /**
+   * The prorated charge for moving mid-cycle to a dearer plan, or null when
+   * the move is not a prorated upgrade (no paid time left, same plan,
+   * cheaper plan, or coming from Free).
+   *
+   * The renewal date is the anchor and does not move. The user is credited
+   * the unused share of the old plan and charged the same share of the new
+   * one, each rounded to whole kobo:
+   *
+   *   ratio  = time left / one billing month (the month ending on the anchor)
+   *   charge = round(newPrice × ratio) − round(oldPrice × ratio)
+   *
+   * The month is measured as the one that ends on the anchor rather than
+   * currentPeriodEnd − currentPeriodStart, because an early renewal extends
+   * the period without moving its start: over a two-month span, dividing by
+   * the whole span would halve the credit. With a month as the unit, time
+   * left beyond one month is credited at the full monthly rate.
+   */
+  prorationQuote(
+    sub: LifecycleFields & { plan: Pick<Plan, 'key' | 'priceMonthly'> },
+    target: Pick<Plan, 'key' | 'priceMonthly'>,
+    now = new Date(),
+  ): { amountKobo: number; fromPlanKey: PlanTier; periodEnd: Date } | null {
+    if (
+      sub.plan.key === target.key ||
+      sub.plan.priceMonthly <= 0 ||
+      target.priceMonthly <= sub.plan.priceMonthly ||
+      !this.hasPaidTimeLeft(sub, now)
+    ) {
+      return null;
+    }
+    const periodEnd = sub.currentPeriodEnd!;
+    const monthMs =
+      periodEnd.getTime() - this.addMonths(periodEnd, -1).getTime();
+    const ratio = (periodEnd.getTime() - now.getTime()) / monthMs;
+
+    const unusedCredit = Math.round(sub.plan.priceMonthly * ratio);
+    const newCost = Math.round(target.priceMonthly * ratio);
+    return {
+      // Paystack rejects very small charges; ₦50 is what wallet-nest's own
+      // card check charges. In the last few days of a cycle the fair delta
+      // falls below that and is rounded up to it.
+      amountKobo: Math.max(MIN_CHARGE_KOBO, newCost - unusedCredit),
+      fromPlanKey: sub.plan.key,
+      periodEnd,
+    };
+  }
+
+  /**
+   * What a checkout for `target` charges, or a 409 when it must not start:
+   * - the plan the user already has, outside the renewal window (a double
+   *   payment);
+   * - a cheaper plan while paid time is left (it would forfeit that time;
+   *   downgrades are not offered yet).
+   * A mid-cycle move to a dearer plan is prorated and keeps the renewal
+   * date; anything else is the full monthly price.
+   */
+  quoteCheckout(
+    sub: LifecycleFields & {
+      plan: Pick<Plan, 'key' | 'name' | 'priceMonthly'>;
+    },
+    target: Pick<Plan, 'key' | 'name' | 'priceMonthly'>,
+    now = new Date(),
+  ): CheckoutQuote {
+    const blocked = this.checkoutBlockedReason(sub, target.key, now);
+    if (blocked) throw new ConflictException(blocked);
+
+    if (
+      sub.plan.key !== target.key &&
+      target.priceMonthly < sub.plan.priceMonthly &&
+      this.hasPaidTimeLeft(sub, now)
+    ) {
+      throw new ConflictException(
+        `Moving to ${target.name} isn't available while your ${sub.plan.name} ` +
+          `plan has paid time left (until ${sub.currentPeriodEnd!.toISOString().slice(0, 10)}).`,
+      );
+    }
+
+    const prorated = this.prorationQuote(sub, target, now);
+    if (prorated) {
+      return {
+        kind: 'prorated_upgrade',
+        planKey: target.key,
+        amountKobo: prorated.amountKobo,
+        fullPriceKobo: target.priceMonthly,
+        fromPlanKey: prorated.fromPlanKey,
+        renewsAt: prorated.periodEnd,
+      };
+    }
+    // Mirrors upgradePlan: the same plan with paid time left extends from its
+    // current end; anything else starts a month from today.
+    const extendsCurrent =
+      sub.plan.key === target.key &&
+      sub.currentPeriodEnd !== null &&
+      sub.currentPeriodEnd > now;
+    return {
+      kind: 'full',
+      planKey: target.key,
+      amountKobo: target.priceMonthly,
+      fullPriceKobo: target.priceMonthly,
+      fromPlanKey: null,
+      renewsAt: this.addMonths(extendsCurrent ? sub.currentPeriodEnd! : now, 1),
+    };
   }
 
   /**
@@ -291,6 +425,14 @@ export class SubscriptionsService {
     newPlanKey: PlanTier,
     gatewaySubId: string,
     tx?: Pick<DatabaseService, 'subscription' | 'plan'>,
+    options: {
+      /**
+       * A prorated mid-cycle upgrade: switch plans now and keep the period
+       * (and its renewal date) exactly as it is — the payment only covered
+       * the difference for the time left.
+       */
+      keepCurrentPeriod?: boolean;
+    } = {},
   ): Promise<Subscription> {
     const db = tx ?? this.db;
 
@@ -301,6 +443,18 @@ export class SubscriptionsService {
 
     const plan = await db.plan.findUnique({ where: { key: newPlanKey } });
     if (!plan) throw new NotFoundException(`Plan not found: ${newPlanKey}`);
+
+    if (options.keepCurrentPeriod) {
+      return db.subscription.update({
+        where: { userId },
+        data: {
+          planId: plan.id,
+          status: SubscriptionStatus.ACTIVE,
+          gatewaySubId,
+          cancelledAt: null,
+        },
+      });
+    }
 
     const now = new Date();
 

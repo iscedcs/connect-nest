@@ -12,6 +12,7 @@ import {
   NotFoundException,
   BadRequestException,
   ForbiddenException,
+  ParseEnumPipe,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -150,17 +151,38 @@ export class SubscriptionsController {
       throw new BadRequestException('FREE plan does not require payment');
     }
 
-    // Refuse to charge for the plan the user already has, outside the
-    // renewal window — nearly always a double payment.
-    await this.subscriptionsService.assertCheckoutAllowed(user.id, dto.planKey);
+    // Price the checkout. 409 for the plan the user already has outside the
+    // renewal window (a double payment) or a cheaper plan with paid time
+    // left; a mid-cycle upgrade is charged only the prorated difference.
+    const sub = await this.subscriptionsService.getActiveSubscription(user.id);
+    const quote = this.subscriptionsService.quoteCheckout(sub, plan);
 
     const provider = this.gatewayFactory.getProvider(dto.gateway);
+    if (
+      quote.kind === 'prorated_upgrade' &&
+      provider.providerName !== 'PAYSTACK'
+    ) {
+      // Only the Paystack path carries the checkout metadata activation
+      // relies on to tell a prorated payment from an underpaid one.
+      throw new BadRequestException(
+        'Mid-cycle upgrades are only available with Paystack',
+      );
+    }
+
     const result = await provider.initiateCheckout({
       userId: user.id,
       email: user.email || `${user.id}@isce.app`,
       planKey: dto.planKey,
-      amountKobo: plan.priceMonthly,
+      amountKobo: quote.amountKobo,
       callbackUrl: dto.callbackUrl,
+      metadata:
+        quote.kind === 'prorated_upgrade'
+          ? {
+              checkoutKind: quote.kind,
+              fromPlanKey: quote.fromPlanKey,
+              renewsAt: quote.renewsAt.toISOString(),
+            }
+          : { checkoutKind: quote.kind },
     });
 
     return {
@@ -169,9 +191,48 @@ export class SubscriptionsController {
       data: {
         ...result,
         planKey: dto.planKey,
-        amountKobo: plan.priceMonthly,
+        amountKobo: quote.amountKobo,
+        fullPriceKobo: quote.fullPriceKobo,
+        kind: quote.kind,
+        renewsAt: quote.renewsAt,
         provider: provider.providerName,
       },
+    };
+  }
+
+  @Get('quote/:planKey')
+  @ApiOperation({
+    summary:
+      'What paying for a plan would charge now, before starting a checkout',
+    description:
+      'A mid-cycle move to a dearer plan is prorated: it charges the difference ' +
+      'for the rest of the current period and keeps the renewal date. Anything ' +
+      'else is one month at the full price.',
+  })
+  @ApiResponse({ status: 200, description: 'Quote returned' })
+  @ApiResponse({ status: 400, description: 'The Free plan needs no payment' })
+  @ApiResponse({ status: 404, description: 'Plan not available' })
+  @ApiResponse({
+    status: 409,
+    description:
+      'Same plan outside the renewal window, or a cheaper plan while paid time is left',
+  })
+  async quote(
+    @Req() req: any,
+    @Param('planKey', new ParseEnumPipe(PlanTier)) planKey: PlanTier,
+  ) {
+    const plan = await this.subscriptionsService.getPlanByKey(planKey);
+    if (!plan || !plan.isActive) {
+      throw new NotFoundException(`Plan ${planKey} is not available`);
+    }
+    if (plan.priceMonthly === 0) {
+      throw new BadRequestException('FREE plan does not require payment');
+    }
+    const user = req.user || req.isce_auth;
+    const sub = await this.subscriptionsService.getActiveSubscription(user.id);
+    return {
+      success: true,
+      data: this.subscriptionsService.quoteCheckout(sub, plan),
     };
   }
 
