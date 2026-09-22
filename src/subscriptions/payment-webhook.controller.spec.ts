@@ -1,12 +1,15 @@
 import {
   BadRequestException,
+  InternalServerErrorException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { PaymentWebhookController } from './payment-webhook.controller';
+import { SubscriptionPaymentsService } from './subscription-payments.service';
 import { PlanTier } from '../generated/prisma/client';
 
 describe('PaymentWebhookController', () => {
   let controller: PaymentWebhookController;
+  let mockWallet: any;
   let mockGatewayFactory: any;
   let mockSubscriptionsService: any;
   let mockDb: any;
@@ -47,15 +50,38 @@ describe('PaymentWebhookController', () => {
     };
 
     mockSubscriptionsService = {
+      // Shaped like a real row: activation must not mistake its `status`
+      // for an outcome's.
       upgradePlan: jest.fn().mockResolvedValue({
         id: 'sub_123',
         userId: 'usr_test_123',
         planId: 'plan_pro_lite',
+        status: 'ACTIVE',
       }),
+      isEntitled: jest.fn().mockReturnValue(false),
+      renewalAnchor: jest.fn(
+        (sub: any) =>
+          (sub.status === 'TRIALING'
+            ? sub.trialEndDate
+            : sub.currentPeriodEnd) ?? null,
+      ),
     };
 
     mockTx = {
-      paymentRecord: { create: jest.fn().mockResolvedValue({ id: 'pr_123' }) },
+      paymentRecord: {
+        create: jest.fn().mockResolvedValue({ id: 'pr_123' }),
+        findUnique: jest.fn().mockResolvedValue(null),
+        count: jest.fn().mockResolvedValue(0),
+      },
+      subscription: {
+        findUnique: jest.fn().mockResolvedValue(null),
+        update: jest.fn().mockImplementation(async ({ data }: any) => ({
+          id: 'sub_123',
+          status: 'ACTIVE',
+          ...data,
+        })),
+      },
+      $queryRaw: jest.fn().mockResolvedValue([]),
     };
 
     mockDb = {
@@ -73,11 +99,19 @@ describe('PaymentWebhookController', () => {
       dispatch: jest.fn().mockResolvedValue(true),
     };
 
+    mockWallet = {
+      removeSavedCard: jest.fn().mockResolvedValue(undefined),
+      revokeMandate: jest.fn().mockResolvedValue(undefined),
+    };
+
     controller = new PaymentWebhookController(
       mockGatewayFactory,
-      mockSubscriptionsService,
-      mockDb,
-      mockNotifications,
+      new SubscriptionPaymentsService(
+        mockSubscriptionsService,
+        mockDb,
+        mockNotifications,
+        mockWallet,
+      ),
     );
   });
 
@@ -98,6 +132,7 @@ describe('PaymentWebhookController', () => {
         PlanTier.PRO_LITE,
         REFERENCE,
         mockTx,
+        {},
       );
       expect(mockTx.paymentRecord.create).toHaveBeenCalled();
       expect(mockNotifications.dispatch).toHaveBeenCalledWith(
@@ -299,14 +334,12 @@ describe('PaymentWebhookController', () => {
       });
       mockTx.$queryRaw = jest.fn().mockResolvedValue([]);
       mockTx.paymentRecord.findUnique = jest.fn().mockResolvedValue(null);
-      mockTx.subscription = {
-        findUnique: jest.fn().mockResolvedValue({
-          userId: 'usr_test_123',
-          status: 'ACTIVE',
-          currentPeriodEnd: periodEnd,
-          plan: { key: PlanTier.PRO_LITE, priceMonthly: 100000 },
-        }),
-      };
+      mockTx.subscription.findUnique.mockResolvedValue({
+        userId: 'usr_test_123',
+        status: 'ACTIVE',
+        currentPeriodEnd: periodEnd,
+        plan: { key: PlanTier.PRO_LITE, priceMonthly: 100000 },
+      });
       mockSubscriptionsService.prorationQuote = jest.fn().mockReturnValue({
         amountKobo: 25000,
         fromPlanKey: PlanTier.PRO_LITE,
@@ -438,6 +471,146 @@ describe('PaymentWebhookController', () => {
         controller.handleForwardedPaystackEvent(validBody as any),
       ).resolves.toEqual({ status: 'already_processed' });
       expect(mockSubscriptionsService.upgradePlan).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('saved cards', () => {
+    it('keeps the card wallet-nest saved for automatic renewal', async () => {
+      mockPaystackProvider.handleWebhookEvent.mockResolvedValue({
+        success: true,
+        userId: 'usr_test_123',
+        planKey: PlanTier.PRO_LITE,
+        reference: REFERENCE,
+        amountKobo: 100000,
+        autoRenew: true,
+        paymentMethod: 'CARD',
+      });
+
+      await controller.handleForwardedPaystackEvent({
+        ...validBody,
+        savedCard: {
+          id: 'card_1',
+          last4: '4081',
+          brand: 'visa',
+          bank: null,
+          expMonth: '12',
+          expYear: '2030',
+        },
+      } as any);
+
+      expect(mockTx.subscription.update).toHaveBeenCalledWith({
+        where: { userId: 'usr_test_123' },
+        data: {
+          autoRenew: true,
+          paymentMethod: 'CARD',
+          savedCardId: 'card_1',
+          savedCardLabel: 'visa •••• 4081',
+          walletMandateId: null,
+        },
+      });
+    });
+  });
+
+  describe('handleWalletPayment (delivered by wallet-nest)', () => {
+    const delivery = {
+      paymentId: 'sp_1',
+      reference: 'SUBW_PRO_LITE_usr_test_123_1790000000',
+      userId: 'usr_test_123',
+      amountKobo: 100000,
+      metadata: {
+        userId: 'someone_else',
+        planKey: PlanTier.PRO_LITE,
+        checkoutKind: 'full',
+        autoRenew: true,
+      },
+      mandateId: 'mandate_1',
+    };
+
+    it('applies the payment for the payer wallet-nest names, and keeps the wallet permission', async () => {
+      await expect(
+        controller.handleWalletPayment(delivery as any),
+      ).resolves.toEqual({
+        status: 'success',
+        userId: 'usr_test_123',
+        planKey: PlanTier.PRO_LITE,
+      });
+      expect(mockSubscriptionsService.upgradePlan).toHaveBeenCalledWith(
+        'usr_test_123',
+        PlanTier.PRO_LITE,
+        delivery.reference,
+        mockTx,
+        {},
+      );
+      expect(mockTx.subscription.update).toHaveBeenCalledWith({
+        where: { userId: 'usr_test_123' },
+        data: expect.objectContaining({
+          paymentMethod: 'WALLET',
+          walletMandateId: 'mandate_1',
+        }),
+      });
+    });
+
+    it('carries a prorated upgrade priced at checkout through to its checks', async () => {
+      const periodEnd = new Date('2026-10-07T12:00:00Z');
+      mockDb.plan.findUnique.mockResolvedValue({
+        id: 'plan_pro_plus',
+        key: PlanTier.PRO_PLUS,
+        priceMonthly: 150000,
+      });
+      mockTx.subscription.findUnique.mockResolvedValue({
+        userId: 'usr_test_123',
+        status: 'ACTIVE',
+        currentPeriodEnd: periodEnd,
+        plan: { key: PlanTier.PRO_LITE, priceMonthly: 100000 },
+      });
+      mockSubscriptionsService.prorationQuote = jest.fn().mockReturnValue({
+        amountKobo: 25000,
+        fromPlanKey: PlanTier.PRO_LITE,
+        periodEnd,
+      });
+
+      await expect(
+        controller.handleWalletPayment({
+          ...delivery,
+          amountKobo: 25000,
+          metadata: {
+            planKey: PlanTier.PRO_PLUS,
+            checkoutKind: 'prorated_upgrade',
+            fromPlanKey: PlanTier.PRO_LITE,
+            renewsAt: periodEnd.toISOString(),
+          },
+        } as any),
+      ).resolves.toMatchObject({ status: 'success' });
+      expect(mockSubscriptionsService.upgradePlan).toHaveBeenCalledWith(
+        'usr_test_123',
+        PlanTier.PRO_PLUS,
+        delivery.reference,
+        mockTx,
+        { keepCurrentPeriod: true },
+      );
+    });
+
+    it('answers 422 for a payment that no longer applies, so wallet-nest returns the money', async () => {
+      await expect(
+        controller.handleWalletPayment({ ...delivery, amountKobo: 100 } as any),
+      ).rejects.toBeInstanceOf(UnprocessableEntityException);
+    });
+
+    it('answers 422 for a payment that names no plan', async () => {
+      await expect(
+        controller.handleWalletPayment({
+          ...delivery,
+          metadata: { checkoutKind: 'full' },
+        } as any),
+      ).rejects.toBeInstanceOf(UnprocessableEntityException);
+      expect(mockSubscriptionsService.upgradePlan).not.toHaveBeenCalled();
+    });
+
+    it('answers 500 when activation fails, so wallet-nest delivers it again', async () => {
+      mockDb.$transaction.mockRejectedValue(new Error('connection reset'));
+      await expect(
+        controller.handleWalletPayment(delivery as any),
+      ).rejects.toBeInstanceOf(InternalServerErrorException);
     });
   });
 });

@@ -30,6 +30,8 @@ import { PlanTier } from '../generated/prisma/client';
 import { PaymentGatewayFactory } from './gateways/payment-gateway.factory';
 import { SystemConfigService } from '../system-config/system-config.service';
 import { SubscriptionBroadcastService } from './subscription-broadcast.service';
+import { SubscriptionPaymentsService } from './subscription-payments.service';
+import { WalletNestClient } from './gateways/wallet-nest.client';
 
 @ApiTags('Subscriptions')
 @ApiBearerAuth()
@@ -40,6 +42,8 @@ export class SubscriptionsController {
     private readonly gatewayFactory: PaymentGatewayFactory,
     private readonly systemConfigService: SystemConfigService,
     private readonly broadcastService: SubscriptionBroadcastService,
+    private readonly payments: SubscriptionPaymentsService,
+    private readonly wallet: WalletNestClient,
   ) {}
 
   @Get('me')
@@ -51,7 +55,9 @@ export class SubscriptionsController {
     const sub = await this.subscriptionsService.getActiveSubscription(user.id);
     return {
       success: true,
-      data: this.subscriptionsService.buildSubscriptionResponse(sub),
+      data: this.subscriptionsService.buildSubscriptionResponse(sub, {
+        trialEligible: await this.subscriptionsService.isTrialEligible(sub),
+      }),
     };
   }
 
@@ -115,6 +121,9 @@ export class SubscriptionsController {
   async cancelSubscription(@Req() req: any) {
     const user = req.user || req.isce_auth;
     const sub = await this.subscriptionsService.cancelSubscription(user.id);
+    // Nothing will be charged again: forget the saved card, revoke the
+    // wallet permission.
+    await this.payments.stopAutoRenew(user.id);
     return {
       success: true,
       message:
@@ -153,19 +162,67 @@ export class SubscriptionsController {
 
     // Price the checkout. 409 for the plan the user already has outside the
     // renewal window (a double payment) or a cheaper plan with paid time
-    // left; a mid-cycle upgrade is charged only the prorated difference.
+    // left; a mid-cycle upgrade is charged only the prorated difference, and
+    // a first paid plan starts with a trial.
     const sub = await this.subscriptionsService.getActiveSubscription(user.id);
-    const quote = this.subscriptionsService.quoteCheckout(sub, plan);
+    const quote = this.subscriptionsService.quoteCheckout(
+      sub,
+      plan,
+      new Date(),
+      { trialEligible: await this.subscriptionsService.isTrialEligible(sub) },
+    );
+    // A trial exists to be followed by automatic payment.
+    const autoRenew = quote.kind === 'trial' ? true : (dto.autoRenew ?? true);
+
+    // What the payment carries back to activation, whichever way it's paid.
+    const metadata: Record<string, unknown> = {
+      checkoutKind: quote.kind,
+      autoRenew,
+      ...(quote.kind === 'prorated_upgrade' && {
+        fromPlanKey: quote.fromPlanKey,
+        renewsAt: quote.renewsAt.toISOString(),
+      }),
+    };
+    const priced = {
+      planKey: dto.planKey,
+      amountKobo: quote.amountKobo,
+      fullPriceKobo: quote.fullPriceKobo,
+      kind: quote.kind,
+      renewsAt: quote.renewsAt,
+      autoRenew,
+    };
+
+    if (dto.method === 'WALLET') {
+      const payment = await this.wallet.createWalletPayment({
+        userId: user.id,
+        amountKobo: quote.amountKobo,
+        reference: `SUBW_${dto.planKey}_${user.id}_${Date.now()}`,
+        description:
+          quote.kind === 'trial'
+            ? `Connect ${plan.name} trial start`
+            : `Connect ${plan.name} plan`,
+        metadata: { userId: user.id, planKey: dto.planKey, ...metadata },
+        // Renewals charge the full monthly price.
+        ...(autoRenew && { mandateMaxAmountKobo: plan.priceMonthly }),
+      });
+      return {
+        success: true,
+        message: 'Wallet payment created; approve it with your wallet PIN',
+        data: {
+          ...priced,
+          method: 'WALLET',
+          walletPaymentId: payment.id,
+          balanceSufficient: payment.balanceSufficient,
+        },
+      };
+    }
 
     const provider = this.gatewayFactory.getProvider(dto.gateway);
-    if (
-      quote.kind === 'prorated_upgrade' &&
-      provider.providerName !== 'PAYSTACK'
-    ) {
+    if (quote.kind !== 'full' && provider.providerName !== 'PAYSTACK') {
       // Only the Paystack path carries the checkout metadata activation
-      // relies on to tell a prorated payment from an underpaid one.
+      // relies on to tell a prorated or trial payment from an underpaid one.
       throw new BadRequestException(
-        'Mid-cycle upgrades are only available with Paystack',
+        'Upgrades and trials are only available with Paystack',
       );
     }
 
@@ -175,14 +232,8 @@ export class SubscriptionsController {
       planKey: dto.planKey,
       amountKobo: quote.amountKobo,
       callbackUrl: dto.callbackUrl,
-      metadata:
-        quote.kind === 'prorated_upgrade'
-          ? {
-              checkoutKind: quote.kind,
-              fromPlanKey: quote.fromPlanKey,
-              renewsAt: quote.renewsAt.toISOString(),
-            }
-          : { checkoutKind: quote.kind },
+      metadata,
+      saveCard: autoRenew,
     });
 
     return {
@@ -190,11 +241,8 @@ export class SubscriptionsController {
       message: 'Payment checkout session initialized',
       data: {
         ...result,
-        planKey: dto.planKey,
-        amountKobo: quote.amountKobo,
-        fullPriceKobo: quote.fullPriceKobo,
-        kind: quote.kind,
-        renewsAt: quote.renewsAt,
+        ...priced,
+        method: 'CARD',
         provider: provider.providerName,
       },
     };
@@ -232,7 +280,9 @@ export class SubscriptionsController {
     const sub = await this.subscriptionsService.getActiveSubscription(user.id);
     return {
       success: true,
-      data: this.subscriptionsService.quoteCheckout(sub, plan),
+      data: this.subscriptionsService.quoteCheckout(sub, plan, new Date(), {
+        trialEligible: await this.subscriptionsService.isTrialEligible(sub),
+      }),
     };
   }
 

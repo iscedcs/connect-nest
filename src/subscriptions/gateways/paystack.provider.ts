@@ -12,6 +12,7 @@ import {
   WebhookResult,
 } from './payment-gateway.interface';
 import { PlanTier } from '../../generated/prisma/client';
+import { CHECKOUT_KINDS, CheckoutKind } from '../subscriptions.service';
 
 @Injectable()
 export class PaystackGatewayProvider implements PaymentGatewayProvider {
@@ -52,6 +53,8 @@ export class PaystackGatewayProvider implements PaymentGatewayProvider {
       amountKobo: params.amountKobo,
       reference,
       callbackUrl: params.callbackUrl,
+      // wallet-nest keeps the card and forwards only its id and label.
+      ...(params.saveCard && { saveCardFor: params.userId }),
       metadata: {
         userId: params.userId,
         planKey: params.planKey,
@@ -204,12 +207,12 @@ export class PaystackGatewayProvider implements PaymentGatewayProvider {
       return null;
     }
 
-    // Set by initiate-payment for a mid-cycle upgrade; absent on older
-    // checkouts, which were always full-price.
-    const checkoutKind =
-      data?.metadata?.checkoutKind === 'prorated_upgrade'
-        ? 'prorated_upgrade'
-        : 'full';
+    // Set by initiate-payment and the renewal job; absent on older checkouts,
+    // which were always full-price.
+    const kind = data?.metadata?.checkoutKind;
+    const checkoutKind: CheckoutKind = CHECKOUT_KINDS.includes(kind)
+      ? kind
+      : 'full';
 
     return {
       success: true,
@@ -220,7 +223,10 @@ export class PaystackGatewayProvider implements PaymentGatewayProvider {
       gatewayCustomerId: customerCode,
       checkoutKind,
       fromPlanKey: data?.metadata?.fromPlanKey as PlanTier | undefined,
-      pricedPeriodEnd: data?.metadata?.renewsAt as string | undefined,
+      pricedPeriodEnd: (data?.metadata?.anchor ?? data?.metadata?.renewsAt) as
+        string | undefined,
+      autoRenew: data?.metadata?.autoRenew === true,
+      paymentMethod: 'CARD',
       rawEvent: event,
     };
   }
