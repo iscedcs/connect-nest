@@ -3,6 +3,7 @@ import { BadRequestException, ConflictException } from '@nestjs/common';
 import {
   MIN_CHARGE_KOBO,
   PAST_DUE_GRACE_DAYS,
+  PRORATION_ROUNDING_KOBO,
   RENEWAL_WINDOW_DAYS,
   SubscriptionsService,
 } from './subscriptions.service';
@@ -441,6 +442,26 @@ describe('SubscriptionsService (paid plan lifecycle)', () => {
       // 10 of 30 days left: round(150000/3)=50000, round(100000/3)=33333.
       const due = service.prorationQuote(liteUntil(daysFromNow(10)), proPlus);
       expect(due!.amountKobo).toBe(50_000 - 33_333);
+    });
+
+    it('can rise by 1 kobo a few seconds later (why activation allows PRORATION_ROUNDING_KOBO)', () => {
+      // Month 7 Sep → 7 Oct 2026, 30 days. At ratio 0.500006 the old price
+      // share is 50000.6 → 50001 and the new 75000.9 → 75001: 25000 due.
+      // 5.184 s later the ratio is 0.500004: 50000.4 → 50000 and
+      // 75000.6 → 75001, so 25001 is due for less time.
+      const end = new Date('2026-10-07T12:00:00Z');
+      const month = 30 * 24 * 60 * 60 * 1000;
+      const atCheckout = new Date(end.getTime() - month * 0.500006);
+      const atWebhook = new Date(atCheckout.getTime() + 5_184);
+
+      const quoted = service.prorationQuote(
+        liteUntil(end),
+        proPlus,
+        atCheckout,
+      );
+      const due = service.prorationQuote(liteUntil(end), proPlus, atWebhook);
+      expect(quoted!.amountKobo).toBe(25_000);
+      expect(due!.amountKobo).toBe(25_000 + PRORATION_ROUNDING_KOBO);
     });
 
     it('never charges less than ₦50 near the end of the cycle', () => {

@@ -290,6 +290,7 @@ describe('PaymentWebhookController', () => {
         amountKobo: 25000,
         checkoutKind: 'prorated_upgrade',
         fromPlanKey: PlanTier.PRO_LITE,
+        pricedPeriodEnd: periodEnd.toISOString(),
       });
       mockDb.plan.findUnique.mockResolvedValue({
         id: 'plan_pro_plus',
@@ -367,6 +368,52 @@ describe('PaymentWebhookController', () => {
         controller.handleForwardedPaystackEvent(validBody as any),
       ).rejects.toBeInstanceOf(UnprocessableEntityException);
       expect(mockSubscriptionsService.upgradePlan).not.toHaveBeenCalled();
+    });
+
+    it('refuses, for a refund, when the renewal date moved after pricing', async () => {
+      // An early renewal of Pro Lite in another tab: same plan, a month more
+      // to credit, so the payment was priced for a period that is gone.
+      mockSubscriptionsService.prorationQuote.mockReturnValue({
+        amountKobo: 75000,
+        fromPlanKey: PlanTier.PRO_LITE,
+        periodEnd: new Date('2026-11-07T12:00:00Z'),
+      });
+
+      await expect(
+        controller.handleForwardedPaystackEvent(validBody as any),
+      ).rejects.toBeInstanceOf(UnprocessableEntityException);
+      expect(mockSubscriptionsService.upgradePlan).not.toHaveBeenCalled();
+    });
+
+    it('refuses a prorated payment that carries no priced renewal date', async () => {
+      mockPaystackProvider.handleWebhookEvent.mockResolvedValue({
+        success: true,
+        userId: 'usr_test_123',
+        planKey: PlanTier.PRO_PLUS,
+        reference: UPGRADE_REF,
+        amountKobo: 25000,
+        checkoutKind: 'prorated_upgrade',
+        fromPlanKey: PlanTier.PRO_LITE,
+      });
+
+      await expect(
+        controller.handleForwardedPaystackEvent(validBody as any),
+      ).rejects.toBeInstanceOf(UnprocessableEntityException);
+      expect(mockSubscriptionsService.upgradePlan).not.toHaveBeenCalled();
+    });
+
+    it('accepts a payment 1 kobo short of a re-price that rounded up', async () => {
+      // Quoted 25000 at checkout; seconds later the separately rounded
+      // prices give 25001 for less time (see the service spec).
+      mockSubscriptionsService.prorationQuote.mockReturnValue({
+        amountKobo: 25001,
+        fromPlanKey: PlanTier.PRO_LITE,
+        periodEnd,
+      });
+
+      await expect(
+        controller.handleForwardedPaystackEvent(validBody as any),
+      ).resolves.toMatchObject({ status: 'success' });
     });
 
     it('refuses a payment that no longer covers the difference due', async () => {

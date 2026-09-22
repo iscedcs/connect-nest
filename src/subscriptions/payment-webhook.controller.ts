@@ -19,7 +19,10 @@ import { InternalGuard } from '../internal/internal.guard';
 import { ForwardedPaystackEventDto } from './dto/subscription.dto';
 import { PaymentGatewayFactory } from './gateways/payment-gateway.factory';
 import { WebhookResult } from './gateways/payment-gateway.interface';
-import { SubscriptionsService } from './subscriptions.service';
+import {
+  PRORATION_ROUNDING_KOBO,
+  SubscriptionsService,
+} from './subscriptions.service';
 import { DatabaseService } from '../database/database.service';
 import { NotificationDispatcher } from '../notification/notification-dispatcher.service';
 import { Plan, Prisma } from '../generated/prisma/client';
@@ -280,11 +283,16 @@ export class PaymentWebhookController {
    * Decide, inside the activation transaction, whether a prorated upgrade
    * payment can be applied. Returns an outcome to stop with, or null to go on.
    *
-   * The amount due is recomputed now, from the subscription as it stands:
-   * the payment was priced at checkout, and the subscription may have moved
-   * since (a second upgrade paid in another tab, a renewal, a lapse). What
-   * was paid must still cover the difference for the time now left, which is
-   * never more than what was quoted unless the subscription itself changed.
+   * The payment was priced at checkout against the subscription as it was
+   * then: its plan and its renewal date. If either has changed since (a
+   * second upgrade paid in another tab, an early renewal, a lapse), the
+   * payment no longer fits and is refused for a refund.
+   *
+   * If neither has changed, the amount due is recomputed for the time now
+   * left and what was paid must cover it. Less time is left than at checkout,
+   * so the fair difference has only shrunk, but each price is rounded to
+   * whole kobo separately and the rounded difference can tick up by 1 kobo
+   * as the ratio falls. That 1 kobo is allowed; anything more is refused.
    */
   private async checkProratedUpgrade(
     tx: Prisma.TransactionClient,
@@ -316,11 +324,19 @@ export class PaymentWebhookController {
       ? this.subscriptionsService.prorationQuote(sub, plan)
       : null;
 
-    if (!due || due.fromPlanKey !== result.fromPlanKey) {
+    const pricedEnd = result.pricedPeriodEnd
+      ? new Date(result.pricedPeriodEnd).getTime()
+      : NaN;
+    if (
+      !due ||
+      due.fromPlanKey !== result.fromPlanKey ||
+      due.periodEnd.getTime() !== pricedEnd
+    ) {
       this.logger.error(
         `REFUND NEEDED: ${gateway} prorated upgrade to ${result.planKey} no longer applies ` +
-          `(user ${result.userId}, now on ${sub?.plan.key ?? 'no plan'} / ${sub?.status ?? '-'}, ` +
-          `priced from ${result.fromPlanKey}; paid ${result.amountKobo}, ref: ${result.reference})`,
+          `(user ${result.userId}, now on ${sub?.plan.key ?? 'no plan'} / ${sub?.status ?? '-'} ` +
+          `until ${sub?.currentPeriodEnd?.toISOString() ?? '-'}, priced from ${result.fromPlanKey} ` +
+          `until ${result.pricedPeriodEnd ?? '-'}; paid ${result.amountKobo}, ref: ${result.reference})`,
       );
       return {
         status: 'rejected',
@@ -329,9 +345,13 @@ export class PaymentWebhookController {
       };
     }
 
-    if ((result.amountKobo ?? 0) < due.amountKobo) {
-      this.logger.warn(
-        `${gateway} prorated upgrade underpaid for ${result.planKey}: paid ${result.amountKobo}, due ${due.amountKobo} (ref: ${result.reference})`,
+    if ((result.amountKobo ?? 0) < due.amountKobo - PRORATION_ROUNDING_KOBO) {
+      // Checkout sets the amount server-side, so this is a tampered or
+      // hand-made charge rather than a customer mistake — still money taken
+      // with nothing granted.
+      this.logger.error(
+        `REFUND NEEDED: ${gateway} prorated upgrade underpaid for ${result.planKey}: ` +
+          `paid ${result.amountKobo}, due ${due.amountKobo} (user ${result.userId}, ref: ${result.reference})`,
       );
       return {
         status: 'rejected',

@@ -220,6 +220,7 @@ export class PaystackGatewayProvider implements PaymentGatewayProvider {
       gatewayCustomerId: customerCode,
       checkoutKind,
       fromPlanKey: data?.metadata?.fromPlanKey as PlanTier | undefined,
+      pricedPeriodEnd: data?.metadata?.renewsAt as string | undefined,
       rawEvent: event,
     };
   }

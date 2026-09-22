@@ -31,6 +31,14 @@ export const RENEWAL_WINDOW_DAYS = 7;
 /** Smallest charge sent to Paystack: ₦50, what wallet-nest's own card check charges. */
 export const MIN_CHARGE_KOBO = 5_000;
 
+/**
+ * How far the prorated difference can rise as time passes. Each price is
+ * rounded separately, so round(new × r) − round(old × r) is off the exact
+ * value by less than 1 kobo either way: as r falls, the rounded difference
+ * can go up by at most 1 kobo before the shrinking exact value outweighs it.
+ */
+export const PRORATION_ROUNDING_KOBO = 1;
+
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 /** What a checkout for a plan will charge, and what the payment buys. */

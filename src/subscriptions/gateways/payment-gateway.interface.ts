@@ -30,6 +30,11 @@ export interface WebhookResult {
   checkoutKind?: 'full' | 'prorated_upgrade';
   /** The plan a prorated upgrade was priced from. */
   fromPlanKey?: PlanTier;
+  /**
+   * The renewal date a prorated upgrade was priced against (ISO). The
+   * payment only fits the period that was running when it was priced.
+   */
+  pricedPeriodEnd?: string;
   rawEvent?: any;
 }
 
