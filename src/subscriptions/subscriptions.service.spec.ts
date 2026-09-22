@@ -576,6 +576,33 @@ describe('SubscriptionsService (paid plan lifecycle)', () => {
       );
     });
 
+    it('starts the grace days from now for a period that ended long before it was marked', async () => {
+      byStatus({
+        [SubscriptionStatus.ACTIVE]: [
+          {
+            id: 'sub_old',
+            userId: 'usr_old',
+            plan: proLite,
+            status: SubscriptionStatus.ACTIVE,
+            currentPeriodEnd: daysFromNow(-10),
+          },
+        ],
+      });
+
+      await service.processPaidExpiries();
+
+      expect(db.subscription.update).toHaveBeenCalledWith({
+        where: { id: 'sub_old' },
+        data: { status: SubscriptionStatus.PAST_DUE, currentPeriodEnd: NOW },
+      });
+      expect(notifications.dispatch).toHaveBeenCalledWith(
+        expect.objectContaining({
+          userId: 'usr_old',
+          message: expect.stringContaining('Renew by 2026-09-25'),
+        }),
+      );
+    });
+
     it('moves past-due plans whose grace is over, and cancelled plans whose period ended, to Free', async () => {
       byStatus({
         [SubscriptionStatus.PAST_DUE]: [{ id: 'sub_p' }],

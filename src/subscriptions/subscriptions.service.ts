@@ -531,13 +531,28 @@ export class SubscriptionsService {
     });
     for (const sub of lapsed) {
       if (sub.plan.priceMonthly === 0) continue;
+      // Grace is measured from currentPeriodEnd. A period that ended more
+      // than a day ago (rows from before this job existed, or runs missed
+      // while the service was down) would otherwise lose its features the
+      // moment it is marked, and be told to "renew by" a date already
+      // gone — so its grace starts from now instead.
+      const periodEnd =
+        sub.currentPeriodEnd! < new Date(now.getTime() - DAY_MS)
+          ? now
+          : sub.currentPeriodEnd!;
       await this.db.subscription.update({
         where: { id: sub.id },
-        data: { status: SubscriptionStatus.PAST_DUE },
+        data: {
+          status: SubscriptionStatus.PAST_DUE,
+          ...(periodEnd !== sub.currentPeriodEnd && {
+            currentPeriodEnd: periodEnd,
+          }),
+        },
       });
       const graceEnds = this.accessEndsAt({
         ...sub,
         status: SubscriptionStatus.PAST_DUE,
+        currentPeriodEnd: periodEnd,
       });
       await this.notifications.dispatch({
         userId: sub.userId,
