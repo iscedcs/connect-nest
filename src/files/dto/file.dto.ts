@@ -55,7 +55,7 @@ export class CreateFileDto {
   @ApiProperty({
     description: 'Public URL to the file in Digital Ocean Spaces',
     example:
-      'https://connect-files.nyc3.digitaloceanspaces.com/profiles/prof_01/files/brochure_1729890610.pdf',
+      'https://isce-image.fra1.digitaloceanspaces.com/profiles/prof_01/files/brochure_1729890610.pdf',
   })
   @IsUrl({ protocols: ['https'], require_protocol: true })
   spaces_url: string;
@@ -130,7 +130,7 @@ export class FileResponseDto {
   @ApiProperty({
     description: 'Public URL to the file in Digital Ocean Spaces',
     example:
-      'https://connect-files.nyc3.digitaloceanspaces.com/profiles/prof_01/files/brochure_1729890610.pdf',
+      'https://isce-image.fra1.digitaloceanspaces.com/profiles/prof_01/files/brochure_1729890610.pdf',
   })
   spaces_url: string;
 
@@ -160,7 +160,7 @@ export class DownloadResponseDto {
   @ApiProperty({
     description: 'Time-limited download URL',
     example:
-      'https://connect-files.nyc3.digitaloceanspaces.com/profiles/prof_01/files/brochure_1729890610.pdf?X-Amz-Algorithm=...',
+      'https://isce-image.fra1.digitaloceanspaces.com/profiles/prof_01/files/brochure_1729890610.pdf?X-Amz-Algorithm=...',
   })
   download_url: string;
 

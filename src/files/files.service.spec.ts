@@ -96,4 +96,95 @@ describe('FilesService', () => {
       ).rejects.toThrow(PlanLimitException);
     });
   });
+
+  // The public base used to hardcode the nyc3 region, so a Space in any other
+  // region uploaded successfully and then returned a URL that did not resolve.
+  // These pin the derivation, since nothing else in this suite looks at it.
+  describe('public URL derivation', () => {
+    const dto = {
+      filename: 'document.pdf',
+      media_type: 'application/pdf',
+      size_bytes: 1024,
+    };
+    const ENV_KEYS = [
+      'DO_SPACES_BUCKET',
+      'DO_SPACES_REGION',
+      'DO_SPACES_PUBLIC_BASE',
+      'DO_SPACES_KEY',
+      'DO_SPACES_SECRET',
+      'AWS_S3_BUCKET',
+      'AWS_REGION',
+      'AWS_ACCESS_KEY_ID',
+      'AWS_SECRET_ACCESS_KEY',
+    ];
+    let saved: Record<string, string | undefined>;
+
+    beforeEach(() => {
+      saved = Object.fromEntries(ENV_KEYS.map((k) => [k, process.env[k]]));
+      ENV_KEYS.forEach((k) => delete process.env[k]);
+    });
+
+    afterEach(() => {
+      ENV_KEYS.forEach((k) => {
+        if (saved[k] === undefined) delete process.env[k];
+        else process.env[k] = saved[k];
+      });
+    });
+
+    // The constructor reads the environment, so each case needs its own instance.
+    const buildService = async () => {
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [
+          FilesService,
+          { provide: DatabaseService, useValue: db },
+          { provide: SubscriptionsService, useValue: subscriptionsService },
+        ],
+      }).compile();
+      return module.get<FilesService>(FilesService);
+    };
+
+    const spacesUrl = async (svc: FilesService) => {
+      db.profile.findFirst.mockResolvedValue({ id: profileId, userId: mockUser.id });
+      db.fileItem.count.mockResolvedValue(0);
+      db.fileItem.aggregate.mockResolvedValue({ _sum: { size_bytes: 0 } });
+      const result: any = await svc.generatePresignedUploadUrl(mockUser, profileId, dto);
+      return result.data.spaces_url as string;
+    };
+
+    it('builds the base from the configured bucket and region', async () => {
+      process.env.DO_SPACES_BUCKET = 'isce-image';
+      process.env.DO_SPACES_REGION = 'fra1';
+
+      expect(await spacesUrl(await buildService())).toContain(
+        'https://isce-image.fra1.digitaloceanspaces.com/profiles/',
+      );
+    });
+
+    it('never falls back to a hardcoded region', async () => {
+      process.env.DO_SPACES_BUCKET = 'isce-image';
+      process.env.DO_SPACES_REGION = 'fra1';
+
+      expect(await spacesUrl(await buildService())).not.toContain('nyc3');
+    });
+
+    it('prefers DO_SPACES_PUBLIC_BASE and strips its trailing slash', async () => {
+      process.env.DO_SPACES_BUCKET = 'isce-image';
+      process.env.DO_SPACES_REGION = 'fra1';
+      process.env.DO_SPACES_PUBLIC_BASE = 'https://cdn.isce.app/';
+
+      const url = await spacesUrl(await buildService());
+      expect(url).toContain('https://cdn.isce.app/profiles/');
+      expect(url).not.toContain('//profiles/');
+    });
+
+    it('honours the AWS_* aliases', async () => {
+      process.env.AWS_S3_BUCKET = 'aws-bucket';
+      process.env.AWS_REGION = 'eu-west-1';
+
+      expect(await spacesUrl(await buildService())).toContain(
+        'https://aws-bucket.eu-west-1.digitaloceanspaces.com/profiles/',
+      );
+    });
+  });
+
 });
