@@ -79,6 +79,29 @@ export class AuthClientService {
   }
 
   /** Proxy for ISCE Auth GET /referral/me */
+  async listReferredUsers(
+    authHeader: string,
+    page = 1,
+    limit = 20,
+  ): Promise<any> {
+    try {
+      const response = await axios.get(`${this.authUrl}/referral/referred`, {
+        headers: {
+          Authorization: authHeader,
+        },
+        params: { page, limit },
+      });
+      return response.data;
+    } catch (error: any) {
+      if (error.response) {
+        throw new HttpException(error.response.data, error.response.status);
+      }
+      throw new InternalServerErrorException(
+        'Failed to fetch referred users',
+      );
+    }
+  }
+
   async getReferralSummary(authHeader: string): Promise<any> {
     try {
       const response = await axios.get(`${this.authUrl}/referral/me`, {
