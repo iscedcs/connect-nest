@@ -25,7 +25,16 @@ export class HealthController {
   async check() {
     // Incident tracking rides on inbound hits (external uptime monitor) rather
     // than an in-process timer, so the DB can autosuspend between checks.
-    void this.healthMonitor.checkHealth();
+    //
+    // The .catch() is load-bearing. This is fire-and-forget, so any rejection
+    // escaping checkHealth is an unhandled rejection, and Node exits the
+    // process on those. That turns this public, unauthenticated, throttle-
+    // exempt route into a remote kill switch: on 2026-09-24 a missing
+    // HealthIncident table meant every GET here terminated the container, so
+    // monitoring the endpoint was indistinguishable from a crash-looping
+    // deploy. checkHealth now also contains its own errors; this is the second
+    // line of defence, and it stays even if that one is refactored away.
+    void this.healthMonitor.checkHealth().catch(() => undefined);
 
     const result = await this.health.check([
       () => this.prismaIndicator.isHealthy('database'),
