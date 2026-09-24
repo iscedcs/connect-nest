@@ -78,7 +78,7 @@ export class AuthClientService {
     }
   }
 
-  /** Proxy for ISCE Auth GET /referral/me */
+  /** Proxy for ISCE Auth GET /referral/referred */
   async listReferredUsers(
     authHeader: string,
     page = 1,
@@ -102,6 +102,7 @@ export class AuthClientService {
     }
   }
 
+  /** Proxy for ISCE Auth GET /referral/me */
   async getReferralSummary(authHeader: string): Promise<any> {
     try {
       const response = await axios.get(`${this.authUrl}/referral/me`, {
