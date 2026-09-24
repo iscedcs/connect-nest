@@ -5,6 +5,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -13,6 +14,7 @@ import {
   ApiBody,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { AuthClientService } from '../auth/auth-client.service';
@@ -33,6 +35,25 @@ export class ReferralController {
   getReferralSummary(@Request() req) {
     const authHeader = req.headers.authorization;
     return this.authClientService.getReferralSummary(authHeader);
+  }
+
+  @Get('referred')
+  @ApiOperation({
+    summary: 'List the people the current user referred, newest first',
+  })
+  @ApiQuery({ name: 'page', required: false, example: 1 })
+  @ApiQuery({ name: 'limit', required: false, example: 20 })
+  listReferredUsers(
+    @Request() req,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    const authHeader = req.headers.authorization;
+    return this.authClientService.listReferredUsers(
+      authHeader,
+      Number(page) || 1,
+      Number(limit) || 20,
+    );
   }
 
   @Post('business/apply')
