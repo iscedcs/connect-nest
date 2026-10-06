@@ -657,4 +657,38 @@ export class ContactService {
       };
     }
   }
+
+  async exportContacts(user: any, profileId: string) {
+    try {
+      const profile = await this.databaseService.profile.findFirst({
+        where: { id: profileId, userId: user.id },
+      });
+      if (!profile) return { success: false, message: 'Profile not found' };
+
+      const contacts = await this.databaseService.contact.findMany({
+        where: { ownerId: profile.id, deletedAt: null },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      return {
+        success: true,
+        message: 'Contacts exported successfully',
+        data: {
+          count: contacts.length,
+          contacts: contacts.map((c) => ({
+            id: c.id,
+            firstName: c.firstName,
+            lastName: c.lastName,
+            email: c.email,
+            phone: c.phone,
+            note: c.note,
+            status: c.status,
+            createdAt: c.createdAt,
+          })),
+        },
+      };
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  }
 }
