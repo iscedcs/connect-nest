@@ -1002,11 +1002,14 @@ export class ProfileService {
         }),
       ]);
 
-      // Step 5: Transform contacts (primary/others structure)
+      // Step 5: Fetch subscription plan limits for user to check verified badge
+      const userLimits = await this.subscriptionsService.getUserLimits(profile.userId);
+
+      // Step 6: Transform contacts (primary/others structure)
       const primaryContact = profileContacts.find((c) => c.is_primary) || null;
       const otherContacts = profileContacts.filter((c) => !c.is_primary);
 
-      // Step 6: Format response according to spec
+      // Step 7: Format response according to spec
       return {
         success: true,
         message: 'Public profile loaded',
@@ -1020,6 +1023,7 @@ export class ProfileService {
             profilePhoto: profile.profilePhoto,
             coverPhoto: profile.coverPhoto,
             location: profile.location,
+            verifiedBadge: Boolean(userLimits.verifiedBadge),
           },
           contact: {
             primary: primaryContact
@@ -1197,11 +1201,14 @@ export class ProfileService {
         }),
       ]);
 
-      // Step 3: Transform contacts
+      // Step 3: Fetch subscription plan limits for user to check verified badge
+      const userLimits = await this.subscriptionsService.getUserLimits(profile.userId);
+
+      // Step 4: Transform contacts
       const primaryContact = profileContacts.find((c) => c.is_primary) || null;
       const otherContacts = profileContacts.filter((c) => !c.is_primary);
 
-      // Step 4: Format response
+      // Step 5: Format response
       return {
         success: true,
         message: 'Public profile loaded',
@@ -1216,6 +1223,7 @@ export class ProfileService {
             profilePhoto: profile.profilePhoto,
             coverPhoto: profile.coverPhoto,
             location: profile.location,
+            verifiedBadge: Boolean(userLimits.verifiedBadge),
           },
           contact: {
             primary: primaryContact

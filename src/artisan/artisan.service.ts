@@ -1125,44 +1125,60 @@ export class ArtisanService {
         break;
     }
 
-    const [artisans, total] = await Promise.all([
-      this.databaseService.artisan.findMany({
-        where,
-        include: {
-          profile: {
-            select: {
-              id: true,
-              name: true,
-              profilePhoto: true,
-              slug: true,
-              location: true,
-            },
-          },
-          categories: {
-            include: { category: true },
-            orderBy: { isPrimary: 'desc' },
-          },
-          services: {
-            where: { isActive: true },
-            orderBy: { order: 'asc' },
-            take: 3,
-          },
-          portfolio: {
-            orderBy: { order: 'asc' },
-            take: 3,
+    const rawArtisans = await this.databaseService.artisan.findMany({
+      where,
+      include: {
+        profile: {
+          select: {
+            id: true,
+            userId: true,
+            name: true,
+            profilePhoto: true,
+            slug: true,
+            location: true,
           },
         },
-        orderBy,
-        skip,
-        take: limit,
+        categories: {
+          include: { category: true },
+          orderBy: { isPrimary: 'desc' },
+        },
+        services: {
+          where: { isActive: true },
+          orderBy: { order: 'asc' },
+          take: 3,
+        },
+        portfolio: {
+          orderBy: { order: 'asc' },
+          take: 3,
+        },
+      },
+      orderBy,
+    });
+
+    const evaluated = await Promise.all(
+      rawArtisans.map(async (artisan) => {
+        const limits = await this.subscriptionsService.getUserLimits(
+          artisan.profile.userId,
+        );
+        return {
+          artisan,
+          publiclySearchable: limits.publiclySearchable,
+          priorityRanking: limits.priorityRanking,
+        };
       }),
-      this.databaseService.artisan.count({ where }),
-    ]);
+    );
+
+    const filtered = evaluated
+      .filter((e) => e.publiclySearchable)
+      .sort((a, b) => (b.priorityRanking ? 1 : 0) - (a.priorityRanking ? 1 : 0));
+
+    const total = filtered.length;
+    const paginated = filtered.slice(skip, skip + limit).map((e) => e.artisan);
 
     return {
       success: true,
       data: {
-        artisans,
+        artisans: paginated,
         total,
         page,
         totalPages: Math.ceil(total / limit),
@@ -1184,13 +1200,14 @@ export class ArtisanService {
   }
 
   async getFeaturedArtisans(limit = 10) {
-    // Sponsored first, then by rating
-    const artisans = await this.databaseService.artisan.findMany({
+    // Priority-ranked and sponsored first, then by rating
+    const rawArtisans = await this.databaseService.artisan.findMany({
       where: { status: 'ACTIVE' },
       include: {
         profile: {
           select: {
             id: true,
+            userId: true,
             name: true,
             profilePhoto: true,
             slug: true,
@@ -1203,10 +1220,28 @@ export class ArtisanService {
         },
       },
       orderBy: [{ averageRating: 'desc' }, { totalBookings: 'desc' }],
-      take: limit,
     });
 
-    return { success: true, data: artisans };
+    const evaluated = await Promise.all(
+      rawArtisans.map(async (artisan) => {
+        const limits = await this.subscriptionsService.getUserLimits(
+          artisan.profile.userId,
+        );
+        return {
+          artisan,
+          publiclySearchable: limits.publiclySearchable,
+          priorityRanking: limits.priorityRanking,
+        };
+      }),
+    );
+
+    const filtered = evaluated
+      .filter((e) => e.publiclySearchable)
+      .sort((a, b) => (b.priorityRanking ? 1 : 0) - (a.priorityRanking ? 1 : 0))
+      .slice(0, limit)
+      .map((e) => e.artisan);
+
+    return { success: true, data: filtered };
   }
 
   async getCategoriesWithCounts() {
