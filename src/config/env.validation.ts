@@ -93,6 +93,11 @@ export class EnvironmentVariables {
   @IsString()
   DO_SPACES_REGION?: string;
 
+  // Public base URL of connect-web; used to build links in emails (e.g. CP invites).
+  @IsOptional()
+  @IsString()
+  CONNECT_WEB_URL?: string;
+
   @IsOptional()
   @IsNumber()
   PORT: number = 4990;
