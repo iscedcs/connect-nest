@@ -27,7 +27,7 @@ import { InviteStaffDto } from './dto/invite-staff.dto';
 import { UpdateStaffProfileDto } from './dto/update-staff-profile.dto';
 import { UpdateStaffStatusDto } from './dto/update-staff-status.dto';
 import { UpdateStaffRoleDto } from './dto/update-staff-role.dto';
-import { PaginateQueryDto } from '../common/dto/paginate-query.dto';
+import { ListStaffQueryDto } from './dto/list-staff-query.dto';
 
 @ApiTags('LYNCON Plus - Staff')
 @ApiBearerAuth('access-token')
@@ -37,7 +37,7 @@ export class CpStaffController {
   constructor(private readonly service: CpStaffService) {}
 
   @Post('invite')
-  @CpRoles(CpRole.WORKSPACE_ADMIN)
+  @CpRoles(CpRole.WORKSPACE_ADMIN, CpRole.CREATOR)
   @ApiOperation({ summary: 'Invite staff member' })
   @ApiResponse({ status: 201, description: 'Staff invitation sent' })
   inviteStaff(
@@ -64,7 +64,7 @@ export class CpStaffController {
   listStaff(
     @CpContext() ctx: CpRequestContext,
     
-    @Query() query: PaginateQueryDto) {
+    @Query() query: ListStaffQueryDto) {
     return this.service.listStaff(ctx, query);
   }
 

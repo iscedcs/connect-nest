@@ -34,6 +34,8 @@ export type CpStaffProfileMinAggregateOutputType = {
   photo: string | null
   jobTitle: string | null
   department: string | null
+  phone: string | null
+  bio: string | null
   staffNumber: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -50,6 +52,8 @@ export type CpStaffProfileMaxAggregateOutputType = {
   photo: string | null
   jobTitle: string | null
   department: string | null
+  phone: string | null
+  bio: string | null
   staffNumber: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -66,6 +70,8 @@ export type CpStaffProfileCountAggregateOutputType = {
   photo: number
   jobTitle: number
   department: number
+  phone: number
+  bio: number
   staffNumber: number
   createdAt: number
   updatedAt: number
@@ -84,6 +90,8 @@ export type CpStaffProfileMinAggregateInputType = {
   photo?: true
   jobTitle?: true
   department?: true
+  phone?: true
+  bio?: true
   staffNumber?: true
   createdAt?: true
   updatedAt?: true
@@ -100,6 +108,8 @@ export type CpStaffProfileMaxAggregateInputType = {
   photo?: true
   jobTitle?: true
   department?: true
+  phone?: true
+  bio?: true
   staffNumber?: true
   createdAt?: true
   updatedAt?: true
@@ -116,6 +126,8 @@ export type CpStaffProfileCountAggregateInputType = {
   photo?: true
   jobTitle?: true
   department?: true
+  phone?: true
+  bio?: true
   staffNumber?: true
   createdAt?: true
   updatedAt?: true
@@ -205,6 +217,8 @@ export type CpStaffProfileGroupByOutputType = {
   photo: string | null
   jobTitle: string | null
   department: string | null
+  phone: string | null
+  bio: string | null
   staffNumber: string | null
   createdAt: Date
   updatedAt: Date
@@ -242,6 +256,8 @@ export type CpStaffProfileWhereInput = {
   photo?: Prisma.StringNullableFilter<"CpStaffProfile"> | string | null
   jobTitle?: Prisma.StringNullableFilter<"CpStaffProfile"> | string | null
   department?: Prisma.StringNullableFilter<"CpStaffProfile"> | string | null
+  phone?: Prisma.StringNullableFilter<"CpStaffProfile"> | string | null
+  bio?: Prisma.StringNullableFilter<"CpStaffProfile"> | string | null
   staffNumber?: Prisma.StringNullableFilter<"CpStaffProfile"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CpStaffProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CpStaffProfile"> | Date | string
@@ -264,6 +280,8 @@ export type CpStaffProfileOrderByWithRelationInput = {
   photo?: Prisma.SortOrderInput | Prisma.SortOrder
   jobTitle?: Prisma.SortOrderInput | Prisma.SortOrder
   department?: Prisma.SortOrderInput | Prisma.SortOrder
+  phone?: Prisma.SortOrderInput | Prisma.SortOrder
+  bio?: Prisma.SortOrderInput | Prisma.SortOrder
   staffNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -289,6 +307,8 @@ export type CpStaffProfileWhereUniqueInput = Prisma.AtLeast<{
   photo?: Prisma.StringNullableFilter<"CpStaffProfile"> | string | null
   jobTitle?: Prisma.StringNullableFilter<"CpStaffProfile"> | string | null
   department?: Prisma.StringNullableFilter<"CpStaffProfile"> | string | null
+  phone?: Prisma.StringNullableFilter<"CpStaffProfile"> | string | null
+  bio?: Prisma.StringNullableFilter<"CpStaffProfile"> | string | null
   staffNumber?: Prisma.StringNullableFilter<"CpStaffProfile"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CpStaffProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CpStaffProfile"> | Date | string
@@ -311,6 +331,8 @@ export type CpStaffProfileOrderByWithAggregationInput = {
   photo?: Prisma.SortOrderInput | Prisma.SortOrder
   jobTitle?: Prisma.SortOrderInput | Prisma.SortOrder
   department?: Prisma.SortOrderInput | Prisma.SortOrder
+  phone?: Prisma.SortOrderInput | Prisma.SortOrder
+  bio?: Prisma.SortOrderInput | Prisma.SortOrder
   staffNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -333,6 +355,8 @@ export type CpStaffProfileScalarWhereWithAggregatesInput = {
   photo?: Prisma.StringNullableWithAggregatesFilter<"CpStaffProfile"> | string | null
   jobTitle?: Prisma.StringNullableWithAggregatesFilter<"CpStaffProfile"> | string | null
   department?: Prisma.StringNullableWithAggregatesFilter<"CpStaffProfile"> | string | null
+  phone?: Prisma.StringNullableWithAggregatesFilter<"CpStaffProfile"> | string | null
+  bio?: Prisma.StringNullableWithAggregatesFilter<"CpStaffProfile"> | string | null
   staffNumber?: Prisma.StringNullableWithAggregatesFilter<"CpStaffProfile"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"CpStaffProfile"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"CpStaffProfile"> | Date | string
@@ -348,6 +372,8 @@ export type CpStaffProfileCreateInput = {
   photo?: string | null
   jobTitle?: string | null
   department?: string | null
+  phone?: string | null
+  bio?: string | null
   staffNumber?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -370,6 +396,8 @@ export type CpStaffProfileUncheckedCreateInput = {
   photo?: string | null
   jobTitle?: string | null
   department?: string | null
+  phone?: string | null
+  bio?: string | null
   staffNumber?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -390,6 +418,8 @@ export type CpStaffProfileUpdateInput = {
   photo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   staffNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -412,6 +442,8 @@ export type CpStaffProfileUncheckedUpdateInput = {
   photo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   staffNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -433,6 +465,8 @@ export type CpStaffProfileCreateManyInput = {
   photo?: string | null
   jobTitle?: string | null
   department?: string | null
+  phone?: string | null
+  bio?: string | null
   staffNumber?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -448,6 +482,8 @@ export type CpStaffProfileUpdateManyMutationInput = {
   photo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   staffNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -464,6 +500,8 @@ export type CpStaffProfileUncheckedUpdateManyInput = {
   photo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   staffNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -485,6 +523,8 @@ export type CpStaffProfileCountOrderByAggregateInput = {
   photo?: Prisma.SortOrder
   jobTitle?: Prisma.SortOrder
   department?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
+  bio?: Prisma.SortOrder
   staffNumber?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -501,6 +541,8 @@ export type CpStaffProfileMaxOrderByAggregateInput = {
   photo?: Prisma.SortOrder
   jobTitle?: Prisma.SortOrder
   department?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
+  bio?: Prisma.SortOrder
   staffNumber?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -517,6 +559,8 @@ export type CpStaffProfileMinOrderByAggregateInput = {
   photo?: Prisma.SortOrder
   jobTitle?: Prisma.SortOrder
   department?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
+  bio?: Prisma.SortOrder
   staffNumber?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -647,6 +691,8 @@ export type CpStaffProfileCreateWithoutMemberInput = {
   photo?: string | null
   jobTitle?: string | null
   department?: string | null
+  phone?: string | null
+  bio?: string | null
   staffNumber?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -667,6 +713,8 @@ export type CpStaffProfileUncheckedCreateWithoutMemberInput = {
   photo?: string | null
   jobTitle?: string | null
   department?: string | null
+  phone?: string | null
+  bio?: string | null
   staffNumber?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -703,6 +751,8 @@ export type CpStaffProfileUpdateWithoutMemberInput = {
   photo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   staffNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -723,6 +773,8 @@ export type CpStaffProfileUncheckedUpdateWithoutMemberInput = {
   photo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   staffNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -743,6 +795,8 @@ export type CpStaffProfileCreateWithoutConnectCardInput = {
   photo?: string | null
   jobTitle?: string | null
   department?: string | null
+  phone?: string | null
+  bio?: string | null
   staffNumber?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -764,6 +818,8 @@ export type CpStaffProfileUncheckedCreateWithoutConnectCardInput = {
   photo?: string | null
   jobTitle?: string | null
   department?: string | null
+  phone?: string | null
+  bio?: string | null
   staffNumber?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -799,6 +855,8 @@ export type CpStaffProfileUpdateWithoutConnectCardInput = {
   photo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   staffNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -820,6 +878,8 @@ export type CpStaffProfileUncheckedUpdateWithoutConnectCardInput = {
   photo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   staffNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -839,6 +899,8 @@ export type CpStaffProfileCreateWithoutClientsInput = {
   photo?: string | null
   jobTitle?: string | null
   department?: string | null
+  phone?: string | null
+  bio?: string | null
   staffNumber?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -860,6 +922,8 @@ export type CpStaffProfileUncheckedCreateWithoutClientsInput = {
   photo?: string | null
   jobTitle?: string | null
   department?: string | null
+  phone?: string | null
+  bio?: string | null
   staffNumber?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -895,6 +959,8 @@ export type CpStaffProfileUpdateWithoutClientsInput = {
   photo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   staffNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -916,6 +982,8 @@ export type CpStaffProfileUncheckedUpdateWithoutClientsInput = {
   photo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   staffNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -935,6 +1003,8 @@ export type CpStaffProfileCreateWithoutAppointmentsInput = {
   photo?: string | null
   jobTitle?: string | null
   department?: string | null
+  phone?: string | null
+  bio?: string | null
   staffNumber?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -956,6 +1026,8 @@ export type CpStaffProfileUncheckedCreateWithoutAppointmentsInput = {
   photo?: string | null
   jobTitle?: string | null
   department?: string | null
+  phone?: string | null
+  bio?: string | null
   staffNumber?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -991,6 +1063,8 @@ export type CpStaffProfileUpdateWithoutAppointmentsInput = {
   photo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   staffNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1012,6 +1086,8 @@ export type CpStaffProfileUncheckedUpdateWithoutAppointmentsInput = {
   photo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   staffNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1031,6 +1107,8 @@ export type CpStaffProfileCreateWithoutAttendanceInput = {
   photo?: string | null
   jobTitle?: string | null
   department?: string | null
+  phone?: string | null
+  bio?: string | null
   staffNumber?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1052,6 +1130,8 @@ export type CpStaffProfileUncheckedCreateWithoutAttendanceInput = {
   photo?: string | null
   jobTitle?: string | null
   department?: string | null
+  phone?: string | null
+  bio?: string | null
   staffNumber?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1087,6 +1167,8 @@ export type CpStaffProfileUpdateWithoutAttendanceInput = {
   photo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   staffNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1108,6 +1190,8 @@ export type CpStaffProfileUncheckedUpdateWithoutAttendanceInput = {
   photo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   staffNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1127,6 +1211,8 @@ export type CpStaffProfileCreateWithoutInvoicesInput = {
   photo?: string | null
   jobTitle?: string | null
   department?: string | null
+  phone?: string | null
+  bio?: string | null
   staffNumber?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1148,6 +1234,8 @@ export type CpStaffProfileUncheckedCreateWithoutInvoicesInput = {
   photo?: string | null
   jobTitle?: string | null
   department?: string | null
+  phone?: string | null
+  bio?: string | null
   staffNumber?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1183,6 +1271,8 @@ export type CpStaffProfileUpdateWithoutInvoicesInput = {
   photo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   staffNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1204,6 +1294,8 @@ export type CpStaffProfileUncheckedUpdateWithoutInvoicesInput = {
   photo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   staffNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1282,6 +1374,8 @@ export type CpStaffProfileSelect<ExtArgs extends runtime.Types.Extensions.Intern
   photo?: boolean
   jobTitle?: boolean
   department?: boolean
+  phone?: boolean
+  bio?: boolean
   staffNumber?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1305,6 +1399,8 @@ export type CpStaffProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   photo?: boolean
   jobTitle?: boolean
   department?: boolean
+  phone?: boolean
+  bio?: boolean
   staffNumber?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1322,6 +1418,8 @@ export type CpStaffProfileSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   photo?: boolean
   jobTitle?: boolean
   department?: boolean
+  phone?: boolean
+  bio?: boolean
   staffNumber?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1339,13 +1437,15 @@ export type CpStaffProfileSelectScalar = {
   photo?: boolean
   jobTitle?: boolean
   department?: boolean
+  phone?: boolean
+  bio?: boolean
   staffNumber?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
 }
 
-export type CpStaffProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "memberId" | "authUserId" | "name" | "email" | "photo" | "jobTitle" | "department" | "staffNumber" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["cpStaffProfile"]>
+export type CpStaffProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "memberId" | "authUserId" | "name" | "email" | "photo" | "jobTitle" | "department" | "phone" | "bio" | "staffNumber" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["cpStaffProfile"]>
 export type CpStaffProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   member?: boolean | Prisma.CpWorkspaceMemberDefaultArgs<ExtArgs>
   connectCard?: boolean | Prisma.CpStaffProfile$connectCardArgs<ExtArgs>
@@ -1382,6 +1482,8 @@ export type $CpStaffProfilePayload<ExtArgs extends runtime.Types.Extensions.Inte
     photo: string | null
     jobTitle: string | null
     department: string | null
+    phone: string | null
+    bio: string | null
     staffNumber: string | null
     createdAt: Date
     updatedAt: Date
@@ -1824,6 +1926,8 @@ export interface CpStaffProfileFieldRefs {
   readonly photo: Prisma.FieldRef<"CpStaffProfile", 'String'>
   readonly jobTitle: Prisma.FieldRef<"CpStaffProfile", 'String'>
   readonly department: Prisma.FieldRef<"CpStaffProfile", 'String'>
+  readonly phone: Prisma.FieldRef<"CpStaffProfile", 'String'>
+  readonly bio: Prisma.FieldRef<"CpStaffProfile", 'String'>
   readonly staffNumber: Prisma.FieldRef<"CpStaffProfile", 'String'>
   readonly createdAt: Prisma.FieldRef<"CpStaffProfile", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"CpStaffProfile", 'DateTime'>

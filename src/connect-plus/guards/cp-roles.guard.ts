@@ -33,7 +33,15 @@ export class CpRolesGuard implements CanActivate {
       throw new ForbiddenException('Workspace context not resolved');
     }
 
-    if (!requiredRoles.includes(cpCtx.role)) {
+    // The organization owner is a workspace admin by default: a route open to
+    // WORKSPACE_ADMIN is open to CREATOR too. Routes that list only CREATOR,
+    // STAFF or CLIENT are unaffected.
+    const allowed =
+      requiredRoles.includes(cpCtx.role) ||
+      (cpCtx.role === CpRole.CREATOR &&
+        requiredRoles.includes(CpRole.WORKSPACE_ADMIN));
+
+    if (!allowed) {
       throw new ForbiddenException('Insufficient role');
     }
 

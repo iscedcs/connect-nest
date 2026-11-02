@@ -828,6 +828,8 @@ export const CpStaffProfileScalarFieldEnum = {
   photo: 'photo',
   jobTitle: 'jobTitle',
   department: 'department',
+  phone: 'phone',
+  bio: 'bio',
   staffNumber: 'staffNumber',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
