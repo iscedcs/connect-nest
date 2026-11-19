@@ -29,8 +29,11 @@ export class EmailService {
 
   constructor() {
     const apiKey = process.env.RESEND_API_KEY;
+    // Send from the already-verified isce.app domain (SPF/DKIM/DMARC in place).
+    // The LYNCON rebrand changes the display name only — moving the sending domain
+    // to lyncon.app needs its DNS records verified in Resend first.
     this.fromAddress =
-      process.env.RESEND_FROM_EMAIL || 'LYNCON <notifications@lyncon.app>';
+      process.env.RESEND_FROM_EMAIL || 'LYNCON <lyncon@isce.app>';
     this.appUrl = process.env.APP_URL || 'https://connect.isce.app';
 
     if (apiKey) {
@@ -157,8 +160,12 @@ export class EmailService {
   private buildSubscriptionLaunchHtml(
     options: SendSubscriptionLaunchOptions,
   ): string {
-    const { recipientName, trialMonths = 6, trialEndDate, dashboardUrl } =
-      options;
+    const {
+      recipientName,
+      trialMonths = 6,
+      trialEndDate,
+      dashboardUrl,
+    } = options;
     const greeting = recipientName ? `Hi ${recipientName},` : 'Hello,';
     const targetUrl = dashboardUrl || `${this.appUrl}/subscriptions`;
 
@@ -285,12 +292,15 @@ export class EmailService {
       SUBSCRIPTION_CANCELLED: '🚫',
       SUBSCRIPTION_PAST_DUE: '⚠️',
       SUBSCRIPTION_LAUNCH_ANNOUNCEMENT: '🚀',
+      SUBSCRIPTION_RENEWAL_REMINDER: '🔁',
+      SUBSCRIPTION_RENEWAL_FAILED: '⚠️',
     };
     return map[type] || '🔔';
   }
 
   private getCategoryLabel(type: NotificationType): string {
-    if (type === 'SUBSCRIPTION_LAUNCH_ANNOUNCEMENT') return 'Special Announcement';
+    if (type === 'SUBSCRIPTION_LAUNCH_ANNOUNCEMENT')
+      return 'Special Announcement';
     if (type.startsWith('SUBSCRIPTION_')) return 'Subscription';
     if (type.startsWith('THREAD_') || type.startsWith('BOOKING_'))
       return 'Bookings & Threads';

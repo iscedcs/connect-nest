@@ -257,6 +257,7 @@ export type PaymentRecordOrderByWithRelationInput = {
 
 export type PaymentRecordWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  gatewayRef?: string
   AND?: Prisma.PaymentRecordWhereInput | Prisma.PaymentRecordWhereInput[]
   OR?: Prisma.PaymentRecordWhereInput[]
   NOT?: Prisma.PaymentRecordWhereInput | Prisma.PaymentRecordWhereInput[]
@@ -264,11 +265,10 @@ export type PaymentRecordWhereUniqueInput = Prisma.AtLeast<{
   amount?: Prisma.IntFilter<"PaymentRecord"> | number
   currency?: Prisma.StringFilter<"PaymentRecord"> | string
   status?: Prisma.StringFilter<"PaymentRecord"> | string
-  gatewayRef?: Prisma.StringNullableFilter<"PaymentRecord"> | string | null
   paidAt?: Prisma.DateTimeNullableFilter<"PaymentRecord"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"PaymentRecord"> | Date | string
   subscription?: Prisma.XOR<Prisma.SubscriptionScalarRelationFilter, Prisma.SubscriptionWhereInput>
-}, "id">
+}, "id" | "gatewayRef">
 
 export type PaymentRecordOrderByWithAggregationInput = {
   id?: Prisma.SortOrder

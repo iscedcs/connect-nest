@@ -233,6 +233,7 @@ export class CpLeadsService {
       void this.isceAuth.sendClientInvite({
         email: lead.email,
         token: rawToken,
+        workspaceId,
         clientId: result.client.id,
       });
     }

@@ -10,12 +10,18 @@ import { PaystackGatewayProvider } from './gateways/paystack.provider';
 import { PaydestalGatewayProvider } from './gateways/paydestal.provider';
 import { PaymentGatewayFactory } from './gateways/payment-gateway.factory';
 import { SubscriptionBroadcastService } from './subscription-broadcast.service';
+import { SubscriptionPaymentsService } from './subscription-payments.service';
+import { SubscriptionRenewalService } from './subscription-renewal.service';
+import { WalletNestClient } from './gateways/wallet-nest.client';
 
 @Module({
   imports: [DatabaseModule, NotificationModule, AuthModule],
   controllers: [SubscriptionsController, PaymentWebhookController],
   providers: [
     SubscriptionsService,
+    SubscriptionPaymentsService,
+    SubscriptionRenewalService,
+    WalletNestClient,
     SubscriptionBroadcastService,
     PlanLimitGuard,
     PaystackGatewayProvider,
@@ -32,4 +38,3 @@ import { SubscriptionBroadcastService } from './subscription-broadcast.service';
   ],
 })
 export class SubscriptionsModule {}
-

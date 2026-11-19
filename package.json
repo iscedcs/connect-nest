@@ -7,6 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
+    "heroku-postbuild": "yarn build && yarn prisma:check-drift",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "set NODE_ENV=production && node dist/src/main.js",
     "start:dev": "nest start --watch",
@@ -26,6 +27,7 @@
     "prisma:migrate": "prisma migrate deploy",
     "prisma:migrate:dev": "prisma migrate dev",
     "prisma:migrate:status": "prisma migrate status",
+    "prisma:check-drift": "node scripts/check-schema-drift.mjs",
     "seed": "ts-node prisma/seed.ts",
     "seed:plans": "ts-node prisma/seed.ts"
   },

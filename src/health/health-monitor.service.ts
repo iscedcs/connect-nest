@@ -6,6 +6,10 @@ import { HealthDependency, HealthIncidentStatus } from '../generated/prisma/clie
 const FAILURE_THRESHOLD = 1;
 const COOLDOWN_MS = 30 * 60 * 1000; // 30 minutes
 
+function describe(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
 @Injectable()
 export class HealthMonitorService {
   private readonly logger = new Logger(HealthMonitorService.name);
@@ -26,18 +30,40 @@ export class HealthMonitorService {
     return FAILURE_THRESHOLD;
   }
 
+  /**
+   * Never rejects. Callers invoke this fire-and-forget from the public /health
+   * route, where an escaping rejection would terminate the process.
+   */
   async checkHealth() {
-    await this.checkPostgres();
+    try {
+      await this.checkPostgres();
+    } catch (error) {
+      this.logger.error(
+        `Health monitoring itself failed (the dependency may be fine): ${describe(error)}`,
+      );
+    }
   }
 
   private async checkPostgres() {
     const dependency = HealthDependency.POSTGRES;
+    let probeError: string | null = null;
+
     try {
       await this.db.$queryRaw`SELECT 1`;
-      await this.handleSuccess(dependency);
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      await this.handleFailure(dependency, message);
+      probeError = describe(error);
+    }
+
+    // Incident bookkeeping sits outside the probe's try/catch on purpose.
+    // Previously handleSuccess ran inside it, so a failure to *record* an
+    // incident was reported as the dependency being down — which then called
+    // triggerAlert, which touched the same broken table again and threw for
+    // real. One missing table became a false POSTGRES outage, an alert email,
+    // and a dead process.
+    if (probeError === null) {
+      await this.handleSuccess(dependency);
+    } else {
+      await this.handleFailure(dependency, probeError);
     }
   }
 

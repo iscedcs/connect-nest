@@ -24,6 +24,7 @@ export class FilesService {
   private readonly logger = new Logger(FilesService.name);
   private readonly spacesClient: S3Client | null = null;
   private readonly bucket: string;
+  private readonly publicBase: string;
 
   constructor(
     private readonly databaseService: DatabaseService,
@@ -34,6 +35,13 @@ export class FilesService {
     const accessKeyId = process.env.DO_SPACES_KEY || process.env.AWS_ACCESS_KEY_ID;
     const secretAccessKey = process.env.DO_SPACES_SECRET || process.env.AWS_SECRET_ACCESS_KEY;
     this.bucket = process.env.DO_SPACES_BUCKET || process.env.AWS_S3_BUCKET || 'isce-connect-files';
+
+    // The region used to be hardcoded here, which meant a Space in any other
+    // region uploaded fine and then handed back a URL that did not resolve.
+    // DO_SPACES_PUBLIC_BASE wins so a CDN endpoint can be put in front.
+    this.publicBase =
+      process.env.DO_SPACES_PUBLIC_BASE?.replace(/\/+$/, '') ||
+      `https://${this.bucket}.${region}.digitaloceanspaces.com`;
 
     if (accessKeyId && secretAccessKey) {
       this.spacesClient = new S3Client({
@@ -99,10 +107,10 @@ export class FilesService {
           expiresIn: expiresSeconds,
         });
       } else {
-        uploadUrl = `https://${this.bucket}.nyc3.digitaloceanspaces.com/${storageKey}?mock_signature=true`;
+        uploadUrl = `${this.publicBase}/${storageKey}?mock_signature=true`;
       }
 
-      const publicUrl = `https://${this.bucket}.nyc3.digitaloceanspaces.com/${storageKey}`;
+      const publicUrl = `${this.publicBase}/${storageKey}`;
       const expiresAt = new Date(Date.now() + expiresSeconds * 1000).toISOString();
 
       return {

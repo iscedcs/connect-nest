@@ -1,4 +1,9 @@
-import { Injectable, Logger, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  BadRequestException,
+  BadGatewayException,
+} from '@nestjs/common';
 import * as crypto from 'crypto';
 import {
   PaymentGatewayProvider,
@@ -7,6 +12,7 @@ import {
   WebhookResult,
 } from './payment-gateway.interface';
 import { PlanTier } from '../../generated/prisma/client';
+import { CHECKOUT_KINDS, CheckoutKind } from '../subscriptions.service';
 
 @Injectable()
 export class PaystackGatewayProvider implements PaymentGatewayProvider {
@@ -14,25 +20,41 @@ export class PaystackGatewayProvider implements PaymentGatewayProvider {
   private readonly logger = new Logger(PaystackGatewayProvider.name);
   private readonly secretKey: string;
   private readonly baseUrl = 'https://api.paystack.co';
+  private readonly walletApiUrl: string;
+  private readonly internalKey: string;
 
   constructor() {
+    // Only chargeRecurring and the direct webhook route still use the key;
+    // checkout goes through wallet-nest, which holds it.
     this.secretKey = process.env.PAYSTACK_SECRET_KEY || '';
-    if (!this.secretKey) {
-      this.logger.warn('PAYSTACK_SECRET_KEY is not set');
-    }
+    this.walletApiUrl = (process.env.WALLET_API_URL || '').replace(/\/+$/, '');
+    this.internalKey = process.env.INTERNAL_API_KEY || '';
   }
 
-  async initiateCheckout(params: InitiateCheckoutParams): Promise<CheckoutResult> {
-    if (!this.secretKey) {
-      throw new BadRequestException('Paystack gateway is not configured');
+  /**
+   * wallet-nest creates the charge: it holds the Paystack key and owns the only
+   * webhook Paystack can deliver to. The charge is tagged service=connect, so
+   * wallet-nest forwards its charge.success to
+   * POST /api/subscriptions/webhooks/internal/paystack-event. The payer needs no wallet.
+   */
+  async initiateCheckout(
+    params: InitiateCheckoutParams,
+  ): Promise<CheckoutResult> {
+    if (!this.walletApiUrl || !this.internalKey) {
+      throw new BadRequestException(
+        'Card payments are not configured (WALLET_API_URL / INTERNAL_API_KEY)',
+      );
     }
 
     const reference = `SUB_${params.planKey}_${params.userId}_${Date.now()}`;
     const payload = {
+      service: 'connect',
       email: params.email,
-      amount: params.amountKobo,
+      amountKobo: params.amountKobo,
       reference,
-      callback_url: params.callbackUrl,
+      callbackUrl: params.callbackUrl,
+      // wallet-nest keeps the card and forwards only its id and label.
+      ...(params.saveCard && { saveCardFor: params.userId }),
       metadata: {
         userId: params.userId,
         planKey: params.planKey,
@@ -52,35 +74,38 @@ export class PaystackGatewayProvider implements PaymentGatewayProvider {
       },
     };
 
+    let response: Response;
     try {
-      const response = await fetch(`${this.baseUrl}/transaction/initialize`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${this.secretKey}`,
-          'Content-Type': 'application/json',
+      response = await fetch(
+        `${this.walletApiUrl}/api/internal/paystack/initialize`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Internal-Secret': this.internalKey,
+          },
+          body: JSON.stringify(payload),
+          signal: AbortSignal.timeout(15000),
         },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json();
-      if (!response.ok || !data.status) {
-        this.logger.error(`Paystack initialize error: ${JSON.stringify(data)}`);
-        throw new BadRequestException(
-          data.message || 'Failed to initialize Paystack transaction',
-        );
-      }
-
-      return {
-        checkoutUrl: data.data.authorization_url,
-        reference: data.data.reference || reference,
-        accessCode: data.data.access_code,
-      };
-    } catch (error) {
-      this.logger.error(`Paystack request error: ${error.message}`);
-      throw new BadRequestException(
-        `Paystack checkout initialization failed: ${error.message}`,
       );
+    } catch (error) {
+      this.logger.error(`wallet-nest checkout unreachable: ${error.message}`);
+      throw new BadGatewayException('Could not start the card payment');
     }
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data?.status || !data?.data?.authorization_url) {
+      this.logger.error(
+        `wallet-nest checkout failed | status=${response.status} | ref=${reference} | ${JSON.stringify(data)}`,
+      );
+      throw new BadGatewayException('Could not start the card payment');
+    }
+
+    return {
+      checkoutUrl: data.data.authorization_url,
+      reference: data.data.reference || reference,
+      accessCode: data.data.access_code,
+    };
   }
 
   async chargeRecurring(params: {
@@ -95,7 +120,8 @@ export class PaystackGatewayProvider implements PaymentGatewayProvider {
     }
 
     const reference =
-      params.reference || `REC_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+      params.reference ||
+      `REC_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
     const payload = {
       email: params.email,
       amount: params.amountKobo,
@@ -105,18 +131,23 @@ export class PaystackGatewayProvider implements PaymentGatewayProvider {
     };
 
     try {
-      const response = await fetch(`${this.baseUrl}/transaction/charge_authorization`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${this.secretKey}`,
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `${this.baseUrl}/transaction/charge_authorization`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${this.secretKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
         },
-        body: JSON.stringify(payload),
-      });
+      );
 
       const data = await response.json();
       if (!response.ok || !data.status) {
-        this.logger.error(`Paystack charge_authorization error: ${JSON.stringify(data)}`);
+        this.logger.error(
+          `Paystack charge_authorization error: ${JSON.stringify(data)}`,
+        );
         return {
           success: false,
           reference,
@@ -143,7 +174,8 @@ export class PaystackGatewayProvider implements PaymentGatewayProvider {
 
   verifyWebhookSignature(rawBody: string | Buffer, signature: string): boolean {
     if (!this.secretKey || !signature) return false;
-    const bodyStr = typeof rawBody === 'string' ? rawBody : rawBody.toString('utf8');
+    const bodyStr =
+      typeof rawBody === 'string' ? rawBody : rawBody.toString('utf8');
     const hash = crypto
       .createHmac('sha512', this.secretKey)
       .update(bodyStr)
@@ -162,7 +194,8 @@ export class PaystackGatewayProvider implements PaymentGatewayProvider {
 
     const data = event.data;
     const userId = data?.metadata?.userId || data?.metadata?.user_id;
-    const planKey = (data?.metadata?.planKey || data?.metadata?.plan_key) as PlanTier;
+    const planKey = (data?.metadata?.planKey ||
+      data?.metadata?.plan_key) as PlanTier;
     const reference = data?.reference;
     const amountKobo = data?.amount;
     const customerCode = data?.customer?.customer_code;
@@ -174,6 +207,13 @@ export class PaystackGatewayProvider implements PaymentGatewayProvider {
       return null;
     }
 
+    // Set by initiate-payment and the renewal job; absent on older checkouts,
+    // which were always full-price.
+    const kind = data?.metadata?.checkoutKind;
+    const checkoutKind: CheckoutKind = CHECKOUT_KINDS.includes(kind)
+      ? kind
+      : 'full';
+
     return {
       success: true,
       userId,
@@ -181,6 +221,12 @@ export class PaystackGatewayProvider implements PaymentGatewayProvider {
       reference,
       amountKobo,
       gatewayCustomerId: customerCode,
+      checkoutKind,
+      fromPlanKey: data?.metadata?.fromPlanKey as PlanTier | undefined,
+      pricedPeriodEnd: (data?.metadata?.anchor ?? data?.metadata?.renewsAt) as
+        string | undefined,
+      autoRenew: data?.metadata?.autoRenew === true,
+      paymentMethod: 'CARD',
       rawEvent: event,
     };
   }

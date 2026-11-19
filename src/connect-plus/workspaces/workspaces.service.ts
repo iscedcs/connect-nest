@@ -341,6 +341,7 @@ export class CpWorkspacesService {
       email: dto.email,
       token: rawToken,
       role: CpRole.WORKSPACE_ADMIN,
+      workspaceId: workspace.id,
       workspaceName: companyProfile?.name ?? workspace.name,
       inviterName: ctx.authUserId,
     });

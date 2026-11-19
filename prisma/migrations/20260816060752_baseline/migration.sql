@@ -1,3 +1,4 @@
+
 -- CreateSchema
 CREATE SCHEMA IF NOT EXISTS "public";
 
@@ -5,7 +6,7 @@ CREATE SCHEMA IF NOT EXISTS "public";
 CREATE TYPE "ContactStatus" AS ENUM ('PENDING', 'ACCEPTED');
 
 -- CreateEnum
-CREATE TYPE "NotificationType" AS ENUM ('CARD_INTERACTION', 'CONTACT_SHARED', 'WALLET_UPDATE', 'WALLET_FUNDED', 'WALLET_TRANSFER', 'CONTACT_SAVED', 'MEETING_REQUEST', 'APPOINTMENT_BOOKED', 'ARTISAN_ACTIVATED', 'ARTISAN_SUSPENDED', 'BOOKING_RECEIVED', 'BOOKING_CONFIRMED', 'BOOKING_CANCELLED', 'BOOKING_COMPLETED', 'REVIEW_RECEIVED', 'PROMOTION_STARTED', 'PROMOTION_EXPIRED', 'THREAD_NEW_INQUIRY', 'THREAD_NEW_MESSAGE', 'THREAD_PROPOSAL_RECEIVED', 'THREAD_PROPOSAL_ACCEPTED', 'THREAD_PROPOSAL_DECLINED', 'PAYMENT_SENT_CONFIRMED', 'PAYMENT_RECEIVED_CONFIRMED', 'PAYMENT_DISPUTED', 'SUBSCRIPTION_TRIAL_EXPIRED', 'SUBSCRIPTION_ACTIVATED', 'SUBSCRIPTION_CANCELLED', 'SUBSCRIPTION_PAST_DUE', 'SUBSCRIPTION_LAUNCH_ANNOUNCEMENT');
+CREATE TYPE "NotificationType" AS ENUM ('CARD_INTERACTION', 'CONTACT_SHARED', 'WALLET_UPDATE', 'WALLET_FUNDED', 'WALLET_TRANSFER', 'CONTACT_SAVED', 'MEETING_REQUEST', 'APPOINTMENT_BOOKED', 'ARTISAN_ACTIVATED', 'ARTISAN_SUSPENDED', 'BOOKING_RECEIVED', 'BOOKING_CONFIRMED', 'BOOKING_CANCELLED', 'BOOKING_COMPLETED', 'REVIEW_RECEIVED', 'PROMOTION_STARTED', 'PROMOTION_EXPIRED', 'THREAD_NEW_INQUIRY', 'THREAD_NEW_MESSAGE', 'THREAD_PROPOSAL_RECEIVED', 'THREAD_PROPOSAL_ACCEPTED', 'THREAD_PROPOSAL_DECLINED', 'PAYMENT_SENT_CONFIRMED', 'PAYMENT_RECEIVED_CONFIRMED', 'PAYMENT_DISPUTED');
 
 -- CreateEnum
 CREATE TYPE "InviteStatus" AS ENUM ('PENDING', 'ACCEPTED', 'DECLINED');
@@ -45,12 +46,6 @@ CREATE TYPE "PaymentTiming" AS ENUM ('UPFRONT', 'ON_COMPLETION');
 
 -- CreateEnum
 CREATE TYPE "PaymentDisputedBy" AS ENUM ('CLIENT', 'ARTISAN');
-
--- CreateEnum
-CREATE TYPE "SubscriptionStatus" AS ENUM ('TRIALING', 'ACTIVE', 'PAST_DUE', 'CANCELLED', 'EXPIRED');
-
--- CreateEnum
-CREATE TYPE "PlanTier" AS ENUM ('FREE', 'PRO_LITE', 'PRO_PLUS');
 
 -- CreateEnum
 CREATE TYPE "CpOrgStatus" AS ENUM ('ACTIVE', 'SUSPENDED', 'ARCHIVED');
@@ -630,55 +625,6 @@ CREATE TABLE "PlatformSetting" (
 );
 
 -- CreateTable
-CREATE TABLE "Plan" (
-    "id" TEXT NOT NULL,
-    "key" "PlanTier" NOT NULL,
-    "name" TEXT NOT NULL,
-    "priceMonthly" INTEGER NOT NULL,
-    "isActive" BOOLEAN NOT NULL DEFAULT true,
-    "limits" JSONB,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "Plan_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Subscription" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-    "planId" TEXT NOT NULL,
-    "status" "SubscriptionStatus" NOT NULL DEFAULT 'TRIALING',
-    "trialStartDate" TIMESTAMP(3),
-    "trialEndDate" TIMESTAMP(3),
-    "trialUsed" BOOLEAN NOT NULL DEFAULT false,
-    "currentPeriodStart" TIMESTAMP(3),
-    "currentPeriodEnd" TIMESTAMP(3),
-    "cancelledAt" TIMESTAMP(3),
-    "gatewayCustomerId" TEXT,
-    "gatewaySubId" TEXT,
-    "notifiedLaunch" BOOLEAN NOT NULL DEFAULT false,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "Subscription_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "PaymentRecord" (
-    "id" TEXT NOT NULL,
-    "subscriptionId" TEXT NOT NULL,
-    "amount" INTEGER NOT NULL,
-    "currency" TEXT NOT NULL DEFAULT 'NGN',
-    "status" TEXT NOT NULL,
-    "gatewayRef" TEXT,
-    "paidAt" TIMESTAMP(3),
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "PaymentRecord_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "CpOrganization" (
     "id" TEXT NOT NULL,
     "creatorAuthId" TEXT NOT NULL,
@@ -698,11 +644,7 @@ CREATE TABLE "CpSubscription" (
     "id" TEXT NOT NULL,
     "organizationId" TEXT NOT NULL,
     "plan" "CpSubscriptionPlan" NOT NULL DEFAULT 'FREE',
-    "status" "CpSubscriptionStatus" NOT NULL DEFAULT 'TRIALING',
-    "trialStartsAt" TIMESTAMP(3),
-    "trialEndsAt" TIMESTAMP(3),
-    "trialUsed" BOOLEAN NOT NULL DEFAULT false,
-    "targetPlan" "CpSubscriptionPlan",
+    "status" "CpSubscriptionStatus" NOT NULL DEFAULT 'ACTIVE',
     "paystackSubCode" TEXT,
     "paystackCustomerCode" TEXT,
     "currentPeriodStart" TIMESTAMP(3),
@@ -712,20 +654,6 @@ CREATE TABLE "CpSubscription" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "CpSubscription_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "CpPlan" (
-    "id" TEXT NOT NULL,
-    "key" "CpSubscriptionPlan" NOT NULL,
-    "name" TEXT NOT NULL,
-    "priceMonthly" INTEGER NOT NULL DEFAULT 0,
-    "isActive" BOOLEAN NOT NULL DEFAULT true,
-    "limits" JSONB NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "CpPlan_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -1105,20 +1033,6 @@ CREATE TABLE "HealthIncident" (
     CONSTRAINT "HealthIncident_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
-CREATE TABLE "SystemConfig" (
-    "id" TEXT NOT NULL DEFAULT 'default',
-    "personalSubscriptionsEnabled" BOOLEAN NOT NULL DEFAULT true,
-    "connectPlusSubscriptionsEnabled" BOOLEAN NOT NULL DEFAULT true,
-    "bypassMode" TEXT NOT NULL DEFAULT 'OPEN_ACCESS',
-    "maintenanceReason" TEXT,
-    "updatedBy" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "SystemConfig_pkey" PRIMARY KEY ("id")
-);
-
 -- CreateIndex
 CREATE UNIQUE INDEX "Profile_slug_key" ON "Profile"("slug");
 
@@ -1243,27 +1157,6 @@ CREATE INDEX "Promotion_type_status_idx" ON "Promotion"("type", "status");
 CREATE INDEX "Promotion_endsAt_idx" ON "Promotion"("endsAt");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Plan_key_key" ON "Plan"("key");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Subscription_userId_key" ON "Subscription"("userId");
-
--- CreateIndex
-CREATE INDEX "Subscription_userId_idx" ON "Subscription"("userId");
-
--- CreateIndex
-CREATE INDEX "Subscription_status_idx" ON "Subscription"("status");
-
--- CreateIndex
-CREATE INDEX "Subscription_trialEndDate_idx" ON "Subscription"("trialEndDate");
-
--- CreateIndex
-CREATE INDEX "Subscription_currentPeriodEnd_idx" ON "Subscription"("currentPeriodEnd");
-
--- CreateIndex
-CREATE INDEX "PaymentRecord_subscriptionId_idx" ON "PaymentRecord"("subscriptionId");
-
--- CreateIndex
 CREATE UNIQUE INDEX "CpOrganization_slug_key" ON "CpOrganization"("slug");
 
 -- CreateIndex
@@ -1274,15 +1167,6 @@ CREATE UNIQUE INDEX "CpSubscription_organizationId_key" ON "CpSubscription"("org
 
 -- CreateIndex
 CREATE INDEX "CpSubscription_organizationId_idx" ON "CpSubscription"("organizationId");
-
--- CreateIndex
-CREATE INDEX "CpSubscription_status_idx" ON "CpSubscription"("status");
-
--- CreateIndex
-CREATE INDEX "CpSubscription_trialEndsAt_idx" ON "CpSubscription"("trialEndsAt");
-
--- CreateIndex
-CREATE UNIQUE INDEX "CpPlan_key_key" ON "CpPlan"("key");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "CpWorkspace_slug_key" ON "CpWorkspace"("slug");
@@ -1540,12 +1424,6 @@ ALTER TABLE "Review" ADD CONSTRAINT "Review_bookingId_fkey" FOREIGN KEY ("bookin
 ALTER TABLE "Promotion" ADD CONSTRAINT "Promotion_artisanId_fkey" FOREIGN KEY ("artisanId") REFERENCES "Artisan"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Subscription" ADD CONSTRAINT "Subscription_planId_fkey" FOREIGN KEY ("planId") REFERENCES "Plan"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "PaymentRecord" ADD CONSTRAINT "PaymentRecord_subscriptionId_fkey" FOREIGN KEY ("subscriptionId") REFERENCES "Subscription"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "CpSubscription" ADD CONSTRAINT "CpSubscription_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "CpOrganization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -1652,3 +1530,4 @@ ALTER TABLE "CpSavedTalent" ADD CONSTRAINT "CpSavedTalent_workspaceId_fkey" FORE
 
 -- AddForeignKey
 ALTER TABLE "CpSavedTalent" ADD CONSTRAINT "CpSavedTalent_artisanId_fkey" FOREIGN KEY ("artisanId") REFERENCES "Artisan"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+

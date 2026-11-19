@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Post,
   Req,
@@ -7,14 +8,26 @@ import {
   HttpStatus,
   Logger,
   BadRequestException,
+  InternalServerErrorException,
+  UnprocessableEntityException,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Request } from 'express';
 import { PublicRoute } from '../auth/decorators/public-route.decorator';
+import { InternalGuard } from '../internal/internal.guard';
+import {
+  ForwardedPaystackEventDto,
+  WalletPaymentDeliveryDto,
+} from './dto/subscription.dto';
 import { PaymentGatewayFactory } from './gateways/payment-gateway.factory';
-import { SubscriptionsService } from './subscriptions.service';
-import { DatabaseService } from '../database/database.service';
-import { NotificationDispatcher } from '../notification/notification-dispatcher.service';
+import { WebhookResult } from './gateways/payment-gateway.interface';
+import { CHECKOUT_KINDS, CheckoutKind } from './subscriptions.service';
+import {
+  ActivationOutcome,
+  SubscriptionPaymentsService,
+} from './subscription-payments.service';
+import { PlanTier } from '../generated/prisma/client';
 
 @ApiTags('Subscriptions Webhooks')
 @Controller('subscriptions/webhooks')
@@ -23,9 +36,7 @@ export class PaymentWebhookController {
 
   constructor(
     private readonly gatewayFactory: PaymentGatewayFactory,
-    private readonly subscriptionsService: SubscriptionsService,
-    private readonly db: DatabaseService,
-    private readonly notifications: NotificationDispatcher,
+    private readonly payments: SubscriptionPaymentsService,
   ) {}
 
   @Post('paystack')
@@ -38,9 +49,9 @@ export class PaymentWebhookController {
     @Headers('x-paystack-signature') signature: string,
   ) {
     const provider = this.gatewayFactory.getProvider('PAYSTACK');
-    const rawBody = (req as any).rawBody || JSON.stringify(req.body);
+    const rawBody = this.getRawBody(req);
 
-    if (signature && !provider.verifyWebhookSignature(rawBody, signature)) {
+    if (!signature || !provider.verifyWebhookSignature(rawBody, signature)) {
       this.logger.warn('Paystack webhook signature verification failed');
       throw new BadRequestException('Invalid webhook signature');
     }
@@ -50,57 +61,13 @@ export class PaymentWebhookController {
 
     const result = await provider.handleWebhookEvent(event);
     if (!result || !result.success) {
-      return { status: 'ignored', message: 'Event not handled or non-actionable' };
+      return {
+        status: 'ignored',
+        message: 'Event not handled or non-actionable',
+      };
     }
 
-    // Check idempotency: avoid processing the same transaction twice
-    const existingPayment = await this.db.paymentRecord.findFirst({
-      where: { gatewayRef: result.reference },
-    });
-
-    if (existingPayment && existingPayment.status === 'success') {
-      this.logger.log(`Payment already processed for reference ${result.reference}`);
-      return { status: 'already_processed' };
-    }
-
-    // Upgrade the user's subscription
-    try {
-      const updatedSub = await this.subscriptionsService.upgradePlan(
-        result.userId,
-        result.planKey,
-        result.reference,
-      );
-
-      // Record payment history
-      await this.db.paymentRecord.create({
-        data: {
-          subscriptionId: updatedSub.id,
-          amount: result.amountKobo,
-          currency: 'NGN',
-          status: 'success',
-          gatewayRef: result.reference,
-          paidAt: new Date(),
-        },
-      });
-
-      // Dispatch notification to user
-      await this.notifications.dispatch({
-        userId: result.userId,
-        type: 'SUBSCRIPTION_ACTIVATED',
-        title: 'Subscription Activated! 🎉',
-        message: `Your subscription to ${result.planKey} has been activated successfully.`,
-        skipPush: false,
-      });
-
-      this.logger.log(
-        `Successfully upgraded user ${result.userId} to ${result.planKey} via Paystack ref: ${result.reference}`,
-      );
-
-      return { status: 'success', userId: result.userId, planKey: result.planKey };
-    } catch (err) {
-      this.logger.error(`Error activating subscription after webhook: ${err.message}`);
-      return { status: 'error', message: err.message };
-    }
+    return this.payments.activateFromPayment(result, 'Paystack');
   }
 
   @Post('paydestal')
@@ -113,9 +80,9 @@ export class PaymentWebhookController {
     @Headers('x-paydestal-signature') signature: string,
   ) {
     const provider = this.gatewayFactory.getProvider('PAYDESTAL');
-    const rawBody = (req as any).rawBody || JSON.stringify(req.body);
+    const rawBody = this.getRawBody(req);
 
-    if (signature && !provider.verifyWebhookSignature(rawBody, signature)) {
+    if (!signature || !provider.verifyWebhookSignature(rawBody, signature)) {
       this.logger.warn('Paydestal webhook signature verification failed');
       throw new BadRequestException('Invalid webhook signature');
     }
@@ -126,44 +93,129 @@ export class PaymentWebhookController {
       return { status: 'ignored' };
     }
 
-    const existingPayment = await this.db.paymentRecord.findFirst({
-      where: { gatewayRef: result.reference },
+    return this.payments.activateFromPayment(result, 'Paydestal');
+  }
+
+  /**
+   * Paystack delivers every webhook to wallet-nest (one URL per account), which
+   * forwards charges tagged service=connect here as { event, data }. wallet-nest
+   * has already checked Paystack's signature; this route trusts the internal
+   * secret. A non-2xx makes wallet-nest record the webhook as FAILED, so an
+   * underpaid or unappliable payment stays visible instead of looking handled.
+   */
+  @Post('internal/paystack-event')
+  @PublicRoute()
+  @UseGuards(InternalGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: '[Internal] Apply a Paystack charge forwarded by wallet-nest',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Applied, already applied, or ignored',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Invalid or missing internal secret',
+  })
+  async handleForwardedPaystackEvent(@Body() body: ForwardedPaystackEventDto) {
+    const provider = this.gatewayFactory.getProvider('PAYSTACK');
+    const result = await provider.handleWebhookEvent({
+      event: body.event,
+      data: body.data,
     });
-
-    if (existingPayment && existingPayment.status === 'success') {
-      return { status: 'already_processed' };
+    if (!result || !result.success) {
+      return { status: 'ignored' };
     }
+    // wallet-nest saved the card this checkout asked it to keep, and sends
+    // its id and label next to the event (never the card's token).
+    if (body.savedCard) result.savedCard = body.savedCard;
 
-    try {
-      const updatedSub = await this.subscriptionsService.upgradePlan(
-        result.userId,
-        result.planKey,
-        result.reference,
+    return PaymentWebhookController.answer(
+      await this.payments.activateFromPayment(
+        result,
+        'Paystack via wallet-nest',
+      ),
+    );
+  }
+
+  /**
+   * wallet-nest delivers a payment the user made from their Fiscus wallet
+   * (approved with their PIN) or took under their wallet mandate. The same
+   * checks as a card payment apply. A 422 makes wallet-nest move the money
+   * back to the wallet; a 5xx makes it retry.
+   */
+  @Post('internal/wallet-payment')
+  @PublicRoute()
+  @UseGuards(InternalGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: '[Internal] Apply a wallet payment delivered by wallet-nest',
+  })
+  @ApiResponse({ status: 200, description: 'Applied or already applied' })
+  @ApiResponse({
+    status: 403,
+    description: 'Invalid or missing internal secret',
+  })
+  @ApiResponse({
+    status: 422,
+    description: 'The payment no longer applies; wallet-nest returns the money',
+  })
+  async handleWalletPayment(@Body() body: WalletPaymentDeliveryDto) {
+    const metadata = body.metadata ?? {};
+    const kind = metadata.checkoutKind as CheckoutKind;
+    const planKey = metadata.planKey as PlanTier;
+    if (!Object.values(PlanTier).includes(planKey)) {
+      throw new UnprocessableEntityException('The payment names no plan');
+    }
+    const result: WebhookResult = {
+      success: true,
+      userId: body.userId,
+      planKey,
+      reference: body.reference,
+      amountKobo: body.amountKobo,
+      checkoutKind: CHECKOUT_KINDS.includes(kind) ? kind : 'full',
+      fromPlanKey: metadata.fromPlanKey as PlanTier | undefined,
+      pricedPeriodEnd: (metadata.anchor ?? metadata.renewsAt) as
+        string | undefined,
+      autoRenew: metadata.autoRenew === true,
+      paymentMethod: 'WALLET',
+      walletMandateId: body.mandateId ?? null,
+    };
+    return PaymentWebhookController.answer(
+      await this.payments.activateFromPayment(result, 'Wallet'),
+    );
+  }
+
+  /** Internal callers learn the outcome from the status code. */
+  private static answer(outcome: ActivationOutcome) {
+    if (
+      outcome.status === 'success' ||
+      outcome.status === 'already_processed'
+    ) {
+      return outcome;
+    }
+    if (outcome.status === 'rejected') {
+      throw new UnprocessableEntityException(outcome.message);
+    }
+    throw new InternalServerErrorException(
+      outcome.message ?? 'Subscription could not be activated',
+    );
+  }
+
+  /**
+   * The gateway signs the exact bytes it sent. Re-serialising a parsed body is not
+   * guaranteed to reproduce them (key order, whitespace, unicode escapes), so a
+   * missing rawBody means we cannot verify anything — fail rather than guess.
+   */
+  private getRawBody(req: Request): string | Buffer {
+    const rawBody = (req as Request & { rawBody?: string | Buffer }).rawBody;
+    if (!rawBody) {
+      this.logger.error(
+        'Webhook received without rawBody — NestFactory must be created with { rawBody: true }',
       );
-
-      await this.db.paymentRecord.create({
-        data: {
-          subscriptionId: updatedSub.id,
-          amount: result.amountKobo,
-          currency: 'NGN',
-          status: 'success',
-          gatewayRef: result.reference,
-          paidAt: new Date(),
-        },
-      });
-
-      await this.notifications.dispatch({
-        userId: result.userId,
-        type: 'SUBSCRIPTION_ACTIVATED',
-        title: 'Subscription Activated! 🎉',
-        message: `Your subscription to ${result.planKey} has been activated successfully.`,
-        skipPush: false,
-      });
-
-      return { status: 'success', userId: result.userId, planKey: result.planKey };
-    } catch (err) {
-      this.logger.error(`Error activating subscription via Paydestal: ${err.message}`);
-      return { status: 'error', message: err.message };
+      throw new BadRequestException('Unable to verify webhook payload');
     }
+    return rawBody;
   }
 }

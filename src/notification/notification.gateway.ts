@@ -7,6 +7,7 @@ import {
 import { Logger, UnauthorizedException } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import * as jwt from 'jsonwebtoken';
+import { verifyAccessToken } from '../auth/token-verifier';
 
 interface JwtPayload {
   id: string;
@@ -49,7 +50,7 @@ export class NotificationGateway
 
   async handleConnection(client: Socket) {
     try {
-      const user = this.authenticate(client);
+      const user = await this.authenticate(client);
       client.data.userId = user.id;
 
       // Auto-join user's personal room
@@ -90,7 +91,7 @@ export class NotificationGateway
 
   // ─── Auth helper ────────────────────────────────────
 
-  private authenticate(client: Socket): JwtPayload {
+  private async authenticate(client: Socket): Promise<JwtPayload> {
     const token =
       (client.handshake.auth?.token as string) ||
       (client.handshake.query?.token as string);
@@ -99,11 +100,9 @@ export class NotificationGateway
       throw new UnauthorizedException('No token provided');
     }
 
-    const secret = process.env.JWT_SECRET;
-    if (!secret) {
-      throw new Error('JWT_SECRET not set');
-    }
-
-    return jwt.verify(token, secret) as JwtPayload;
+    const { payload } = await verifyAccessToken<JwtPayload & jwt.JwtPayload>(
+      token,
+    );
+    return payload;
   }
 }

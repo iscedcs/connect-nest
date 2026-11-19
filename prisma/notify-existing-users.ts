@@ -2,9 +2,12 @@
  * Standalone Script — Notify Existing Users of LYNCON Rebrand & 6-Month Free Trial
  *
  * Usage:
- *   npx ts-node prisma/notify-existing-users.ts --dry-run
+ *   npx ts-node prisma/notify-existing-users.ts --plan=PRO_PLUS --dry-run
  *   npx ts-node prisma/notify-existing-users.ts --test=admin@example.com
- *   npx ts-node prisma/notify-existing-users.ts
+ *   npx ts-node prisma/notify-existing-users.ts --plan=PRO_PLUS
+ *
+ * --plan is required for live and dry runs: it decides which paid tier the
+ * 6-month trial grants. There is deliberately no default.
  */
 
 import 'dotenv/config';
@@ -24,7 +27,7 @@ const prisma = new PrismaClient({ adapter });
 const apiKey = process.env.RESEND_API_KEY;
 const resend = apiKey ? new Resend(apiKey) : null;
 const fromAddress =
-  process.env.RESEND_FROM_EMAIL || 'LYNCON <notifications@lyncon.app>';
+  process.env.RESEND_FROM_EMAIL || 'LYNCON <lyncon@isce.app>';
 const appUrl = process.env.APP_URL || 'https://connect.isce.app';
 const authUrl = process.env.AUTH_API_URL;
 const internalKey = process.env.INTERNAL_API_KEY;
@@ -159,10 +162,24 @@ async function main() {
     return;
   }
 
-  // Find Free plan in DB
-  const freePlan = await prisma.plan.findUnique({ where: { key: PlanTier.FREE } });
-  if (!freePlan) {
-    console.error('❌ Free plan not found in database. Run `npx ts-node prisma/seed.ts` first.');
+  // The email promises a 6-month free trial with elevated features, so the grant has
+  // to be a TRIALING paid tier — granting an ACTIVE FREE plan would make the email a
+  // lie. Which tier is a pricing decision, so it must be stated rather than defaulted.
+  const planArg = args.find((a) => a.startsWith('--plan='));
+  const planKey = planArg ? (planArg.split('=')[1] as PlanTier) : null;
+  const TRIAL_TIERS: PlanTier[] = [PlanTier.PRO_LITE, PlanTier.PRO_PLUS];
+
+  if (!planKey || !TRIAL_TIERS.includes(planKey)) {
+    console.error(
+      `❌ Specify the tier the 6-month trial grants: --plan=${TRIAL_TIERS.join(' | --plan=')}`,
+    );
+    process.exitCode = 1;
+    return;
+  }
+
+  const trialPlan = await prisma.plan.findUnique({ where: { key: planKey } });
+  if (!trialPlan) {
+    console.error(`❌ Plan ${planKey} not found in database. Run \`npx ts-node prisma/seed.ts\` first.`);
     return;
   }
 
@@ -192,9 +209,11 @@ async function main() {
           sub = await prisma.subscription.create({
             data: {
               userId: profile.userId,
-              planId: freePlan.id,
-              status: SubscriptionStatus.ACTIVE,
-              trialUsed: false,
+              planId: trialPlan.id,
+              status: SubscriptionStatus.TRIALING,
+              trialStartDate: now,
+              trialEndDate,
+              trialUsed: true,
               notifiedLaunch: false,
             },
           });

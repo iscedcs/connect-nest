@@ -3,11 +3,13 @@ import {
   CanActivate,
   ExecutionContext,
   UnauthorizedException,
+  Logger,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import * as jwt from 'jsonwebtoken';
 import { Request } from 'express';
 import { IS_PUBLIC_ROUTE_KEY } from './decorators/public-route.decorator';
+import { TokenClaimsError, verifyAccessToken } from './token-verifier';
 
 interface IscePermissions {
   connect: boolean;
@@ -33,6 +35,8 @@ export interface JwtPayload {
 
 @Injectable()
 export class AuthGuard implements CanActivate {
+  private readonly logger = new Logger(AuthGuard.name);
+
   constructor(private readonly reflector: Reflector) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -59,24 +63,28 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-      const secret = process.env.JWT_SECRET;
-      if (!secret) {
-        throw new Error('JWT_SECRET environment variable is not set');
-      }
-
-      // Verify the JWT signature and decode the payload
-      const verified = jwt.verify(token, secret) as JwtPayload;
+      // HS256 (legacy) and RS256 (JWKS) are both accepted during migration
+      const { payload, method } = await verifyAccessToken<
+        JwtPayload & jwt.JwtPayload
+      >(token);
+      this.logger.debug(
+        `[JWT_MIGRATION] token accepted | method=${method} userId=${payload.id}`,
+      );
 
       // Attach verified user info to the request
-      (request as any).isce_auth = verified;
+      (request as any).isce_auth = payload;
       return true;
     } catch (error) {
+      if (error instanceof TokenClaimsError) {
+        throw new UnauthorizedException('Invalid token claims');
+      }
       if (error instanceof jwt.TokenExpiredError) {
         throw new UnauthorizedException('Token has expired');
       }
       if (error instanceof jwt.JsonWebTokenError) {
         throw new UnauthorizedException('Invalid token');
       }
+      this.logger.error(`JWT verification failed: ${(error as Error).message}`);
       throw new UnauthorizedException('Unauthorized');
     }
   }

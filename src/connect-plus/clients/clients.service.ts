@@ -259,6 +259,7 @@ export class CpClientsService {
     void this.isceAuth.sendClientInvite({
       email: dto.email,
       token: rawToken,
+      workspaceId,
       clientId: client.id,
     });
 

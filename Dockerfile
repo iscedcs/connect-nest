@@ -28,7 +28,11 @@ COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/prisma ./prisma
 COPY --from=build /app/prisma.config.mts ./prisma.config.mts
 COPY --from=build /app/package.json ./package.json
+COPY --from=build /app/scripts/check-schema-drift.mjs ./scripts/check-schema-drift.mjs
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "npx prisma db push && node dist/src/main.js"]
+# migrate deploy only runs unrecorded migration files; the drift check then
+# checks the live DB has everything schema.prisma needs and refuses to start
+# if anything is missing (see scripts/check-schema-drift.mjs).
+CMD ["sh", "-c", "npx prisma migrate deploy && yarn prisma:check-drift && node dist/src/main.js"]
