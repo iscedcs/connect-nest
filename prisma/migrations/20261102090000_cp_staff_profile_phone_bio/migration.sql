@@ -1,0 +1,2 @@
+ALTER TABLE "CpStaffProfile" ADD COLUMN "phone" TEXT,
+ADD COLUMN "bio" TEXT;

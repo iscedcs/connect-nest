@@ -1157,6 +1157,8 @@ model CpStaffProfile {
   photo       String?
   jobTitle    String?
   department  String?
+  phone       String?
+  bio         String?
   staffNumber String?
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt

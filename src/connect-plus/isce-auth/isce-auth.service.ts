@@ -32,28 +32,41 @@ export interface AdminInvitePayload {
 @Injectable()
 export class IsceAuthService {
   private readonly logger = new Logger(IsceAuthService.name);
-  private readonly webUrl = process.env.CONNECT_WEB_URL ?? '';
+  // Absolute base of connect-web (e.g. https://connect.isce.app), no trailing slash.
+  private readonly webUrl = (process.env.CONNECT_WEB_URL ?? '').replace(
+    /\/+$/,
+    '',
+  );
 
-  constructor(private readonly mail: MailClientService) {}
+  constructor(private readonly mail: MailClientService) {
+    if (!this.webUrl) {
+      this.logger.warn(
+        'CONNECT_WEB_URL is not set: invite emails will contain a link without a host',
+      );
+    }
+  }
 
   /**
-   * connect-web has no /cp/invite/accept page yet, so this link is a stub
-   * for when Connect Plus gets a frontend. Until then the token can be
+   * Points at connect-web's `/cp/invites/accept` page. The token can also be
    * redeemed directly via isce-auth's /auth/signup or /auth/signin, which
    * accept inviteToken/inviteWorkspaceId/inviteRole and notify connect-nest
    * on success (see CpWebhooksService.handleInviteAccepted).
    */
   private inviteLink(token: string, workspaceId: string, role: string): string {
-    return `${this.webUrl}/cp/invite/accept?token=${encodeURIComponent(token)}&workspaceId=${encodeURIComponent(workspaceId)}&role=${encodeURIComponent(role)}`;
+    return `${this.webUrl}/cp/invites/accept?token=${encodeURIComponent(token)}&workspaceId=${encodeURIComponent(workspaceId)}&role=${encodeURIComponent(role)}`;
   }
 
   async sendStaffInvite(payload: StaffInvitePayload): Promise<void> {
-    const link = this.inviteLink(payload.token, payload.workspaceId, payload.role);
+    const link = this.inviteLink(
+      payload.token,
+      payload.workspaceId,
+      payload.role,
+    );
     const sent = await this.mail.sendEmail({
       to: payload.email,
-      subject: `You've been invited to join ${payload.workspaceName} on Connect Plus`,
+      subject: `You've been invited to join ${payload.workspaceName} on Lyncon Plus`,
       html: `<p>Hi${payload.name ? ` ${payload.name}` : ''},</p>
-<p>${payload.inviterName} invited you to join <strong>${payload.workspaceName}</strong> as ${payload.role} on Connect Plus.</p>
+<p>${payload.inviterName} invited you to join <strong>${payload.workspaceName}</strong> as ${payload.role} on Lyncon Plus.</p>
 <p><a href="${link}">Accept invite</a></p>
 <p>This link expires in 7 days.</p>`,
     });
@@ -63,12 +76,16 @@ export class IsceAuthService {
   }
 
   async sendAdminInvite(payload: AdminInvitePayload): Promise<void> {
-    const link = this.inviteLink(payload.token, payload.workspaceId, payload.role);
+    const link = this.inviteLink(
+      payload.token,
+      payload.workspaceId,
+      payload.role,
+    );
     const sent = await this.mail.sendEmail({
       to: payload.email,
-      subject: `You've been invited to administer ${payload.workspaceName} on Connect Plus`,
+      subject: `You've been invited to administer ${payload.workspaceName} on Lyncon Plus`,
       html: `<p>Hi,</p>
-<p>${payload.inviterName} invited you to become a workspace admin for <strong>${payload.workspaceName}</strong> on Connect Plus.</p>
+<p>${payload.inviterName} invited you to become a workspace admin for <strong>${payload.workspaceName}</strong> on Lyncon Plus.</p>
 <p><a href="${link}">Accept invite</a></p>
 <p>This link expires in 7 days.</p>`,
     });
@@ -81,9 +98,9 @@ export class IsceAuthService {
     const link = this.inviteLink(payload.token, payload.workspaceId, 'CLIENT');
     const sent = await this.mail.sendEmail({
       to: payload.email,
-      subject: `You've been invited to Connect Plus`,
+      subject: `You've been invited to Lyncon Plus`,
       html: `<p>Hi,</p>
-<p>You've been invited to join Connect Plus as a client.</p>
+<p>You've been invited to join Lyncon Plus as a client.</p>
 <p><a href="${link}">Accept invite</a></p>
 <p>This link expires in 7 days.</p>`,
     });

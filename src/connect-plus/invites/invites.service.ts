@@ -11,7 +11,7 @@ import { CpAuditLogService } from '../audit-logs/cp-audit-log.service';
 import { IsceAuthService } from '../isce-auth/isce-auth.service';
 import { CpSubscriptionsService } from '../subscriptions/subscriptions.service';
 import { CpRole, CpNotificationType } from '../../generated/prisma/client';
-import { CpRequestContext } from '../types/cp-request.types';
+import { CpRequestContext, IsceAuthPayload } from '../types/cp-request.types';
 import { CpNotificationsService } from '../notifications/notifications.service';
 import { SendInviteDto } from './dto/send-invite.dto';
 import { Request } from 'express';
@@ -25,6 +25,12 @@ export class CpInvitesService {
     private readonly subscriptions: CpSubscriptionsService,
     private readonly notifications: CpNotificationsService,
   ) {}
+
+  private inviterDisplayName(req: Request): string {
+    const me = (req as Request & { isce_auth?: IsceAuthPayload }).isce_auth;
+    const full = [me?.firstName, me?.lastName].filter(Boolean).join(' ').trim();
+    return full || me?.email || 'A team member';
+  }
 
   async sendInvite(ctx: CpRequestContext, dto: SendInviteDto, req: Request) {
     const workspaceId = ctx.workspaceId;
@@ -83,7 +89,7 @@ export class CpInvitesService {
       role: CpRole.STAFF,
       workspaceId,
       workspaceName: workspace?.companyProfile?.name ?? workspace?.name ?? workspaceId,
-      inviterName: ctx.authUserId,
+      inviterName: this.inviterDisplayName(req),
       name: dto.name,
       jobTitle: dto.jobTitle,
     });
@@ -170,7 +176,7 @@ export class CpInvitesService {
       role: invite.role,
       workspaceId,
       workspaceName: workspace?.companyProfile?.name ?? workspace?.name ?? workspaceId,
-      inviterName: ctx.authUserId,
+      inviterName: this.inviterDisplayName(req),
     });
 
     this.auditLog.write({
