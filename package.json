@@ -7,6 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
+    "heroku-postbuild": "yarn build && yarn prisma:check-drift",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "set NODE_ENV=production && node dist/src/main.js",
     "start:dev": "nest start --watch",
