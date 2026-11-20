@@ -21,7 +21,9 @@ export class AttendanceScheduler {
     this.logger.log('Running auto-checkout CRON');
 
     try {
-      // Find today's attendance records (UTC) that have not been checked out
+      // Find today's attendance records (UTC) that have not been checked out.
+      // checkIn is non-nullable, so it needs no filter: `checkIn: { not: null }`
+      // is a Prisma validation error and made every run fail.
       const startOfDay = new Date();
       startOfDay.setUTCHours(0, 0, 0, 0);
       const endOfDay = new Date();
@@ -32,7 +34,6 @@ export class AttendanceScheduler {
           this.db.cpAttendance.findMany({
             where: {
               date: { gte: startOfDay, lte: endOfDay },
-              checkIn: { not: null },
               checkOut: null,
             },
             include: {
