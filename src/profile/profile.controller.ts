@@ -16,6 +16,7 @@ import {
   ProfileResponseDto,
   ProfileStatsResponseDto,
   CloneProfileDto,
+  EnsureMyDefaultProfileDto,
 } from './dto/profile.dto';
 import {
   ApiBearerAuth,
@@ -49,6 +50,38 @@ export class ProfileController {
       return { success: false, message: 'User not found' };
     }
     return this.profileService.createProfile(user, dto);
+  }
+
+  @Post('ensure-default')
+  @ApiOperation({
+    summary:
+      'Idempotently ensure the signed-in user has a default Connect profile and FREE subscription',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Default profile ensured (created or already existed)',
+    type: ProfileResponseDto,
+  })
+  @ApiBody({ type: EnsureMyDefaultProfileDto, required: false })
+  ensureDefaultProfile(
+    @Request() req,
+    @Body(ValidationPipe) dto: EnsureMyDefaultProfileDto = {},
+  ) {
+    const user = req.isce_auth;
+    if (!user) {
+      return { success: false, message: 'User not found' };
+    }
+    const tokenName =
+      user.name ||
+      [user.firstName, user.lastName].filter(Boolean).join(' ').trim() ||
+      undefined;
+    const tokenPhoto =
+      user.profilePhoto || user.photo || user.avatar || undefined;
+
+    return this.profileService.ensureDefaultProfile(user.id, {
+      name: dto?.name || tokenName,
+      profilePhoto: dto?.profilePhoto || tokenPhoto,
+    });
   }
 
   @Get('me')

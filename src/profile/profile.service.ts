@@ -1,4 +1,5 @@
 import { Injectable, HttpException } from '@nestjs/common';
+import slugify from 'slugify';
 import { DatabaseService } from 'src/database/database.service';
 import {
   CreateProfileDto,
@@ -73,6 +74,73 @@ export class ProfileService {
         message: error.message,
       };
     }
+  }
+
+  /**
+   * Idempotently ensures the given user has a default Connect profile and a
+   * FREE subscription. Uses a transaction-scoped Postgres advisory lock on
+   * `userId` so concurrent calls (e.g. isce-auth sign-up + first frontend
+   * visit) cannot create duplicate default profiles.
+   */
+  async ensureDefaultProfile(
+    userId: string,
+    input: { name?: string; profilePhoto?: string },
+  ) {
+    const resolvedName = input.name?.trim() || 'LYNCON User';
+
+    const result = await this.databaseService.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${userId}))`;
+
+      const existing = await tx.profile.findFirst({
+        where: { userId, deletedAt: null },
+        orderBy: [{ is_default: 'desc' }, { createdAt: 'asc' }],
+      });
+
+      if (existing) {
+        return { created: false, profile: existing };
+      }
+
+      const baseSlug =
+        slugify(resolvedName, { lower: true, strict: true, trim: true }) ||
+        'user';
+      let slug = baseSlug;
+      let counter = 1;
+      while (await tx.profile.findUnique({ where: { slug } })) {
+        slug = `${baseSlug}-${counter}`;
+        counter += 1;
+      }
+
+      const profile = await tx.profile.create({
+        data: {
+          userId,
+          name: resolvedName,
+          profilePhoto: input.profilePhoto,
+          slug,
+          is_default: true,
+        },
+      });
+
+      return { created: true, profile };
+    });
+
+    if (result.created) {
+      await this.subscriptionsService.createSubscription(
+        userId,
+        PlanTier.FREE,
+        true, // skipConflictCheck
+      );
+    }
+
+    return {
+      success: true,
+      created: result.created,
+      message: result.created
+        ? 'Default profile created successfully'
+        : 'Default profile already exists',
+      data: {
+        profile: result.profile,
+      },
+    };
   }
 
   async getProfile(user: any) {

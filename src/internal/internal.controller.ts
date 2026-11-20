@@ -12,6 +12,7 @@ import { PublicRoute } from '../auth/decorators/public-route.decorator';
 import { InternalGuard } from './internal.guard';
 import { InternalService } from './internal.service';
 import { ProvisionBusinessOrgDto } from './dto/provision-business-org.dto';
+import { EnsureDefaultProfileDto } from './dto/ensure-default-profile.dto';
 
 @ApiTags('Internal')
 @Controller('internal')
@@ -72,6 +73,30 @@ export class InternalController {
     return this.internalService.provisionBusinessOrg(
       dto.authUserId,
       dto.businessName,
+    );
+  }
+
+  @Post('profile/ensure-default')
+  @ApiOperation({
+    summary: '[Internal] Ensure a default Connect profile for a user',
+    description:
+      'Called by isce-auth right after an individual USER signs up, so the ' +
+      'new user lands with a default Connect profile, slug, and FREE subscription. ' +
+      'Idempotent. Requires X-Internal-Secret header.',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Default profile created or already existed.',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Invalid or missing internal secret.',
+  })
+  ensureDefaultProfile(@Body() dto: EnsureDefaultProfileDto) {
+    return this.internalService.ensureDefaultProfile(
+      dto.authUserId,
+      dto.name,
+      dto.profilePhoto,
     );
   }
 }
