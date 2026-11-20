@@ -54,6 +54,8 @@ export class ArtisanService {
       data: {
         minPortfolioItems: settings.minPortfolioItems,
         maxCategories: settings.maxCategories,
+        // false → new profiles wait for admin review; true → listed at once
+        autoApproval: settings.artisanAutoApproval,
         categories,
         requirements: [
           'Complete profile with display picture',
@@ -141,6 +143,7 @@ export class ArtisanService {
             ? (dto.workingHours as unknown as Prisma.InputJsonValue)
             : Prisma.JsonNull,
           status,
+          termsAcceptedAt: new Date(), // termsAccepted is enforced above
         },
       });
 
