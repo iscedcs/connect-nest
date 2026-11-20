@@ -9,6 +9,7 @@ import {
   Param,
   Query,
   Patch,
+  UseGuards,
 } from '@nestjs/common';
 import { ContactService } from './contact.service';
 import { CreateContactDto, ContactResponseDto } from './dto/contact.dto';
@@ -22,6 +23,8 @@ import {
   ApiQuery,
 } from '@nestjs/swagger';
 import { PublicRoute } from 'src/auth/decorators/public-route.decorator';
+import { PlanFeature } from 'src/subscriptions/decorators/plan-feature.decorator';
+import { PlanLimitGuard } from 'src/subscriptions/guards/plan-limit.guard';
 
 @ApiTags('Contact Management')
 @Controller('contact')
@@ -50,6 +53,18 @@ export class ContactController {
 @Controller('profiles/:profileId/contact')
 export class ProfileContactController {
   constructor(private readonly contactService: ContactService) {}
+
+  @Get('export')
+  @PlanFeature('contactExport')
+  @UseGuards(PlanLimitGuard)
+  @ApiOperation({ summary: 'Export received contacts' })
+  @ApiResponse({ status: 200, description: 'Contacts exported successfully' })
+  @ApiParam({ name: 'profileId', description: 'Profile ID' })
+  exportContacts(@Request() req, @Param('profileId') profileId: string) {
+    const user = req.isce_auth;
+    if (!user) return { success: false, message: 'User not found' };
+    return this.contactService.exportContacts(user, profileId);
+  }
 
   @Get('received')
   @ApiOperation({

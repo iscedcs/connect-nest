@@ -158,6 +158,24 @@ export class UpdateProfileDto {
   address?: object;
 }
 
+export class EnsureMyDefaultProfileDto {
+  @ApiPropertyOptional({
+    description: 'Optional display name override (defaults to token name)',
+    example: 'John Doe',
+  })
+  @IsOptional()
+  @IsString()
+  name?: string;
+
+  @ApiPropertyOptional({
+    description: 'Optional profile photo URL override',
+    example: 'https://example.com/profile-photo.jpg',
+  })
+  @IsOptional()
+  @IsString()
+  profilePhoto?: string;
+}
+
 export class PaginationDto {
   @ApiPropertyOptional({
     description: 'Page number for pagination',

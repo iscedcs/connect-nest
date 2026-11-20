@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
+import { SubscriptionsService } from 'src/subscriptions/subscriptions.service';
 import {
   CreateSupportRequestDto,
   UpdateSupportRequestDto,
@@ -7,7 +8,10 @@ import {
 
 @Injectable()
 export class SupportRequestService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly subscriptionsService: SubscriptionsService,
+  ) {}
 
   async createSupportRequest(user: any, dto: CreateSupportRequestDto) {
     try {
@@ -22,6 +26,9 @@ export class SupportRequestService {
         };
       }
 
+      const limits = await this.subscriptionsService.getUserLimits(user.id);
+      const isPriority = Boolean(limits.prioritySupport);
+
       const supportRequest = await this.databaseService.supportRequest.create({
         data: {
           userId: profile.id,
@@ -32,9 +39,15 @@ export class SupportRequestService {
 
       return {
         success: true,
-        message: 'Support request submitted successfully',
+        message: isPriority
+          ? 'Priority support request submitted successfully'
+          : 'Support request submitted successfully',
         data: {
-          supportRequest,
+          supportRequest: {
+            ...supportRequest,
+            priority: isPriority ? 'HIGH' : 'NORMAL',
+            isPriority,
+          },
         },
       };
     } catch (error) {

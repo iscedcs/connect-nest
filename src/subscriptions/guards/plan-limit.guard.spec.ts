@@ -84,4 +84,16 @@ describe('PlanLimitGuard', () => {
     const result = await guard.canActivate(mockContext('usr_123'));
     expect(result).toBe(true);
   });
+
+  it('should throw PlanLimitException if themeCustomization is none', async () => {
+    (reflector.get as jest.Mock).mockReturnValue('themeCustomization');
+    (systemConfigService.isPersonalBypassed as jest.Mock).mockResolvedValue(false);
+    (subscriptionsService.getUserLimits as jest.Mock).mockResolvedValue({
+      themeCustomization: 'none',
+    });
+
+    await expect(guard.canActivate(mockContext('usr_123'))).rejects.toThrow(
+      PlanLimitException,
+    );
+  });
 });

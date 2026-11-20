@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { CpOrganizationsService } from '../connect-plus/organizations/organizations.service';
 import { CpWorkspacesService } from '../connect-plus/workspaces/workspaces.service';
+import { ProfileService } from '../profile/profile.service';
 import { CpRequestContext } from '../connect-plus/types/cp-request.types';
 import { CpRole } from '../generated/prisma/client';
 
@@ -11,7 +12,23 @@ export class InternalService {
     private readonly db: DatabaseService,
     private readonly organizations: CpOrganizationsService,
     private readonly workspaces: CpWorkspacesService,
+    private readonly profiles: ProfileService,
   ) {}
+
+  /**
+   * Idempotently ensures an individual isce-auth USER has a default Connect
+   * profile and FREE subscription. Safe to call multiple times or concurrently.
+   */
+  ensureDefaultProfile(
+    authUserId: string,
+    name: string,
+    profilePhoto?: string,
+  ) {
+    return this.profiles.ensureDefaultProfile(authUserId, {
+      name,
+      profilePhoto,
+    });
+  }
 
   /**
    * Provisions a CpOrganization + CpWorkspace (+ CREATOR membership) for a

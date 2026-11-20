@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
+import { SubscriptionsService } from '../subscriptions/subscriptions.service';
+import { PlanLimitException } from '../subscriptions/exceptions/plan-limit.exception';
+import { PlanTier } from '../generated/prisma/client';
 import {
   UpdateConnectConfigDto,
   ReorderModulesDto,
@@ -7,7 +10,10 @@ import {
 
 @Injectable()
 export class ConnectConfigService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly subscriptionsService: SubscriptionsService,
+  ) {}
 
   async getConfig(user: any, profileId: string) {
     try {
@@ -32,10 +38,24 @@ export class ConnectConfigService {
         });
       }
 
+      const limits = await this.subscriptionsService.getUserLimits(user.id);
+      const branding = {
+        ...((config.branding as any) || {}),
+        ...(!limits.removeIsceBranding && {
+          showIsceBranding: true,
+          removeIsceBranding: false,
+        }),
+      };
+
       return {
         success: true,
         message: 'Config retrieved successfully',
-        data: { config },
+        data: {
+          config: {
+            ...config,
+            branding,
+          },
+        },
       };
     } catch (error) {
       return { success: false, message: error.message };
@@ -52,6 +72,31 @@ export class ConnectConfigService {
         where: { id: profileId, userId: user.id, deletedAt: null },
       });
       if (!profile) return { success: false, message: 'Profile not found' };
+
+      const limits = await this.subscriptionsService.getUserLimits(user.id);
+
+      // 1. Enforce themeCustomization entitlement
+      if (dto.theme !== undefined) {
+        if (limits.themeCustomization === 'none') {
+          throw new PlanLimitException('themeCustomization', PlanTier.PRO_LITE);
+        }
+        if (
+          limits.themeCustomization === 'basic' &&
+          (dto.theme?.customCss || dto.theme?.customBackground || dto.theme?.advanced)
+        ) {
+          throw new PlanLimitException('themeCustomization', PlanTier.PRO_PLUS);
+        }
+      }
+
+      // 2. Enforce removeIsceBranding entitlement
+      if (
+        dto.branding?.removeIsceBranding === true ||
+        dto.branding?.showIsceBranding === false
+      ) {
+        if (!limits.removeIsceBranding) {
+          throw new PlanLimitException('removeIsceBranding', PlanTier.PRO_PLUS);
+        }
+      }
 
       const config = await this.databaseService.connectConfig.findFirst({
         where: { profileId },
@@ -92,6 +137,7 @@ export class ConnectConfigService {
         };
       }
     } catch (error) {
+      if (error instanceof PlanLimitException) throw error;
       return { success: false, message: error.message };
     }
   }

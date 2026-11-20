@@ -40,8 +40,8 @@ export class PlanLimitGuard implements CanActivate {
     const limits = await this.subscriptionsService.getUserLimits(userId);
     const limit = limits[feature];
 
-    // Gate boolean feature flags and zero-value numeric limits
-    if (limit === false || limit === 0) {
+    // Gate boolean feature flags, zero-value numeric limits, and 'none' enum values
+    if (limit === false || limit === 0 || limit === 'none') {
       throw new PlanLimitException(String(feature), PlanTier.PRO_LITE);
     }
 
